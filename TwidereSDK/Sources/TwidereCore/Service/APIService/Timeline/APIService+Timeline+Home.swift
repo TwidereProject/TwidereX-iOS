@@ -14,52 +14,6 @@ import TwitterSDK
 import MastodonSDK
 import func QuartzCore.CACurrentMediaTime
 
-//class TwitterBatchLookupTask {
-//
-//    // input
-//    let session: URLSession
-//    let statusIDs: [Twitter.Entity.V2.Tweet.ID]
-//
-//    // output
-//    let
-//    init(
-//        session: URLSession,
-//        content: Twitter.API.V2.User.Timeline.HomeContent
-//    ) {
-//        var statusIDs: [Twitter.Entity.Tweet.ID] = []
-//        statusIDs += (content.data ?? []).map { $0.id }
-//        statusIDs += (content.includes?.tweets ?? []).map { $0.id }
-//
-//        self.session = session
-//        self.statusIDs = statusIDs
-//    }
-//
-//    func start() {
-//        let chunks = stride(from: 0, to: statusIDs.count, by: 100).map {
-//            statusIDs[$0..<Swift.min(statusIDs.count, $0 + 100)]
-//        }
-//
-//        let _responses = await chunks.parallelMap { chunk -> Twitter.Response.Content<[Twitter.Entity.Tweet]>? in
-//            let query = Twitter.API.Lookup.LookupQuery(ids: Array(chunk))
-//            let response = try? await Twitter.API.Lookup.tweets(
-//                session: self.session,
-//                query: query,
-//                authorization: authenticationContext.authorization
-//            )
-//            return response
-//        }
-//
-//        let statuses = _responses
-//            .compactMap { $0 }
-//            .map { $0.value }
-//            .flatMap { $0 }
-//
-//        return statuses
-//    }
-//
-//
-//}
-
 extension APIService {
     
     static let homeTimelineRequestWindowInSec: TimeInterval = 15 * 60
