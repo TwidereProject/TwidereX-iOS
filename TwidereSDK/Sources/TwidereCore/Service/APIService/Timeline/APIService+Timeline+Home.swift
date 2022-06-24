@@ -32,13 +32,6 @@ extension APIService {
         #if DEBUG
         // log rate limit
         _response.logRateLimit()
-        
-        // log time cost
-        let start = CACurrentMediaTime()
-        defer {
-            let end = CACurrentMediaTime()
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
-        }
         #endif
         
         var responses: [Twitter.Response.Content<Twitter.API.V2.User.Timeline.HomeContent>] = []
@@ -83,6 +76,15 @@ extension APIService {
             statusIDs: statusIDs,
             authenticationContext: authenticationContext
         )
+        
+        #if DEBUG
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+        }
+        #endif
         
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {

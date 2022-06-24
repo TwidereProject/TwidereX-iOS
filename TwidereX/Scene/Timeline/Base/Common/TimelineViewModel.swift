@@ -128,6 +128,9 @@ extension TimelineViewModel {
                 api: context.apiService,
                 input: input
             )
+            guard output.result.count != .zero else {
+                throw AppError.implicit(.internal(reason: "empty results"))
+            }
             switch kind {
             case .home:
                 break
