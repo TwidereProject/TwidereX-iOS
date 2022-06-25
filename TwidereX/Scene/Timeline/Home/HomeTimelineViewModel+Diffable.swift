@@ -112,7 +112,7 @@ extension HomeTimelineViewModel {
                     ) else {
                         self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
                         self.didLoadLatest.send()
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot without difference")
                         return
                     }
                     
@@ -123,6 +123,7 @@ extension HomeTimelineViewModel {
                     )
                     self.didLoadLatest.send()
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): with difference:\n\(difference)")
                 }   // end Task
             }
             .store(in: &disposeBag)

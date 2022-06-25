@@ -14,11 +14,20 @@ import CoreDataStack
 
 extension ListTimelineViewModel {
     
-    struct Difference<T> {
+    struct Difference<T>: CustomStringConvertible {
         let item: T
         let sourceIndexPath: IndexPath
         let sourceDistanceToTableViewTopEdge: CGFloat
         let targetIndexPath: IndexPath
+        
+        var description: String {
+            """
+            source: \(sourceIndexPath.debugDescription)
+            target: \(targetIndexPath.debugDescription)
+            offset: \(sourceDistanceToTableViewTopEdge)
+            item: \(String(describing: item))
+            """
+        }
     }
     
     @MainActor func calculateReloadSnapshotDifference<S: Hashable, T: Hashable>(
@@ -57,6 +66,12 @@ extension ListTimelineViewModel {
         snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>,
         difference: Difference<StatusItem>
     ) {
+        tableView.isUserInteractionEnabled = false
+        tableView.panGestureRecognizer.isEnabled = false
+        defer {
+            tableView.isUserInteractionEnabled = true
+            tableView.panGestureRecognizer.isEnabled = true
+        }
         diffableDataSource?.applySnapshotUsingReloadData(snapshot)
         tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
         var contentOffset = tableView.contentOffset
