@@ -186,7 +186,7 @@ extension ListTimelineViewController: UITableViewDelegate, AutoGenerateTableView
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let frame = retrieveCellFrame(tableView: tableView, indexPath: indexPath) else {
-            return 200
+            return UITableView.automaticDimension
         }
         return ceil(frame.height)
     }
