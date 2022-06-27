@@ -16,8 +16,8 @@ import func QuartzCore.CACurrentMediaTime
 
 extension APIService {
     
-    static let homeTimelineRequestWindowInSec: TimeInterval = 15 * 60
-    
+    public static var homeTimelineLoadNotification = Notification.Name("com.twidere.twiderex.APIService.homeTimelineLoadNotification")
+
     enum TwitterHomeTimelineTaskResult {
         case content(Twitter.Response.Content<Twitter.API.V2.User.Timeline.HomeContent>)
         case lookup([Twitter.Response.Content<[Twitter.Entity.Tweet]>])
@@ -58,7 +58,6 @@ extension APIService {
                 return TwitterHomeTimelineTaskResult.content(response)
             }
             
-
             var results: [TwitterHomeTimelineTaskResult] = []
             while let next = try await group.next() {
                 results.append(next)
@@ -96,6 +95,19 @@ extension APIService {
                             )
                             return statusArray.map { ManagedObjectRecord<TwitterStatus>(objectID: $0.objectID) }
                         }
+                        
+                        let userInfo: [AnyHashable: Any] = {
+                            let feedCount = response.value.data?.count ?? 0
+                            var userInfo: [AnyHashable: Any] = [
+                                "count": feedCount,
+                            ]
+                            if let sinceID = query.sinceID {
+                                userInfo["sinceID"] = sinceID
+                            }
+                            return userInfo
+                        }()
+                        NotificationCenter.default.post(name: APIService.homeTimelineLoadNotification, object: nil, userInfo: userInfo)
+                        
                         return TwitterHomeTimelineTaskResult.persist(records)
                     }
                     // fetch next page

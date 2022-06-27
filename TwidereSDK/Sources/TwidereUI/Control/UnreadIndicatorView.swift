@@ -5,6 +5,7 @@
 //  Created by MainasuK on 2022-6-23.
 //
 
+import os.log
 import UIKit
 
 final public class UnreadIndicatorView: UIView {
@@ -29,6 +30,11 @@ final public class UnreadIndicatorView: UIView {
         }
     }
     
+    public var count = 0
+    private var currentCount = 0
+    
+    var displayLink: CADisplayLink?
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         _init()
@@ -39,6 +45,9 @@ final public class UnreadIndicatorView: UIView {
         _init()
     }
     
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
 }
 
 extension UnreadIndicatorView {
@@ -73,5 +82,42 @@ extension UnreadIndicatorView {
         layer.masksToBounds = true
         layer.cornerCurve = .continuous
         layer.cornerRadius = 8
+        
+        startDisplayLink()
     }
+}
+
+extension UnreadIndicatorView {
+    
+    public func startDisplayLink() {
+        self.displayLink = CADisplayLink(
+            target: self,
+            selector: #selector(UnreadIndicatorView.step(displayLink:))
+        )
+        if #available(iOS 15.0, *) {
+            displayLink?.preferredFrameRateRange = .init(minimum: 15, maximum: 120, preferred: 120)
+        } else {
+            // Fallback on earlier versions
+        }
+        displayLink?.add(to: .current, forMode: .common)
+    }
+    
+    public func stopDisplayLink() {
+        displayLink?.invalidate()
+    }
+
+    @objc private func step(displayLink: CADisplayLink) {
+        if currentCount == count {
+            // do nothing
+        } else if currentCount > count {
+            // directly update
+            currentCount = count
+        } else {
+            // step increment
+            currentCount += 1
+        }
+        
+        label.text = "\(currentCount)"
+    }
+    
 }

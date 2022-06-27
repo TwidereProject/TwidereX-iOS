@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import Combine
 import TwidereUI
 import TwidereLocalization
 
@@ -51,7 +52,7 @@ extension HomeTimelineViewController {
                 self.unreadIndicatorView.translationY = .zero
             }
             .store(in: &disposeBag)
-    
+
         #if DEBUG
         navigationItem.rightBarButtonItem = debugActionBarButtonItem
         #endif
@@ -66,8 +67,85 @@ extension HomeTimelineViewController {
             statusViewTableViewCellDelegate: self,
             timelineMiddleLoaderTableViewCellDelegate: self
         )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(HomeTimelineViewController.homeTimelineLoadNotificationHandler(_:)),
+            name: APIService.homeTimelineLoadNotification,
+            object: nil
+        )
+        
+        viewModel.didLoadLatest
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                guard let self = self else { return }
+                guard let viewModel = self.viewModel as? HomeTimelineViewModel else { return }
+                viewModel.loadItemCount = 0
+            }
+            .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            viewModel.$unreadItemCount,
+            viewModel.$loadItemCount
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] unreadItemCount, loadItemCount in
+            guard let self = self else { return }
+
+            let count: Int
+            if loadItemCount > 0 {
+                count = loadItemCount
+            } else {
+                count = unreadItemCount
+            }
+            self.unreadIndicatorView.count = count
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update unread indicator count: \(count)")
+            
+            let animator = UIViewPropertyAnimator(duration: 0.33, timingParameters: UICubicTimingParameters(animationCurve: .easeInOut))
+            animator.addAnimations {
+                self.unreadIndicatorView.alpha = count > 0 ? 1 : 0
+            }
+            animator.startAnimation()
+        }
+        .store(in: &disposeBag)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        unreadIndicatorView.startDisplayLink()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        unreadIndicatorView.stopDisplayLink()
+    }
+    
+}
+
+extension HomeTimelineViewController {
+    @objc private func homeTimelineLoadNotificationHandler(_ notification: Notification) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        Task { @MainActor in
+            assert(Thread.isMainThread)
+            
+            guard let viewModel = self.viewModel as? HomeTimelineViewModel else {
+                assertionFailure()
+                return
+            }
+            
+            guard let userInfo = notification.userInfo,
+                  let sinceID = userInfo["sinceID"] as? String,
+                  let currentSinceID = viewModel.sinceID,
+                  currentSinceID == sinceID,
+                  let count = userInfo["count"] as? Int
+            else { return }
+            
+            viewModel.loadItemCount += count
+        }   // end Task
+    }
 }
 
 // MARK: - UIScrollViewDelegate
@@ -137,13 +215,7 @@ extension HomeTimelineViewController {
         }
 
         viewModel.latestUnreadStatusItem = item
-        unreadIndicatorView.label.text = "\(indexPath.row)"
-        
-        let animator = UIViewPropertyAnimator(duration: 0.33, timingParameters: UICubicTimingParameters(animationCurve: .easeInOut))
-        animator.addAnimations {
-            self.unreadIndicatorView.alpha = indexPath.row > 0 ? 1 : 0
-        }
-        animator.startAnimation()
+        viewModel.unreadItemCount = indexPath.row
     }
     
 }
