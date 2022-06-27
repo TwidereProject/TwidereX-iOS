@@ -169,6 +169,9 @@ extension StatusToolbar {
         case translate
         case share
         case remove
+        #if DEBUG
+        case copyID
+        #endif
     }
 
     public enum Style {
