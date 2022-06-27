@@ -14,7 +14,7 @@ struct AboutView: View {
     
     @EnvironmentObject var context: AppContext
     @ObservedObject var viewModel: AboutViewModel
-    @ObservedObject var manager = MotionManager()
+    @StateObject var manager = MotionManager()
     
     var body: some View {
         VStack {
