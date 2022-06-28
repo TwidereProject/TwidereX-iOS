@@ -216,6 +216,19 @@ extension StatusFetchViewModel.Timeline {
             case .twitter(let authenticationContext):
                 return await .home(.twitter(.init(
                     authenticationContext: authenticationContext,
+                    sinceID: {
+                        let managedObjectContext = fetchContext.managedObjectContext
+                        switch fetchContext.position {
+                        case .top(let anchor):
+                            guard let anchor = anchor else { return nil }
+                            return await managedObjectContext.perform {
+                                guard case let .twitter(record) = anchor else { return nil }
+                                return record.object(in: managedObjectContext)?.id
+                            }
+                        case .middle, .bottom:
+                            return nil
+                        }
+                    }(),
                     untilID: {
                         let managedObjectContext = fetchContext.managedObjectContext
                         switch fetchContext.position {
@@ -234,6 +247,19 @@ extension StatusFetchViewModel.Timeline {
             case .mastodon(let authenticationContext):
                 return await .home(.mastodon(.init(
                     authenticationContext: authenticationContext,
+                    sinceID: {
+                        let managedObjectContext = fetchContext.managedObjectContext
+                        switch fetchContext.position {
+                        case .top(let anchor):
+                            guard let anchor = anchor else { return nil }
+                            return await managedObjectContext.perform {
+                                guard case let .mastodon(record) = anchor else { return nil }
+                                return record.object(in: managedObjectContext)?.id
+                            }
+                        case .middle, .bottom:
+                            return nil
+                        }
+                    }(),
                     maxID: {
                         let managedObjectContext = fetchContext.managedObjectContext
                         switch fetchContext.position {

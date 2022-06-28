@@ -402,6 +402,16 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                     status: status,
                     authenticationContext: authenticationContext
                 )
+            #if DEBUG
+            case .copyID:
+                let _statusID: String? = await context.managedObjectContext.perform {
+                    guard let status = status.object(in: self.context.managedObjectContext) else { return nil }
+                    return status.id
+                }
+                if let statusID = _statusID {
+                    UIPasteboard.general.string = statusID
+                }
+            #endif
             }   // end switch
         }   // end Task
     }   // end func

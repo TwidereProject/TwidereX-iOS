@@ -28,6 +28,15 @@ extension StatusObject {
 
 extension StatusObject {
     
+    public var id: String {
+        switch self {
+        case .twitter(let object):
+            return object.id
+        case .mastodon(let object):
+            return object.id
+        }
+    }
+    
     public var plaintextContent: String {
         switch self {
         case .twitter(let status):

@@ -27,7 +27,7 @@ final public class FeedFetchedResultsController: NSObject {
     
     // output
     private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
-    public let records = CurrentValueSubject<[ManagedObjectRecord<Feed>], Never>([])
+    @Published public var records: [ManagedObjectRecord<Feed>] = []
     
     public init(managedObjectContext: NSManagedObjectContext) {
         self.fetchedResultsController = {
@@ -55,8 +55,7 @@ final public class FeedFetchedResultsController: NSObject {
         _objectIDs
             .throttle(for: 0.1, scheduler: DispatchQueue.main, latest: true)
             .map { objectIDs in objectIDs.map { ManagedObjectRecord(objectID: $0) } }
-            .assign(to: \.value, on: records)
-            .store(in: &disposeBag)
+            .assign(to: &$records)
         
         fetchedResultsController.delegate = self
         

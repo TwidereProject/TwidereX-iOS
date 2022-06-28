@@ -40,15 +40,17 @@ extension HomeTimelineViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.applySnapshotUsingReloadData(snapshot)
         
-        feedFetchedResultsController.records
+        feedFetchedResultsController.$records
             .receive(on: DispatchQueue.main)
             .sink { [weak self] records in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(records.count) objects")
-                Task { @MainActor in 
+                Task { @MainActor in
                     let start = CACurrentMediaTime()
+                    self.isUpdaingDataSource = true
                     defer {
+                        self.isUpdaingDataSource = false
                         let end = CACurrentMediaTime()
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cost \(end - start, format: .fixed(precision: 4))s to process \(records.count) feeds")
                     }
@@ -108,9 +110,9 @@ extension HomeTimelineViewModel {
                         oldSnapshot: oldSnapshot,
                         newSnapshot: newSnapshot
                     ) else {
-                        await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
+                        self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
                         self.didLoadLatest.send()
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot without difference")
                         return
                     }
                     
@@ -121,6 +123,7 @@ extension HomeTimelineViewModel {
                     )
                     self.didLoadLatest.send()
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): with difference:\n\(difference)")
                 }   // end Task
             }
             .store(in: &disposeBag)

@@ -149,6 +149,7 @@ extension Persistence.TwitterStatus {
                 )
             )
             let author = authorResult.user
+            context.userCache?.dictionary[author.id] = author
             let relationship = TwitterStatus.Relationship(
                 poll: poll,
                 author: author,
@@ -156,6 +157,7 @@ extension Persistence.TwitterStatus {
                 quote: quote
             )
             let status = create(in: managedObjectContext, context: context, relationship: relationship)
+            context.statusCache?.dictionary[status.id] = status
             return .init(status: status, isNewInsertion: true, isNewInsertionAuthor: authorResult.isNewInsertion)
         }
     }

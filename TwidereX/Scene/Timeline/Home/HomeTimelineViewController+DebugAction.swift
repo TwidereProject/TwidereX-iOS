@@ -196,12 +196,20 @@ extension HomeTimelineViewController {
             image: UIImage(systemName: "minus.circle"),
             identifier: nil,
             options: [],
-            children: [1, 2, 5, 10, 20, 50, 100, 150, 200, 250, 300].map { count in
-                UIAction(title: "Drop Recent \(count)", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.dropRecentFeedAction(action, count: count)
-                })
-            }
+            children: [
+                [1, 2, 5, 10, 20, 50, 100, 150, 200, 250, 300].map { count in
+                    UIAction(title: "Drop Recent \(count)", image: nil, attributes: [], handler: { [weak self] action in
+                        guard let self = self else { return }
+                        self.dropRecentFeedAction(action, count: count)
+                    })
+                },
+                [
+                    UIAction(title: "Exclude last", image: nil, attributes: [], handler: { [weak self] action in
+                        guard let self = self else { return }
+                        self.dropFeedExcludeLastAction(action)
+                    }),
+                ],
+            ].flatMap { $0 }
         )
     }
     
@@ -494,6 +502,13 @@ extension HomeTimelineViewController {
         }
         .store(in: &disposeBag)
     }
+    
+    @objc private func dropFeedExcludeLastAction(_ sender: UIAction) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshot = diffableDataSource.snapshot()
+        dropRecentFeedAction(sender, count: snapshot.itemIdentifiers.count - 1)
+    }
+
     
     @objc private func exportDatabase(_ sender: UIAction) {
 //        let storeURL = URL.storeURL(for: "group.com.twidere.twiderex", databaseName: "shared")

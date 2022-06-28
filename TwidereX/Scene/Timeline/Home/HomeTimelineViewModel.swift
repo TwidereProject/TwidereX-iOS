@@ -11,6 +11,14 @@ import CoreDataStack
 
 final class HomeTimelineViewModel: ListTimelineViewModel {
     
+    // input
+    var isUpdaingDataSource = false
+    var latestUnreadStatusItem: StatusItem?
+    
+    // output
+    @Published var unreadItemCount = 0
+    @Published var loadItemCount = 0
+    
     init(context: AppContext) {
         super.init(context: context, kind: .home)
         
@@ -42,6 +50,18 @@ final class HomeTimelineViewModel: ListTimelineViewModel {
     
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
+    
+}
+
+extension HomeTimelineViewModel {
+    
+    var sinceID: String? {
+        guard let first = feedFetchedResultsController.records.first,
+              let object = first.object(in: context.managedObjectContext)?.statusObject
+        else { return nil }
+        return object.id
     }
     
 }

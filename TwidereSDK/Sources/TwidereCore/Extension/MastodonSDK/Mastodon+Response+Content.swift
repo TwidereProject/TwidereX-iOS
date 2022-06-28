@@ -1,18 +1,16 @@
 //
-//  TwitterResponseContent.swift
-//  TwitterResponseContent
+//  Mastodon+Response+Content.swift
+//  
 //
-//  Created by Cirno MainasuK on 2021-8-24.
-//  Copyright © 2021 Twidere. All rights reserved.
+//  Created by MainasuK on 2022-6-28.
 //
-
 
 #if DEBUG
 import os.log
 import Foundation
-import TwitterSDK
+import MastodonSDK
 
-extension Twitter.Response.Content {
+extension Mastodon.Response.Content {
     public func logRateLimit(category: String? = nil) {
         guard let date = self.date, let rateLimit = self.rateLimit else { return }
         

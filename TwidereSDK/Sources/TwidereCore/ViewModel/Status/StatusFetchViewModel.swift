@@ -20,6 +20,14 @@ public enum StatusFetchViewModel {
         case twitter([Twitter.Entity.Tweet]) // v1
         case twitterV2([Twitter.Entity.V2.Tweet]) // v2
         case mastodon([Mastodon.Entity.Status])
+        
+        public var count: Int {
+            switch self {
+            case .twitter(let array):       return array.count
+            case .twitterV2(let array):     return array.count
+            case .mastodon(let array):      return array.count
+            }
+        }
     }
-    
+
 }
