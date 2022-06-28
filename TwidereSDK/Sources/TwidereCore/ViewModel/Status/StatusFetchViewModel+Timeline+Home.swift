@@ -57,17 +57,20 @@ extension StatusFetchViewModel.Timeline.Home {
     
     public struct MastodonFetchContext: Hashable {
         public let authenticationContext: MastodonAuthenticationContext
+        public let sinceID: Mastodon.Entity.Status.ID?
         public let maxID: Mastodon.Entity.Status.ID?
         public let count: Int?
         public let filter: StatusFetchViewModel.Timeline.Filter
         
         public init(
             authenticationContext: MastodonAuthenticationContext,
+            sinceID: Mastodon.Entity.Status.ID?,
             maxID: Mastodon.Entity.Status.ID?,
             count: Int?,
             filter: StatusFetchViewModel.Timeline.Filter
         ) {
             self.authenticationContext = authenticationContext
+            self.sinceID = sinceID
             self.maxID = maxID
             self.count = count
             self.filter = filter
@@ -76,6 +79,7 @@ extension StatusFetchViewModel.Timeline.Home {
         func map(maxID: Mastodon.Entity.Status.ID?) -> MastodonFetchContext {
             MastodonFetchContext(
                 authenticationContext: authenticationContext,
+                sinceID: sinceID,
                 maxID: maxID,
                 count: count,
                 filter: filter
@@ -120,24 +124,38 @@ extension StatusFetchViewModel.Timeline.Home {
             )
         case .mastodon(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
-            let response = try await api.mastodonHomeTimeline(
-                maxID: fetchContext.maxID,
-                count: fetchContext.count ?? 50,
+            let responses = try await api.mastodonHomeTimeline(
+                query: .init(
+                    local: nil,
+                    remote: nil,
+                    onlyMedia: nil,
+                    maxID: fetchContext.maxID,
+                    sinceID: fetchContext.sinceID,
+                    minID: nil,
+                    limit: fetchContext.count ?? 100
+                ),
                 authenticationContext: authenticationContext
             )
-            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == fetchContext.maxID)
             let nextInput: Input? = {
+                guard let last = responses.last else { return nil }
+                let noMore = last.value.isEmpty || (last.value.count == 1 && last.value[0].id == fetchContext.maxID)
                 if noMore { return nil }
-                guard let maxID = response.value.last?.id else { return nil }
+                guard let maxID = last.link?.maxID else { return nil }
                 let fetchContext = fetchContext.map(maxID: maxID)
                 return .mastodon(fetchContext)
             }()
             return .init(
-                result: .mastodon(response.value),
+                result: {
+                    let statuses = responses
+                        .map { $0.value }
+                        .compactMap{ $0 }
+                        .flatMap { $0 }
+                    return .mastodon(statuses)
+                }(),
                 backInput: nil,
                 nextInput: nextInput.flatMap { .home($0) }
             )
-        }
-    }
+        }   // end switch
+    }   // end func
     
 }
