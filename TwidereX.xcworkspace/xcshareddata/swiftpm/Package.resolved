@@ -110,6 +110,15 @@
         }
       },
       {
+        "package": "MetaTextKit",
+        "repositoryURL": "https://github.com/TwidereProject/MetaTextKit.git",
+        "state": {
+          "branch": null,
+          "revision": "f5af64a22d5a4839d68efe74e41216f039194d12",
+          "version": "3.3.2"
+        }
+      },
+      {
         "package": "Pageboy",
         "repositoryURL": "https://github.com/uias/Pageboy",
         "state": {
