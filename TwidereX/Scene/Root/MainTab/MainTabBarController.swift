@@ -173,12 +173,16 @@ extension MainTabBarController {
             currentTab = tab
         }
         
-        // check if selected and scroll it to top
+        // check if selected and scroll it to top or pop to top
         guard currentTab == tab,
               let viewController = viewControllers?[safe: index],
-              let navigationController = viewController as? UINavigationController,
-              navigationController.viewControllers.count == 1
+              let navigationController = viewController as? UINavigationController
         else { return }
+        
+        guard navigationController.viewControllers.count == 1 else {
+            navigationController.popToRootViewController(animated: true)
+            return
+        }
 
         let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
         guard let scrollViewContainer = _scrollViewContainer else {

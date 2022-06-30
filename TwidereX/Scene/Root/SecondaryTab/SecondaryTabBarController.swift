@@ -75,9 +75,16 @@ extension SecondaryTabBarController {
         // check if selected and scroll it to top
         guard currentTab == tab,
               let viewController = viewControllers?[safe: index],
-              let navigationController = viewController as? UINavigationController,
-              navigationController.viewControllers.count == 1 + 1 // additional prepend SecondaryTabBarRootController 
+              let navigationController = viewController as? UINavigationController
         else { return }
+            
+        // additional prepend SecondaryTabBarRootController
+        guard navigationController.viewControllers.count == 1 + 1 else {
+            if let second = navigationController.viewControllers[safe: 1] {
+                navigationController.popToViewController(second, animated: true)
+            }
+            return
+        }
 
         let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
         guard let scrollViewContainer = _scrollViewContainer else {
