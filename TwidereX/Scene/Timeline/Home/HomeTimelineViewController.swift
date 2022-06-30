@@ -92,12 +92,7 @@ extension HomeTimelineViewController {
         .sink { [weak self] unreadItemCount, loadItemCount in
             guard let self = self else { return }
 
-            let count: Int
-            if loadItemCount > 0 {
-                count = loadItemCount
-            } else {
-                count = unreadItemCount
-            }
+            let count = max(0, loadItemCount) + max(0, unreadItemCount)
             self.unreadIndicatorView.count = count
             self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update unread indicator count: \(count)")
             
