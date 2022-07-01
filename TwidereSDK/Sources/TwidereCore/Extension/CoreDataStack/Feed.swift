@@ -27,7 +27,7 @@ extension Feed {
             } else {
                 return .none
             }
-        case .notification:
+        case .notificationAll, .notificationMentions:
             if let status = twitterStatus {
                 return .twitter(status)
             } else if let status = mastodonStatus {
@@ -61,7 +61,7 @@ extension Feed {
             } else {
                 return .none
             }
-        case .notification:
+        case .notificationAll, .notificationMentions:
             if let status = twitterStatus {
                 return .status(.twitter(object: status))
             } else if let status = mastodonStatus {

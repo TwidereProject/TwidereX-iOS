@@ -156,7 +156,7 @@ extension NotificationViewController {
 #endif
 
 extension NotificationViewController {
-    private func setupSegmentedControl(scopes: [NotificationViewModel.Scope]) {
+    private func setupSegmentedControl(scopes: [NotificationTimelineViewModel.Scope]) {
         pageSegmentedControl.removeAllSegments()
         for (i, scope) in scopes.enumerated() {
             pageSegmentedControl.insertSegment(withTitle: scope.title, at: i, animated: false)

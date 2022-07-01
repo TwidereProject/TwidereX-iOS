@@ -24,7 +24,7 @@ extension NotificationFetchViewModel {
 
     public enum Input {
         case twitter(TwitterFetchContext)
-         case mastodon(MastodonFetchContext)
+        case mastodon(MastodonFetchContext)
     }
     
     public struct Output {
@@ -58,18 +58,24 @@ extension NotificationFetchViewModel {
     
     public struct MastodonFetchContext {
         public let authenticationContext: MastodonAuthenticationContext
+        public let scope: Mastodon.API.Notification.TimelineScope
         public let maxID: String?
+        public let includeTypes: [Mastodon.Entity.Notification.NotificationType]?
         public let excludeTypes: [Mastodon.Entity.Notification.NotificationType]?
         public let limit: Int?
 
         public init(
             authenticationContext: MastodonAuthenticationContext,
+            scope: Mastodon.API.Notification.TimelineScope,
             maxID: String?,
+            includeTypes: [Mastodon.Entity.Notification.NotificationType]?,
             excludeTypes: [Mastodon.Entity.Notification.NotificationType]?,
             limit: Int?
         ) {
             self.authenticationContext = authenticationContext
+            self.scope = scope
             self.maxID = maxID
+            self.includeTypes = includeTypes
             self.excludeTypes = excludeTypes
             self.limit = limit
         }
@@ -77,7 +83,9 @@ extension NotificationFetchViewModel {
         func map(maxID: String) -> MastodonFetchContext {
             return MastodonFetchContext(
                 authenticationContext: authenticationContext,
+                scope: scope,
                 maxID: maxID,
+                includeTypes: includeTypes,
                 excludeTypes: excludeTypes,
                 limit: limit
             )
@@ -111,11 +119,13 @@ extension NotificationFetchViewModel {
             let query = Mastodon.API.Notification.NotificationsQuery(
                 maxID: fetchContext.maxID,
                 limit: fetchContext.limit,
+                types: fetchContext.includeTypes,
                 excludeTypes: fetchContext.excludeTypes,
                 accountID: nil
             )
             let response = try await api.mastodonNotificationTimeline(
                 query: query,
+                scope: fetchContext.scope,
                 authenticationContext: authenticationContext
             )
             return Output(

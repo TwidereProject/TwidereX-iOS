@@ -96,6 +96,30 @@ extension NotificationTimelineViewController {
         refreshControl.endRefreshing()
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if !viewModel.isLoadingLatest {
+            let now = Date()
+            if let timestamp = viewModel.lastAutomaticFetchTimestamp {
+                if now.timeIntervalSince(timestamp) > 60 {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): auto fetch latest timeline…")
+                    Task {
+                        await viewModel.loadLatest()
+                    }
+                    viewModel.lastAutomaticFetchTimestamp = now
+                } else {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): auto fetch latest timeline skip. Reason: updated in recent 60s")
+                }
+            } else {
+                Task {
+                    await viewModel.loadLatest()
+                }
+                viewModel.lastAutomaticFetchTimestamp = now
+            }
+        }
+    }
 }
 
 extension NotificationTimelineViewController {

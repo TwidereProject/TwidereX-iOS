@@ -44,12 +44,36 @@ extension Mastodon.API.Notification {
         return Mastodon.Response.Content(value: value, response: response)
     }
     
+    public enum TimelineScope: Hashable {
+        case all
+        case mentions
+        
+        public var includeTypes: [Mastodon.Entity.Notification.NotificationType]? {
+            switch self {
+            case .all:
+                return nil
+            case .mentions:
+                return [.mention, .status]
+            }   // end switch
+        }
+        
+        public var excludeTypes: [Mastodon.Entity.Notification.NotificationType]? {
+            switch self {
+            case .all:
+                return nil
+            case .mentions:
+                return [.follow, .followRequest, .reblog, .favourite, .poll]
+            }   // end switch
+        }
+    }
+    
     public struct NotificationsQuery: Query {
         
         public let maxID: Mastodon.Entity.Status.ID?
         public let sinceID: Mastodon.Entity.Status.ID?
         public let minID: Mastodon.Entity.Status.ID?
         public let limit: Int?
+        public let types: [Mastodon.Entity.Notification.NotificationType]?
         public let excludeTypes: [Mastodon.Entity.Notification.NotificationType]?
         public let accountID: String?
     
@@ -58,6 +82,7 @@ extension Mastodon.API.Notification {
             sinceID: Mastodon.Entity.Status.ID? = nil,
             minID: Mastodon.Entity.Status.ID? = nil,
             limit: Int? = nil,
+            types: [Mastodon.Entity.Notification.NotificationType]? = nil,
             excludeTypes: [Mastodon.Entity.Notification.NotificationType]? = nil,
             accountID: String? = nil
         ) {
@@ -65,6 +90,7 @@ extension Mastodon.API.Notification {
             self.sinceID = sinceID
             self.minID = minID
             self.limit = limit
+            self.types = types
             self.excludeTypes = excludeTypes
             self.accountID = accountID
         }
@@ -75,6 +101,11 @@ extension Mastodon.API.Notification {
             sinceID.flatMap { items.append(URLQueryItem(name: "since_id", value: $0)) }
             minID.flatMap { items.append(URLQueryItem(name: "min_id", value: $0)) }
             limit.flatMap { items.append(URLQueryItem(name: "limit", value: String($0))) }
+            if let types = types {
+                types.forEach {
+                    items.append(URLQueryItem(name: "types[]", value: $0.rawValue))
+                }
+            }
             if let excludeTypes = excludeTypes {
                 excludeTypes.forEach {
                     items.append(URLQueryItem(name: "exclude_types[]", value: $0.rawValue))
