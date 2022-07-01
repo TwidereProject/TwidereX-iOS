@@ -159,6 +159,7 @@ extension SearchViewController {
             tableView: tableView
         )
         
+        // bind trend section titile
         viewModel.trendViewModel.$trendPlaceName
             .receive(on: DispatchQueue.main)
             .sink { [weak self] name in
@@ -168,6 +169,21 @@ extension SearchViewController {
             }
             .store(in: &disposeBag)
         
+        // bind twitter trend place entry
+        viewModel.context.authenticationService.$activeAuthenticationContext
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] authenticationContext in
+                guard let self = self else { return }
+                switch authenticationContext {
+                case .twitter:
+                    self.trendSectionHeaderView.button.isHidden = false
+                default:
+                    self.trendSectionHeaderView.button.isHidden = true
+                }
+            }
+            .store(in: &disposeBag)
+        
+        // bind searchBar bookmark
         Publishers.CombineLatest3(
             viewModel.$savedSearchTexts,
             searchResultViewModel.$searchText,

@@ -43,7 +43,6 @@ extension HomeTimelineViewController {
             unreadIndicatorView.widthAnchor.constraint(greaterThanOrEqualToConstant: 36).priority(.required - 1),
             unreadIndicatorView.heightAnchor.constraint(greaterThanOrEqualToConstant: 36).priority(.required - 1),
         ])
-        unreadIndicatorView.isUserInteractionEnabled = false
         unreadIndicatorView.alpha = 0
         viewModel.didLoadLatest
             .receive(on: DispatchQueue.main)
@@ -52,6 +51,9 @@ extension HomeTimelineViewController {
                 self.unreadIndicatorView.translationY = .zero
             }
             .store(in: &disposeBag)
+        let unreadIndicatorViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+        unreadIndicatorViewTapGestureRecognizer.addTarget(self, action: #selector(HomeTimelineViewController.unreadIndicatorViewTapGestureRecognizerHandler(_:)))
+        unreadIndicatorView.addGestureRecognizer(unreadIndicatorViewTapGestureRecognizer)
 
         #if DEBUG
         navigationItem.rightBarButtonItem = debugActionBarButtonItem
@@ -92,12 +94,7 @@ extension HomeTimelineViewController {
         .sink { [weak self] unreadItemCount, loadItemCount in
             guard let self = self else { return }
 
-            let count: Int
-            if loadItemCount > 0 {
-                count = loadItemCount
-            } else {
-                count = unreadItemCount
-            }
+            let count = max(0, loadItemCount) + max(0, unreadItemCount)
             self.unreadIndicatorView.count = count
             self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update unread indicator count: \(count)")
             
@@ -145,6 +142,35 @@ extension HomeTimelineViewController {
             
             viewModel.loadItemCount += count
         }   // end Task
+    }
+    
+    @objc private func unreadIndicatorViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        assert(sender.view === unreadIndicatorView)
+        guard unreadIndicatorView.alpha == 1 else { return }
+        
+        guard let viewModel = self.viewModel as? HomeTimelineViewModel,
+              let diffableDataSource = viewModel.diffableDataSource
+        else {
+            assertionFailure()
+            return
+        }
+        
+        guard let item = viewModel.latestUnreadStatusItem,
+              let indexPath = diffableDataSource.indexPath(for: item)
+        else { return }
+        
+        if let indexPathsForVisibleRows = tableView.indexPathsForVisibleRows,
+           !indexPathsForVisibleRows.isEmpty,
+           indexPathsForVisibleRows.contains(indexPath)
+        {
+            // do nothing when target index path visible
+            return
+        }
+        
+        tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        
     }
 }
 

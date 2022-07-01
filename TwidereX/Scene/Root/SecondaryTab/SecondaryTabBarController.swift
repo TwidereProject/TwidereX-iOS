@@ -63,11 +63,34 @@ extension SecondaryTabBarController {
 
     func select(tab: TabBarItem) {
         let _index = tabBar.items?.firstIndex(where: { $0.tag == tab.tag })
-        if let index = _index {
-            selectedIndex = index
+        guard let index = _index else {
+            return
         }
         
-        currentTab = tab
+        defer {
+            selectedIndex = index
+            currentTab = tab
+        }
+        
+        // check if selected and scroll it to top
+        guard currentTab == tab,
+              let viewController = viewControllers?[safe: index],
+              let navigationController = viewController as? UINavigationController
+        else { return }
+            
+        // additional prepend SecondaryTabBarRootController
+        guard navigationController.viewControllers.count == 1 + 1 else {
+            if let second = navigationController.viewControllers[safe: 1] {
+                navigationController.popToViewController(second, animated: true)
+            }
+            return
+        }
+
+        let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
+        guard let scrollViewContainer = _scrollViewContainer else {
+            return
+        }
+        scrollViewContainer.scrollToTop(animated: true)
     }
     
     func navigationController(for tab: TabBarItem) -> UINavigationController? {

@@ -14,6 +14,7 @@ import SafariServices
 import SwiftMessages
 import TwitterSDK
 import TwidereUI
+import TwidereCommon
 
 final class MainTabBarController: UITabBarController {
     
@@ -166,9 +167,28 @@ extension MainTabBarController {
         guard let index = _index else {
             return
         }
+        
+        defer {
+            selectedIndex = index
+            currentTab = tab
+        }
+        
+        // check if selected and scroll it to top or pop to top
+        guard currentTab == tab,
+              let viewController = viewControllers?[safe: index],
+              let navigationController = viewController as? UINavigationController
+        else { return }
+        
+        guard navigationController.viewControllers.count == 1 else {
+            navigationController.popToRootViewController(animated: true)
+            return
+        }
 
-        selectedIndex = index
-        currentTab = tab
+        let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
+        guard let scrollViewContainer = _scrollViewContainer else {
+            return
+        }
+        scrollViewContainer.scrollToTop(animated: true)
     }
     
 }
@@ -215,19 +235,6 @@ extension MainTabBarController: UITabBarControllerDelegate {
             return
         }
         
-        defer {
-            currentTab = tab
-        }
-        
-        guard currentTab == tab,
-              let navigationController = viewController as? UINavigationController,
-              navigationController.viewControllers.count == 1
-        else { return }
-
-        let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
-        guard let scrollViewContainer = _scrollViewContainer else {
-            return
-        }
-        scrollViewContainer.scrollToTop(animated: true)
+        select(tab: tab)
     }
 }
