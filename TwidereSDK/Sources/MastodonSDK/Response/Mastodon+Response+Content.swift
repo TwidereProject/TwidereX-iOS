@@ -39,7 +39,10 @@ extension Mastodon.Response {
                 if let date = Mastodon.API.httpHeaderDateFormatter2.date(from: string) {
                     return date
                 }
-                assertionFailure()
+                if let date = Mastodon.API.httpHeaderDateFormatter3.date(from: string) {
+                    return date
+                }
+                // assertionFailure()
                 return nil
             }()
             
