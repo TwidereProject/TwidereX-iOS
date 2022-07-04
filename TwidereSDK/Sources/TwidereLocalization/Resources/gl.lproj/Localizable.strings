@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@ marcou favorito o teu toot";
 "Common.Notification.Follow" = "%@ séguete";
 "Common.Notification.FollowRequest" = "%@ pediu seguirte";
+"Common.Notification.FollowRequestAction.Approve" = "Approve";
+"Common.Notification.FollowRequestAction.Deny" = "Deny";
 "Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
 "Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@ mencionoute";

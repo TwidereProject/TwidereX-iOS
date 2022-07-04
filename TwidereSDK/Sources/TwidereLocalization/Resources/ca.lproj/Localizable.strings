@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@ han impulsat el vostre tut";
 "Common.Notification.Follow" = "%@ et segueix";
 "Common.Notification.FollowRequest" = "%@ has requested to follow you";
+"Common.Notification.FollowRequestAction.Approve" = "Approve";
+"Common.Notification.FollowRequestAction.Deny" = "Deny";
 "Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
 "Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@ t'ha mencionat";

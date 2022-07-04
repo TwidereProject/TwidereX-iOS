@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@ 收藏了你的嘟文";
 "Common.Notification.Follow" = "%@ 关注了你";
 "Common.Notification.FollowRequest" = "%@ 向你发送了关注请求";
+"Common.Notification.FollowRequestAction.Approve" = "通过";
+"Common.Notification.FollowRequestAction.Deny" = "拒绝";
 "Common.Notification.FollowRequestResponse.FollowRequestApproved" = "关注请求已通过";
 "Common.Notification.FollowRequestResponse.FollowRequestDenied" = "关注请求已拒绝";
 "Common.Notification.Mentions" = "%@ 提及了你";

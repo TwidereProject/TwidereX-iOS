@@ -115,12 +115,11 @@ extension DataSourceFacade {
         }
 
         do {
-            try? await Task.sleep(nanoseconds: .second * 3)
-//            _ = try await dependency.context.apiService.followRequest(
-//                user: mastodonFollwRequestContext.user,
-//                query: query,
-//                authenticationContext: authenticationContext
-//            )
+            _ = try await dependency.context.apiService.followRequest(
+                user: mastodonFollwRequestContext.user,
+                query: query,
+                authenticationContext: authenticationContext
+            )
         } catch {
             // update transient on main context
             try? await managedObjectContext.performChanges {

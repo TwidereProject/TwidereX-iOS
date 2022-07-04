@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@-(e)k zure toota gogoko du";
 "Common.Notification.Follow" = "%@-(e)k jarraitu dizu";
 "Common.Notification.FollowRequest" = "%@-(e)k zu jarraitzeko eskaera egin du";
+"Common.Notification.FollowRequestAction.Approve" = "Approve";
+"Common.Notification.FollowRequestAction.Deny" = "Deny";
 "Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
 "Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@-k aipatu zaitu";

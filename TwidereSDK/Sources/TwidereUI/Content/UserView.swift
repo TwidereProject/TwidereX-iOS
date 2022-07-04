@@ -141,6 +141,7 @@ public final class UserView: UIView {
         button.setImage(Asset.Indices.checkmarkCircle.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = Asset.Colors.hightLight.color    // FIXME: tint color
         button.addTarget(self, action: #selector(UserView.acceptFollowRequestButtonDidPressed(_:)), for: .touchUpInside)
+        button.accessibilityLabel = L10n.Common.Notification.FollowRequestAction.approve
         return button
     }()
     
@@ -149,6 +150,7 @@ public final class UserView: UIView {
         button.setImage(Asset.Indices.xmarkCircle.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .secondaryLabel
         button.addTarget(self, action: #selector(UserView.rejectFollowRequestButtonDidPressed(_:)), for: .touchUpInside)
+        button.accessibilityLabel = L10n.Common.Notification.FollowRequestAction.deny
         return button
     }()
 

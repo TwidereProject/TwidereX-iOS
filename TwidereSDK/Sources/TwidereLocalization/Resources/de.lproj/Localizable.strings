@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@ favorisierte deinen Beitrag";
 "Common.Notification.Follow" = "%@ folgt dir";
 "Common.Notification.FollowRequest" = "%@ hat angefragt dir zu folgen";
+"Common.Notification.FollowRequestAction.Approve" = "Approve";
+"Common.Notification.FollowRequestAction.Deny" = "Deny";
 "Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
 "Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@ hat dich erwähnt";

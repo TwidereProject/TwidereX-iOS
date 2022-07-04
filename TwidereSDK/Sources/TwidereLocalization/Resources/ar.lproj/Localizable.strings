@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "أُعجِب %@ بتبويقك";
 "Common.Notification.Follow" = "تابعك %@";
 "Common.Notification.FollowRequest" = "%@ يطلب متابعتك";
+"Common.Notification.FollowRequestAction.Approve" = "Approve";
+"Common.Notification.FollowRequestAction.Deny" = "Deny";
 "Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
 "Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "ذكرك %@";

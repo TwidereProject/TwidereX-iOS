@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@가 내 툿에 좋아요를 눌렀습니다";
 "Common.Notification.Follow" = "%@가 나를 팔로합니다.";
 "Common.Notification.FollowRequest" = "%@가 팔로 요청을 보냈습니다";
+"Common.Notification.FollowRequestAction.Approve" = "Approve";
+"Common.Notification.FollowRequestAction.Deny" = "Deny";
 "Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
 "Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@가 언급했습니다.";

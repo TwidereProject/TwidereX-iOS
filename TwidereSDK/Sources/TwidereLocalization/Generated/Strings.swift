@@ -864,6 +864,12 @@ public enum L10n {
       public static func status(_ p1: Any) -> String {
         return L10n.tr("Localizable", "Common.Notification.Status", String(describing: p1))
       }
+      public enum FollowRequestAction {
+        /// Approve
+        public static let approve = L10n.tr("Localizable", "Common.Notification.FollowRequestAction.Approve")
+        /// Deny
+        public static let deny = L10n.tr("Localizable", "Common.Notification.FollowRequestAction.Deny")
+      }
       public enum FollowRequestResponse {
         /// Follow Request Approved
         public static let followRequestApproved = L10n.tr("Localizable", "Common.Notification.FollowRequestResponse.FollowRequestApproved")

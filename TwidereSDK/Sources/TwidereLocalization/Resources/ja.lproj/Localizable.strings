@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@ さんがトゥートをお気に入りにしました";
 "Common.Notification.Follow" = "%@ がフォローしました";
 "Common.Notification.FollowRequest" = "%@ がフォローリクエストしました";
+"Common.Notification.FollowRequestAction.Approve" = "Approve";
+"Common.Notification.FollowRequestAction.Deny" = "Deny";
 "Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
 "Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@ がメンションしました";
