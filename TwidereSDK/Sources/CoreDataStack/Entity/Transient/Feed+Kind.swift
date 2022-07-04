@@ -12,6 +12,7 @@ extension Feed {
     public enum Kind: String, CaseIterable {
         case none
         case home
-        case notification
+        case notificationAll
+        case notificationMentions
     }
 }

@@ -12,6 +12,8 @@ import Combine
 import CoreDataStack
 import GameplayKit
 import MastodonSDK
+import TwidereCore
+import TwidereUI
 
 final class NotificationTimelineViewModel {
     
@@ -22,8 +24,12 @@ final class NotificationTimelineViewModel {
     // input
     let context: AppContext
     let scope: Scope
+    let authenticationContext: AuthenticationContext
     let fetchedResultsController: FeedFetchedResultsController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
+    
+    @Published var isLoadingLatest = false
+    @Published var lastAutomaticFetchTimestamp: Date?
 
     // output
     var diffableDataSource: UITableViewDiffableDataSource<NotificationSection, NotificationItem>?
@@ -42,28 +48,22 @@ final class NotificationTimelineViewModel {
         return stateMachine
     }()
 
-    init(context: AppContext, scope: Scope) {
+    init(
+        context: AppContext,
+        scope: Scope,
+        authenticationContext: AuthenticationContext
+    ) {
         self.context = context
         self.scope = scope
+        self.authenticationContext = authenticationContext
         self.fetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
         // end init
         
-        context.authenticationService.$activeAuthenticationContext
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                let emptyFeedPredicate = Feed.nonePredicate()
-                guard let authenticationContext = authenticationContext else {
-                    self.fetchedResultsController.predicate = emptyFeedPredicate
-                    return
-                }
-                
-                let predicate = NotificationTimelineViewModel.feedPredicate(
-                    authenticationContext: authenticationContext,
-                    scope: scope
-                )
-                self.fetchedResultsController.predicate = predicate
-            }
-            .store(in: &disposeBag)
+        let predicate = NotificationTimelineViewModel.feedPredicate(
+            scope: scope,
+            authenticationContext: authenticationContext
+        )
+        self.fetchedResultsController.predicate = predicate
     }
     
     deinit {
@@ -74,71 +74,54 @@ final class NotificationTimelineViewModel {
 
 extension NotificationTimelineViewModel {
     
-    enum Scope {
-        case all
-        case mentions
+    enum Scope: Hashable {
+        case twitter
+        case mastodon(Mastodon.API.Notification.TimelineScope)
         
-        var includeTypes: [MastodonNotificationType]? {
+        var title: String {
             switch self {
-            case .all:              return nil
-            case .mentions:         return [.mention, .status]
-            }
-        }
-        
-        
-        var excludeTypes: [MastodonNotificationType]? {
-            switch self {
-            case .all:              return nil
-            case .mentions:         return [.follow, .followRequest, .reblog, .favourite, .poll]
-            }
-        }
-        
-        var _excludeTypes: [Mastodon.Entity.Notification.NotificationType]? {
-            switch self {
-            case .all:              return nil
-            case .mentions:         return [.follow, .followRequest, .reblog, .favourite, .poll]
+            case .twitter:
+                return L10n.Scene.Notification.Tabs.mentions
+            case .mastodon(let timelineScope):
+                switch timelineScope {
+                case .all:      return L10n.Scene.Notification.Tabs.all
+                case .mentions: return L10n.Scene.Notification.Tabs.mentions
+                }
             }
         }
     }
     
     static func feedPredicate(
-        authenticationContext: AuthenticationContext,
-        scope: Scope
+        scope: Scope,
+        authenticationContext: AuthenticationContext
     ) -> NSPredicate {
         let predicate: NSPredicate
-        switch authenticationContext {
-        case .twitter(let authenticationContext):
+        switch (scope, authenticationContext) {
+        case (.twitter, .twitter(let authenticationContext)):
             let userID = authenticationContext.userID
             predicate = Feed.predicate(
-                kind: .notification,
+                kind: .notificationMentions,
                 acct: Feed.Acct.twitter(userID: userID)
             )
-        case .mastodon(let authenticationContext):
+        case (.mastodon(let timelineScope), .mastodon(let authenticationContext)):
             let domain = authenticationContext.domain
             let userID = authenticationContext.userID
-            predicate = {
-                switch scope {
-                case .all:
-                    return Feed.predicate(
-                        kind: .notification,
-                        acct: Feed.Acct.mastodon(
-                            domain: domain,
-                            userID: userID
-                        )
-                    )
-                case .mentions:
-                    return NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        Feed.predicate(
-                            kind: .notification,
-                            acct: Feed.Acct.mastodon(
-                                domain: domain,
-                                userID: userID
-                            )
-                        ),
-                        Feed.mastodonNotificationTypePredicate(types: scope.includeTypes ?? [])
-                    ])
+            let kind: Feed.Kind = {
+                switch timelineScope {
+                case .all:          return .notificationAll
+                case .mentions:     return .notificationMentions
                 }
             }()
+            return Feed.predicate(
+                kind: kind,
+                acct: Feed.Acct.mastodon(
+                    domain: domain,
+                    userID: userID
+                )
+            )
+        default:
+            assertionFailure()
+            predicate = Feed.nonePredicate()
         }
         return predicate
     }
