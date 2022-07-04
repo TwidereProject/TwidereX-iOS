@@ -11,7 +11,6 @@ import UIKit
 import Photos
 import AlamofireImage
 import TwidereCore
-import SwiftMessages
 
 final class SavePhotoActivity: UIActivity {
     

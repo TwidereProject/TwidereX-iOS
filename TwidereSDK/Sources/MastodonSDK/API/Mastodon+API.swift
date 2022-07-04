@@ -92,7 +92,6 @@ extension Mastodon.API {
 
 extension Mastodon.API {
 
-    public enum Account { }
     public enum App { }
     public enum CustomEmoji { }
     public enum Favorite { }

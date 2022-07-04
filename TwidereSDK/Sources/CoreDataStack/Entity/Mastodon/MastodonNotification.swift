@@ -31,6 +31,9 @@ final public class MastodonNotification: NSManagedObject {
         }
     }
     
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var isFollowRequestBusy: Bool
+    
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
     // sourcery: autoUpdatableObject, autoGenerateProperty
@@ -178,6 +181,11 @@ extension MastodonNotification: AutoUpdatableObject {
     public func update(notificationType: MastodonNotificationType) {
     	if self.notificationType != notificationType {
     		self.notificationType = notificationType
+    	}
+    }
+    public func update(isFollowRequestBusy: Bool) {
+    	if self.isFollowRequestBusy != isFollowRequestBusy {
+    		self.isFollowRequestBusy = isFollowRequestBusy
     	}
     }
     public func update(createdAt: Date) {

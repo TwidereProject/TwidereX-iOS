@@ -864,6 +864,12 @@ public enum L10n {
       public static func status(_ p1: Any) -> String {
         return L10n.tr("Localizable", "Common.Notification.Status", String(describing: p1))
       }
+      public enum FollowRequestResponse {
+        /// Follow Request Approved
+        public static let followRequestApproved = L10n.tr("Localizable", "Common.Notification.FollowRequestResponse.FollowRequestApproved")
+        /// Follow Request Denied
+        public static let followRequestDenied = L10n.tr("Localizable", "Common.Notification.FollowRequestResponse.FollowRequestDenied")
+      }
       public enum Messages {
         /// %@ sent you a message
         public static func content(_ p1: Any) -> String {
@@ -1559,6 +1565,8 @@ public enum L10n {
       public static let now = L10n.tr("Localizable", "Scene.Trends.Now")
       /// Trends
       public static let title = L10n.tr("Localizable", "Scene.Trends.Title")
+      /// Trends Location
+      public static let trendsLocation = L10n.tr("Localizable", "Scene.Trends.TrendsLocation")
       /// Trends - Worldwide
       public static let worldWide = L10n.tr("Localizable", "Scene.Trends.WorldWide")
       /// Worldwide

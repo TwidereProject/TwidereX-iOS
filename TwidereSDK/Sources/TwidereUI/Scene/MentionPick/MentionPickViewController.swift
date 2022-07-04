@@ -113,4 +113,12 @@ extension MentionPickViewController: UserViewTableViewCellDelegate {
     public func tableViewCell(_ cell: UITableViewCell, userView: UserView, membershipButtonDidPressed button: UIButton) {
         // do nothing
     }
+    
+    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, acceptFollowReqeustButtonDidPressed button: UIButton) {
+        // do nothing
+    }
+    
+    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, rejectFollowReqeustButtonDidPressed button: UIButton) {
+        // do nothing
+    }
 }

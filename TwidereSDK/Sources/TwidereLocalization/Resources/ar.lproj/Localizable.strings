@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "أُعجِب %@ بتبويقك";
 "Common.Notification.Follow" = "تابعك %@";
 "Common.Notification.FollowRequest" = "%@ يطلب متابعتك";
+"Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
+"Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "ذكرك %@";
 "Common.Notification.Messages.Content" = "ارسل %@ لك رسالة";
 "Common.Notification.Messages.Title" = "رسالة مباشرة جديدة";
@@ -493,5 +495,6 @@
 "Scene.Trends.Accounts" = "%d شخص يتحدَّث";
 "Scene.Trends.Now" = "شائع الآن";
 "Scene.Trends.Title" = "الشائع";
+"Scene.Trends.TrendsLocation" = "Trends Location";
 "Scene.Trends.WorldWide" = "الشائع - عالميا";
 "Scene.Trends.WorldWideWithoutPrefix" = "Worldwide";

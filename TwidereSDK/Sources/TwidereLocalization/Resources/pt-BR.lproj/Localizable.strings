@@ -224,8 +224,8 @@
 "Common.Controls.Status.Poll.TotalPerson" = "%@ pessoa";
 "Common.Controls.Status.Poll.TotalVote" = "%@ voto";
 "Common.Controls.Status.Poll.TotalVotes" = "%@ votos";
-"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "People %@ follows or mentioned can reply.";
-"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "People %@ mentioned can reply.";
+"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "%@ pessoas que seguem ou mencionadas podem responder.";
+"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "%@ pessoas mencionadas podem responder.";
 "Common.Controls.Status.Thread.Show" = "Mostrar esta thread";
 "Common.Controls.Status.UserBoosted" = "%@ impulsionado";
 "Common.Controls.Status.UserRetweeted" = "%@ retweetado";
@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@ favoritou seu toot";
 "Common.Notification.Follow" = "%@ seguiu você";
 "Common.Notification.FollowRequest" = "%@ pediu para segui-lo";
+"Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
+"Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@ mencionou você";
 "Common.Notification.Messages.Content" = "%@ te enviou uma mensagem";
 "Common.Notification.Messages.Title" = "Nova mensagem direta";
@@ -493,5 +495,6 @@ Faça Login para Começar.";
 "Scene.Trends.Accounts" = "%d pessoas falando";
 "Scene.Trends.Now" = "Tendências Agora";
 "Scene.Trends.Title" = "Tendências";
+"Scene.Trends.TrendsLocation" = "Trends Location";
 "Scene.Trends.WorldWide" = "Tendências - Global";
 "Scene.Trends.WorldWideWithoutPrefix" = "Global";

@@ -26,6 +26,8 @@ public protocol UserViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     func tableViewCell(_ cell: UITableViewCell, userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton)
     func tableViewCell(_ cell: UITableViewCell, userView: UserView, friendshipButtonDidPressed button: UIButton)
     func tableViewCell(_ cell: UITableViewCell, userView: UserView, membershipButtonDidPressed button: UIButton)
+    func tableViewCell(_ cell: UITableViewCell, userView: UserView, acceptFollowReqeustButtonDidPressed button: UIButton)
+    func tableViewCell(_ cell: UITableViewCell, userView: UserView, rejectFollowReqeustButtonDidPressed button: UIButton)
     // sourcery:end
 }
 
@@ -43,6 +45,14 @@ extension UserViewDelegate where Self: UserViewContainerTableViewCell {
 
     func userView(_ userView: UserView, membershipButtonDidPressed button: UIButton) {
         delegate?.tableViewCell(self, userView: userView, membershipButtonDidPressed: button)
+    }
+
+    func userView(_ userView: UserView, acceptFollowReqeustButtonDidPressed button: UIButton) {
+        delegate?.tableViewCell(self, userView: userView, acceptFollowReqeustButtonDidPressed: button)
+    }
+
+    func userView(_ userView: UserView, rejectFollowReqeustButtonDidPressed button: UIButton) {
+        delegate?.tableViewCell(self, userView: userView, rejectFollowReqeustButtonDidPressed: button)
     }
   
     // sourcery:end  

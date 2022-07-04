@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@-(e)k zure toota gogoko du";
 "Common.Notification.Follow" = "%@-(e)k jarraitu dizu";
 "Common.Notification.FollowRequest" = "%@-(e)k zu jarraitzeko eskaera egin du";
+"Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
+"Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@-k aipatu zaitu";
 "Common.Notification.Messages.Content" = "%@(e)k mezu bat bidali dizu";
 "Common.Notification.Messages.Title" = "Mezu zuzen bat";
@@ -493,5 +495,6 @@ Hasi saioa hasteko.";
 "Scene.Trends.Accounts" = "%d pertsona hizketan";
 "Scene.Trends.Now" = "Joera Orain";
 "Scene.Trends.Title" = "Joerak";
+"Scene.Trends.TrendsLocation" = "Trends Location";
 "Scene.Trends.WorldWide" = "Joerak - Mundu osoan";
 "Scene.Trends.WorldWideWithoutPrefix" = "Worldwide";

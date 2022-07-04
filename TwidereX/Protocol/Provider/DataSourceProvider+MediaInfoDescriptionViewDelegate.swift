@@ -22,7 +22,7 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
                 assertionFailure("only works for status data provider")
                 return
             }
@@ -40,16 +40,16 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
             guard let item = await item(from: source) else {
                 return
             }
-            switch item {
-            case .status(let status):
-                await DataSourceFacade.coordinateToStatusThreadScene(
-                    provider: self,
-                    target: .repost,    // keep repost wrapper
-                    status: status
-                )
-            default:
-                assertionFailure()
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
+                return
             }
+
+            await DataSourceFacade.coordinateToStatusThreadScene(
+                provider: self,
+                target: .repost,    // keep repost wrapper
+                status: status
+            )
         }
     }
     
@@ -59,16 +59,16 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
             guard let item = await item(from: source) else {
                 return
             }
-            switch item {
-            case .status(let status):
-                await DataSourceFacade.coordinateToStatusThreadScene(
-                    provider: self,
-                    target: .repost,    // keep repost wrapper
-                    status: status
-                )
-            default:
-                assertionFailure()
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
+                return
             }
+
+            await DataSourceFacade.coordinateToStatusThreadScene(
+                provider: self,
+                target: .repost,    // keep repost wrapper
+                status: status
+            )
         }
     }
 
@@ -81,7 +81,7 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
                 assertionFailure("only works for status data provider")
                 return
             }
@@ -97,8 +97,7 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
     }   // end func
     
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
-
+        assertionFailure("present UIAcitivityController directly")
     }
 
 }

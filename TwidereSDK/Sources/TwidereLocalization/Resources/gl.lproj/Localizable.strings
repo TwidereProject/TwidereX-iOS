@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@ marcou favorito o teu toot";
 "Common.Notification.Follow" = "%@ séguete";
 "Common.Notification.FollowRequest" = "%@ pediu seguirte";
+"Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
+"Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@ mencionoute";
 "Common.Notification.Messages.Content" = "%@ enviouche unha mensaxe";
 "Common.Notification.Messages.Title" = "Nova mensaxe directa";
@@ -492,5 +494,6 @@ Aínda en fase previa.";
 "Scene.Trends.Accounts" = "%d persoas falando";
 "Scene.Trends.Now" = "Tendencia agora";
 "Scene.Trends.Title" = "Tendencias";
+"Scene.Trends.TrendsLocation" = "Trends Location";
 "Scene.Trends.WorldWide" = "Tendencias - Mundial";
 "Scene.Trends.WorldWideWithoutPrefix" = "Worldwide";

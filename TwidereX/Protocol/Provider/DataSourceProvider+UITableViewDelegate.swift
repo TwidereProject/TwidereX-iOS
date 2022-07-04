@@ -31,10 +31,29 @@ extension UITableViewDelegate where Self: DataSourceProvider {
                     user: user
                 )
             case .notification(let notification):
-                assertionFailure("TODO")
-            }
-        }
-    }
+                let managedObjectContext = self.context.managedObjectContext
+                guard let object = notification.object(in: managedObjectContext) else {
+                    assertionFailure()
+                    return
+                }
+                switch object {
+                case .mastodon(let notification):
+                    if let status = notification.status {
+                        await DataSourceFacade.coordinateToStatusThreadScene(
+                            provider: self,
+                            target: .repost,    // keep repost wrapper
+                            status: .mastodon(record: .init(objectID: status.objectID))
+                        )
+                    } else {
+                        await DataSourceFacade.coordinateToProfileScene(
+                            provider: self,
+                            user: .mastodon(record: .init(objectID: notification.account.objectID))
+                        )
+                    }
+                }
+            }   // end switch
+        }   // end Task
+    }   // end func
     
 }
 
@@ -260,7 +279,7 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewableV
                     assertionFailure()
                     return
                 }
-                guard case let .status(status) = item else {
+                guard let status = await item.status(in: self.context.managedObjectContext) else {
                     assertionFailure("only works for status data provider")
                     return
                 }
@@ -274,7 +293,7 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewableV
                         index: index
                     )
                 )
-            }
+            }   // end Task
         }
     }   // end func
     

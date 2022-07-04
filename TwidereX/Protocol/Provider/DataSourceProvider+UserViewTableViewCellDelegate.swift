@@ -10,6 +10,7 @@ import UIKit
 import TwidereUI
 import SwiftMessages
 
+// MARK: - menu button
 extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
     
     func tableViewCell(
@@ -28,7 +29,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
                     return
                 }
                 guard case let .user(user) = item else {
-                    assertionFailure("only works for status data provider")
+                    assertionFailure("only works for user data")
                     return
                 }
                 try await DataSourceFacade.responseToUserSignOut(
@@ -40,6 +41,11 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
             assertionFailure("Override in view controller")
         }   // end swtich
     }
+    
+}
+
+// MARK: - friendship button
+extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
 
     func tableViewCell(
         _ cell: UITableViewCell,
@@ -48,6 +54,11 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
     ) {
         assertionFailure("TODO")
     }
+
+}
+
+// MARK: - membership
+extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
 
     func tableViewCell(
         _ cell: UITableViewCell,
@@ -69,7 +80,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
                 return
             }
             guard case let .user(user) = item else {
-                assertionFailure("only works for status data provider")
+                assertionFailure("only works for user data")
                 return
             }
             
@@ -94,7 +105,69 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
                 bannerView.messageLabel.text = error.localizedDescription
                 SwiftMessages.show(config: config, view: bannerView)
             }
+        }   // end Task
+    }
+
+}
+
+// MARK: - follow request
+extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
+
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        userView: UserView,
+        acceptFollowReqeustButtonDidPressed button: UIButton
+    ) {
+        Task {
+            guard let authenticationContext = context.authenticationService.activeAuthenticationContext else {
+                return
+            }
             
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .notification(notification) = item else {
+                assertionFailure("only works for notification data")
+                return
+            }
+            
+            try await DataSourceFacade.responseToUserFollowRequestAction(
+                dependency: self,
+                notification: notification,
+                query: .accept,
+                authenticationContext: authenticationContext
+            )
+        }   // end Task
+    }
+    
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        userView: UserView,
+        rejectFollowReqeustButtonDidPressed button: UIButton
+    ) {
+        Task {
+            guard let authenticationContext = context.authenticationService.activeAuthenticationContext else {
+                return
+            }
+            
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .notification(notification) = item else {
+                assertionFailure("only works for notification data")
+                return
+            }
+            
+            try await DataSourceFacade.responseToUserFollowRequestAction(
+                dependency: self,
+                notification: notification,
+                query: .reject,
+                authenticationContext: authenticationContext
+            )
         }   // end Task
     }
 

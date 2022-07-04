@@ -162,8 +162,6 @@
 		DB697E0927904BFB004EF2F7 /* FederatedTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0827904BFB004EF2F7 /* FederatedTimelineViewController.swift */; };
 		DB697E0C27904C56004EF2F7 /* FederatedTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0B27904C56004EF2F7 /* FederatedTimelineViewModel.swift */; };
 		DB697E0E27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0D27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift */; };
-		DB6B2EC827612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */; };
-		DB6B2ECA27612E0A00A9B9D2 /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DB6B2EC927612E0A00A9B9D2 /* TabBarPager */; };
 		DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */; };
 		DB6B8B2F25AF235F00F20FD5 /* TwidereX-Performance.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */; };
 		DB6B8B5F25AF30B900F20FD5 /* ContextMenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */; };
@@ -347,6 +345,8 @@
 		DBFA471F2859C4AE00C9FF7F /* UserLikeTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA471E2859C4AE00C9FF7F /* UserLikeTimelineViewController.swift */; };
 		DBFA47212859C4F300C9FF7F /* UserLikeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA47202859C4F300C9FF7F /* UserLikeTimelineViewModel.swift */; };
 		DBFA4A2025A5924C00D51703 /* ListTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1F25A5924C00D51703 /* ListTimelineViewModel+Diffable.swift */; };
+		DBFADA892872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */; };
+		DBFADA8B2872BEDE00B512D6 /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DBFADA8A2872BEDE00B512D6 /* TabBarPager */; };
 		DBFC0AE6276118080011E99B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		DBFC0AE9276118240011E99B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		DBFC0AEA276118240011E99B /* AppShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -898,10 +898,10 @@
 			files = (
 				DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */,
 				DBFC0AE9276118240011E99B /* AppShared.framework in Frameworks */,
-				DB6B2EC827612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout in Frameworks */,
 				DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */,
 				DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */,
-				DB6B2ECA27612E0A00A9B9D2 /* TabBarPager in Frameworks */,
+				DBFADA892872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout in Frameworks */,
+				DBFADA8B2872BEDE00B512D6 /* TabBarPager in Frameworks */,
 				DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */,
 				DB7AB33E2744E3740035EB8A /* Floaty in Frameworks */,
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
@@ -2425,8 +2425,8 @@
 				DBD98488251CB88A00ED87A1 /* Tabman */,
 				DB6CF1C3269715CD001DE069 /* FPSIndicator */,
 				DB7AB33D2744E3740035EB8A /* Floaty */,
-				DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */,
-				DB6B2EC927612E0A00A9B9D2 /* TabBarPager */,
+				DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */,
+				DBFADA8A2872BEDE00B512D6 /* TabBarPager */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -4110,14 +4110,6 @@
 			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
 			productName = CryptoSwift;
 		};
-		DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CoverFlowStackCollectionViewLayout;
-		};
-		DB6B2EC927612E0A00A9B9D2 /* TabBarPager */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = TabBarPager;
-		};
 		DB6CF1C3269715CD001DE069 /* FPSIndicator */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */;
@@ -4141,6 +4133,14 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */;
 			productName = Kanna;
+		};
+		DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoverFlowStackCollectionViewLayout;
+		};
+		DBFADA8A2872BEDE00B512D6 /* TabBarPager */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TabBarPager;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

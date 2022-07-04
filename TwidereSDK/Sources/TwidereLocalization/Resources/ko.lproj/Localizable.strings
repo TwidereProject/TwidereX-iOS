@@ -254,6 +254,8 @@
 "Common.Notification.Favourite" = "%@가 내 툿에 좋아요를 눌렀습니다";
 "Common.Notification.Follow" = "%@가 나를 팔로합니다.";
 "Common.Notification.FollowRequest" = "%@가 팔로 요청을 보냈습니다";
+"Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
+"Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@가 언급했습니다.";
 "Common.Notification.Messages.Content" = "%@님이 메시지를 보냈습니다";
 "Common.Notification.Messages.Title" = "새 쪽지";
@@ -493,5 +495,6 @@
 "Scene.Trends.Accounts" = "%d 명이 언급함";
 "Scene.Trends.Now" = "실시간 트렌드";
 "Scene.Trends.Title" = "트렌드";
+"Scene.Trends.TrendsLocation" = "Trends Location";
 "Scene.Trends.WorldWide" = "실시간 트렌드 - 전세계";
 "Scene.Trends.WorldWideWithoutPrefix" = "Worldwide";
