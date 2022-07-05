@@ -39,12 +39,7 @@ extension APIService {
         }
         #endif
 
-        let managedObjectContext = backgroundManagedObjectContext
-        
-        // note: the coordinator not handle history merge for directly derived context
-        // let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        // managedObjectContext.parent = self.backgroundManagedObjectContext
-        // managedObjectContext.automaticallyMergesChangesFromParent = true
+        let managedObjectContext = coreDataStack.newTaskContext()
         
         let taskResults = try await withThrowingTaskGroup(of: TwitterHomeTimelineTaskResult.self) { group -> [TwitterHomeTimelineTaskResult] in
             group.addTask {
@@ -354,14 +349,9 @@ extension APIService {
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch home timeline cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
         }
         #endif
-        
-        let managedObjectContext = backgroundManagedObjectContext
-        
-        // note: the coordinator not handle history merge for directly derived context
-        // let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        // managedObjectContext.parent = self.backgroundManagedObjectContext
-        // managedObjectContext.automaticallyMergesChangesFromParent = true
-        
+                
+        let managedObjectContext = coreDataStack.newTaskContext()
+
         let taskResults = try await withThrowingTaskGroup(of: MastodonHomeTimelineTaskResult.self) { group -> [MastodonHomeTimelineTaskResult] in
             group.addTask {
                 let response = try await Mastodon.API.Timeline.home(

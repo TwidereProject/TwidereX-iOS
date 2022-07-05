@@ -12,3 +12,12 @@ import CoreDataStack
 public enum NotificationObject {
     case mastodon(object: MastodonNotification)
 }
+
+extension NotificationObject {
+    public var status: StatusObject? {
+        switch self {
+        case .mastodon(let object):
+            return object.status.flatMap { .mastodon(object: $0) }
+        }   // end swich
+    }   // end func
+}

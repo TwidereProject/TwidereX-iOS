@@ -32,12 +32,8 @@ extension NotificationTimelineViewController: DataSourceProvider {
                     return .status(.twitter(record: .init(objectID: status.objectID)))
                 case .mastodon(let status):
                     return .status(.mastodon(record: .init(objectID: status.objectID)))
-                case .mastodonNotification(let mastodonNotification):
-                    if let status = mastodonNotification.status {
-                        return .status(.mastodon(record: .init(objectID: status.objectID)))
-                    } else {
-                        return .user(.mastodon(record: .init(objectID: mastodonNotification.account.objectID)))
-                    }
+                case .mastodonNotification(let notification):
+                    return .notification(.mastodon(record: .init(objectID: notification.objectID)))
                 case .none:
                     return nil
                 }

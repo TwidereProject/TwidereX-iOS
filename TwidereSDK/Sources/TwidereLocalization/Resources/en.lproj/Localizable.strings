@@ -254,6 +254,10 @@
 "Common.Notification.Favourite" = "%@ favourited your toot";
 "Common.Notification.Follow" = "%@ followed you";
 "Common.Notification.FollowRequest" = "%@ has requested to follow you";
+"Common.Notification.FollowRequestAction.Approve" = "Approve";
+"Common.Notification.FollowRequestAction.Deny" = "Deny";
+"Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
+"Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@ mentions you";
 "Common.Notification.Messages.Content" = "%@ sent you a message";
 "Common.Notification.Messages.Title" = "New direct message";
@@ -493,5 +497,6 @@ Sign in to Get Started.";
 "Scene.Trends.Accounts" = "%d people talking";
 "Scene.Trends.Now" = "Trending Now";
 "Scene.Trends.Title" = "Trends";
+"Scene.Trends.TrendsLocation" = "Trends Location";
 "Scene.Trends.WorldWide" = "Trends - Worldwide";
 "Scene.Trends.WorldWideWithoutPrefix" = "Worldwide";

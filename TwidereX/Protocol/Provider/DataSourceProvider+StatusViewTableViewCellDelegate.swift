@@ -25,8 +25,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.coordinateToProfileScene(
@@ -53,8 +52,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.coordinateToProfileScene(
@@ -77,8 +75,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.coordinateToProfileScene(
@@ -100,8 +97,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             
@@ -110,7 +106,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 target: .status,
                 status: status
             )
-        }
+        }   // end Task
     }
 }
 
@@ -123,8 +119,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             
@@ -145,8 +140,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             
@@ -177,10 +171,10 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & Media
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
-            }
+            }   // end switch
+            
             await DataSourceFacade.coordinateToMediaPreviewScene(
                 provider: self,
                 target: .status,
@@ -191,7 +185,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & Media
                     index: index
                 )
             )
-        }
+        }   // end Task
     }
     
     func tableViewCell(
@@ -208,8 +202,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & Media
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.coordinateToMediaPreviewScene(
@@ -232,8 +225,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & Media
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             try await DataSourceFacade.responseToToggleMediaSensitiveAction(
@@ -254,8 +246,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.responseToStatusPollOption(
@@ -274,8 +265,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.responseToStatusPollOption(
@@ -296,9 +286,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             guard let item = await item(from: source) else {
                 return
             }
-            
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             
@@ -328,8 +316,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
             
@@ -356,8 +343,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
-                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
 
@@ -425,15 +411,14 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             guard let item = await item(from: source) else {
                 return
             }
-            switch item {
-            case .status(let status):
-                try await DataSourceFacade.responseToStatusTranslate(
-                    provider: self,
-                    status: status
-                )
-            default:
-                assertionFailure()
+            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+                return
             }
+            
+            try await DataSourceFacade.responseToStatusTranslate(
+                provider: self,
+                status: status
+            )
         }   // end Task
     }
 }
@@ -460,10 +445,29 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                     user: user
                 )
             case .notification(let notification):
-                assertionFailure("TODO")
+                let managedObjectContext = self.context.managedObjectContext
+                guard let object = notification.object(in: managedObjectContext) else {
+                    assertionFailure()
+                    return
+                }
+                switch object {
+                case .mastodon(let notification):
+                    if let status = notification.status {
+                        await DataSourceFacade.coordinateToStatusThreadScene(
+                            provider: self,
+                            target: .repost,    // keep repost wrapper
+                            status: .mastodon(record: .init(objectID: status.objectID))
+                        )
+                    } else {
+                        await DataSourceFacade.coordinateToProfileScene(
+                            provider: self,
+                            user: .mastodon(record: .init(objectID: notification.account.objectID))
+                        )
+                    }
+                }
             }
         }   // end Task
-    }
+    }   // end func
     
 }
 

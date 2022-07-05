@@ -254,6 +254,10 @@
 "Common.Notification.Favourite" = "%@ さんがトゥートをお気に入りにしました";
 "Common.Notification.Follow" = "%@ がフォローしました";
 "Common.Notification.FollowRequest" = "%@ がフォローリクエストしました";
+"Common.Notification.FollowRequestAction.Approve" = "Approve";
+"Common.Notification.FollowRequestAction.Deny" = "Deny";
+"Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
+"Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@ がメンションしました";
 "Common.Notification.Messages.Content" = "%@ がメッセージを送信しました";
 "Common.Notification.Messages.Title" = "新しいダイレクト メッセージ";
@@ -494,5 +498,6 @@
 "Scene.Trends.Accounts" = "%d people talking";
 "Scene.Trends.Now" = "トレンド";
 "Scene.Trends.Title" = "トレンド";
+"Scene.Trends.TrendsLocation" = "Trends Location";
 "Scene.Trends.WorldWide" = "トレンド - 全世界";
 "Scene.Trends.WorldWideWithoutPrefix" = "Worldwide";

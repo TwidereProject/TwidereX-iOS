@@ -33,6 +33,11 @@ extension Mastodon.API {
         formatter.dateFormat = "E, dd MMM, yyyy HH:mm:ss zzz"
         return formatter
     }()
+    static let httpHeaderDateFormatter3: DateFormatter = {
+        var formatter = DateFormatter()
+        formatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        return formatter
+    }()
     static let fractionalSecondsPreciseISO8601Formatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions.insert(.withFractionalSeconds)
@@ -92,7 +97,6 @@ extension Mastodon.API {
 
 extension Mastodon.API {
 
-    public enum Account { }
     public enum App { }
     public enum CustomEmoji { }
     public enum Favorite { }

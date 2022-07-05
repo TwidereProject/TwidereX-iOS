@@ -124,6 +124,7 @@ public enum Asset {
     public static let exclamationmarkTriangleLarge = ImageAsset(name: "Indices/exclamationmark.triangle.large")
     public static let infoCircle = ImageAsset(name: "Indices/info.circle")
     public static let square = ImageAsset(name: "Indices/square")
+    public static let xmarkCircle = ImageAsset(name: "Indices/xmark.circle")
   }
   public enum Keyboard {
     public static let keyboard = ImageAsset(name: "Keyboard/keyboard")
