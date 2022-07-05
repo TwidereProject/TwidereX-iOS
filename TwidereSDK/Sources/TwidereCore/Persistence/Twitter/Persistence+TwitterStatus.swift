@@ -119,7 +119,8 @@ extension Persistence.TwitterStatus {
                 poll: nil,
                 author: author,
                 repost: repost,
-                quote: quote
+                quote: quote,
+                replyTo: nil
             )
             let status = create(in: managedObjectContext, context: context, relationship: relationship)
             return PersistResult(
