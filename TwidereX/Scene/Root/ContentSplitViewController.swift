@@ -220,10 +220,10 @@ extension ContentSplitViewController: SidebarViewModelDelegate {
         default:
             viewModel.activeTab = tab
             if mainTabBarController.tabs.contains(tab) {
-                mainTabBarController.select(tab: tab)
+                mainTabBarController.select(tab: tab, isMainTabBarControllerActive: !isSecondaryTabBarControllerActive)
                 isSecondaryTabBarControllerActive = false
             } else if secondaryTabBarController.tabs.contains(tab) {
-                secondaryTabBarController.select(tab: tab)
+                secondaryTabBarController.select(tab: tab, isSecondaryTabBarControllerActive: isSecondaryTabBarControllerActive)
                 isSecondaryTabBarControllerActive = true
             } else {
                 assertionFailure()
