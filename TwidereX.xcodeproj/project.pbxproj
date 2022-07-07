@@ -356,6 +356,13 @@
 		DBFDCE4827F450FC00BE99E3 /* TwidereXIntent.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DBFDCE5027F4515E00BE99E3 /* SwitchAccountIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4F27F4515E00BE99E3 /* SwitchAccountIntentHandler.swift */; };
 		DBFDCE5427F451FC00BE99E3 /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
+		DBFE6ECB2876EB42003ABDCB /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFE6ECA2876EB42003ABDCB /* NotificationService.swift */; };
+		DBFE6ECF2876EB42003ABDCB /* NotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DBFE6EC82876EB42003ABDCB /* NotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DBFE6ED52876F3B4003ABDCB /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
+		DBFE6ED62876F3B4003ABDCB /* AppShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DBFE6EDB2876F47B003ABDCB /* String+Decode85.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFE6EDA2876F47B003ABDCB /* String+Decode85.swift */; };
+		DBFE6EDD2876F4D2003ABDCB /* NotificationService+Decrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFE6EDC2876F4D2003ABDCB /* NotificationService+Decrypt.swift */; };
+		DBFE6EDF2876F567003ABDCB /* String+Escape.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFE6EDE2876F567003ABDCB /* String+Escape.swift */; };
 		E5E65DC85CA480AE17571EFC /* Pods_AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */; };
 /* End PBXBuildFile section */
 
@@ -423,6 +430,20 @@
 			remoteGlobalIDString = DB94B6BA26C65CB000A2E8A1;
 			remoteInfo = AppShared;
 		};
+		DBFE6ECD2876EB42003ABDCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DBFE6EC72876EB42003ABDCB;
+			remoteInfo = NotificationService;
+		};
+		DBFE6ED72876F3B4003ABDCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DB94B6BA26C65CB000A2E8A1;
+			remoteInfo = AppShared;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -454,9 +475,21 @@
 			dstSubfolderSpec = 13;
 			files = (
 				DB77FF7F2847808C00182A0B /* ShareExtension.appex in Embed App Extensions */,
+				DBFE6ECF2876EB42003ABDCB /* NotificationService.appex in Embed App Extensions */,
 				DBFDCE4827F450FC00BE99E3 /* TwidereXIntent.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBFE6ED92876F3B4003ABDCB /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DBFE6ED62876F3B4003ABDCB /* AppShared.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -871,6 +904,13 @@
 		DBFDCE4527F450FC00BE99E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DBFDCE4F27F4515E00BE99E3 /* SwitchAccountIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchAccountIntentHandler.swift; sourceTree = "<group>"; };
 		DBFDCE5127F451A200BE99E3 /* TwidereXIntent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TwidereXIntent.entitlements; sourceTree = "<group>"; };
+		DBFE6EC82876EB42003ABDCB /* NotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBFE6ECA2876EB42003ABDCB /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		DBFE6ECC2876EB42003ABDCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DBFE6ED42876EB4A003ABDCB /* NotificationService.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationService.entitlements; sourceTree = "<group>"; };
+		DBFE6EDA2876F47B003ABDCB /* String+Decode85.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Decode85.swift"; sourceTree = "<group>"; };
+		DBFE6EDC2876F4D2003ABDCB /* NotificationService+Decrypt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationService+Decrypt.swift"; sourceTree = "<group>"; };
+		DBFE6EDE2876F567003ABDCB /* String+Escape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Escape.swift"; sourceTree = "<group>"; };
 		F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.debug.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -930,6 +970,14 @@
 			files = (
 				DBFDCE5427F451FC00BE99E3 /* AppShared.framework in Frameworks */,
 				DBFDCE4127F450FC00BE99E3 /* Intents.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBFE6EC52876EB42003ABDCB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DBFE6ED52876F3B4003ABDCB /* AppShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1990,6 +2038,7 @@
 				DB94B6BC26C65CB000A2E8A1 /* AppShared */,
 				DBBBBE5F2744E8CC007ACB4B /* ShareExtension */,
 				DBFDCE4227F450FC00BE99E3 /* TwidereXIntent */,
+				DBFE6EC92876EB42003ABDCB /* NotificationService */,
 				DBDA8E1F24FCF8A3006750DC /* Products */,
 				0ACC0E3D669CFFCB246A2D5B /* Pods */,
 				F30A8D6C372DFF6B5AEEE327 /* Frameworks */,
@@ -2005,6 +2054,7 @@
 				DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */,
 				DBBBBE5E2744E8CC007ACB4B /* ShareExtension.appex */,
 				DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */,
+				DBFE6EC82876EB42003ABDCB /* NotificationService.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2320,6 +2370,19 @@
 			path = TwidereXIntent;
 			sourceTree = "<group>";
 		};
+		DBFE6EC92876EB42003ABDCB /* NotificationService */ = {
+			isa = PBXGroup;
+			children = (
+				DBFE6ED42876EB4A003ABDCB /* NotificationService.entitlements */,
+				DBFE6ECA2876EB42003ABDCB /* NotificationService.swift */,
+				DBFE6EDC2876F4D2003ABDCB /* NotificationService+Decrypt.swift */,
+				DBFE6EDA2876F47B003ABDCB /* String+Decode85.swift */,
+				DBFE6EDE2876F567003ABDCB /* String+Escape.swift */,
+				DBFE6ECC2876EB42003ABDCB /* Info.plist */,
+			);
+			path = NotificationService;
+			sourceTree = "<group>";
+		};
 		F30A8D6C372DFF6B5AEEE327 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -2417,6 +2480,7 @@
 				DB94B6C026C65CB000A2E8A1 /* PBXTargetDependency */,
 				DBFDCE4727F450FC00BE99E3 /* PBXTargetDependency */,
 				DB77FF812847808C00182A0B /* PBXTargetDependency */,
+				DBFE6ECE2876EB42003ABDCB /* PBXTargetDependency */,
 			);
 			name = TwidereX;
 			packageProductDependencies = (
@@ -2489,13 +2553,32 @@
 			productReference = DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		DBFE6EC72876EB42003ABDCB /* NotificationService */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DBFE6ED32876EB43003ABDCB /* Build configuration list for PBXNativeTarget "NotificationService" */;
+			buildPhases = (
+				DBFE6EC42876EB42003ABDCB /* Sources */,
+				DBFE6EC52876EB42003ABDCB /* Frameworks */,
+				DBFE6EC62876EB42003ABDCB /* Resources */,
+				DBFE6ED92876F3B4003ABDCB /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DBFE6ED82876F3B4003ABDCB /* PBXTargetDependency */,
+			);
+			name = NotificationService;
+			productName = NotificationService;
+			productReference = DBFE6EC82876EB42003ABDCB /* NotificationService.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		DBDA8E1624FCF8A3006750DC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1330;
+				LastSwiftUpdateCheck = 1400;
 				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = Twidere;
 				TargetAttributes = {
@@ -2519,6 +2602,9 @@
 					};
 					DBFDCE3F27F450FC00BE99E3 = {
 						CreatedOnToolsVersion = 13.3;
+					};
+					DBFE6EC72876EB42003ABDCB = {
+						CreatedOnToolsVersion = 14.0;
 					};
 				};
 			};
@@ -2559,6 +2645,7 @@
 				DB94B6BA26C65CB000A2E8A1 /* AppShared */,
 				DBBBBE5D2744E8CC007ACB4B /* ShareExtension */,
 				DBFDCE3F27F450FC00BE99E3 /* TwidereXIntent */,
+				DBFE6EC72876EB42003ABDCB /* NotificationService */,
 			);
 		};
 /* End PBXProject section */
@@ -2611,6 +2698,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		DBFDCE3E27F450FC00BE99E3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBFE6EC62876EB42003ABDCB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3174,6 +3268,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DBFE6EC42876EB42003ABDCB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DBFE6ECB2876EB42003ABDCB /* NotificationService.swift in Sources */,
+				DBFE6EDF2876F567003ABDCB /* String+Escape.swift in Sources */,
+				DBFE6EDD2876F4D2003ABDCB /* NotificationService+Decrypt.swift in Sources */,
+				DBFE6EDB2876F47B003ABDCB /* String+Decode85.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -3221,6 +3326,16 @@
 			isa = PBXTargetDependency;
 			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
 			targetProxy = DBFDCE5627F451FC00BE99E3 /* PBXContainerItemProxy */;
+		};
+		DBFE6ECE2876EB42003ABDCB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DBFE6EC72876EB42003ABDCB /* NotificationService */;
+			targetProxy = DBFE6ECD2876EB42003ABDCB /* PBXContainerItemProxy */;
+		};
+		DBFE6ED82876F3B4003ABDCB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
+			targetProxy = DBFE6ED72876F3B4003ABDCB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3986,6 +4101,94 @@
 			};
 			name = Release;
 		};
+		DBFE6ED02876EB43003ABDCB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 7LFDZ96332;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NotificationService/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NotificationService;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.NotificationService;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DBFE6ED12876EB43003ABDCB /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7LFDZ96332;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NotificationService/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NotificationService;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.NotificationService;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Profile;
+		};
+		DBFE6ED22876EB43003ABDCB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7LFDZ96332;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NotificationService/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NotificationService;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.NotificationService;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -4055,6 +4258,16 @@
 				DBFDCE4A27F450FC00BE99E3 /* Debug */,
 				DB2F180C282B54F30001C6A8 /* Profile */,
 				DBFDCE4B27F450FC00BE99E3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DBFE6ED32876EB43003ABDCB /* Build configuration list for PBXNativeTarget "NotificationService" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBFE6ED02876EB43003ABDCB /* Debug */,
+				DBFE6ED12876EB43003ABDCB /* Profile */,
+				DBFE6ED22876EB43003ABDCB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
