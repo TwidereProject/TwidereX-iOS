@@ -62,7 +62,7 @@ final public class TwitterStatus: NSManagedObject {
     @NSManaged public private(set) var repost: TwitterStatus?
     // sourcery: autoGenerateRelationship
     @NSManaged public private(set) var quote: TwitterStatus?
-    // sourcery: autoUpdatableObject
+    // sourcery: autoGenerateRelationship, autoUpdatableObject
     @NSManaged public private(set) var replyTo: TwitterStatus?
     
     // one-to-many relationship
@@ -304,17 +304,20 @@ extension TwitterStatus: AutoGenerateRelationship {
     	public let author: TwitterUser
     	public let repost: TwitterStatus?
     	public let quote: TwitterStatus?
+    	public let replyTo: TwitterStatus?
 
     	public init(
     		poll: TwitterPoll?,
     		author: TwitterUser,
     		repost: TwitterStatus?,
-    		quote: TwitterStatus?
+    		quote: TwitterStatus?,
+    		replyTo: TwitterStatus?
     	) {
     		self.poll = poll
     		self.author = author
     		self.repost = repost
     		self.quote = quote
+    		self.replyTo = replyTo
     	}
     }
 
@@ -323,6 +326,7 @@ extension TwitterStatus: AutoGenerateRelationship {
     	self.author = relationship.author
     	self.repost = relationship.repost
     	self.quote = relationship.quote
+    	self.replyTo = relationship.replyTo
     }
     // sourcery:end
 }

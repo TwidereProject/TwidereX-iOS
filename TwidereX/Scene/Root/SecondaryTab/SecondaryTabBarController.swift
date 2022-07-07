@@ -61,7 +61,7 @@ extension SecondaryTabBarController {
 
 extension SecondaryTabBarController {
 
-    func select(tab: TabBarItem) {
+    func select(tab: TabBarItem, isSecondaryTabBarControllerActive: Bool = true) {
         let _index = tabBar.items?.firstIndex(where: { $0.tag == tab.tag })
         guard let index = _index else {
             return
@@ -73,7 +73,8 @@ extension SecondaryTabBarController {
         }
         
         // check if selected and scroll it to top
-        guard currentTab == tab,
+        guard isSecondaryTabBarControllerActive,
+              currentTab == tab,
               let viewController = viewControllers?[safe: index],
               let navigationController = viewController as? UINavigationController
         else { return }

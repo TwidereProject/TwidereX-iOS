@@ -73,6 +73,25 @@ extension HomeTimelineViewController {
             identifier: nil,
             options: [],
             children: [
+                UIAction(title: "Status by ID", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    let alertController = UIAlertController(title: "Enter Status ID", message: nil, preferredStyle: .alert)
+                    alertController.addTextField()
+                    let showAction = UIAlertAction(title: "Move", style: .default) { [weak self, weak alertController] _ in
+                        guard let self = self else { return }
+                        guard let textField = alertController?.textFields?.first else { return }
+                        guard let id = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !id.isEmpty else { return }
+                        self.showStatusByID(id)
+                    }
+                    alertController.addAction(showAction)
+                    let cancelAction = UIAlertAction.cancel
+                    alertController.addAction(cancelAction)
+                    self.coordinator.present(
+                        scene: .alertController(alertController: alertController),
+                        from: self,
+                        transition: .alertController(animated: true, completion: nil)
+                    )
+                }),
                 UIAction(title: "Account List", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.showAccountListAction(action)
@@ -246,6 +265,39 @@ extension HomeTimelineViewController {
     
     @objc private func showFLEXAction(_ sender: UIAction) {
         FLEXManager.shared.showExplorer()
+    }
+    
+    @objc private func showStatusByID(_ id: String) {
+        Task {
+            let authenticationContext = self.context.authenticationService.activeAuthenticationContext
+            switch authenticationContext {
+            case .twitter(let authenticationContext):
+                _ = try await self.context.apiService.twitterStatus(
+                    statusIDs: [id],
+                    authenticationContext: authenticationContext
+                )
+                let request = TwitterStatus.sortedFetchRequest
+                request.predicate = TwitterStatus.predicate(id: id)
+                request.fetchLimit = 1
+                let _status = try self.context.managedObjectContext.fetch(request).first
+                guard let status = _status else {
+                    return
+                }
+                let statusThreadViewModel = StatusThreadViewModel(
+                    context: self.context,
+                    root: .root(context: .init(status: .twitter(record: .init(objectID: status.objectID))))
+                )
+                await self.coordinator.present(
+                    scene: .statusThread(viewModel: statusThreadViewModel),
+                    from: self,
+                    transition: .show
+                )
+            case .mastodon:
+                assertionFailure("TODO:")
+            default:
+                assertionFailure()
+            }
+        }   // end Task
     }
     
     @objc private func showStubTimelineAction(_ sender: UIAction) {
