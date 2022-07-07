@@ -33,7 +33,7 @@ extension AccountListViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.apply(snapshot)
         
-        context.authenticationService.authenticationIndexes
+        context.authenticationService.$authenticationIndexes
             .receive(on: DispatchQueue.main)
             .sink { [weak self] authenticationIndexes in
                 guard let self = self else { return }

@@ -8,20 +8,47 @@
 import Foundation
 import CryptoKit
 import TwitterSDK
+import KeychainAccess
 
 public class AppSecret {
-    
+
     public typealias Secret = String
 
+    // keychain
+    public static let keychain = Keychain(service: "com.twidere.TwidereX.keychain", accessGroup: AppCommon.groupID)
+    
+    // notification key names
+    static let mastodonNotificationPrivateKeyName = "notification-private-key-base64"
+    static let mastodonNotificationAuthName = "notification-auth-base64"
+    
     public let secret: Secret
     public let oauthSecret: OAuthSecret
+    
+    // Mastodon notification keys
+    public let mastodonNotificationRelayEndpoint: String
+    public var mastodonNotificationPrivateKey: P256.KeyAgreement.PrivateKey {
+        AppSecret.createOrFetchNotificationPrivateKey()
+    }
+    public var mastodonNotificationPublicKey: P256.KeyAgreement.PublicKey {
+        mastodonNotificationPrivateKey.publicKey
+    }
+    public var mastodonNotificationAuth: Data {
+        AppSecret.createOrFetchNotificationAuth()
+    }
 
     public init(
         secret: Secret,
-        oauthSecret: AppSecret.OAuthSecret
+        oauthSecret: AppSecret.OAuthSecret,
+        mastodonNotificationRelayEndpoint: String
     ) {
         self.secret = secret
         self.oauthSecret = oauthSecret
+        self.mastodonNotificationRelayEndpoint = mastodonNotificationRelayEndpoint
+    }
+    
+    public static func register() {
+        _ = AppSecret.createOrFetchNotificationPrivateKey()
+        _ = AppSecret.createOrFetchNotificationAuth()
     }
 
 }
@@ -106,4 +133,55 @@ extension AppSecret {
         
         return wrapKey
     }
+}
+
+extension AppSecret {
+    
+    private static func createOrFetchNotificationPrivateKey() -> P256.KeyAgreement.PrivateKey {
+        if let encoded = AppSecret.keychain[AppSecret.mastodonNotificationPrivateKeyName],
+           let data = Data(base64Encoded: encoded) {
+            do {
+                let privateKey = try P256.KeyAgreement.PrivateKey(rawRepresentation: data)
+                return privateKey
+            } catch {
+                assertionFailure()
+                return AppSecret.resetNotificationPrivateKey()
+            }
+        } else {
+            return AppSecret.resetNotificationPrivateKey()
+        }
+    }
+    
+    private static func resetNotificationPrivateKey() -> P256.KeyAgreement.PrivateKey {
+        let privateKey = P256.KeyAgreement.PrivateKey()
+        keychain[AppSecret.mastodonNotificationPrivateKeyName] = privateKey.rawRepresentation.base64EncodedString()
+        return privateKey
+    }
+    
+}
+
+extension AppSecret {
+    
+    private static func createOrFetchNotificationAuth() -> Data {
+        if let encoded = keychain[AppSecret.mastodonNotificationAuthName],
+           let data = Data(base64Encoded: encoded) {
+            return data
+        } else {
+            return AppSecret.resetNotificationAuth()
+        }
+    }
+    
+    private static func resetNotificationAuth() -> Data {
+        let auth = AppSecret.createRandomAuthBytes()
+        keychain[AppSecret.mastodonNotificationAuthName] = auth.base64EncodedString()
+        return auth
+    }
+    
+    private static func createRandomAuthBytes() -> Data {
+        let byteCount = 16
+        var bytes = Data(count: byteCount)
+        _ = bytes.withUnsafeMutableBytes { SecRandomCopyBytes(kSecRandomDefault, byteCount, $0.baseAddress!) }
+        return bytes
+    }
+    
 }

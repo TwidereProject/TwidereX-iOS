@@ -5,11 +5,13 @@
 //  Created by Cirno MainasuK on 2020-8-31.
 //
 
+import os.log
 import AVKit
 import UIKit
 import Combine
 import Floaty
 import Firebase
+import FirebaseMessaging
 import Kingfisher
 import AppShared
 import TwidereCommon
@@ -18,6 +20,8 @@ import TwidereCommon
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    let logger = Logger(subsystem: "AppDelegate", category: "AppDelegate")
 
     var disposeBag = Set<AnyCancellable>()
 
@@ -25,9 +29,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        AppSecret.register()
+        
+        // setup push notification
+        UNUserNotificationCenter.current().delegate = self
+        application.registerForRemoteNotifications()
+
         // Firebase
         FirebaseApp.configure()
         Crashlytics.crashlytics().setCustomValue(Locale.preferredLanguages.first ?? "nil", forKey: "preferredLanguage")
+        Messaging.messaging().delegate = self
         
         // configure AudioSession
         try? AVAudioSession.sharedInstance().setCategory(.ambient)
@@ -80,6 +91,22 @@ extension AppDelegate {
             return .all
         }
         #endif
+    }
+}
+
+// MARK: - UNUserNotificationCenterDelegate
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+}
+
+// MARK: - MessagingDelegate
+extension AppDelegate: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fcmToken: \(fcmToken ?? "<nil>")")
+        
+        Task {
+            await appContext.notificationService.updateToken(fcmToken)
+        }   // end Task
     }
 }
 

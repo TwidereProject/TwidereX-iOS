@@ -22,6 +22,7 @@ target 'TwidereX' do
   pod 'Firebase/AnalyticsWithoutAdIdSupport'
   pod 'FirebaseCrashlytics'
   pod 'FirebasePerformance'
+  pod 'FirebaseMessaging'
   
   # misc
   pod 'SwiftGen', '~> 6.3.0'
@@ -60,7 +61,9 @@ plugin 'cocoapods-keys', {
     "oauth_endpoint",
     "oauth_endpoint_debug",
     "oauth2_endpoint",
-    "oauth2_endpoint_debug"
+    "oauth2_endpoint_debug",
+    "mastodon_notification_endpoint_debug",
+    "mastodon_notification_endpoint"
   ]
 }
 

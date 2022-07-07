@@ -42,6 +42,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.2"),
         .package(url: "https://github.com/SwiftKickMobile/SwiftMessages.git", from: "9.0.5"),
         .package(url: "https://github.com/aheze/Popovers.git", from: "1.3.2"),
+        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "4.2.2"),
         .package(name: "Introspect", url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
     ],
     targets: [
@@ -86,6 +87,7 @@ let package = Package(
             name: "TwidereCommon",
             dependencies: [
                 "TwitterSDK",
+                .product(name: "KeychainAccess", package: "KeychainAccess"),
             ]
         ),
         .target(

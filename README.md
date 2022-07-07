@@ -51,18 +51,20 @@ The localization resource files locate in [TwidereX-Localization](https://github
 
 ## Acknowledgements
 
+- [Alamofire](https://github.com/Alamofire/Alamofire)
 - [AlamofireImage](https://github.com/Alamofire/AlamofireImage)
 - [AlamofireNetworkActivityIndicator](https://github.com/Alamofire/AlamofireNetworkActivityIndicator)
-- [Alamofire](https://github.com/Alamofire/Alamofire)
 - [cocoapods-keys](https://github.com/orta/cocoapods-keys)
 - [CommonOSLog](https://github.com/mainasuk/CommonOSLog)
 - [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift)
 - [DateToolSwift](https://github.com/MatthewYork/DateTools)
 - [Floaty](https://github.com/kciter/Floaty)
 - [Kanna](https://github.com/tid-kijyun/Kanna)
+- [KeychainAccess](https://github.com/kishikawakatsumi/KeychainAccess)
 - [Kingfisher](https://github.com/onevcat/Kingfisher)
 - [LineChart](https://github.com/nhatminh12369/LineChart)
 - [PageBoy](https://github.com/uias/Pageboy)
+- [Popovers](https://github.com/aheze/Popovers)
 - [swift-nio](https://github.com/apple/swift-nio)
 - [SwiftGen](https://github.com/SwiftGen/SwiftGen)
 - [SwiftMessages](https://github.com/SwiftKickMobile/SwiftMessages)

@@ -40,6 +40,15 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/UserDefaults (~> 7.7)
     - PromisesObjC (~> 2.1)
+  - FirebaseMessaging (9.2.0):
+    - FirebaseCore (~> 9.0)
+    - FirebaseInstallations (~> 9.0)
+    - GoogleDataTransport (< 10.0.0, >= 9.1.4)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/Environment (~> 7.7)
+    - GoogleUtilities/Reachability (~> 7.7)
+    - GoogleUtilities/UserDefaults (~> 7.7)
+    - nanopb (< 2.30910.0, >= 2.30908.0)
   - FirebasePerformance (9.1.0):
     - FirebaseCore (~> 9.0)
     - FirebaseInstallations (~> 9.0)
@@ -105,6 +114,7 @@ DEPENDENCIES:
   - DateToolsSwift (~> 5.0.0)
   - Firebase/AnalyticsWithoutAdIdSupport
   - FirebaseCrashlytics
+  - FirebaseMessaging
   - FirebasePerformance
   - FLEX (~> 4.4.0)
   - Keys (from `Pods/CocoaPodsKeys`)
@@ -125,6 +135,7 @@ SPEC REPOS:
     - FirebaseCoreInternal
     - FirebaseCrashlytics
     - FirebaseInstallations
+    - FirebaseMessaging
     - FirebasePerformance
     - FirebaseRemoteConfig
     - FLEX
@@ -153,6 +164,7 @@ SPEC CHECKSUMS:
   FirebaseCoreInternal: f3c838ae0b41cd840bbf34f90debfede78d352e5
   FirebaseCrashlytics: 8e21736dcf15d814b79229eb7e79ba3a5eec5f30
   FirebaseInstallations: a91c74276b544524ce144c8315d8cdbce2dbe30b
+  FirebaseMessaging: 4eaf1b8a7464b2c5e619ad66e9b20ee3e3206b24
   FirebasePerformance: c31b7f18df1fda622edd4190d2d6fcececec3e3c
   FirebaseRemoteConfig: ebd0eb74b9a0593ab2a3f0788a5be5595b46a05c
   FLEX: 7ca2c8cd3a435ff501ff6d2f2141e9bdc934eaab
@@ -168,6 +180,6 @@ SPEC CHECKSUMS:
   XLPagerTabStrip: 61c57fd61f611ee5f01ff1495ad6fbee8bf496c5
   ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: b8b276d991a162e817f90fbd698f266887207b71
+PODFILE CHECKSUM: 5e12e332eb31dd3e2519e9f9f18f66b6116e66e1
 
 COCOAPODS: 1.11.3

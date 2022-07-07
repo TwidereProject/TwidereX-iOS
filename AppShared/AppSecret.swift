@@ -16,7 +16,14 @@ extension AppSecret {
         let keys = TwidereXKeys()
         self.init(
             secret: keys.app_secret,
-            oauthSecret: oauthSecret
+            oauthSecret: oauthSecret,
+            mastodonNotificationRelayEndpoint: {
+                #if DEBUG
+                return keys.mastodon_notification_endpoint_debug
+                #else
+                return keys.mastodon_notification_endpoint
+                #endif
+            }()
         )
     }
     
