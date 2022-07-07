@@ -28,7 +28,11 @@ All you need
 ```zsh
 git clone https://github.com/TwidereProject/TwidereX-iOS
 cd TwidereX-iOS
-pod install
+
+gem install bundle
+bundle install
+
+bundle exec pod install
 
 # setup cocoapods-keys
 > app_secret: "Twidere"
@@ -73,6 +77,7 @@ The localization resource files locate in [TwidereX-Localization](https://github
 - [TOCropViewController](https://github.com/TimOliver/TOCropViewController)
 - [twitter-text](https://github.com/twitter/twitter-text)
 - [TwitterProfile](https://github.com/OfTheWolf/TwitterProfile)
+- [webpush-fcm-relay](https://github.com/mastodon/webpush-fcm-relay)
 - [ZIPFoundation](https://github.com/weichsel/ZIPFoundation)
 
 ## License
