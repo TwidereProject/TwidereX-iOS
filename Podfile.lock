@@ -64,7 +64,7 @@ PODS:
     - FirebaseInstallations (~> 9.0)
     - GoogleUtilities/Environment (~> 7.7)
     - "GoogleUtilities/NSData+zlib (~> 7.7)"
-  - FLEX (4.4.1)
+  - FLEX (4.7.0)
   - GoogleAppMeasurement/WithoutAdIdSupport (9.2.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
     - GoogleUtilities/MethodSwizzler (~> 7.7)
@@ -101,10 +101,10 @@ PODS:
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
   - PromisesObjC (2.1.1)
-  - Sourcery (1.6.1):
-    - Sourcery/CLI-Only (= 1.6.1)
-  - Sourcery/CLI-Only (1.6.1)
-  - SwiftGen (6.3.0)
+  - Sourcery (1.8.1):
+    - Sourcery/CLI-Only (= 1.8.1)
+  - Sourcery/CLI-Only (1.8.1)
+  - SwiftGen (6.5.1)
   - twitter-text (3.1.0)
   - XLPagerTabStrip (9.0.0)
   - ZIPFoundation (0.9.13)
@@ -115,9 +115,9 @@ DEPENDENCIES:
   - FirebaseCrashlytics
   - FirebaseMessaging
   - FirebasePerformance
-  - FLEX (~> 4.4.0)
-  - Sourcery (~> 1.6.1)
-  - SwiftGen (~> 6.3.0)
+  - FLEX (~> 4.7.0)
+  - Sourcery (~> 1.8.1)
+  - SwiftGen (~> 6.5.1)
   - twitter-text (~> 3.1.0)
   - XLPagerTabStrip (~> 9.0.0)
   - ZIPFoundation (~> 0.9.11)
@@ -161,18 +161,18 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 4eaf1b8a7464b2c5e619ad66e9b20ee3e3206b24
   FirebasePerformance: 5a8d2a9e645a398dfcc02657853f4b946675d5d4
   FirebaseRemoteConfig: 16e29297f0dd0c7d2415c4506d614fe0b54875d1
-  FLEX: 7ca2c8cd3a435ff501ff6d2f2141e9bdc934eaab
+  FLEX: bdc9ac7d4a239e3d04c298c01221203257d63a80
   GoogleAppMeasurement: 7a33224321f975d58c166657260526775d9c6b1a
   GoogleDataTransport: 5fffe35792f8b96ec8d6775f5eccd83c998d5a3b
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
-  Sourcery: f3759f803bd0739f74fc92a4341eed0473ce61ac
-  SwiftGen: 3d5024a47ea79e408cded20763d7a17d18a4548c
+  Sourcery: 4d44d4ea26a682a4a9875ec7c1870a1e7b8e183f
+  SwiftGen: a6d22010845f08fe18fbdf3a07a8e380fd22e0ea
   twitter-text: 3a0d73ca52955439dc8b208ca7e123ea0abd6a51
   XLPagerTabStrip: 61c57fd61f611ee5f01ff1495ad6fbee8bf496c5
   ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: 9151295bd987ef2e612a5a5aa386b5ae12a2fc65
+PODFILE CHECKSUM: 9a116be6704a7b6b4940f5dfb93bf4c4214dbc93
 
 COCOAPODS: 1.11.3

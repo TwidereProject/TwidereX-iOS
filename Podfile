@@ -25,11 +25,11 @@ target 'TwidereX' do
   pod 'FirebaseMessaging'
   
   # misc
-  pod 'SwiftGen', '~> 6.3.0'
-  pod 'Sourcery', '~> 1.6.1'
+  pod 'SwiftGen', '~> 6.5.1'
+  pod 'Sourcery', '~> 1.8.1'
 
   # Debug
-  pod 'FLEX', '~> 4.4.0', :configurations => ['Debug']
+  pod 'FLEX', '~> 4.7.0', :configurations => ['Debug']
   pod 'ZIPFoundation', '~> 0.9.11', :configurations => ['Debug']
   
   target 'TwidereXTests' do
