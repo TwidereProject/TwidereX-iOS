@@ -8,9 +8,9 @@
 import Foundation
 import CryptoKit
 import TwitterSDK
+import MastodonSDK
 import KeychainAccess
 import ArkanaKeys
-import MastodonSDK
 
 public class AppSecret {
 

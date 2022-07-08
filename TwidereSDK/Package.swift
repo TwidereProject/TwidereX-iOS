@@ -88,6 +88,7 @@ let package = Package(
             name: "TwidereCommon",
             dependencies: [
                 "TwitterSDK",
+                "MastodonSDK",
                 .product(name: "KeychainAccess", package: "KeychainAccess"),
                 .product(name: "ArkanaKeys", package: "ArkanaKeys"),
             ]

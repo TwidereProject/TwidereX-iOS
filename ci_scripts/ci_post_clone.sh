@@ -8,6 +8,10 @@ set -o pipefail
 # list hardware
 system_profiler SPSoftwareDataType SPHardwareDataType
 
+echo $PWD
+cd $CI_WORKSPACE
+echo $PWD
+
 # install rbenv
 brew install rbenv
 which ruby
