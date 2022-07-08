@@ -95,7 +95,6 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.7.0):
     - GoogleUtilities/Logger
-  - Keys (1.0.1)
   - nanopb (2.30909.0):
     - nanopb/decode (= 2.30909.0)
     - nanopb/encode (= 2.30909.0)
@@ -117,7 +116,6 @@ DEPENDENCIES:
   - FirebaseMessaging
   - FirebasePerformance
   - FLEX (~> 4.4.0)
-  - Keys (from `Pods/CocoaPodsKeys`)
   - Sourcery (~> 1.6.1)
   - SwiftGen (~> 6.3.0)
   - twitter-text (~> 3.1.0)
@@ -150,10 +148,6 @@ SPEC REPOS:
     - XLPagerTabStrip
     - ZIPFoundation
 
-EXTERNAL SOURCES:
-  Keys:
-    :path: Pods/CocoaPodsKeys
-
 SPEC CHECKSUMS:
   DateToolsSwift: 4207ada6ad615d8dc076323d27037c94916dbfa6
   Firebase: 91c243d75573ac6e7c9735ec859b72bffb61347d
@@ -171,7 +165,6 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8ecc717f2abe3f9ee95a5d38db08827852894acc
   GoogleDataTransport: 5fffe35792f8b96ec8d6775f5eccd83c998d5a3b
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
-  Keys: a576f4c9c1c641ca913a959a9c62ed3f215a8de9
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
   Sourcery: f3759f803bd0739f74fc92a4341eed0473ce61ac
@@ -180,6 +173,6 @@ SPEC CHECKSUMS:
   XLPagerTabStrip: 61c57fd61f611ee5f01ff1495ad6fbee8bf496c5
   ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: 5e12e332eb31dd3e2519e9f9f18f66b6116e66e1
+PODFILE CHECKSUM: 9151295bd987ef2e612a5a5aa386b5ae12a2fc65
 
 COCOAPODS: 1.11.3

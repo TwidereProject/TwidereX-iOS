@@ -49,24 +49,6 @@ target 'AppShared' do
   common_pods
 end
 
-plugin 'cocoapods-keys', {
-  :project => "TwidereX",
-  :keys => [
-    "app_secret",
-    "consumer_key",
-    "consumer_key_secret",
-    "client_id",
-    "client_id_debug",
-    "host_key_public",
-    "oauth_endpoint",
-    "oauth_endpoint_debug",
-    "oauth2_endpoint",
-    "oauth2_endpoint_debug",
-    "mastodon_notification_endpoint_debug",
-    "mastodon_notification_endpoint"
-  ]
-}
-
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|

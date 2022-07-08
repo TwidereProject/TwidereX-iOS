@@ -33,7 +33,6 @@
 		DB0AD4EA28587B040002ABDB /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0AD4E928587B040002ABDB /* TimelineViewController.swift */; };
 		DB0AD4EB28587B520002ABDB /* FederatedTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0F279050FC004EF2F7 /* FederatedTimelineViewModel+Diffable.swift */; };
 		DB0AD4F0285893FA0002ABDB /* TimelineViewModelDriver.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0AD4EF285893FA0002ABDB /* TimelineViewModelDriver.swift */; };
-		DB0B3B8E26C6639100501BB7 /* AppSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2611462518AC13004BF309 /* AppSecret.swift */; };
 		DB0CC4BA27D5F7BA00A051B4 /* CompositeListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0CC4B927D5F7BA00A051B4 /* CompositeListViewModel+Diffable.swift */; };
 		DB12BEE727329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB12BEE627329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift */; };
 		DB148B00281A729200B596C7 /* SidebarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB148AFF281A729200B596C7 /* SidebarViewController.swift */; };
@@ -562,7 +561,6 @@
 		DB25C4CE2779A06D00EC1435 /* SavedSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedSearchViewModel.swift; sourceTree = "<group>"; };
 		DB25C4D02779A37E00EC1435 /* SavedSearchViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SavedSearchViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB25C4D22779ADD800EC1435 /* SearchResultContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultContainerViewController.swift; sourceTree = "<group>"; };
-		DB2611462518AC13004BF309 /* AppSecret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSecret.swift; sourceTree = "<group>"; };
 		DB262A322721377800D18EF3 /* DataSourceFacade+Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Block.swift"; sourceTree = "<group>"; };
 		DB262A3627213FBE00D18EF3 /* UIAlertAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertAction.swift; sourceTree = "<group>"; };
 		DB262A382721621800D18EF3 /* DataSourceFacade+User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+User.swift"; sourceTree = "<group>"; };
@@ -1778,7 +1776,6 @@
 			children = (
 				DBCDCE602760B8B000F0B78C /* Info.plist */,
 				DB94B6BD26C65CB000A2E8A1 /* AppShared.h */,
-				DB2611462518AC13004BF309 /* AppSecret.swift */,
 				DBCC7AE7274BA10300E0986D /* Vender */,
 			);
 			path = AppShared;
@@ -2911,7 +2908,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB0B3B8E26C6639100501BB7 /* AppSecret.swift in Sources */,
 				DBCC7AE5274BA10100E0986D /* DateTimeSwiftProvider.swift in Sources */,
 				DBCC7AE6274BA10100E0986D /* OfficialTwitterTextProvider.swift in Sources */,
 			);

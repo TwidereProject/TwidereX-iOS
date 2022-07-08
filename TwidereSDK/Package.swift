@@ -44,6 +44,7 @@ let package = Package(
         .package(url: "https://github.com/aheze/Popovers.git", from: "1.3.2"),
         .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "4.2.2"),
         .package(name: "Introspect", url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
+        .package(name: "ArkanaKeys", path: "../dependencies/ArkanaKeys"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -51,7 +52,8 @@ let package = Package(
         .target(
             name: "CoreDataStack",
             dependencies: [
-                "TwidereCommon"
+                "TwidereCommon",
+                .product(name: "ArkanaKeys", package: "ArkanaKeys"),
             ],
             exclude: [
                 "Template/Stencil"

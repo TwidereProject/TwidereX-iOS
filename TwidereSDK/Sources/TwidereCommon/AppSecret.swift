@@ -9,6 +9,8 @@ import Foundation
 import CryptoKit
 import TwitterSDK
 import KeychainAccess
+import ArkanaKeys
+import MastodonSDK
 
 public class AppSecret {
 
@@ -52,6 +54,54 @@ public class AppSecret {
     }
 
 }
+
+extension AppSecret {
+    
+    public convenience init(
+        oauthSecret: OAuthSecret,
+        mastodonNotificationEndpoint: String
+    ) {
+        self.init(
+            secret: Keys.Global().appSecret,
+            oauthSecret: oauthSecret,
+            mastodonNotificationRelayEndpoint: mastodonNotificationEndpoint
+        )
+    }
+    
+    public static let `default`: AppSecret = {
+        let hostPublicKey: Curve25519.KeyAgreement.PublicKey? = {
+            let keyString = Keys.Global().hostKeyPublic
+            guard let keyData = Data(base64Encoded: keyString),
+                  let key = try? Curve25519.KeyAgreement.PublicKey(rawRepresentation: keyData) else {
+                return nil
+            }
+            
+            return key
+        }()
+        
+        #if DEBUG
+        let keys = Keys.Debug()
+        #else
+        let keys = Keys.Release()
+        #endif
+        
+        let oauthSecret = AppSecret.OAuthSecret(
+            consumerKey: keys.consumerKey,
+            consumerKeySecret: keys.consumerKeySecret,
+            clientID: keys.clientID,
+            hostPublicKey: hostPublicKey,
+            oauthEndpoint: keys.oauthEndpoint,
+            oauth2Endpoint: keys.oauth2Endpoint
+        )
+        let appSecret = AppSecret(
+            oauthSecret: oauthSecret,
+            mastodonNotificationEndpoint: keys.mastodonNotificationEndpoint
+        )
+        return appSecret
+    }()
+    
+}
+
 
 extension AppSecret {
     public struct OAuthSecret {

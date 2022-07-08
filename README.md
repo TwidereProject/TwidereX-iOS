@@ -22,9 +22,8 @@ All you need
 
 - Twitter app `API key` and `API key secret`
 - The latest Xcode from the App Store
-- [CocoaPods](https://cocoapods.org)
-- [cocoapods-keys](https://github.com/orta/cocoapods-keys)
-
+- A `.env` file contains the keys. Check the [.env](./env/.env) template and create yours
+  
 ```zsh
 git clone https://github.com/TwidereProject/TwidereX-iOS
 cd TwidereX-iOS
@@ -32,16 +31,13 @@ cd TwidereX-iOS
 gem install bundle
 bundle install
 
+# For contributor
+bundle exec arkana -e ./env/.env.Homebrew -f Homebrew
+
+# For App Store release
+# bundle exec arkana -e <path-to-env/.env.AppStore> -f AppStore
+
 bundle exec pod install
-
-# setup cocoapods-keys
-> app_secret: "Twidere"
-> consumer_key: "<API key>"
-> consumer_key_secret: "<API key secret>"
-> host_key_public: ""
-> oauth_endpoint: "oob"
-> oauth_endpoint_debug: "oob"
-
 open TwidereX.xcworkspace  
 ```
 
@@ -58,6 +54,7 @@ The localization resource files locate in [TwidereX-Localization](https://github
 - [Alamofire](https://github.com/Alamofire/Alamofire)
 - [AlamofireImage](https://github.com/Alamofire/AlamofireImage)
 - [AlamofireNetworkActivityIndicator](https://github.com/Alamofire/AlamofireNetworkActivityIndicator)
+- [Arkana](https://github.com/rogerluan/arkana)
 - [cocoapods-keys](https://github.com/orta/cocoapods-keys)
 - [CommonOSLog](https://github.com/mainasuk/CommonOSLog)
 - [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift)

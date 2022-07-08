@@ -1,0 +1,27 @@
+import_name: 'ArkanaKeys'
+namespace: 'Keys'
+result_path: 'dependencies'
+flavors:
+  - AppStore
+swift_declaration_strategy: let
+should_generate_unit_tests: true
+package_manager: spm
+environments:
+  - Debug
+  - Release
+global_secrets:
+  # AppStore build Secret
+  - AppSecret
+  - HostKeyPublic
+environment_secrets:
+  # Will lookup for <Key>Debug and <Key>Release env vars (assuming no flavor was declared)
+  # Twitter OAuth 1.0a Keys
+  - ConsumerKey
+  - ConsumerKeySecret
+  - OauthEndpoint
+  # Twitter OAuth 2.0 Keys
+  - ClientID
+  - ClientSecret
+  - Oauth2Endpoint
+  # Mastodon Push Notification Endpoint
+  - MastodonNotificationEndpoint
