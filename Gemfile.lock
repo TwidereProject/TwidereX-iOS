@@ -80,6 +80,7 @@ GEM
     netrc (0.11.0)
     public_suffix (4.0.7)
     rexml (3.2.5)
+    rouge (2.0.7)
     ruby-macho (2.5.1)
     typhoeus (1.4.0)
       ethon (>= 0.9.0)
@@ -92,6 +93,8 @@ GEM
       colored2 (~> 3.1)
       nanaimo (~> 0.3.0)
       rexml (~> 3.2.4)
+    xcpretty (0.3.0)
+      rouge (~> 2.0.7)
     yaml (0.2.0)
     zeitwerk (2.6.0)
 
@@ -102,6 +105,7 @@ DEPENDENCIES
   arkana
   cocoapods
   cocoapods-clean
+  xcpretty
 
 BUNDLED WITH
    2.2.32
