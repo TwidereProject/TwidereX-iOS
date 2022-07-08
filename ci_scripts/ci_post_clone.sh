@@ -1,5 +1,20 @@
 #!/bin/sh
 
+# Xcode Cloud scripts
+
+set -xeu
+set -o pipefail
+
+brew install rbenv
+which ruby
+echo 'eval "$(rbenv init -)"' >> ~/.zprofile
+source ~/.zprofile
+which ruby
+
+rbenv install 3.0.3
+rbenv global 3.0.3
+ruby --version
+
 gem install bundle
 bundle install
 
