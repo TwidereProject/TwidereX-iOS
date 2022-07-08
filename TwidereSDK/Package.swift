@@ -53,7 +53,6 @@ let package = Package(
             name: "CoreDataStack",
             dependencies: [
                 "TwidereCommon",
-                .product(name: "ArkanaKeys", package: "ArkanaKeys"),
             ],
             exclude: [
                 "Template/Stencil"
@@ -90,6 +89,7 @@ let package = Package(
             dependencies: [
                 "TwitterSDK",
                 .product(name: "KeychainAccess", package: "KeychainAccess"),
+                .product(name: "ArkanaKeys", package: "ArkanaKeys"),
             ]
         ),
         .target(
