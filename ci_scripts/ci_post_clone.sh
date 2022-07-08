@@ -20,7 +20,7 @@ rbenv global 3.0.3
 ruby --version
 
 # install bundle gem
-gem install bundle
+gem install bundler
 
 # setup gems
 bundle install

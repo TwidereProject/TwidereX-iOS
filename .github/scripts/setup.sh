@@ -3,7 +3,7 @@
 set -xeu
 set -o pipefail
 
-gem install bundle
+gem install bundler
 bundle install
 
 bundle exec arkana
