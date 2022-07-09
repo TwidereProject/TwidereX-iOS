@@ -33,6 +33,7 @@ extension DataSourceFacade {
 }
 
 extension DataSourceFacade {
+    @MainActor
     static func createActivityViewController(
         provider: DataSourceProvider,
         status: StatusRecord
@@ -56,7 +57,7 @@ extension DataSourceFacade {
             applicationActivities.append(contentsOf: provider.applicationActivities)
         }
         
-        let activityViewController = await UIActivityViewController(
+        let activityViewController = UIActivityViewController(
             activityItems: activityItems,
             applicationActivities: applicationActivities
         )

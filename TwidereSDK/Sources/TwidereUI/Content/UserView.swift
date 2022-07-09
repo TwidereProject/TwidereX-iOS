@@ -17,6 +17,8 @@ protocol UserViewDelegate: AnyObject {
     func userView(_ userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton)
     func userView(_ userView: UserView, friendshipButtonDidPressed button: UIButton)
     func userView(_ userView: UserView, membershipButtonDidPressed button: UIButton)
+    func userView(_ userView: UserView, acceptFollowReqeustButtonDidPressed button: UIButton)
+    func userView(_ userView: UserView, rejectFollowReqeustButtonDidPressed button: UIButton)
 }
 
 public final class UserView: UIView {
@@ -131,6 +133,27 @@ public final class UserView: UIView {
         return button
     }()
     
+    // follow request
+    public let followRequestControlContainerView = UIStackView()
+    
+    public private(set) lazy var acceptFollowRequestButton: HitTestExpandedButton = {
+        let button = HitTestExpandedButton()
+        button.setImage(Asset.Indices.checkmarkCircle.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = Asset.Colors.hightLight.color    // FIXME: tint color
+        button.addTarget(self, action: #selector(UserView.acceptFollowRequestButtonDidPressed(_:)), for: .touchUpInside)
+        button.accessibilityLabel = L10n.Common.Notification.FollowRequestAction.approve
+        return button
+    }()
+    
+    public private(set) lazy var rejectFollowRequestButton: HitTestExpandedButton = {
+        let button = HitTestExpandedButton()
+        button.setImage(Asset.Indices.xmarkCircle.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .secondaryLabel
+        button.addTarget(self, action: #selector(UserView.rejectFollowRequestButtonDidPressed(_:)), for: .touchUpInside)
+        button.accessibilityLabel = L10n.Common.Notification.FollowRequestAction.deny
+        return button
+    }()
+
     // activity indicator
     public let activityIndicatorView: UIActivityIndicatorView = {
         let activityIndicatorView = UIActivityIndicatorView(style: .medium)
@@ -139,9 +162,10 @@ public final class UserView: UIView {
         return activityIndicatorView
     }()
     
+    
     public func prepareForReuse() {
         disposeBag.removeAll()
-        viewModel.avatarImageURL = nil
+        viewModel.prepareForReuse()
         authorProfileAvatarView.avatarButton.avatarImageView.cancelTask()
         Style.prepareForReuse(userView: self)
     }
@@ -222,7 +246,17 @@ extension UserView {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.userView(self, membershipButtonDidPressed: sender)
     }
+    
+    @objc private func acceptFollowRequestButtonDidPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.userView(self, acceptFollowReqeustButtonDidPressed: sender)
+    }
 
+    @objc private func rejectFollowRequestButtonDidPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.userView(self, rejectFollowReqeustButtonDidPressed: sender)
+    }
+    
 }
 
 extension UserView {
@@ -245,7 +279,7 @@ extension UserView {
         // header: notification
         // headline: name | lock | username
         // subheadline: follower count
-        // accessory: none // TODO: menu
+        // accessory: [followRquest accept and reject button]
         case notification
         
         // headline: name | lock
@@ -277,6 +311,7 @@ extension UserView {
         
         public static func prepareForReuse(userView: UserView) {
             userView.headerContainerView.isHidden = true
+            userView.followRequestControlContainerView.isHidden = true
         }
     }
 }
@@ -368,7 +403,6 @@ extension UserView.Style {
         userView.setNeedsLayout()
     }
     
-    // FIXME: add action button
     func layoutNotification(userView: UserView) {
         userView.headerIconImageView.translatesAutoresizingMaskIntoConstraints = false
         userView.headerTextLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -395,7 +429,24 @@ extension UserView.Style {
             userView.headerTextLabel.leadingAnchor.constraint(equalTo: userView.authorProfileAvatarView.trailingAnchor, constant: UserView.contentStackViewSpacing),
         ])
 
-        // TODO: action button   
+        // follow request button
+        userView.accessoryContainerView.addArrangedSubview(userView.followRequestControlContainerView)
+        userView.followRequestControlContainerView.axis = .horizontal
+        userView.followRequestControlContainerView.spacing = 20
+        userView.followRequestControlContainerView.isHidden = true
+        
+        userView.followRequestControlContainerView.addArrangedSubview(userView.acceptFollowRequestButton)
+        userView.followRequestControlContainerView.addArrangedSubview(userView.rejectFollowRequestButton)
+        userView.acceptFollowRequestButton.setContentHuggingPriority(.required - 1, for: .horizontal)
+        userView.acceptFollowRequestButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        userView.rejectFollowRequestButton.setContentHuggingPriority(.required - 1, for: .horizontal)
+        userView.rejectFollowRequestButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        
+        userView.accessoryContainerView.addArrangedSubview(userView.activityIndicatorView)
+        userView.activityIndicatorView.setContentHuggingPriority(.required - 1, for: .horizontal)
+        userView.activityIndicatorView.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        userView.activityIndicatorView.isHidden = true
+           
         userView.setNeedsLayout()
     }
     
@@ -464,6 +515,10 @@ extension UserView.Style {
 extension UserView {
     public func setHeaderDisplay() {
         headerContainerView.isHidden = false
+    }
+    
+    public func setFollowRequestControlDisplay() {
+        followRequestControlContainerView.isHidden = false
     }
 }
 

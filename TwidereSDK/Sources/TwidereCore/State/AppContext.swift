@@ -45,7 +45,10 @@ public class AppContext: ObservableObject {
         managedObjectContext = _managedObjectContext
         backgroundManagedObjectContext = _backgroundManagedObjectContext
         
-        let _apiService = APIService(backgroundManagedObjectContext: _backgroundManagedObjectContext)
+        let _apiService = APIService(
+            coreDataStack: coreDataStack,
+            backgroundManagedObjectContext: _backgroundManagedObjectContext
+        )
         apiService = _apiService
         
         authenticationService = AuthenticationService(

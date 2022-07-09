@@ -31,6 +31,7 @@ class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTr
     let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     var disposeBag = Set<AnyCancellable>()
+    var observations = Set<NSKeyValueObservation>()
     
     var _viewModel: TimelineViewModel!
     

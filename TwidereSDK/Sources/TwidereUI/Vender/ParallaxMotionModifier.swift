@@ -1,5 +1,6 @@
 // https://trailingclosure.com/device-motion-effect/
 
+import os.log
 import SwiftUI
 import CoreMotion
 
@@ -32,7 +33,8 @@ public class MotionManager: ObservableObject {
     public init() {
         self.manager = CMMotionManager()
         self.manager.deviceMotionUpdateInterval = 1/60
-        self.manager.startDeviceMotionUpdates(to: .main) { (motionData, error) in
+        self.manager.startDeviceMotionUpdates(to: .main) { [weak self] (motionData, error) in
+            guard let self = self else { return }
             guard error == nil else {
                 print(error!)
                 return
@@ -43,6 +45,10 @@ public class MotionManager: ObservableObject {
                 self.roll = motionData.attitude.roll
             }
         }
-
     }
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }

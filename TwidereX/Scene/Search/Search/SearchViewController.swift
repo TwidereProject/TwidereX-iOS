@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import Combine
 import TwidereLocalization
+import TwidereUI
 
 // DrawerSidebarTransitionableViewController
 final class SearchViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
@@ -21,14 +22,6 @@ final class SearchViewController: UIViewController, NeedsDependency, DrawerSideb
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchViewModel!
-    
-    private(set) lazy var trendPreferenceBarButtonItem: UIBarButtonItem = {
-        let barButtonItem = UIBarButtonItem()
-        barButtonItem.image = UIImage(systemName: "ellipsis")
-//        barButtonItem.target = self
-//        barButtonItem.action = #selector(SearchViewController.trendPreferenceBarButtonItemDidPressed(_:))
-        return barButtonItem
-    }()
     
     private(set) lazy var searchResultViewModel = SearchResultViewModel(context: context, coordinator: coordinator)
     private(set) lazy var searchResultViewController: SearchResultViewController = {
@@ -65,7 +58,14 @@ final class SearchViewController: UIViewController, NeedsDependency, DrawerSideb
         return header
     }()
     
-    let trendSectionHeaderView = TableViewSectionTextHeaderView()
+    private(set) lazy var trendSectionHeaderView: TableViewSectionTextHeaderView = {
+        let headerView = TableViewSectionTextHeaderView()
+        headerView.button.setImage(UIImage(systemName: "map.circle.fill"), for: .normal)
+        headerView.button.tintColor = .secondaryLabel
+        headerView.button.isHidden = false
+        headerView.button.addTarget(self, action: #selector(SearchViewController.trendPlaceButtonDidPressed(_:)), for: .touchUpInside)
+        return headerView
+    }()
     
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -80,49 +80,49 @@ extension SearchViewController {
         
         drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
         
-        viewModel.trendViewModel.$twitterTrendPlaces
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] places in
-                guard let self = self else { return }
-                self.navigationItem.rightBarButtonItem = places.isEmpty ? nil : self.trendPreferenceBarButtonItem
-                self.trendPreferenceBarButtonItem.menu = {
-                    let worldwideMenu = UIMenu(
-                        title: "",
-                        image: nil,
-                        identifier: nil,
-                        options: [.displayInline],
-                        children: [
-                            UIAction(
-                                title: L10n.Scene.Trends.worldWideWithoutPrefix,
-                                image: UIImage(systemName: "globe"),
-                                identifier: nil,
-                                discoverabilityTitle: nil,
-                                attributes: [],
-                                state: .off
-                            ) { [weak self] _ in
-                                guard let self = self else { return }
-                                self.viewModel.trendViewModel.resetTrendGroupIndex()
-                            }
-                        ]
-                    )
-                    let placeActions: [UIMenuElement] = places.map { place in
-                        UIAction(
-                            title: place.name,
-                            image: nil,
-                            identifier: nil,
-                            discoverabilityTitle: nil,
-                            attributes: [],
-                            state: .off
-                        ) { [weak self] _ in
-                            guard let self = self else { return }
-                            self.viewModel.trendViewModel.updateTrendGroupIndex(place: place)
-                        }
-                    }
-                    return UIMenu(title: "Trend Places", image: nil, identifier: nil, options: [], children: [worldwideMenu] + placeActions)
-                }()
-            }
-            .store(in: &disposeBag)
+//        viewModel.trendViewModel.$twitterTrendPlaces
+//            .removeDuplicates()
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] places in
+//                guard let self = self else { return }
+//                self.navigationItem.rightBarButtonItem = places.isEmpty ? nil : self.trendPreferenceBarButtonItem
+//                self.trendPreferenceBarButtonItem.menu = {
+//                    let worldwideMenu = UIMenu(
+//                        title: "",
+//                        image: nil,
+//                        identifier: nil,
+//                        options: [.displayInline],
+//                        children: [
+//                            UIAction(
+//                                title: L10n.Scene.Trends.worldWideWithoutPrefix,
+//                                image: UIImage(systemName: "globe"),
+//                                identifier: nil,
+//                                discoverabilityTitle: nil,
+//                                attributes: [],
+//                                state: .off
+//                            ) { [weak self] _ in
+//                                guard let self = self else { return }
+//                                self.viewModel.trendViewModel.resetTrendGroupIndex()
+//                            }
+//                        ]
+//                    )
+//                    let placeActions: [UIMenuElement] = places.map { place in
+//                        UIAction(
+//                            title: place.name,
+//                            image: nil,
+//                            identifier: nil,
+//                            discoverabilityTitle: nil,
+//                            attributes: [],
+//                            state: .off
+//                        ) { [weak self] _ in
+//                            guard let self = self else { return }
+//                            self.viewModel.trendViewModel.updateTrendGroupIndex(place: place)
+//                        }
+//                    }
+//                    return UIMenu(title: "Trend Places", image: nil, identifier: nil, options: [], children: [worldwideMenu] + placeActions)
+//                }()
+//            }
+//            .store(in: &disposeBag)
 
         view.backgroundColor = .systemGroupedBackground
         navigationItem.searchController = searchController
@@ -159,6 +159,7 @@ extension SearchViewController {
             tableView: tableView
         )
         
+        // bind trend section titile
         viewModel.trendViewModel.$trendPlaceName
             .receive(on: DispatchQueue.main)
             .sink { [weak self] name in
@@ -168,6 +169,21 @@ extension SearchViewController {
             }
             .store(in: &disposeBag)
         
+        // bind twitter trend place entry
+        viewModel.context.authenticationService.$activeAuthenticationContext
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] authenticationContext in
+                guard let self = self else { return }
+                switch authenticationContext {
+                case .twitter:
+                    self.trendSectionHeaderView.button.isHidden = false
+                default:
+                    self.trendSectionHeaderView.button.isHidden = true
+                }
+            }
+            .store(in: &disposeBag)
+        
+        // bind searchBar bookmark
         Publishers.CombineLatest3(
             viewModel.$savedSearchTexts,
             searchResultViewModel.$searchText,
@@ -210,10 +226,15 @@ extension SearchViewController {
 }
 
 extension SearchViewController {
-    
-    @objc private func trendPreferenceBarButtonItemDidPressed(_ sender: UIBarButtonItem) {
+
+    @objc private func trendPlaceButtonDidPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
+        coordinator.present(
+            scene: .trendPlace(viewModel: viewModel.trendViewModel),
+            from: self,
+            transition: .modal(animated: true)
+        )
     }
 
 }

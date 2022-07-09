@@ -10,6 +10,7 @@ import os.log
 import Foundation
 import GameplayKit
 import CoreDataStack
+import TwidereCore
 
 extension NotificationTimelineViewModel {
     class LoadOldestState: GKState {
@@ -23,6 +24,11 @@ extension NotificationTimelineViewModel {
             super.didEnter(from: previousState)
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
         }
+        
+        @MainActor
+        func enter(state: NotificationTimelineViewModel.LoadOldestState.Type) {
+            stateMachine?.enter(state)
+        }
     }
 }
 
@@ -30,7 +36,7 @@ extension NotificationTimelineViewModel.LoadOldestState {
     class Initial: NotificationTimelineViewModel.LoadOldestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             guard let viewModel = viewModel else { return false }
-            guard !viewModel.fetchedResultsController.records.value.isEmpty else { return false }
+            guard !viewModel.fetchedResultsController.records.isEmpty else { return false }
             return stateClass == Loading.self
         }
     }
@@ -54,42 +60,48 @@ extension NotificationTimelineViewModel.LoadOldestState {
                 return
             }
             
-            guard let lsatFeedRecord = viewModel.fetchedResultsController.records.value.last else {
+            guard let lsatFeedRecord = viewModel.fetchedResultsController.records.last else {
                 stateMachine.enter(Fail.self)
                 return
             }
             
             Task {
-                // generate input from timeline last feed entry
-                let managedObjectContext = viewModel.context.managedObjectContext
-                let _input: NotificationFetchViewModel.Input? = await managedObjectContext.perform {
-                    guard let feed = lsatFeedRecord.object(in: managedObjectContext) else { return nil }
-                    switch (feed.content, authenticationContext) {
-                    case (.twitter(let status), .twitter(let authenticationContext)):
-                        return NotificationFetchViewModel.Input.twitter(.init(
-                            authenticationContext: authenticationContext,
-                            maxID: status.id,
-                            count: 20
-                        ))
-                        
-                    case (.mastodonNotification(let notification), .mastodon(let authenticationContext)):
-                        return NotificationFetchViewModel.Input.mastodon(.init(
-                            authenticationContext: authenticationContext,
-                            maxID: notification.id,
-                            excludeTypes: viewModel.scope._excludeTypes,
-                            limit: 20
-                        ))
-                    default:
-                        return nil
-                    }
-                }
-
-                guard let input = _input else {
-                    await enter(state: Fail.self)
-                    return
-                }
-
                 do {
+                    // generate input from timeline last feed entry
+                    let managedObjectContext = viewModel.context.managedObjectContext
+                    let _input: NotificationFetchViewModel.Input? = try await managedObjectContext.perform {
+                        guard let feed = lsatFeedRecord.object(in: managedObjectContext) else { return nil }
+                        switch (feed.content, authenticationContext) {
+                        case (.twitter(let status), .twitter(let authenticationContext)):
+                            return NotificationFetchViewModel.Input.twitter(.init(
+                                authenticationContext: authenticationContext,
+                                maxID: status.id,
+                                count: 20
+                            ))
+                            
+                        case (.mastodonNotification(let notification), .mastodon(let authenticationContext)):
+                            guard case let .mastodon(timelineScope) = viewModel.scope else {
+                                throw AppError.implicit(.badRequest)
+                            }
+                            
+                            return NotificationFetchViewModel.Input.mastodon(.init(
+                                authenticationContext: authenticationContext,
+                                scope: timelineScope,
+                                maxID: notification.id,
+                                includeTypes: timelineScope.includeTypes,
+                                excludeTypes: timelineScope.excludeTypes,
+                                limit: 20
+                            ))
+                        default:
+                            return nil
+                        }
+                    }
+                    
+                    guard let input = _input else {
+                        await enter(state: Fail.self)
+                        return
+                    }
+                    
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
                     let output = try await NotificationFetchViewModel.timeline(api: viewModel.context.apiService, input: input)
                     if output.hasMore {
@@ -102,12 +114,7 @@ extension NotificationTimelineViewModel.LoadOldestState {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                     await enter(state: Fail.self)
                 }
-            }
-        }
-        
-        @MainActor
-        func enter(state: NotificationTimelineViewModel.LoadOldestState.Type) {
-            stateMachine?.enter(state)
+            }   // end Task
         }
 
     }

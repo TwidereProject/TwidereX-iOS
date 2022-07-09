@@ -162,8 +162,6 @@
 		DB697E0927904BFB004EF2F7 /* FederatedTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0827904BFB004EF2F7 /* FederatedTimelineViewController.swift */; };
 		DB697E0C27904C56004EF2F7 /* FederatedTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0B27904C56004EF2F7 /* FederatedTimelineViewModel.swift */; };
 		DB697E0E27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0D27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift */; };
-		DB6B2EC827612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */; };
-		DB6B2ECA27612E0A00A9B9D2 /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DB6B2EC927612E0A00A9B9D2 /* TabBarPager */; };
 		DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */; };
 		DB6B8B2F25AF235F00F20FD5 /* TwidereX-Performance.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */; };
 		DB6B8B5F25AF30B900F20FD5 /* ContextMenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */; };
@@ -268,6 +266,9 @@
 		DBAA89902758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA898F2758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift */; };
 		DBAA89922758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */; };
 		DBADCDC82826658700D1CA4E /* MediaPreviewableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBADCDC72826658700D1CA4E /* MediaPreviewableViewController.swift */; };
+		DBB04A322861AE24003799CA /* TrendPlaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB04A312861AE24003799CA /* TrendPlaceViewController.swift */; };
+		DBB04A352861AE4D003799CA /* TrendPlaceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB04A342861AE4D003799CA /* TrendPlaceViewModel.swift */; };
+		DBB04A372861AF2D003799CA /* TrendPlaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB04A362861AF2D003799CA /* TrendPlaceView.swift */; };
 		DBB0E3C32760FB1200F1D45F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DBB0E3C22760FB1200F1D45F /* TwidereSDK */; };
 		DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DA826EB3AA2001590F7 /* ProfileFieldListView.swift */; };
 		DBB47DAB26EB3BF8001590F7 /* ProfileFieldContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DAA26EB3BF8001590F7 /* ProfileFieldContentView.swift */; };
@@ -344,6 +345,8 @@
 		DBFA471F2859C4AE00C9FF7F /* UserLikeTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA471E2859C4AE00C9FF7F /* UserLikeTimelineViewController.swift */; };
 		DBFA47212859C4F300C9FF7F /* UserLikeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA47202859C4F300C9FF7F /* UserLikeTimelineViewModel.swift */; };
 		DBFA4A2025A5924C00D51703 /* ListTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1F25A5924C00D51703 /* ListTimelineViewModel+Diffable.swift */; };
+		DBFADA892872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */; };
+		DBFADA8B2872BEDE00B512D6 /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DBFADA8A2872BEDE00B512D6 /* TabBarPager */; };
 		DBFC0AE6276118080011E99B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		DBFC0AE9276118240011E99B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		DBFC0AEA276118240011E99B /* AppShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -750,6 +753,9 @@
 		DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrawerSidebarViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBAC4A6625552A1E00140B23 /* MediaPreviewImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewImageViewModel.swift; sourceTree = "<group>"; };
 		DBADCDC72826658700D1CA4E /* MediaPreviewableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewableViewController.swift; sourceTree = "<group>"; };
+		DBB04A312861AE24003799CA /* TrendPlaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendPlaceViewController.swift; sourceTree = "<group>"; };
+		DBB04A342861AE4D003799CA /* TrendPlaceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendPlaceViewModel.swift; sourceTree = "<group>"; };
+		DBB04A362861AF2D003799CA /* TrendPlaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendPlaceView.swift; sourceTree = "<group>"; };
 		DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewController+DebugAction.swift"; sourceTree = "<group>"; };
 		DBB47DA826EB3AA2001590F7 /* ProfileFieldListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFieldListView.swift; sourceTree = "<group>"; };
 		DBB47DAA26EB3BF8001590F7 /* ProfileFieldContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFieldContentView.swift; sourceTree = "<group>"; };
@@ -892,10 +898,10 @@
 			files = (
 				DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */,
 				DBFC0AE9276118240011E99B /* AppShared.framework in Frameworks */,
-				DB6B2EC827612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout in Frameworks */,
 				DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */,
 				DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */,
-				DB6B2ECA27612E0A00A9B9D2 /* TabBarPager in Frameworks */,
+				DBFADA892872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout in Frameworks */,
+				DBFADA8B2872BEDE00B512D6 /* TabBarPager in Frameworks */,
 				DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */,
 				DB7AB33E2744E3740035EB8A /* Floaty in Frameworks */,
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
@@ -1853,6 +1859,16 @@
 			path = AddListMember;
 			sourceTree = "<group>";
 		};
+		DBB04A332861AE2A003799CA /* TrendPlace */ = {
+			isa = PBXGroup;
+			children = (
+				DBB04A312861AE24003799CA /* TrendPlaceViewController.swift */,
+				DBB04A342861AE4D003799CA /* TrendPlaceViewModel.swift */,
+				DBB04A362861AF2D003799CA /* TrendPlaceView.swift */,
+			);
+			path = TrendPlace;
+			sourceTree = "<group>";
+		};
 		DBBBBE5F2744E8CC007ACB4B /* ShareExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -2206,6 +2222,7 @@
 				DB262A3E27228DF700D18EF3 /* SearchResult */,
 				DB25C4CD27799FEB00EC1435 /* SavedSearch */,
 				DB6BCD6C277ADBF600847054 /* Trend */,
+				DBB04A332861AE2A003799CA /* TrendPlace */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -2408,8 +2425,8 @@
 				DBD98488251CB88A00ED87A1 /* Tabman */,
 				DB6CF1C3269715CD001DE069 /* FPSIndicator */,
 				DB7AB33D2744E3740035EB8A /* Floaty */,
-				DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */,
-				DB6B2EC927612E0A00A9B9D2 /* TabBarPager */,
+				DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */,
+				DBFADA8A2872BEDE00B512D6 /* TabBarPager */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -2953,6 +2970,7 @@
 				DB5632A726DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift in Sources */,
 				DB9B324D285732A400AC818D /* UserTimelineViewController.swift in Sources */,
 				DBB47DAD26EB440C001590F7 /* ProfileFieldCollectionViewCell.swift in Sources */,
+				DBB04A322861AE24003799CA /* TrendPlaceViewController.swift in Sources */,
 				DB3B905F26E8A9650010F64C /* StatusThreadViewController+DataSourceProvider.swift in Sources */,
 				DBF739D1275C3EF300BF6AB5 /* DataSourceFacade+Report.swift in Sources */,
 				DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */,
@@ -3063,6 +3081,7 @@
 				DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */,
 				DB76A658275F498F00A50673 /* MediaPreviewImageViewModel.swift in Sources */,
 				DB47AB2E27CE097C00CD73C7 /* ListItem.swift in Sources */,
+				DBB04A372861AF2D003799CA /* TrendPlaceView.swift in Sources */,
 				DB6BCD6E277ADC0900847054 /* TrendViewModel.swift in Sources */,
 				DB51DC4E27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift in Sources */,
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
@@ -3104,6 +3123,7 @@
 				DB5632AB26DCCD3900FC893F /* DataSourceFacade.swift in Sources */,
 				DB8761D02745553700BA7EE2 /* MediaSection.swift in Sources */,
 				DB51DC1C2715588E00A0D8FB /* ProfileDashboardMeterView.swift in Sources */,
+				DBB04A352861AE4D003799CA /* TrendPlaceViewModel.swift in Sources */,
 				DB2C8743274F4B7D00CE0398 /* SettingListView.swift in Sources */,
 				DB76A650275F1C3200A50673 /* MediaPreviewTransitionController.swift in Sources */,
 				DBF81C8027F6E80700004A56 /* AppearanceView.swift in Sources */,
@@ -3361,7 +3381,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3385,7 +3405,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3408,7 +3428,7 @@
 			baseConfigurationReference = BC377CE93F0DE1E07208F697 /* Pods-TwidereX-TwidereXUITests.profile.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3434,11 +3454,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 103;
+				DYLIB_CURRENT_VERSION = 109;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3466,7 +3486,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3493,7 +3513,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
@@ -3523,11 +3543,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 103;
+				DYLIB_CURRENT_VERSION = 109;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3557,11 +3577,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 103;
+				DYLIB_CURRENT_VERSION = 109;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3588,7 +3608,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3615,7 +3635,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3769,7 +3789,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3798,7 +3818,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3822,7 +3842,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3846,7 +3866,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3869,7 +3889,7 @@
 			baseConfigurationReference = 2E41729E598B3379FC09BC03 /* Pods-TwidereX-TwidereXUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3892,7 +3912,7 @@
 			baseConfigurationReference = 44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3916,7 +3936,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
@@ -3944,7 +3964,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 109;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
@@ -4090,14 +4110,6 @@
 			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
 			productName = CryptoSwift;
 		};
-		DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CoverFlowStackCollectionViewLayout;
-		};
-		DB6B2EC927612E0A00A9B9D2 /* TabBarPager */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = TabBarPager;
-		};
 		DB6CF1C3269715CD001DE069 /* FPSIndicator */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */;
@@ -4121,6 +4133,14 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */;
 			productName = Kanna;
+		};
+		DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoverFlowStackCollectionViewLayout;
+		};
+		DBFADA8A2872BEDE00B512D6 /* TabBarPager */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TabBarPager;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

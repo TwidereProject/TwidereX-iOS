@@ -88,6 +88,10 @@ extension TimelineViewModel {
     // load top
     @MainActor
     func loadLatest() async {
+        guard !isLoadingLatest else {
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): skip due to loading latest on flying")
+            return
+        }
         isLoadingLatest = true
         defer {
             isLoadingLatest = false
@@ -101,7 +105,13 @@ extension TimelineViewModel {
             position: {
                 switch kind {
                 case .home:
-                    return .top(anchor: nil)
+                    let managedObjectContext = context.managedObjectContext
+                    let anchor: StatusRecord? = {
+                        guard let record = feedFetchedResultsController.records.first else { return nil }
+                        guard let feed = record.object(in: managedObjectContext) else { return nil }
+                        return feed.statusObject?.asRecord
+                    }()
+                    return .top(anchor: anchor)
                 case .public, .hashtag, .list:
                     return .top(anchor: statusRecordFetchedResultController.records.first)
                 case .search:
@@ -122,6 +132,9 @@ extension TimelineViewModel {
                 api: context.apiService,
                 input: input
             )
+            guard output.result.count != .zero else {
+                throw AppError.implicit(.internal(reason: "empty results"))
+            }
             switch kind {
             case .home:
                 break
@@ -133,7 +146,5 @@ extension TimelineViewModel {
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
         }
     }
-    
-
     
 }

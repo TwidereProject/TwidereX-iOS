@@ -36,6 +36,28 @@ extension Persistence.Twitter {
         context: PersistContextV2
     ) -> [TwitterStatus] {
         var statusArray: [TwitterStatus] = []
+        
+        let statusCache: Persistence.PersistCache<TwitterStatus>? = {
+            let request = TwitterStatus.sortedFetchRequest
+            request.predicate = TwitterStatus.predicate(ids: context.dictionary.tweetDict.values.map { $0.id })
+            guard let results = try? managedObjectContext.fetch(request) else { return nil }
+            let cache = Persistence.PersistCache<TwitterStatus>()
+            for result in results {
+                cache.dictionary[result.id] = result
+            }
+            return cache
+        }()
+        
+        let userCache: Persistence.PersistCache<TwitterUser>? = {
+            let request = TwitterUser.sortedFetchRequest
+            request.predicate = TwitterUser.predicate(ids: context.dictionary.userDict.values.map { $0.id })
+            guard let results = try? managedObjectContext.fetch(request) else { return nil }
+            let cache = Persistence.PersistCache<TwitterUser>()
+            for result in results {
+                cache.dictionary[result.id] = result
+            }
+            return cache
+        }()
 
         for status in context.dictionary.tweetDict.values {
             guard let authorID = status.authorID,
@@ -74,8 +96,8 @@ extension Persistence.Twitter {
                     replyTo: replyTo,
                     dictionary: context.dictionary,
                     me: context.me,
-                    statusCache: nil,
-                    userCache: nil,
+                    statusCache: statusCache,
+                    userCache: userCache,
                     networkDate: context.networkDate
                 )
             )   // end .createOrMerge(…)

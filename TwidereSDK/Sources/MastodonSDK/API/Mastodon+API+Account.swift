@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Mastodon.API {
+    public enum Account { }
+}
+
 extension Mastodon.API.Account {
 
     static func accountsInfoEndpointURL(domain: String, id: Mastodon.Entity.Account.ID) -> URL {

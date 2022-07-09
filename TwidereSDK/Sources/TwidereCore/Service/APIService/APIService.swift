@@ -25,12 +25,19 @@ public final class APIService {
     let logger = Logger(subsystem: "APIService", category: "API")
     
     // input
+    public let coreDataStack: CoreDataStack
+    
+    // FIXME: use `newTaskContext`
     public let backgroundManagedObjectContext: NSManagedObjectContext
 
     // output
     public let error = PassthroughSubject<AppError, Never>()
     
-    public init(backgroundManagedObjectContext: NSManagedObjectContext) {
+    public init(
+        coreDataStack: CoreDataStack,
+        backgroundManagedObjectContext: NSManagedObjectContext
+    ) {
+        self.coreDataStack = coreDataStack
         self.backgroundManagedObjectContext = backgroundManagedObjectContext
         self.session = URLSession(configuration: .default)
         

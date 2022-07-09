@@ -55,15 +55,18 @@ extension Twitter.API.V2.User.Timeline {
     
     public struct HomeQuery: Query {
         
+        public let sinceID: Twitter.Entity.V2.Tweet.ID?
         public let untilID: Twitter.Entity.V2.Tweet.ID?
         public let paginationToken: String?
         public let maxResults: Int?
         
         public init(
+            sinceID: Twitter.Entity.V2.Tweet.ID?,
             untilID: Twitter.Entity.V2.Tweet.ID?,
             paginationToken: String?,
             maxResults: Int?
         ) {
+            self.sinceID = sinceID
             self.untilID = untilID
             self.paginationToken = paginationToken
             self.maxResults = maxResults
@@ -78,6 +81,9 @@ extension Twitter.API.V2.User.Timeline {
                 Twitter.Request.placeFields.queryItem,
                 Twitter.Request.pollFields.queryItem,
             ]
+            sinceID.flatMap {
+                queryItems.append(URLQueryItem(name: "since_id", value: $0))
+            }
             untilID.flatMap {
                 queryItems.append(URLQueryItem(name: "until_id", value: $0))
             }
@@ -113,12 +119,14 @@ extension Twitter.API.V2.User.Timeline {
             public let resultCount: Int
             public let newestID: Twitter.Entity.V2.Tweet.ID?
             public let oldestID: Twitter.Entity.V2.Tweet.ID?
+            public let previousToken: String?
             public let nextToken: String?
             
             enum CodingKeys: String, CodingKey {
                 case resultCount = "result_count"
                 case newestID = "newest_id"
                 case oldestID = "oldest_id"
+                case previousToken = "previous_token"
                 case nextToken = "next_token"
             }
         }

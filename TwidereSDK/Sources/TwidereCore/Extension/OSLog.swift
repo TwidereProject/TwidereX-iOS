@@ -12,7 +12,7 @@ import CommonOSLog
 extension OSLog {
     public static let api: OSLog = {
         #if DEBUG
-        return OSLog(subsystem: OSLog.subsystem + ".api", category: "api")
+        return OSLog(subsystem: OSLog.subsystem + ".api", category: "API")
         #else
         return OSLog.disabled
         #endif

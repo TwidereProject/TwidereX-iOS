@@ -44,7 +44,7 @@ extension NotificationTimelineViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.apply(snapshot)
         
-        fetchedResultsController.records
+        fetchedResultsController.$records
             .receive(on: DispatchQueue.main)
             .sink { [weak self] records in
                 guard let self = self else { return }
@@ -133,31 +133,29 @@ extension NotificationTimelineViewModel {
 
     // load lastest
     func loadLatest() async {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         do {
-            switch authenticationContext {
-            case .twitter(let authenticationContext):
+            switch (scope, authenticationContext) {
+            case (.twitter, .twitter(let authenticationContext)):
                 _ = try await context.apiService.twitterMentionTimeline(
                     query: Twitter.API.Statuses.Timeline.TimelineQuery(
                         maxID: nil
                     ),
                     authenticationContext: authenticationContext
                 )
-            case .mastodon(let authenticationContext):
+            case (.mastodon(let timelineScope), .mastodon(let authenticationContext)):
                 _ = try await context.apiService.mastodonNotificationTimeline(
-                    query: Mastodon.API.Notification.NotificationsQuery(
+                    query: .init(
                         maxID: nil,
-                        excludeTypes: {
-                            switch scope {
-                            case .all:
-                                return nil
-                            case .mentions:
-                                return [.follow, .followRequest, .reblog, .favourite, .poll]
-                            }
-                        }()
+                        types: timelineScope.includeTypes,
+                        excludeTypes: timelineScope.excludeTypes
                     ),
+                    scope: timelineScope,
                     authenticationContext: authenticationContext
                 )
+            default:
+                assertionFailure()
+                self.didLoadLatest.send()
+                return
             }
         } catch {
             self.didLoadLatest.send()
@@ -197,18 +195,16 @@ extension NotificationTimelineViewModel {
                 )
                 
             case (.mastodonNotification(let mastodonNotification), .mastodon(let authenticationContext)):
+                guard case let .mastodon(timelineScope) = scope else {
+                    throw AppError.implicit(.badRequest)
+                }
                 _ = try await context.apiService.mastodonNotificationTimeline(
-                    query: Mastodon.API.Notification.NotificationsQuery(
+                    query: .init(
                         maxID: mastodonNotification.id,
-                        excludeTypes: {
-                            switch scope {
-                            case .all:
-                                return nil
-                            case .mentions:
-                                return [.follow, .followRequest, .reblog, .favourite, .poll]
-                            }
-                        }()
+                        types: timelineScope.includeTypes,
+                        excludeTypes: timelineScope.excludeTypes
                     ),
+                    scope: timelineScope,
                     authenticationContext: authenticationContext
                 )
             default:

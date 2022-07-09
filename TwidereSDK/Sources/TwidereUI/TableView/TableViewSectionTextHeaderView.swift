@@ -10,6 +10,8 @@ import UIKit
 
 public final class TableViewSectionTextHeaderView: UIView {
     
+    public let stackView = UIStackView()
+    
     public let label: UILabel = {
         let label = UILabel()
         label.font = UIFont.preferredFont(forTextStyle: .subheadline)
@@ -17,6 +19,8 @@ public final class TableViewSectionTextHeaderView: UIView {
         label.textColor = .secondaryLabel
         return label
     }()
+    
+    public let button = HitTestExpandedButton()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -34,13 +38,21 @@ extension TableViewSectionTextHeaderView {
     private func _init() {
         preservesSuperviewLayoutMargins = true
         
-        label.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(label)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        addSubview(stackView)
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(greaterThanOrEqualTo: topAnchor, constant: 8),
-            label.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            label.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-            bottomAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
+            stackView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            stackView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 8),
         ])
+        
+        stackView.addArrangedSubview(label)
+        stackView.addArrangedSubview(button)
+        
+        // default hidden
+        button.isHidden = true
     }
 }

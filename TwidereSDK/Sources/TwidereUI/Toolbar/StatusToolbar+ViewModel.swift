@@ -266,9 +266,24 @@ extension StatusToolbar {
                 children.append(removeAction)
             }
             
+            #if DEBUG
+            let copyIDAction = UIAction(
+                title: "Copy ID",
+                image: UIImage(systemName: "number.square"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: [],
+                state: .off
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.delegate?.statusToolbar(self, menuActionDidPressed: .copyID, menuButton: self.menuButton)
+            }
+            let debugMenu = UIMenu(title: "", options: .displayInline, children: [copyIDAction])
+            children.append(debugMenu)
+            #endif
+            
             return UIMenu(title: "", options: [], children: children)
         }()
-        
         
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.menu

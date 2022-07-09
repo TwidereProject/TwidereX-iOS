@@ -40,6 +40,8 @@ extension UserView {
         
         @Published public var followerCount: Int?
         
+        @Published public var isFollowRequestBusy = false
+        
         public var listMembershipViewModel: ListMembershipViewModel?
         @Published public var listOwnerUserIdentifier: UserIdentifier? = nil
         @Published public var isListMember = false
@@ -55,6 +57,11 @@ extension UserView {
             case none
             case platform
             case user   // verified | bot
+        }
+        
+        func prepareForReuse() {
+            avatarImageURL = nil
+            isFollowRequestBusy = false
         }
         
         init() {
@@ -104,22 +111,7 @@ extension UserView.ViewModel {
         }
         .store(in: &disposeBag)
         // badge
-        UserDefaults.shared
-            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                let avatarStyle = defaults.avatarStyle
-                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
-                animator.addAnimations { [weak userView] in
-                    guard let userView = userView else { return }
-                    switch avatarStyle {
-                    case .circle:
-                        userView.authorProfileAvatarView.avatarStyle = .circle
-                    case .roundedSquare:
-                        userView.authorProfileAvatarView.avatarStyle = .roundedRect
-                    }
-                }
-                animator.startAnimation()
-            }
-            .store(in: &observations)
+        // TODO:
         // header
         $header
             .sink { header in
@@ -193,6 +185,16 @@ extension UserView.ViewModel {
                 ]
                 return UIMenu(title: "", image: nil, options: [], children: children)
             }()
+            
+        case .notification:
+            $isFollowRequestBusy
+                .sink { isFollowRequestBusy in
+                    userView.acceptFollowRequestButton.isHidden = isFollowRequestBusy
+                    userView.rejectFollowRequestButton.isHidden = isFollowRequestBusy
+                    userView.activityIndicatorView.isHidden = !isFollowRequestBusy
+                    userView.activityIndicatorView.startAnimating()
+                }
+                .store(in: &disposeBag)
                 
         case .listMember:
             userView.menuButton.showsMenuAsPrimaryAction = true
@@ -241,175 +243,3 @@ extension UserView.ViewModel {
     }
     
 }
-
-extension UserView {
-    public struct ConfigurationContext {
-        public let listMembershipViewModel: ListMembershipViewModel?
-        public let authenticationContext: Published<AuthenticationContext?>.Publisher
-        
-        public init(
-            listMembershipViewModel: ListMembershipViewModel?,
-            authenticationContext: Published<AuthenticationContext?>.Publisher
-        ) {
-            self.listMembershipViewModel = listMembershipViewModel
-            self.authenticationContext = authenticationContext
-        }
-    }
-}
-
-extension UserView {
-    public func configure(
-        user: UserObject,
-        me: UserObject?,
-        notification: NotificationObject?,
-        configurationContext: ConfigurationContext
-    ) {
-        configurationContext.authenticationContext
-            .assign(to: \.authenticationContext, on: viewModel)
-            .store(in: &disposeBag)
-        
-        switch user {
-        case .twitter(let user):
-            configure(twitterUser: user)
-        case .mastodon(let user):
-            configure(mastodonUser: user)
-        }
-        
-        if let notification = notification {
-            configure(notification: notification)
-        }
-        
-        viewModel.relationshipViewModel.user = user
-        viewModel.relationshipViewModel.me = me
-        
-        viewModel.listMembershipViewModel = configurationContext.listMembershipViewModel
-        if let listMembershipViewModel = configurationContext.listMembershipViewModel {
-            listMembershipViewModel.$ownerUserIdentifier
-                .assign(to: \.listOwnerUserIdentifier, on: viewModel)
-                .store(in: &disposeBag)
-        }
-        
-        // accessory
-        switch style {
-        case .addListMember:
-            guard let listMembershipViewModel = configurationContext.listMembershipViewModel else {
-                assertionFailure()
-                break
-            }
-            let userRecord = user.asRecord
-            listMembershipViewModel.$members
-                .map { members in members.contains(userRecord) }
-                .assign(to: \.isListMember, on: viewModel)
-                .store(in: &disposeBag)
-            listMembershipViewModel.$workingMembers
-                .map { members in members.contains(userRecord) }
-                .assign(to: \.isListMemberCandidate, on: viewModel)
-                .store(in: &disposeBag)
-        default:
-            break
-        }
-    }
-    
-    public func configure(notification: NotificationObject) {
-        switch notification {
-        case .mastodon(let notification):
-            configure(mastodonNotification: notification)
-        }
-    }
-}
-
-extension UserView {
-    private func configure(twitterUser user: TwitterUser) {
-        // platform
-        viewModel.platform = .twitter
-        // userIdentifier
-        viewModel.userIdentifier = .twitter(.init(id: user.id))
-        // avatar
-        user.publisher(for: \.profileImageURL)
-            .map { _ in user.avatarImageURL() }
-            .assign(to: \.avatarImageURL, on: viewModel)
-            .store(in: &disposeBag)
-        // author name
-        user.publisher(for: \.name)
-            .map { PlaintextMetaContent(string: $0) }
-            .assign(to: \.name, on: viewModel)
-            .store(in: &disposeBag)
-        // author username
-        user.publisher(for: \.username)
-            .map { $0 as String? }
-            .assign(to: \.username, on: viewModel)
-            .store(in: &disposeBag)
-        // protected
-        user.publisher(for: \.protected)
-            .assign(to: \.protected, on: viewModel)
-            .store(in: &disposeBag)
-        // followersCount
-        user.publisher(for: \.followersCount)
-            .map { Int($0) }
-            .assign(to: \.followerCount, on: viewModel)
-            .store(in: &disposeBag)
-    }
-    
-}
-
-extension UserView {
-    private func configure(mastodonUser user: MastodonUser) {
-        // platform
-        viewModel.platform = .mastodon
-        // userIdentifier
-        viewModel.userIdentifier = .mastodon(.init(domain: user.domain, id: user.id))
-        // avatar
-        Publishers.CombineLatest3(
-            UserDefaults.shared.publisher(for: \.preferredStaticAvatar),
-            user.publisher(for: \.avatar),
-            user.publisher(for: \.avatarStatic)
-        )
-        .map { preferredStaticAvatar, avatar, avatarStatic in
-            let string = preferredStaticAvatar ? (avatarStatic ?? avatar) : avatar
-            return string.flatMap { URL(string: $0) }
-        }
-        .assign(to: \.avatarImageURL, on: viewModel)
-        .store(in: &disposeBag)
-        // author name
-        Publishers.CombineLatest(
-            user.publisher(for: \.displayName),
-            user.publisher(for: \.emojis)
-        )
-        .map { _ in user.nameMetaContent }
-        .assign(to: \.name, on: viewModel)
-        .store(in: &disposeBag)
-        // author username
-        user.publisher(for: \.acct)
-            .map { _ in user.acctWithDomain as String? }
-            .assign(to: \.username, on: viewModel)
-            .store(in: &disposeBag)
-        // protected
-        user.publisher(for: \.locked)
-            .assign(to: \.protected, on: viewModel)
-            .store(in: &disposeBag)
-        // followersCount
-        user.publisher(for: \.followersCount)
-            .map { Int($0) }
-            .assign(to: \.followerCount, on: viewModel)
-            .store(in: &disposeBag)
-    }
-    
-    private func configure(mastodonNotification notification: MastodonNotification) {
-        let user = notification.account
-        let type = notification.notificationType
-        Publishers.CombineLatest(
-            user.publisher(for: \.displayName),
-            user.publisher(for: \.emojis)
-        )
-        .map { _ in
-            guard let info = NotificationHeaderInfo(type: type, user: user) else {
-                return .none
-            }
-            return ViewModel.Header.notification(info: info)
-        }
-        .assign(to: \.header, on: viewModel)
-        .store(in: &disposeBag)
-    }
-}
-
-

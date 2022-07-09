@@ -24,7 +24,10 @@ final class PublishPostIntentHandler: NSObject {
     
     lazy var api: APIService = {
         let backgroundManagedObjectContext = coreDataStack.newTaskContext()
-        return APIService(backgroundManagedObjectContext: backgroundManagedObjectContext)
+        return APIService(
+            coreDataStack: coreDataStack,
+            backgroundManagedObjectContext: backgroundManagedObjectContext
+        )
     }()
     
 }

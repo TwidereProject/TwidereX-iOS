@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import TwidereLocalization
 
 final class TrendViewController: UIViewController, NeedsDependency {
     
@@ -38,6 +39,13 @@ extension TrendViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        title = [
+            L10n.Scene.Trends.title,
+            viewModel.trendPlaceName
+        ]
+        .compactMap { $0 }
+        .joined(separator: " - ")
         
         view.backgroundColor = .systemBackground
         
@@ -72,7 +80,7 @@ extension TrendViewController: UITableViewDelegate {
         guard case let .trend(object) = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
         switch object {
-        case .twitter(let trend):
+        case .twitter:
             DataSourceFacade.coordinateToSearchResult(
                 dependency: self,
                 trend: object

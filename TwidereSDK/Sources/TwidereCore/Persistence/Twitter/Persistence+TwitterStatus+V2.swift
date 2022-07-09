@@ -81,8 +81,24 @@ extension Persistence.TwitterStatus {
     ) -> PersistResult {
                 
         // build tree
-        // TODO: in reply to
-        // let replyTo = context.replyTo.flatMap { entity in … }
+
+        let replyTo = context.replyTo.flatMap { entity -> TwitterStatus in
+            let result = createOrMerge(
+                in: managedObjectContext,
+                context: PersistContextV2(
+                    entity: entity,
+                    repost: nil,
+                    quote: nil,
+                    replyTo: nil,
+                    dictionary: context.dictionary,
+                    me: context.me,
+                    statusCache: context.statusCache,
+                    userCache: context.userCache,
+                    networkDate: context.networkDate
+                )
+            )
+            return result.status
+        }
         
         let repost = context.repost.flatMap { entity -> TwitterStatus in
             let result = createOrMerge(
@@ -149,13 +165,16 @@ extension Persistence.TwitterStatus {
                 )
             )
             let author = authorResult.user
+            context.userCache?.dictionary[author.id] = author
             let relationship = TwitterStatus.Relationship(
                 poll: poll,
                 author: author,
                 repost: repost,
-                quote: quote
+                quote: quote,
+                replyTo: replyTo
             )
             let status = create(in: managedObjectContext, context: context, relationship: relationship)
+            context.statusCache?.dictionary[status.id] = status
             return .init(status: status, isNewInsertion: true, isNewInsertionAuthor: authorResult.isNewInsertion)
         }
     }

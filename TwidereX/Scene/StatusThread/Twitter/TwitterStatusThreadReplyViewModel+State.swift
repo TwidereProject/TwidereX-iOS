@@ -186,12 +186,12 @@ extension TwitterStatusThreadReplyViewModel.State {
                     assertionFailure()
                     return
                 }
-                await enter(state: nextState)
                 
-                // set nodes after state update
+                // set nodes before state update
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): prepare reply nodes: \(nodes.debugDescription)")
                 await apply(nodes: nodes)
 
+                await enter(state: nextState)
                 
             }   // end Task
         }   // end didEnter

@@ -72,7 +72,7 @@ extension APIService {
             // update hasMore flag for anchor status
             let acct = Feed.Acct.twitter(userID: authenticationContext.userID)
             if let anchorStatus = anchorStatus,
-               let feed = anchorStatus.feed(kind: .notification, acct: acct) {
+               let feed = anchorStatus.feed(kind: .notificationMentions, acct: acct) {
                 feed.update(hasMore: false)
             }
             
@@ -80,13 +80,13 @@ extension APIService {
             let sortedStatuses = statusArray.sorted(by: { $0.createdAt < $1.createdAt })
             let oldestStatus = sortedStatuses.first
             for status in sortedStatuses {
-                let _feed = status.feed(kind: .notification, acct: acct)
+                let _feed = status.feed(kind: .notificationMentions, acct: acct)
                 if let feed = _feed {
                     feed.update(updatedAt: response.networkDate)
                 } else {
                     let feedProperty = Feed.Property(
                         acct: acct,
-                        kind: .notification,
+                        kind: .notificationMentions,
                         hasMore: false,
                         createdAt: status.createdAt,
                         updatedAt: response.networkDate
@@ -111,6 +111,7 @@ extension APIService {
 
     public func mastodonNotificationTimeline(
         query: Mastodon.API.Notification.NotificationsQuery,
+        scope: Mastodon.API.Notification.TimelineScope,
         authenticationContext: MastodonAuthenticationContext
     ) async throws -> Mastodon.Response.Content<[Mastodon.Entity.Notification]> {
         let response = try await Mastodon.API.Notification.notifications(
@@ -131,7 +132,10 @@ extension APIService {
         
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
-            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            guard let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user else {
+                assertionFailure()
+                return
+            }
             
             // persist notifications
             var statusArray: [MastodonNotification] = []
@@ -156,15 +160,25 @@ extension APIService {
             let anchor: MastodonNotification? = {
                 guard let maxID = query.maxID else { return nil }
                 let request = MastodonNotification.sortedFetchRequest
-                request.predicate = MastodonNotification.predicate(domain: authenticationContext.domain, id: maxID)
+                request.predicate = MastodonNotification.predicate(
+                    domain: authenticationContext.domain,
+                    userID: authenticationContext.userID,
+                    id: maxID
+                )
                 request.fetchLimit = 1
                 return try? managedObjectContext.fetch(request).first
             }()
             
             // update hasMore flag for anchor
             let acct = Feed.Acct.mastodon(domain: authenticationContext.domain, userID: authenticationContext.userID)
+            let kind: Feed.Kind = {
+                switch scope {
+                case .all:              return .notificationAll
+                case .mentions:         return .notificationMentions
+                }
+            }()
             if let anchor = anchor,
-               let feed = anchor.feed(kind: .notification, acct: acct) {
+               let feed = anchor.feed(kind: kind, acct: acct) {
                 feed.update(hasMore: false)
             }
             
@@ -172,13 +186,13 @@ extension APIService {
             let sortedNotifications = statusArray.sorted(by: { $0.createdAt < $1.createdAt })
             let oldestNotification = sortedNotifications.first
             for notification in sortedNotifications {
-                let _feed = notification.feed(kind: .notification, acct: acct)
+                let _feed = notification.feed(kind: kind, acct: acct)
                 if let feed = _feed {
                     feed.update(updatedAt: response.networkDate)
                 } else {
                     let feedProperty = Feed.Property(
                         acct: acct,
-                        kind: .notification,
+                        kind: kind,
                         hasMore: false,
                         createdAt: notification.createdAt,
                         updatedAt: response.networkDate

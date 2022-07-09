@@ -9,6 +9,7 @@
 import UIKit
 import Combine
 import Pageboy
+import TwidereCore
 
 final class NotificationViewModel {
     
@@ -17,11 +18,12 @@ final class NotificationViewModel {
     // input
     let context: AppContext
     let _coordinator: SceneCoordinator  // only use for `setup`
-    @Published var selectedScope: Scope? = nil
+    @Published var selectedScope: NotificationTimelineViewModel.Scope? = nil
+    
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     
     // output
-    @Published var scopes: [Scope] = []
+    @Published var scopes: [NotificationTimelineViewModel.Scope] = []
     @Published var viewControllers: [UIViewController] = []
     @Published var currentPageIndex = 0
     @Published var userIdentifier: UserIdentifier?
@@ -43,39 +45,23 @@ final class NotificationViewModel {
 }
 
 extension NotificationViewModel {
-    enum Scope: Hashable {
-        case all(title: String)
-        case mentions(title: String)
-        
-        var title: String {
-            switch self {
-            case .all(let title): return title
-            case .mentions(let title): return title
-            }
-        }
-    }
-}
-
-extension NotificationViewModel {
     func setup(for authenticationContext: AuthenticationContext?) {
         guard let authenticationContext = authenticationContext else {
             return
         }
         
-        let scopes: [Scope]
+        let scopes: [NotificationTimelineViewModel.Scope]
         let userIdentifier: UserIdentifier
         switch authenticationContext {
         case .twitter(let authenticationContext):
-            scopes = [
-                .mentions(title: "Mentions"),
-            ]
+            scopes = [.twitter]
             userIdentifier = UserIdentifier.twitter(.init(
                 id: authenticationContext.userID
             ))
         case .mastodon(let authenticationContext):
             scopes = [
-                .all(title: L10n.Scene.Notification.Tabs.all),
-                .mentions(title: "Mentions"),   // FIXME:
+                .mastodon(.all),
+                .mastodon(.mentions),
             ]
             userIdentifier = UserIdentifier.mastodon(.init(
                 domain: authenticationContext.domain,
@@ -83,7 +69,10 @@ extension NotificationViewModel {
             ))
         }
         let viewControllers = scopes.map { scope in
-            createViewController(for: scope)
+            createViewController(
+                scope: scope,
+                authenticationContext: authenticationContext
+            )
         }
         
         // trigger data source update first
@@ -92,28 +81,18 @@ extension NotificationViewModel {
         self.userIdentifier = userIdentifier
     }
     
-    private func createViewController(for scope: Scope) -> UIViewController {
-        let viewController: UIViewController
-        switch scope {
-        case .all:
-            let _viewController = NotificationTimelineViewController()
-            _viewController.context = context
-            _viewController.coordinator = _coordinator
-            _viewController.viewModel = NotificationTimelineViewModel(
-                context: context,
-                scope: .all
-            )
-            viewController = _viewController
-        case .mentions:
-            let _viewController = NotificationTimelineViewController()
-            _viewController.context = context
-            _viewController.coordinator = _coordinator
-            _viewController.viewModel = NotificationTimelineViewModel(
-                context: context,
-                scope: .mentions
-            )
-            viewController = _viewController
-        }
+    private func createViewController(
+        scope: NotificationTimelineViewModel.Scope,
+        authenticationContext: AuthenticationContext
+    ) -> UIViewController {
+        let viewController = NotificationTimelineViewController()
+        viewController.context = context
+        viewController.coordinator = _coordinator
+        viewController.viewModel = NotificationTimelineViewModel(
+            context: context,
+            scope: scope,
+            authenticationContext: authenticationContext
+        )
         return viewController
     }
 }

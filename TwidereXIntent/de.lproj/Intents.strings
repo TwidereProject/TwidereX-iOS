@@ -10,17 +10,17 @@
 
 "1iPE2d-jEAHra" = "Just to confirm, you wanted ‘Unlisted’?";
 
-"8WWS78" = "Username";
+"8WWS78" = "Benutzername";
 
 "9OV1Ic" = "Posts";
 
 "ApmQKm" = "Switch Account";
 
-"BS59z4" = "Public";
+"BS59z4" = "Öffentlich";
 
 "Ciuk7c" = "Name";
 
-"DBgjXT" = "Account";
+"DBgjXT" = "Konto";
 
 "Fn8AQn" = "URL";
 
@@ -30,7 +30,7 @@
 
 "N4GVJI" = "${errorDescription}";
 
-"QSA5ql" = "Account";
+"QSA5ql" = "Konto";
 
 "QWcTQP" = "Switch to ${account}";
 
@@ -50,7 +50,7 @@
 
 "Yb4tzx" = "Konten";
 
-"aV5Ezl" = "Default";
+"aV5Ezl" = "Standard";
 
 "aV8f0g" = "Private";
 
@@ -78,6 +78,6 @@
 
 "xeqcBa-jEAHra" = "There are ${count} options matching ‘Unlisted’.";
 
-"z3DAP7" = "Switch to ${account}";
+"z3DAP7" = "Zu ${account} wechseln";
 
-"zlMGvn" = "Content";
+"zlMGvn" = "Inhalt";

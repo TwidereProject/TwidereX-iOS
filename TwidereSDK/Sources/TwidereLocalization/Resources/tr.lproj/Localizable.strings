@@ -254,6 +254,10 @@
 "Common.Notification.Favourite" = "%@ senin gücünü beğendi";
 "Common.Notification.Follow" = "%@ seni takip etti";
 "Common.Notification.FollowRequest" = "%@ sana takip isteği gönderdi";
+"Common.Notification.FollowRequestAction.Approve" = "Approve";
+"Common.Notification.FollowRequestAction.Deny" = "Deny";
+"Common.Notification.FollowRequestResponse.FollowRequestApproved" = "Follow Request Approved";
+"Common.Notification.FollowRequestResponse.FollowRequestDenied" = "Follow Request Denied";
 "Common.Notification.Mentions" = "%@ seni etiketledi";
 "Common.Notification.Messages.Content" = "%@ sana mesaj gönderdi";
 "Common.Notification.Messages.Title" = "Yeni direkt mesaj";
@@ -493,5 +497,6 @@ Başlamak için giriş yap.";
 "Scene.Trends.Accounts" = "%d kişi konuşuyor";
 "Scene.Trends.Now" = "Trendler";
 "Scene.Trends.Title" = "Trendler";
+"Scene.Trends.TrendsLocation" = "Trends Location";
 "Scene.Trends.WorldWide" = "Trendler - Dünya Çapındaki";
 "Scene.Trends.WorldWideWithoutPrefix" = "Dünya çapında";

@@ -137,7 +137,7 @@ extension GridTimelineViewController: UICollectionViewDelegate {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
                 assertionFailure("only works for status data provider")
                 return
             }
@@ -164,7 +164,7 @@ extension GridTimelineViewController: StatusMediaGalleryCollectionCellDelegate {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
                 assertionFailure("only works for status data provider")
                 return
             }
@@ -194,7 +194,7 @@ extension GridTimelineViewController: StatusMediaGalleryCollectionCellDelegate {
                 assertionFailure()
                 return
             }
-            guard case let .status(status) = item else {
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
                 assertionFailure("only works for status data provider")
                 return
             }

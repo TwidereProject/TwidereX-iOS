@@ -13,9 +13,9 @@ final public class MastodonNotification: NSManagedObject {
     public typealias ID = String
     
     // sourcery: autoGenerateProperty
-    @NSManaged public private(set) var domain: String
-    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var id: ID
+    // sourcery: autoGenerateProperty
+    @NSManaged public private(set) var domain: String
     // sourcery: autoGenerateProperty
     @NSManaged public private(set) var userID: String
     
@@ -30,6 +30,9 @@ final public class MastodonNotification: NSManagedObject {
             typeRaw = newValue.rawValue
         }
     }
+    
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var isFollowRequestBusy: Bool
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
@@ -77,36 +80,19 @@ extension MastodonNotification {
         return NSPredicate(format: "%K == %@", #keyPath(MastodonNotification.domain), domain)
     }
     
-    static func predicate(id: String) -> NSPredicate {
-        return NSPredicate(format: "%K == %@", #keyPath(MastodonNotification.id), id)
-    }
-    
-    public static func predicate(domain: String, id: String) -> NSPredicate {
-        return NSCompoundPredicate(andPredicateWithSubpredicates: [
-            MastodonNotification.predicate(domain: domain),
-            MastodonNotification.predicate(id: id)
-        ])
-    }
-    
-    static func predicate(ids: [String]) -> NSPredicate {
-        return NSPredicate(format: "%K IN %@", #keyPath(MastodonNotification.id), ids)
-    }
-    
-    public static func predicate(domain: String, ids: [String]) -> NSPredicate {
-        return NSCompoundPredicate(andPredicateWithSubpredicates: [
-            MastodonNotification.predicate(domain: domain),
-            MastodonNotification.predicate(ids: ids)
-        ])
-    }
-    
-    static func predicate(userID: String) -> NSPredicate {
+    static func predicate(userID: MastodonUser.ID) -> NSPredicate {
         return NSPredicate(format: "%K == %@", #keyPath(MastodonNotification.userID), userID)
     }
     
-    public static func predicate(domain: String, userID: String) -> NSPredicate {
+    static func predicate(id: ID) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(MastodonNotification.id), id)
+    }
+    
+    public static func predicate(domain: String, userID: MastodonUser.ID, id: ID) -> NSPredicate {
         return NSCompoundPredicate(andPredicateWithSubpredicates: [
             MastodonNotification.predicate(domain: domain),
-            MastodonNotification.predicate(userID: userID)
+            MastodonNotification.predicate(userID: userID),
+            MastodonNotification.predicate(id: id),
         ])
     }
     
@@ -119,23 +105,23 @@ extension MastodonNotification: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let domain: String
         public let id: ID
+        public let domain: String
         public let userID: String
         public let notificationType: MastodonNotificationType
         public let createdAt: Date
         public let updatedAt: Date
 
     	public init(
-    		domain: String,
     		id: ID,
+    		domain: String,
     		userID: String,
     		notificationType: MastodonNotificationType,
     		createdAt: Date,
     		updatedAt: Date
     	) {
-    		self.domain = domain
     		self.id = id
+    		self.domain = domain
     		self.userID = userID
     		self.notificationType = notificationType
     		self.createdAt = createdAt
@@ -144,8 +130,8 @@ extension MastodonNotification: AutoGenerateProperty {
     }
 
     public func configure(property: Property) {
-    	self.domain = property.domain
     	self.id = property.id
+    	self.domain = property.domain
     	self.userID = property.userID
     	self.notificationType = property.notificationType
     	self.createdAt = property.createdAt
@@ -195,6 +181,11 @@ extension MastodonNotification: AutoUpdatableObject {
     public func update(notificationType: MastodonNotificationType) {
     	if self.notificationType != notificationType {
     		self.notificationType = notificationType
+    	}
+    }
+    public func update(isFollowRequestBusy: Bool) {
+    	if self.isFollowRequestBusy != isFollowRequestBusy {
+    		self.isFollowRequestBusy = isFollowRequestBusy
     	}
     }
     public func update(createdAt: Date) {

@@ -33,7 +33,17 @@ extension Mastodon.Response {
             
             self.date = {
                 guard let string = (response as? HTTPURLResponse)?.value(forHTTPHeaderField: "date") else { return nil }
-                return Mastodon.API.httpHeaderDateFormatter.date(from: string)
+                if let date = Mastodon.API.httpHeaderDateFormatter.date(from: string) {
+                    return date
+                }
+                if let date = Mastodon.API.httpHeaderDateFormatter2.date(from: string) {
+                    return date
+                }
+                if let date = Mastodon.API.httpHeaderDateFormatter3.date(from: string) {
+                    return date
+                }
+                // assertionFailure()
+                return nil
             }()
             
             self.rateLimit = RateLimit(response: response)

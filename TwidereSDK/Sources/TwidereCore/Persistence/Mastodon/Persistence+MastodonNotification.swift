@@ -17,7 +17,7 @@ extension Persistence.MastodonNotification {
     public struct PersistContext {
         public let domain: String
         public let entity: Mastodon.Entity.Notification
-        public let me: MastodonUser?
+        public let me: MastodonUser
         public let notificationCache: Persistence.PersistCache<MastodonNotification>?
         public let statusCache: Persistence.PersistCache<MastodonStatus>?
         public let userCache: Persistence.PersistCache<MastodonUser>?
@@ -27,7 +27,7 @@ extension Persistence.MastodonNotification {
         public init(
             domain: String,
             entity: Mastodon.Entity.Notification,
-            me: MastodonUser?,
+            me: MastodonUser,
             notificationCache: Persistence.PersistCache<MastodonNotification>?,
             statusCache: Persistence.PersistCache<MastodonStatus>?,
             userCache: Persistence.PersistCache<MastodonUser>?,
@@ -147,7 +147,11 @@ extension Persistence.MastodonNotification {
             return cache.dictionary[context.entity.id]
         } else {
             let request = MastodonNotification.sortedFetchRequest
-            request.predicate = MastodonNotification.predicate(domain: context.domain, id: context.entity.id)
+            request.predicate = MastodonNotification.predicate(
+                domain: context.me.domain,
+                userID: context.me.id,
+                id: context.entity.id
+            )
             request.fetchLimit = 1
             do {
                 return try managedObjectContext.fetch(request).first
@@ -157,7 +161,7 @@ extension Persistence.MastodonNotification {
             }
         }
     }
-    
+
     @discardableResult
     public static func create(
         in managedObjectContext: NSManagedObjectContext,
@@ -166,7 +170,8 @@ extension Persistence.MastodonNotification {
     ) -> MastodonNotification {
         let propery = MastodonNotification.Property(
             entity: context.entity,
-            domain: context.domain,
+            domain: context.me.domain,
+            userID: context.me.id,
             networkDate: context.networkDate
         )
         let notification = MastodonNotification.insert(
@@ -185,7 +190,8 @@ extension Persistence.MastodonNotification {
         guard context.networkDate > notification.updatedAt else { return }
         let property = MastodonNotification.Property(
             entity: context.entity,
-            domain: context.domain,
+            domain: context.me.domain,
+            userID: context.me.id,
             networkDate: context.networkDate
         )
         notification.update(property: property)

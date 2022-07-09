@@ -23,3 +23,18 @@ extension NotificationRecord {
         }
     }
 }
+
+extension NotificationRecord {
+    public func status(in managedObjectContext: NSManagedObjectContext) async -> StatusRecord? {
+        return await managedObjectContext.perform {
+            guard let object = self.object(in: managedObjectContext) else { return nil }
+            switch object {
+            case .mastodon(let object):
+                guard let objectID = object.status?.objectID else { return nil }
+                return .mastodon(record: .init(objectID: objectID))
+            }
+        }
+    }   // end func
+}
+
+
