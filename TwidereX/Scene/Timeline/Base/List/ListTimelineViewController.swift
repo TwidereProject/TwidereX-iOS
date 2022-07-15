@@ -123,7 +123,12 @@ extension ListTimelineViewController {
         if !viewModel.isLoadingLatest {
             let now = Date()
             if let timestamp = viewModel.lastAutomaticFetchTimestamp {
-                if now.timeIntervalSince(timestamp) > 60 {
+                #if DEBUG
+                let throttle: TimeInterval = 1
+                #else
+                let throttle: TimeInterval = 60
+                #endif
+                if now.timeIntervalSince(timestamp) > throttle {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline…")
                     Task {
                         await _viewModel.loadLatest()
