@@ -86,7 +86,8 @@ extension SceneCoordinator {
         case searchResult(viewModel: SearchResultViewModel)
         
         // Settings
-        case setting
+        case setting(viewModel: SettingListViewModel)
+        case accountPreference(viewModel: AccountPreferenceViewModel)
         case appearance
         case displayPreference
         case about
@@ -333,8 +334,14 @@ private extension SceneCoordinator {
             _viewController.searchResultViewModel = viewModel
             _viewController.searchResultViewController = searchResultViewController
             viewController = _viewController
-        case .setting:
-            viewController = SettingListViewController()
+        case .setting(let viewModel):
+            let _viewController = SettingListViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .accountPreference(let viewModel):
+            let _viewController = AccountPreferenceViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .appearance:
             viewController = AppearanceViewController()
         case .displayPreference:

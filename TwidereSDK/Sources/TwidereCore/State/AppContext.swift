@@ -103,4 +103,8 @@ public class AppContext: ObservableObject {
         
     }
     
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }

@@ -188,8 +188,8 @@ extension Mastodon.API.Push {
 extension Mastodon.API.Push {
         
     public struct QuerySubscription: Codable {
-        let endpoint: String
-        let keys: Keys
+        public let endpoint: String
+        public let keys: Keys
         
         public init(
             endpoint: String,

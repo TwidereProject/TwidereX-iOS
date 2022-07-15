@@ -235,8 +235,17 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
             guard let diffableDataSource = viewModel.settingDiffableDataSource else { return }
             guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
             guard case .settings = item else { return }
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else { return }
             dismiss(animated: true) {
-                self.coordinator.present(scene: .setting, from: nil, transition: .modal(animated: true, completion: nil))
+                let settingListViewModel = SettingListViewModel(
+                    context: self.context,
+                    auth: .init(authenticationContext: authenticationContext)
+                )
+                self.coordinator.present(
+                    scene: .setting(viewModel: settingListViewModel),
+                    from: nil,
+                    transition: .modal(animated: true, completion: nil)
+                )
             }
         default:
             assertionFailure()

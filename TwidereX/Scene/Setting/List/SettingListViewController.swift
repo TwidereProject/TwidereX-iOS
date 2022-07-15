@@ -17,7 +17,7 @@ final class SettingListViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
 
     var disposeBag = Set<AnyCancellable>()
-    let viewModel = SettingListViewModel()
+    var viewModel: SettingListViewModel!
     
 }
 
@@ -48,6 +48,21 @@ extension SettingListViewController {
             .sink { [weak self] entry in
                 guard let self = self else { return }                
                 switch entry.type {
+                case .account:
+                    // FIXME:
+                    guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
+                    guard let user = self.viewModel.user else { return }
+
+                    let accountPreferenceViewModel = AccountPreferenceViewModel(
+                        context: self.context,
+                        auth: .init(authenticationContext: authenticationContext),
+                        user: user
+                    )
+                    self.coordinator.present(
+                        scene: .accountPreference(viewModel: accountPreferenceViewModel),
+                        from: self,
+                        transition: .show
+                    )
                 case .appearance:
                     self.coordinator.present(scene: .appearance, from: self, transition: .show)
                 case .display:

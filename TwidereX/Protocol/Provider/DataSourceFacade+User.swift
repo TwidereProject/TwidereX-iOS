@@ -313,7 +313,7 @@ extension DataSourceFacade {
 extension DataSourceFacade {
     @MainActor
     static func responseToUserSignOut(
-        provider: DataSourceProvider,
+        dependency: NeedsDependency & UIViewController,
         user: UserRecord
     ) async throws  {
         let alertController = UIAlertController(
@@ -324,12 +324,34 @@ extension DataSourceFacade {
         let signOutAction = UIAlertAction(
             title: L10n.Common.Controls.Actions.signOut,
             style: .destructive
-        ) { [weak provider] _ in
-            guard let provider = provider else { return }
+        ) { [weak dependency] _ in
+            guard let dependency = dependency else { return }
             Task {
                 var isSignOut = false
                 
-                let managedObjectContext = provider.context.backgroundManagedObjectContext
+                // clear badge before sign-out
+                await dependency.context.notificationService.clearNotificationCountForActiveUser()
+                
+                // cancel push notification subscription
+                do {
+                    let _authenticationContext: AuthenticationContext? = await dependency.context.managedObjectContext.perform {
+                        guard let user = user.object(in: dependency.context.managedObjectContext) else { return nil }
+                        guard let authenticationContext = user.authenticationContext else { return nil }
+                        return authenticationContext
+                    }
+                    switch _authenticationContext {
+                    case .twitter:
+                        break
+                    case .mastodon(let authenticationContext):
+                        _ = try await dependency.context.apiService.cancelMastodonNotificationSubscription(authenticationContext: authenticationContext)
+                    case .none:
+                        break
+                    }
+                } catch {
+                    // do nothing
+                }
+                
+                let managedObjectContext = dependency.context.backgroundManagedObjectContext
                 try await managedObjectContext.performChanges {
                     guard let object = user.object(in: managedObjectContext) else { return }
                     switch object {
@@ -351,16 +373,16 @@ extension DataSourceFacade {
                 }
                 
                 guard isSignOut else { return }
-                provider.coordinator.setup()
-                provider.coordinator.setupWelcomeIfNeeds()
+                dependency.coordinator.setup()
+                dependency.coordinator.setupWelcomeIfNeeds()
             }   // end Task
         }
         alertController.addAction(signOutAction)
         let cancelAction = UIAlertAction.cancel
         alertController.addAction(cancelAction)
-        provider.coordinator.present(
+            dependency.coordinator.present(
             scene: .alertController(alertController: alertController),
-            from: provider,
+            from: dependency,
             transition: .alertController(animated: true, completion: nil)
         )
     }

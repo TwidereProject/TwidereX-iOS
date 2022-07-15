@@ -97,6 +97,40 @@ extension AppDelegate {
 // MARK: - UNUserNotificationCenterDelegate
 extension AppDelegate: UNUserNotificationCenterDelegate {
     
+    // notification present in the foreground
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: [Push]", ((#file as NSString).lastPathComponent), #line, #function)
+        guard let pushNotification = AppDelegate.mastodonPushNotification(from: notification) else {
+            completionHandler([])
+            return
+        }
+        
+        let notificationID = String(pushNotification.notificationID)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: [Push] notification %s", ((#file as NSString).lastPathComponent), #line, #function, notificationID)
+        
+        let accessToken = pushNotification.accessToken
+        UserDefaults.shared.increaseNotificationCount(accessToken: accessToken)
+        Task {
+            await self.appContext.notificationService.applicationIconBadgeNeedsUpdate.send()
+            await self.appContext.notificationService.receive(pushNotification: pushNotification)
+        }   // end Task
+        
+        completionHandler([.sound])
+    }
+    
+    private static func mastodonPushNotification(from notification: UNNotification) -> MastodonPushNotification? {
+        guard let plaintext = notification.request.content.userInfo["plaintext"] as? Data,
+              let mastodonPushNotification = try? JSONDecoder().decode(MastodonPushNotification.self, from: plaintext) else {
+            return nil
+        }
+        
+        return mastodonPushNotification
+    }
+    
 }
 
 // MARK: - MessagingDelegate

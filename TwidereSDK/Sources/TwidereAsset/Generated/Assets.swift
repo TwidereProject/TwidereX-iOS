@@ -151,6 +151,7 @@ public enum Asset {
     public static let bellLarge = ImageAsset(name: "Object&Tools/bell.large")
     public static let bellRinging = ImageAsset(name: "Object&Tools/bell.ringing")
     public static let bellRingingLarge = ImageAsset(name: "Object&Tools/bell.ringing.large")
+    public static let bellRingingMini = ImageAsset(name: "Object&Tools/bell.ringing.mini")
     public static let blockedBadge = ImageAsset(name: "Object&Tools/blocked.badge")
     public static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     public static let camera = ImageAsset(name: "Object&Tools/camera")

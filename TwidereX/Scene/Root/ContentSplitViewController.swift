@@ -216,7 +216,16 @@ extension ContentSplitViewController: SidebarViewModelDelegate {
 
         switch tab {
         case .settings:
-            coordinator.present(scene: .setting, from: nil, transition: .modal(animated: true, completion: nil))
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else { return }
+            let settingListViewModel = SettingListViewModel(
+                context: context,
+                auth: .init(authenticationContext: authenticationContext)
+            )
+            coordinator.present(
+                scene: .setting(viewModel: settingListViewModel),
+                from: nil,
+                transition: .modal(animated: true, completion: nil)
+            )
         default:
             viewModel.activeTab = tab
             if mainTabBarController.tabs.contains(tab) {

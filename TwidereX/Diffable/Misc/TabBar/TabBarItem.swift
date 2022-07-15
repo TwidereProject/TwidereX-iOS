@@ -66,6 +66,13 @@ extension TabBarItem {
         }
     }
     
+    var altImage: UIImage {
+        switch self {
+        case .notification:     return Asset.ObjectTools.bellRinging.image.withRenderingMode(.alwaysTemplate)
+        default:                return image
+        }
+    }
+    
     var largeImage: UIImage {
         return image.resized(size: CGSize(width: 80, height: 80))
     }

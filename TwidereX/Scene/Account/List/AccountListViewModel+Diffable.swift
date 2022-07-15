@@ -24,7 +24,7 @@ extension AccountListViewModel {
                 userViewTableViewCellDelegate: userViewTableViewCellDelegate,
                 userViewConfigurationContext: .init(
                     listMembershipViewModel: nil,
-                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+                    authenticationContext: context.authenticationService.activeAuthenticationContext
                 )
             )
         )

@@ -115,3 +115,5 @@ iOSInjectionProject/
 
 env/**/**
 !env/.env
+
+dependencies/

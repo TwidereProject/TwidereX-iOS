@@ -31,7 +31,7 @@ extension NotificationTimelineViewModel {
             ),
             userViewConfigurationContext: .init(
                 listMembershipViewModel: nil,
-                authenticationContext: context.authenticationService.$activeAuthenticationContext
+                authenticationContext: context.authenticationService.activeAuthenticationContext
             )
         )
         diffableDataSource = NotificationSection.diffableDataSource(

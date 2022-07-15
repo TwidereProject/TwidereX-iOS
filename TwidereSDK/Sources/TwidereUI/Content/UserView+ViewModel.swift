@@ -25,6 +25,7 @@ extension UserView {
         
         @Published public var platform: Platform = .none
         @Published public var authenticationContext: AuthenticationContext?       // me
+        @Published public var userAuthenticationContext: AuthenticationContext?
 
         @Published public var header: Header = .none
         
@@ -47,6 +48,8 @@ extension UserView {
         @Published public var isListMember = false
         @Published public var isListMemberCandidate = false       // a.k.a isBusy
         @Published public var isMyList = false
+        
+        @Published public var badgeCount: Int = 0
         
         public enum Header {
             case none
@@ -76,6 +79,21 @@ extension UserView {
                 return authenticationContext.userIdentifier == userIdentifier
             }
             .assign(to: &$isMyList)
+            // badge count
+            $userAuthenticationContext
+                .map { authenticationContext -> Int in
+                    switch authenticationContext {
+                    case .twitter:
+                        return 0
+                    case .mastodon(let authenticationContext):
+                        let accessToken = authenticationContext.authorization.accessToken
+                        let count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
+                        return count
+                    case .none:
+                        return 0
+                    }
+                }
+                .assign(to: &$badgeCount)
         }
     }
 }
@@ -169,6 +187,13 @@ extension UserView.ViewModel {
         // accessory
         switch userView.style {
         case .account:
+            $badgeCount
+                .sink { count in
+                    let count = max(0, min(count, 50))
+                    userView.badgeImageView.image = UIImage(systemName: "\(count).circle.fill")?.withRenderingMode(.alwaysTemplate)
+                    userView.badgeImageView.isHidden = count == 0
+                }
+                .store(in: &disposeBag)
             userView.menuButton.showsMenuAsPrimaryAction = true
             userView.menuButton.menu = {
                 let children = [

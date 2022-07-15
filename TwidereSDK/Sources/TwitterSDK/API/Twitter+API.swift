@@ -53,7 +53,6 @@ extension Twitter.API {
     
 }
 
-
 extension Twitter.API {
     
     enum Method: String {

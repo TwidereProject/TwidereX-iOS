@@ -170,6 +170,9 @@
 		DB6BCD72277AEED600847054 /* TrendViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6BCD71277AEED600847054 /* TrendViewModel+Diffable.swift */; };
 		DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = DB6CF1C3269715CD001DE069 /* FPSIndicator */; };
 		DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */; };
+		DB6E7800287D65520099FAE4 /* AccountPreferenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6E77FF287D65520099FAE4 /* AccountPreferenceViewController.swift */; };
+		DB6E7803287D65DB0099FAE4 /* AccountPreferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6E7802287D65DB0099FAE4 /* AccountPreferenceViewModel.swift */; };
+		DB6E7805287D85090099FAE4 /* AccountPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6E7804287D85090099FAE4 /* AccountPreferenceView.swift */; };
 		DB71C7D1271EB09A00BE3819 /* DataSourceFacade+Friendship.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB71C7D0271EB09A00BE3819 /* DataSourceFacade+Friendship.swift */; };
 		DB71C7D3271EB71800BE3819 /* ProfileViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB71C7D2271EB71800BE3819 /* ProfileViewController+DataSourceProvider.swift */; };
 		DB7274EF273BB25200577D95 /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7274EE273BB25200577D95 /* NotificationViewController.swift */; };
@@ -318,6 +321,8 @@
 		DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE71B7C26B7C5FD00DFAB8E /* StubTimelineViewModel.swift */; };
 		DBE71B7F26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE71B7E26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift */; };
 		DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */; };
+		DBEA1B6F287FFB0B00BE55D0 /* MastodonNotificationSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEA1B6E287FFB0B00BE55D0 /* MastodonNotificationSectionView.swift */; };
+		DBEA1B72287FFEF000BE55D0 /* MastodonNotificationSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEA1B71287FFEF000BE55D0 /* MastodonNotificationSectionViewModel.swift */; };
 		DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = DBEA4F832511F7460007FEC5 /* Kanna */; };
 		DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D7253F5D7800C5383A /* NamingState.swift */; };
 		DBF167FD27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF167FC27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift */; };
@@ -681,6 +686,9 @@
 		DB6BCD6F277AEAC700847054 /* TrendTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendTableViewCell.swift; sourceTree = "<group>"; };
 		DB6BCD71277AEED600847054 /* TrendViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrendViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		DB6E77FF287D65520099FAE4 /* AccountPreferenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPreferenceViewController.swift; sourceTree = "<group>"; };
+		DB6E7802287D65DB0099FAE4 /* AccountPreferenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPreferenceViewModel.swift; sourceTree = "<group>"; };
+		DB6E7804287D85090099FAE4 /* AccountPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPreferenceView.swift; sourceTree = "<group>"; };
 		DB71C7D0271EB09A00BE3819 /* DataSourceFacade+Friendship.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Friendship.swift"; sourceTree = "<group>"; };
 		DB71C7D2271EB71800BE3819 /* ProfileViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB7274EE273BB25200577D95 /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
@@ -859,6 +867,8 @@
 		DBE76CF82500B29500DEB0FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DBE76CFE2500B43300DEB0FC /* StubMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubMixer.swift; sourceTree = "<group>"; };
 		DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineViewModel.swift; sourceTree = "<group>"; };
+		DBEA1B6E287FFB0B00BE55D0 /* MastodonNotificationSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonNotificationSectionView.swift; sourceTree = "<group>"; };
+		DBEA1B71287FFEF000BE55D0 /* MastodonNotificationSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonNotificationSectionViewModel.swift; sourceTree = "<group>"; };
 		DBED2A7125B8006400BE6941 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBED96D7253F5D7800C5383A /* NamingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingState.swift; sourceTree = "<group>"; };
 		DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewController.swift; sourceTree = "<group>"; };
@@ -1204,6 +1214,7 @@
 			isa = PBXGroup;
 			children = (
 				DB2C8739274F4B7D00CE0398 /* List */,
+				DB6E7801287D65550099FAE4 /* AccountPreference */,
 				DBF81C8127F6E84300004A56 /* Appearance */,
 				DB2C8733274F4B7D00CE0398 /* DisplayPreference */,
 				DB2C872F274F4B7D00CE0398 /* Developer */,
@@ -1215,9 +1226,9 @@
 		DB2C872F274F4B7D00CE0398 /* Developer */ = {
 			isa = PBXGroup;
 			children = (
-				DB2C8730274F4B7D00CE0398 /* DeveloperView.swift */,
-				DB2C8731274F4B7D00CE0398 /* DeveloperViewModel.swift */,
 				DB2C8732274F4B7D00CE0398 /* DeveloperViewController.swift */,
+				DB2C8731274F4B7D00CE0398 /* DeveloperViewModel.swift */,
+				DB2C8730274F4B7D00CE0398 /* DeveloperView.swift */,
 			);
 			path = Developer;
 			sourceTree = "<group>";
@@ -1244,9 +1255,9 @@
 		DB2C8739274F4B7D00CE0398 /* List */ = {
 			isa = PBXGroup;
 			children = (
-				DB2C873A274F4B7D00CE0398 /* SettingListView.swift */,
-				DB235EF32834DD0900398FCA /* SettingListViewModel.swift */,
 				DB2C873B274F4B7D00CE0398 /* SettingListViewController.swift */,
+				DB235EF32834DD0900398FCA /* SettingListViewModel.swift */,
+				DB2C873A274F4B7D00CE0398 /* SettingListView.swift */,
 			);
 			path = List;
 			sourceTree = "<group>";
@@ -1555,6 +1566,17 @@
 				DB6BCD71277AEED600847054 /* TrendViewModel+Diffable.swift */,
 			);
 			path = Trend;
+			sourceTree = "<group>";
+		};
+		DB6E7801287D65550099FAE4 /* AccountPreference */ = {
+			isa = PBXGroup;
+			children = (
+				DB6E77FF287D65520099FAE4 /* AccountPreferenceViewController.swift */,
+				DB6E7802287D65DB0099FAE4 /* AccountPreferenceViewModel.swift */,
+				DB6E7804287D85090099FAE4 /* AccountPreferenceView.swift */,
+				DBEA1B70287FFE3100BE55D0 /* MastodonNotification */,
+			);
+			path = AccountPreference;
 			sourceTree = "<group>";
 		};
 		DB7274F0273BB25A00577D95 /* Notification */ = {
@@ -2204,6 +2226,15 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
+		DBEA1B70287FFE3100BE55D0 /* MastodonNotification */ = {
+			isa = PBXGroup;
+			children = (
+				DBEA1B71287FFEF000BE55D0 /* MastodonNotificationSectionViewModel.swift */,
+				DBEA1B6E287FFB0B00BE55D0 /* MastodonNotificationSectionView.swift */,
+			);
+			path = MastodonNotification;
+			sourceTree = "<group>";
+		};
 		DBEA4F782511E4660007FEC5 /* Share */ = {
 			isa = PBXGroup;
 			children = (
@@ -2312,9 +2343,9 @@
 			children = (
 				DBF81C9227F8449800004A56 /* AppIcon */,
 				DBF81C8627F709F200004A56 /* Translation */,
-				DBF81C7F27F6E80700004A56 /* AppearanceView.swift */,
-				DBF81C8227F6ECF400004A56 /* AppearanceViewModel.swift */,
 				DBF81C7D27F6E7F500004A56 /* AppearanceViewController.swift */,
+				DBF81C8227F6ECF400004A56 /* AppearanceViewModel.swift */,
+				DBF81C7F27F6E80700004A56 /* AppearanceView.swift */,
 			);
 			path = Appearance;
 			sourceTree = "<group>";
@@ -2986,6 +3017,7 @@
 				DB51DC412717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift in Sources */,
 				DB9B3251285735F200AC818D /* GridTimelineViewController.swift in Sources */,
 				DB3B906126E8AB480010F64C /* StatusViewTableViewCellDelegate.swift in Sources */,
+				DBEA1B72287FFEF000BE55D0 /* MastodonNotificationSectionViewModel.swift in Sources */,
 				DB46D11A27DB26FF003B8BA1 /* ListUserViewController.swift in Sources */,
 				DB1E48122772CE380074F6A0 /* SearchViewModel.swift in Sources */,
 				DB76A662275F65FF00A50673 /* DataSourceFacade+Model.swift in Sources */,
@@ -2994,9 +3026,11 @@
 				DB8761CB2745530200BA7EE2 /* CoverFlowStackSection.swift in Sources */,
 				DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */,
 				DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */,
+				DB6E7800287D65520099FAE4 /* AccountPreferenceViewController.swift in Sources */,
 				DB442475285B17830095AECF /* SearchMediaTimelineViewModel+Diffable.swift in Sources */,
 				DBBBBE8F2744FB42007ACB4B /* ComposeViewModel.swift in Sources */,
 				DB761E62255942050050DC01 /* DrawerSidebarEntryView.swift in Sources */,
+				DBEA1B6F287FFB0B00BE55D0 /* MastodonNotificationSectionView.swift in Sources */,
 				DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */,
 				DB47AB1D27CCB88000CD73C7 /* ListViewModel.swift in Sources */,
 				DB8761BF274552F800BA7EE2 /* StatusItem.swift in Sources */,
@@ -3142,6 +3176,7 @@
 				DBDAF244274F530B00050319 /* NeedsDependency.swift in Sources */,
 				DB8761C3274552FB00BA7EE2 /* HashtagSection.swift in Sources */,
 				DB9B325C2857493D00AC818D /* UserTimelineViewModel+Diffable.swift in Sources */,
+				DB6E7805287D85090099FAE4 /* AccountPreferenceView.swift in Sources */,
 				DBF81C8E27F843D700004A56 /* AppIconAssets.swift in Sources */,
 				DB262A3B272288FC00D18EF3 /* SearchViewController.swift in Sources */,
 				DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */,
@@ -3205,6 +3240,7 @@
 				DB76A66A27606F6900A50673 /* MediaPreviewVideoViewController.swift in Sources */,
 				DB148B0C281A837E00B596C7 /* SidebarView.swift in Sources */,
 				DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */,
+				DB6E7803287D65DB0099FAE4 /* AccountPreferenceViewModel.swift in Sources */,
 				DB1D7B4325B5938400397DCD /* TwitterAuthenticationOptionViewController.swift in Sources */,
 				DB830209273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB8761C1274552F800BA7EE2 /* UserItem.swift in Sources */,
@@ -3476,6 +3512,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 111;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3850,6 +3887,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 111;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3876,6 +3914,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 111;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;

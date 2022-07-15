@@ -21,7 +21,7 @@ extension FriendshipListViewModel {
             userViewTableViewCellDelegate: nil,
             userViewConfigurationContext: .init(
                 listMembershipViewModel: nil,
-                authenticationContext: context.authenticationService.$activeAuthenticationContext
+                authenticationContext: context.authenticationService.activeAuthenticationContext
             )
         )
         
