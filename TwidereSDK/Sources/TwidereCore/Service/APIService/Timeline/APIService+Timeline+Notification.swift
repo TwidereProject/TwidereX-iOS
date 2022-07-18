@@ -210,5 +210,38 @@ extension APIService {
         
         return response
     }
+    
+    public func mastodonNotification(
+        notificationID: Mastodon.Entity.Notification.ID,
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<Mastodon.Entity.Notification> {
+        let response = try await Mastodon.API.Notification.notification(
+            session: session,
+            domain: authenticationContext.domain,
+            notificationID: notificationID, authorization: authenticationContext.authorization
+        )
+        
+        let managedObjectContext = self.backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            guard let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user else {
+                assertionFailure()
+                return
+            }
+            _ = Persistence.MastodonNotification.createOrMerge(
+                in: managedObjectContext,
+                context: .init(
+                    domain: authenticationContext.domain,
+                    entity: response.value,
+                    me: me,
+                    notificationCache: nil,
+                    statusCache: nil,
+                    userCache: nil,
+                    networkDate: response.networkDate
+                )
+            )
+        }
+        
+        return response
+    }
 
 }

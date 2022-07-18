@@ -37,7 +37,7 @@ final public actor NotificationService {
     }
     public let applicationIconBadgeNeedsUpdate = CurrentValueSubject<Void, Never>(Void())
     public let unreadNotificationCountDidUpdate = CurrentValueSubject<Void, Never>(Void())
-    public let requestRevealNotificationPublisher = PassthroughSubject<MastodonPushNotification, Never>()
+    public let revealNotificationAction = PassthroughSubject<MastodonPushNotification, Never>()
     
     init(
         apiService: APIService,

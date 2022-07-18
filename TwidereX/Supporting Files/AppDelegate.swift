@@ -103,14 +103,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: [Push]", ((#file as NSString).lastPathComponent), #line, #function)
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [PUSH]")
         guard let pushNotification = AppDelegate.mastodonPushNotification(from: notification) else {
             completionHandler([])
             return
         }
         
         let notificationID = String(pushNotification.notificationID)
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: [Push] notification %s", ((#file as NSString).lastPathComponent), #line, #function, notificationID)
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [PUSH] notification \(notificationID)")
         
         let accessToken = pushNotification.accessToken
         UserDefaults.shared.increaseNotificationCount(accessToken: accessToken)
@@ -120,6 +120,28 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         }   // end Task
         
         completionHandler([.sound])
+    }
+    
+    // response to user action for notification (e.g. redirect to post)
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [PUSH]")
+        
+        guard let pushNotification = AppDelegate.mastodonPushNotification(from: response.notification) else {
+            completionHandler()
+            return
+        }
+        
+        let notificationID = String(pushNotification.notificationID)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: [Push] notification %s", ((#file as NSString).lastPathComponent), #line, #function, notificationID)
+        Task {
+            await appContext.notificationService.receive(pushNotification: pushNotification)
+            await appContext.notificationService.revealNotificationAction.send(pushNotification)
+            completionHandler()            
+        }   // end Task
     }
     
     private static func mastodonPushNotification(from notification: UNNotification) -> MastodonPushNotification? {

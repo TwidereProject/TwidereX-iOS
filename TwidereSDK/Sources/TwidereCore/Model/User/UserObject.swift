@@ -46,6 +46,15 @@ extension UserObject {
             }
         }
     }
+    
+    public var notifications: Set<MastodonNotification> {
+        switch self {
+        case .twitter:
+            return []
+        case .mastodon(let object):
+            return object.notifications
+        }
+    }
 }
 
 extension UserObject {

@@ -64,7 +64,7 @@ extension SettingListViewController {
                         transition: .show
                     )
                 case .appearance:
-                    self.coordinator.present(scene: .appearance, from: self, transition: .show)
+                    self.coordinator.present(scene: .appearancePreference, from: self, transition: .show)
                 case .display:
                     self.coordinator.present(scene: .displayPreference, from: self, transition: .show)
                 case .layout:

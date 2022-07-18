@@ -11,7 +11,7 @@ public struct MastodonPushNotification: Codable {
     
     public let accessToken: String
 
-    public let notificationID: Int
+    public let notificationID: Int              //<<< the server use `Int` type here!
     public let notificationType: String
     
     public let preferredLocale: String?

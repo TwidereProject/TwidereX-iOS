@@ -128,6 +128,12 @@ extension ContentSplitViewController {
 }
 
 extension ContentSplitViewController {
+    func select(tab: TabBarItem) {
+        sidebarViewController.viewModel.setActiveTab(item: tab)
+    }
+}
+
+extension ContentSplitViewController {
 
     private func updateConstraint(_ previousTraitCollection: UITraitCollection?) {
         switch traitCollection.horizontalSizeClass {
