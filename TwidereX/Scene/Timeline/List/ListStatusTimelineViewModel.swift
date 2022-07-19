@@ -13,7 +13,7 @@ import CoreDataStack
 import TwidereCore
 
 final class ListStatusTimelineViewModel: ListTimelineViewModel {
-    
+
     // output
     @Published var title: String?
     @Published var isDeleted = false

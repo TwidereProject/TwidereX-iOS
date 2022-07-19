@@ -76,6 +76,30 @@ extension ListTimelineViewController {
                 self.viewModel.stateMachine.enter(TimelineViewModel.LoadOldestState.Loading.self)
             }
             .store(in: &disposeBag)
+        
+        NotificationCenter.default
+            .publisher(for: .statusBarTapped, object: nil)
+            .throttle(for: 0.5, scheduler: DispatchQueue.main, latest: false)
+            .sink { [weak self] notification in
+                guard let self = self else { return }
+                guard let _ = self.view.window else { return } // displaying
+                
+                // https://developer.limneos.net/index.php?ios=13.1.3&framework=UIKitCore.framework&header=UIStatusBarTapAction.h
+                guard let action = notification.object as AnyObject?,
+                      let xPosition = action.value(forKey: "xPosition") as? Double
+                else { return }
+                
+                let viewFrameInWindow = self.view.convert(self.view.frame, to: nil)
+                guard xPosition >= viewFrameInWindow.minX && xPosition <= viewFrameInWindow.maxX else { return }
+                
+                // works on iOS 14, 15
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): receive notification \(xPosition)")
+                
+                // check if scroll to top
+                guard self.shouldRestoreScrollPosition() else { return }
+                self.restorePositionWhenScrollToTop()
+            }
+            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -158,6 +182,78 @@ extension ListTimelineViewController: CellFrameCacheContainer {
     }
 }
 
+
+// MARK: - UIScrollViewDelegate
+extension ListTimelineViewController {
+    
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+        switch scrollView {
+        case tableView:
+            
+            let indexPath = IndexPath(row: 0, section: 0)
+            guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else {
+                return true
+            }
+            // save position
+            savePositionBeforeScrollToTop()
+            // override by custom scrollToRow
+            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+            return false
+        default:
+            assertionFailure()
+            return true
+        }
+    }
+
+    @objc func savePositionBeforeScrollToTop() {
+        // check save action interval
+        // should not fast than 0.5s to prevent save when scrollToTop on-flying
+        if let record = viewModel.scrollPositionRecord {
+            let now = Date()
+            guard now.timeIntervalSince(record.timestamp) > 0.5 else {
+                // skip this save action
+                return
+            }
+        }
+
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let anchorIndexPaths = tableView.indexPathsForVisibleRows?.sorted() else { return }
+        guard !anchorIndexPaths.isEmpty else { return }
+        let anchorIndexPath = anchorIndexPaths[anchorIndexPaths.count / 2]
+        guard let anchorItem = diffableDataSource.itemIdentifier(for: anchorIndexPath) else { return }
+
+        let offset: CGFloat = {
+            guard let anchorCell = tableView.cellForRow(at: anchorIndexPath) else { return 0 }
+            let cellFrameInView = tableView.convert(anchorCell.frame, to: view)
+            return cellFrameInView.origin.y
+        }()
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): save position record for \(anchorIndexPath) with offset: \(offset)")
+        viewModel.scrollPositionRecord = HomeTimelineViewModel.ScrollPositionRecord(
+            item: anchorItem,
+            offset: offset,
+            timestamp: Date()
+        )
+    }
+
+    private func shouldRestoreScrollPosition() -> Bool {
+        // check if scroll to top
+        guard self.tableView.safeAreaInsets.top > 0 else { return false }
+        let zeroOffset = -self.tableView.safeAreaInsets.top
+        return abs(self.tableView.contentOffset.y - zeroOffset) < 2.0
+    }
+
+    @objc func restorePositionWhenScrollToTop() {
+        guard let diffableDataSource = self.viewModel.diffableDataSource else { return }
+        guard let record = self.viewModel.scrollPositionRecord,
+              let indexPath = diffableDataSource.indexPath(for: record.item)
+        else { return }
+
+        tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+        viewModel.scrollPositionRecord = nil
+    }
+
+}
+
 // MARK: - UITableViewDelegate
 extension ListTimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
     // sourcery:inline:ListTimelineView
@@ -220,6 +316,7 @@ extension ListTimelineViewController: ScrollViewContainer {
         } else {
             let indexPath = IndexPath(row: 0, section: 0)
             guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else { return }
+            savePositionBeforeScrollToTop()
             tableView.scrollToRow(at: indexPath, at: .top, animated: true)
         }
     }
