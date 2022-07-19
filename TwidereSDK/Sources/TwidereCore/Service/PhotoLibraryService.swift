@@ -13,6 +13,7 @@ import Alamofire
 import AlamofireImage
 import TwidereCommon
 import SwiftMessages
+import Kingfisher
 
 public final class PhotoLibraryService: NSObject {
     
@@ -101,16 +102,38 @@ extension PhotoLibraryService {
         let temporaryDirectory = FileManager.default.temporaryDirectory
         let downloadDirectory = temporaryDirectory.appendingPathComponent("Download", isDirectory: true)
         try? FileManager.default.createDirectory(at: downloadDirectory, withIntermediateDirectories: true, attributes: nil)
-        let pathExtension: String = {
+        let filename: String = {
             switch source {
-            case .remote(let url):  return url.pathExtension
-            case .image:            return "png"
+            case .remote(let url):  return  url.deletingPathExtension().lastPathComponent
+            case .image:            return UUID().uuidString
             }
         }()
-        let assetURL = downloadDirectory.appendingPathComponent(UUID().uuidString, isDirectory: false).appendingPathExtension(pathExtension)
+        let pathExtension: String = {
+            switch source {
+            case .remote(let url):
+                let pathExtension = url.pathExtension
+                if pathExtension.isEmpty {
+                    return PhotoLibraryService.pathExtension(for: data)
+                } else {
+                    return pathExtension
+                }
+            case .image:
+                return "png"        // use image png representation
+            }
+        }()
+        let assetURL = downloadDirectory.appendingPathComponent(filename, isDirectory: false).appendingPathExtension(pathExtension)
         
         try data.write(to: assetURL)
         return assetURL
+    }
+    
+    static func pathExtension(for data: Data) -> String {
+        switch data.kf.imageFormat {
+        case .unknown:  return "png"        // fallback to png
+        case .PNG:      return "png"
+        case .JPEG:     return "jpg"
+        case .GIF:      return "gif"
+        }
     }
     
 }
