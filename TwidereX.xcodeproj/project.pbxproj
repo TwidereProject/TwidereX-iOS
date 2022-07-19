@@ -152,6 +152,7 @@
 		DB5BF12327F5A549002A3EF5 /* PublishPostIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12227F5A549002A3EF5 /* PublishPostIntentHandler.swift */; };
 		DB5BF12527F5A5C1002A3EF5 /* Account+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12427F5A5C1002A3EF5 /* Account+Fetch.swift */; };
 		DB5BF12D27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12C27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift */; };
+		DB5F1C142886AE2F00978F38 /* TwidereXTests+Issue92.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5F1C132886AE2F00978F38 /* TwidereXTests+Issue92.swift */; };
 		DB5FB00F2727FCB7006520FA /* SearchUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67616B254C021A006C6798 /* SearchUserViewController.swift */; };
 		DB5FB0102727FCC5006520FA /* SearchUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67617A254C0279006C6798 /* SearchUserViewModel.swift */; };
 		DB5FB0112727FD02006520FA /* SearchUserViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDDE72D254C084A0057CF8E /* SearchUserViewModel+Diffable.swift */; };
@@ -672,6 +673,7 @@
 		DB5BF12227F5A549002A3EF5 /* PublishPostIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishPostIntentHandler.swift; sourceTree = "<group>"; };
 		DB5BF12427F5A5C1002A3EF5 /* Account+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Account+Fetch.swift"; sourceTree = "<group>"; };
 		DB5BF12C27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AuthenticationIndex+Fetch.swift"; sourceTree = "<group>"; };
+		DB5F1C132886AE2F00978F38 /* TwidereXTests+Issue92.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TwidereXTests+Issue92.swift"; sourceTree = "<group>"; };
 		DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB5FD9B626D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserBriefInfoView+ViewModel.swift"; sourceTree = "<group>"; };
 		DB60C1A82762394E00628235 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
@@ -2139,9 +2141,10 @@
 		DBDA8E3724FCF8A7006750DC /* TwidereXTests */ = {
 			isa = PBXGroup;
 			children = (
-				DBDA8E3824FCF8A7006750DC /* TwidereXTests.swift */,
 				DBDA8E3A24FCF8A7006750DC /* Info.plist */,
 				DBD40B842599B9C2006E4ABC /* CombineTests.swift */,
+				DBDA8E3824FCF8A7006750DC /* TwidereXTests.swift */,
+				DB5F1C132886AE2F00978F38 /* TwidereXTests+Issue92.swift */,
 			);
 			path = TwidereXTests;
 			sourceTree = "<group>";
@@ -3317,6 +3320,7 @@
 			files = (
 				DBDA8E3924FCF8A7006750DC /* TwidereXTests.swift in Sources */,
 				DBD40B852599B9C2006E4ABC /* CombineTests.swift in Sources */,
+				DB5F1C142886AE2F00978F38 /* TwidereXTests+Issue92.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
