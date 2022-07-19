@@ -127,6 +127,8 @@
 		DB51DC432718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */; };
 		DB51DC4E27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC4D27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift */; };
 		DB51DC5027181DE500A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC4F27181DE400A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift */; };
+		DB522F1628869DAE0088017C /* Notification+Name+HandleTapAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE6358528869441001C114B /* Notification+Name+HandleTapAction.swift */; };
+		DB522F172886A08F0088017C /* UIStatusBarManager+HandleTapAction.m in Sources */ = {isa = PBXBuildFile; fileRef = DBE635832886940B001C114B /* UIStatusBarManager+HandleTapAction.m */; };
 		DB56329726DCBE1600FC893F /* StatusThreadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB56329626DCBE1600FC893F /* StatusThreadViewController.swift */; };
 		DB56329A26DCBE7300FC893F /* StatusThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB56329926DCBE7300FC893F /* StatusThreadViewModel.swift */; };
 		DB56329C26DCC23700FC893F /* DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB56329B26DCC23700FC893F /* DataSourceProvider.swift */; };
@@ -869,6 +871,9 @@
 		DBE6357928855302001C114B /* PushNotificationScratchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationScratchViewController.swift; sourceTree = "<group>"; };
 		DBE6357C2885557C001C114B /* PushNotificationScratchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationScratchViewModel.swift; sourceTree = "<group>"; };
 		DBE6357E288555AE001C114B /* PushNotificationScratchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationScratchView.swift; sourceTree = "<group>"; };
+		DBE635822886940A001C114B /* TwidereX-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TwidereX-Bridging-Header.h"; sourceTree = "<group>"; };
+		DBE635832886940B001C114B /* UIStatusBarManager+HandleTapAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIStatusBarManager+HandleTapAction.m"; sourceTree = "<group>"; };
+		DBE6358528869441001C114B /* Notification+Name+HandleTapAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Name+HandleTapAction.swift"; sourceTree = "<group>"; };
 		DBE71B7926B7AF5C00DFAB8E /* StubTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineViewController.swift; sourceTree = "<group>"; };
 		DBE71B7C26B7C5FD00DFAB8E /* StubTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineViewModel.swift; sourceTree = "<group>"; };
 		DBE71B7E26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1761,6 +1766,8 @@
 			children = (
 				DBA5FA182553DCBC00D2E98E /* TransitioningMath.swift */,
 				DB42411526C3EB9100B6C5F8 /* ReadabilityPadding.swift */,
+				DBE6358528869441001C114B /* Notification+Name+HandleTapAction.swift */,
+				DBE635832886940B001C114B /* UIStatusBarManager+HandleTapAction.m */,
 			);
 			path = Vender;
 			sourceTree = "<group>";
@@ -2152,6 +2159,7 @@
 		DBDA8E5324FDF3D6006750DC /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DBE635822886940A001C114B /* TwidereX-Bridging-Header.h */,
 				DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */,
 				DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */,
 				DBDA8E2724FCF8A3006750DC /* Main.storyboard */,
@@ -2639,6 +2647,7 @@
 					};
 					DBDA8E1D24FCF8A3006750DC = {
 						CreatedOnToolsVersion = 12.0;
+						LastSwiftMigration = 1400;
 					};
 					DBDA8E3324FCF8A7006750DC = {
 						CreatedOnToolsVersion = 12.0;
@@ -3088,6 +3097,7 @@
 				DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */,
 				DB56329C26DCC23700FC893F /* DataSourceProvider.swift in Sources */,
 				DB44A56226C4FEAB004C8B78 /* WelcomeViewModel.swift in Sources */,
+				DB522F172886A08F0088017C /* UIStatusBarManager+HandleTapAction.m in Sources */,
 				DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */,
 				DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */,
 				DBADCDC82826658700D1CA4E /* MediaPreviewableViewController.swift in Sources */,
@@ -3100,6 +3110,7 @@
 				DB0CC4BA27D5F7BA00A051B4 /* CompositeListViewModel+Diffable.swift in Sources */,
 				DB02C77527351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift in Sources */,
 				DB0AD4E22858734A0002ABDB /* UserMediaTimelineViewModel.swift in Sources */,
+				DB522F1628869DAE0088017C /* Notification+Name+HandleTapAction.swift in Sources */,
 				DB86433C26E898C5000C9879 /* DataSourceFacade+Like.swift in Sources */,
 				DB6BCD70277AEAC700847054 /* TrendTableViewCell.swift in Sources */,
 				DB442461285AD8530095AECF /* ListStatusTimelineViewController.swift in Sources */,
@@ -3541,10 +3552,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9510579CE5350F61425470C1 /* Pods-TwidereX.profile.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
 				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -3560,6 +3571,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "TwidereX/Supporting Files/TwidereX-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -4038,10 +4050,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
 				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -4057,6 +4069,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "TwidereX/Supporting Files/TwidereX-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -4067,10 +4081,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4423B1DC6D103908A7B752AF /* Pods-TwidereX.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
 				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -4086,6 +4100,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "TwidereX/Supporting Files/TwidereX-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
