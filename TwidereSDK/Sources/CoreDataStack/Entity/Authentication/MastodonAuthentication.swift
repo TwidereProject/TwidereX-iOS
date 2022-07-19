@@ -36,6 +36,8 @@ final public class MastodonAuthentication: NSManagedObject {
     // one-to-one relationship
     @NSManaged public private(set) var authenticationIndex: AuthenticationIndex
     @NSManaged public private(set) var user: MastodonUser
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var notificationSubscription: MastodonNotificationSubscription?
 
 }
 
@@ -91,6 +93,10 @@ extension MastodonAuthentication {
             MastodonAuthentication.predicate(domain: domain),
             MastodonAuthentication.predicate(userID: userID)
         ])
+    }
+    
+    public static func predicate(userAccessToken: String) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(MastodonAuthentication.userAccessToken), userAccessToken)
     }
     
 }
@@ -178,6 +184,11 @@ extension MastodonAuthentication: AutoUpdatableObject {
     public func update(updatedAt: Date) {
     	if self.updatedAt != updatedAt {
     		self.updatedAt = updatedAt
+    	}
+    }
+    public func update(notificationSubscription: MastodonNotificationSubscription?) {
+    	if self.notificationSubscription != notificationSubscription {
+    		self.notificationSubscription = notificationSubscription
     	}
     }
     // sourcery:end

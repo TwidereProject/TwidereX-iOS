@@ -7,7 +7,7 @@ on: push
 jobs:
   build:
     name: Release
-    runs-on: macos-11
+    runs-on: macos-12
     if: contains(github.event.head_commit.message, '@r2d2/release')
     steps:
       - name: checkout
@@ -28,16 +28,27 @@ jobs:
           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
-      - name: force Xcode 13.2
-        run: sudo xcode-select -switch /Applications/Xcode_13.2.app
+      - name: force Xcode 13.4.1
+        run: sudo xcode-select -switch /Applications/Xcode_13.4.1.app
 
       - name: setup
         env: 
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
-          CONSUMER_KEY_SECRET: ${{ secrets.CONSUMER_KEY_SECRET }}
-          HOST_KEY_PUBLIC: ${{ secrets.HOST_KEY_PUBLIC }}
-          OAUTH_ENDPOINT: ${{ secrets.OAUTH_ENDPOINT }}
+          AppSecret: ${{ secrets.AppSecret }}
+          HostKeyPublic: ${{ secrets.HostKeyPublic }}
+          ConsumerKeyDebug: ${{ secrets.ConsumerKeyDebug }}
+          ConsumerKeyRelease: ${{ secrets.ConsumerKeyRelease }}
+          ConsumerKeySecretDebug: ${{ secrets.ConsumerKeySecretDebug }}
+          ConsumerKeySecretRelease: ${{ secrets.ConsumerKeySecretRelease }}
+          OauthEndpointDebug: ${{ secrets.OauthEndpointDebug }}
+          OauthEndpointRelease: ${{ secrets.OauthEndpointRelease }}
+          ClientIDDebug: ${{ secrets.ClientIDDebug }}
+          ClientIDRelease: ${{ secrets.ClientIDRelease }}
+          ClientSecretDebug: ${{ secrets.ClientSecretDebug }}
+          ClientSecretRelease: ${{ secrets.ClientSecretRelease }}
+          Oauth2EndpointDebug: ${{ secrets.Oauth2EndpointDebug }}
+          Oauth2EndpointRelease: ${{ secrets.Oauth2EndpointRelease }}
+          MastodonNotificationEndpointDebug: ${{ secrets.MastodonNotificationEndpointDebug }}
+          MastodonNotificationEndpointRelease: ${{ secrets.MastodonNotificationEndpointRelease }}
         run: exec ./.github/scripts/setup.sh
 
       - name: build

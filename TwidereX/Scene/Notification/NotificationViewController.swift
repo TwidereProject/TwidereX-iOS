@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import Tabman
 import Pageboy
+import TwidereCore
 
 final class NotificationViewController: TabmanViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
 
@@ -120,6 +121,11 @@ extension NotificationViewController {
         super.viewDidAppear(animated)
         
         viewModel.viewDidAppear.send()
+        
+        // reset notification count
+        Task {
+            await self.context.notificationService.clearNotificationCountForActiveUser()
+        }   // end Task
     }
     
 }

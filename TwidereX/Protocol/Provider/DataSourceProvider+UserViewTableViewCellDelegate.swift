@@ -33,7 +33,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
                     return
                 }
                 try await DataSourceFacade.responseToUserSignOut(
-                    provider: self,
+                            dependency: self,
                     user: user
                 )
             }   // end Task

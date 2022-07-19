@@ -10,6 +10,8 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
+import TwidereCore
+import TwidereAsset
 
 protocol SidebarViewModelDelegate: AnyObject {
     func sidebarViewModel(_ viewModel: SidebarViewModel, active item: TabBarItem)
@@ -30,6 +32,8 @@ final class SidebarViewModel: ObservableObject {
     @Published var mainTabBarItems: [TabBarItem] = []
     @Published var secondaryTabBarItems: [TabBarItem] = []
     @Published var avatarURL: URL?
+    
+    @Published var hasUnreadPushNotification = false
 
     init(context: AppContext) {
         self.context = context
@@ -68,6 +72,10 @@ final class SidebarViewModel: ObservableObject {
                 }
             }
             .store(in: &disposeBag)
+        
+        Task {
+            await setupNotificationTabIconUpdater()
+        }   // end Task
     }
     
 }
@@ -76,6 +84,38 @@ extension SidebarViewModel {
     
     func setActiveTab(item: TabBarItem) {
         delegate?.sidebarViewModel(self, active: item)
+    }
+    
+}
+
+extension SidebarViewModel {
+    
+    @MainActor
+    private func setupNotificationTabIconUpdater() async {
+        // notification tab bar icon updater
+        await Publishers.CombineLatest3(
+            context.authenticationService.$activeAuthenticationContext,
+            context.notificationService.unreadNotificationCountDidUpdate,   // <-- actor property
+            $activeTab
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] authenticationContext, _, activeTab in
+            guard let self = self else { return }
+            guard let authenticationContext = authenticationContext else { return }
+
+            let hasUnreadPushNotification: Bool = {
+                switch authenticationContext {
+                case .twitter:
+                    return false
+                case .mastodon(let authenticationContext):
+                    let accessToken = authenticationContext.authorization.accessToken
+                    let count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
+                    return count > 0
+                }
+            }()
+            self.hasUnreadPushNotification = hasUnreadPushNotification
+        }
+        .store(in: &disposeBag)
     }
     
 }

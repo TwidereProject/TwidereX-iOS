@@ -18,11 +18,11 @@ import MastodonSDK
 extension UserView {
     public struct ConfigurationContext {
         public let listMembershipViewModel: ListMembershipViewModel?
-        public let authenticationContext: Published<AuthenticationContext?>.Publisher
+        public let authenticationContext: AuthenticationContext?
         
         public init(
             listMembershipViewModel: ListMembershipViewModel?,
-            authenticationContext: Published<AuthenticationContext?>.Publisher
+            authenticationContext: AuthenticationContext?
         ) {
             self.listMembershipViewModel = listMembershipViewModel
             self.authenticationContext = authenticationContext
@@ -37,9 +37,7 @@ extension UserView {
         notification: NotificationObject?,
         configurationContext: ConfigurationContext
     ) {
-        configurationContext.authenticationContext
-            .assign(to: \.authenticationContext, on: viewModel)
-            .store(in: &disposeBag)
+        viewModel.authenticationContext = configurationContext.authenticationContext
         
         switch user {
         case .twitter(let user):
@@ -97,6 +95,10 @@ extension UserView {
         viewModel.platform = .twitter
         // userIdentifier
         viewModel.userIdentifier = .twitter(.init(id: user.id))
+        // userAuthenticationContext
+        viewModel.userAuthenticationContext = user.twitterAuthentication.flatMap {
+            AuthenticationContext(authenticationIndex: $0.authenticationIndex, secret: AppSecret.default.secret)
+        }
         // avatar
         user.publisher(for: \.profileImageURL)
             .map { _ in user.avatarImageURL() }
@@ -122,7 +124,6 @@ extension UserView {
             .assign(to: \.followerCount, on: viewModel)
             .store(in: &disposeBag)
     }
-    
 }
 
 extension UserView {
@@ -131,6 +132,10 @@ extension UserView {
         viewModel.platform = .mastodon
         // userIdentifier
         viewModel.userIdentifier = .mastodon(.init(domain: user.domain, id: user.id))
+        // userAuthenticationContext
+        viewModel.userAuthenticationContext = user.mastodonAuthentication.flatMap {
+            AuthenticationContext(authenticationIndex: $0.authenticationIndex, secret: AppSecret.default.secret)
+        }
         // avatar
         Publishers.CombineLatest3(
             UserDefaults.shared.publisher(for: \.preferredStaticAvatar),

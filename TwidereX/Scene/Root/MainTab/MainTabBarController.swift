@@ -77,6 +77,7 @@ extension MainTabBarController {
         
         let feedbackGenerator = UINotificationFeedbackGenerator()
 
+        // post publish result observer
         context.publisherService.statusPublishResult
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
@@ -124,6 +125,10 @@ extension MainTabBarController {
             }
             .store(in: &disposeBag)
         
+        Task {
+            await setupNotificationTabIconUpdater()
+        }   // end Task
+        
         let tabBarLongPressGestureRecognizer = UILongPressGestureRecognizer()
         tabBarLongPressGestureRecognizer.addTarget(self, action: #selector(MainTabBarController.tabBarLongPressGestureRecognizerHandler(_:)))
         tabBar.addGestureRecognizer(tabBarLongPressGestureRecognizer)
@@ -150,6 +155,11 @@ extension MainTabBarController {
 }
 
 extension MainTabBarController {
+    
+    private var notificationViewController: NotificationViewController? {
+        return viewController(of: NotificationViewController.self)
+    }
+    
     private func updateTabBarDisplay() {
         switch traitCollection.horizontalSizeClass {
         case .compact:
@@ -158,6 +168,43 @@ extension MainTabBarController {
             tabBar.isHidden = true
         }
     }
+    
+    @MainActor
+    private func setupNotificationTabIconUpdater() async {
+        // notification tab bar icon updater
+        await Publishers.CombineLatest3(
+            context.authenticationService.$activeAuthenticationContext,
+            context.notificationService.unreadNotificationCountDidUpdate,   // <-- actor property
+            $currentTab
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] authenticationContext, _, currentTab in
+            guard let self = self else { return }
+            guard let authenticationContext = authenticationContext else { return }
+            guard let notificationViewController = self.notificationViewController else { return }
+
+            let hasUnreadPushNotification: Bool = {
+                switch authenticationContext {
+                case .twitter:
+                    return false
+                case .mastodon(let authenticationContext):
+                    let accessToken = authenticationContext.authorization.accessToken
+                    let count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
+                    return count > 0
+                }
+            }()
+            let image = hasUnreadPushNotification ? Asset.ObjectTools.bellRinging.image.withRenderingMode(.alwaysTemplate) : Asset.ObjectTools.bell.image.withRenderingMode(.alwaysTemplate)
+            let largeImage = hasUnreadPushNotification ? Asset.ObjectTools.bellRingingLarge.image.withRenderingMode(.alwaysTemplate) : Asset.ObjectTools.bellLarge.image.withRenderingMode(.alwaysTemplate)
+            
+            notificationViewController.tabBarItem.image = image
+            notificationViewController.tabBarItem.largeContentSizeImage = largeImage
+            
+            notificationViewController.navigationController?.tabBarItem.image = image
+            notificationViewController.navigationController?.tabBarItem.largeContentSizeImage = largeImage
+        }
+        .store(in: &disposeBag)
+    }
+
 }
 
 extension MainTabBarController {

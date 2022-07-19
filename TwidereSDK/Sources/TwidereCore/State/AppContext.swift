@@ -32,10 +32,7 @@ public class AppContext: ObservableObject {
     public let photoLibraryService = PhotoLibraryService()
     public let playerService = PlayerService()
     
-    public let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
-        .autoconnect()
-        .share()
-        .eraseToAnyPublisher()
+    public let notificationService: NotificationService
 
     public init(appSecret: AppSecret) {
         let _coreDataStack = CoreDataStack()
@@ -51,16 +48,23 @@ public class AppContext: ObservableObject {
         )
         apiService = _apiService
         
-        authenticationService = AuthenticationService(
+        let _authenticationService = AuthenticationService(
             managedObjectContext: _managedObjectContext,
             backgroundManagedObjectContext: _backgroundManagedObjectContext,
             apiService: _apiService,
             appSecret: appSecret
         )
+        authenticationService = _authenticationService
         
         mastodonEmojiService = MastodonEmojiService()
         publisherService = PublisherService(
             apiService: _apiService,
+            appSecret: appSecret
+        )
+        
+        notificationService = NotificationService(
+            apiService: _apiService,
+            authenticationService: _authenticationService,
             appSecret: appSecret
         )
     }
@@ -97,6 +101,10 @@ public class AppContext: ObservableObject {
             }
             .store(in: &disposeBag)
         
+    }
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

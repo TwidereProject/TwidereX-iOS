@@ -12,6 +12,17 @@ struct TableViewEntryRow: View {
     
     let icon: Image?
     let title: String
+    let accessorySymbolName: String?
+    
+    init(
+        icon: Image? = nil,
+        title: String,
+        accessorySymbolName: String? = "chevron.right"
+    ) {
+        self.icon = icon
+        self.title = title
+        self.accessorySymbolName = accessorySymbolName
+    }
     
     var body: some View {
         HStack {
@@ -20,8 +31,10 @@ struct TableViewEntryRow: View {
             }
             Text(title)
             Spacer()
-            Image(systemName: "chevron.right")
-                .foregroundColor(Color(.secondaryLabel))
+            if let name = accessorySymbolName {
+                Image(systemName: name)
+                    .foregroundColor(Color(.secondaryLabel))
+            }
         }
     }
     

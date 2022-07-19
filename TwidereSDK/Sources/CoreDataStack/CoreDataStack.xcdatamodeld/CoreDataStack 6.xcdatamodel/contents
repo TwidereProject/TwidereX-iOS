@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21256.2" systemVersion="21F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AuthenticationIndex" representedClassName="CoreDataStack.AuthenticationIndex" syncable="YES">
         <attribute name="activeAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -35,6 +35,7 @@
         <attribute name="userAccessToken" attributeType="String"/>
         <attribute name="userID" attributeType="String"/>
         <relationship name="authenticationIndex" maxCount="1" deletionRule="Nullify" destinationEntity="AuthenticationIndex" inverseName="mastodonAuthentication" inverseEntity="AuthenticationIndex"/>
+        <relationship name="notificationSubscription" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonNotificationSubscription" inverseName="authentication" inverseEntity="MastodonNotificationSubscription"/>
         <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="mastodonAuthentication" inverseEntity="MastodonUser"/>
     </entity>
     <entity name="MastodonList" representedClassName="CoreDataStack.MastodonList" syncable="YES">
@@ -56,6 +57,23 @@
         <relationship name="account" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="notifications" inverseEntity="MastodonUser"/>
         <relationship name="feeds" toMany="YES" deletionRule="Nullify" destinationEntity="Feed" inverseName="mastodonNotification" inverseEntity="Feed"/>
         <relationship name="status" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="notifications" inverseEntity="MastodonStatus"/>
+    </entity>
+    <entity name="MastodonNotificationSubscription" representedClassName="CoreDataStack.MastodonNotificationSubscription" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="domain" optional="YES" attributeType="String"/>
+        <attribute name="endpoint" optional="YES" attributeType="String"/>
+        <attribute name="favourite" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="follow" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="isActive" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="mention" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="mentionPreference" optional="YES" attributeType="Binary"/>
+        <attribute name="poll" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="reblog" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="serverKey" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userToken" optional="YES" attributeType="String"/>
+        <relationship name="authentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonAuthentication" inverseName="notificationSubscription" inverseEntity="MastodonAuthentication"/>
     </entity>
     <entity name="MastodonPoll" representedClassName="CoreDataStack.MastodonPoll" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -279,23 +297,4 @@
         <relationship name="statuses" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="author" inverseEntity="TwitterStatus"/>
         <relationship name="twitterAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterAuthentication" inverseName="user" inverseEntity="TwitterAuthentication"/>
     </entity>
-    <elements>
-        <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="119"/>
-        <element name="Feed" positionX="-54" positionY="-144" width="128" height="164"/>
-        <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="194"/>
-        <element name="MastodonList" positionX="90" positionY="-18" width="128" height="119"/>
-        <element name="MastodonNotification" positionX="90" positionY="-18" width="128" height="179"/>
-        <element name="MastodonPoll" positionX="90" positionY="-18" width="128" height="224"/>
-        <element name="MastodonPollOption" positionX="99" positionY="-9" width="128" height="149"/>
-        <element name="MastodonSavedSearch" positionX="90" positionY="-18" width="128" height="74"/>
-        <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="494"/>
-        <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="599"/>
-        <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="254"/>
-        <element name="TwitterList" positionX="90" positionY="-18" width="128" height="164"/>
-        <element name="TwitterPoll" positionX="99" positionY="-9" width="128" height="149"/>
-        <element name="TwitterPollOption" positionX="90" positionY="-18" width="128" height="119"/>
-        <element name="TwitterSavedSearch" positionX="90" positionY="-18" width="128" height="104"/>
-        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="464"/>
-        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="524"/>
-    </elements>
 </model>

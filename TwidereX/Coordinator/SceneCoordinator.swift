@@ -6,12 +6,18 @@
 //  Copyright © 2020 Dimension. All rights reserved.
 //
 
+import os.log
 import UIKit
+import Combine
 import SafariServices
 import CoreDataStack
 import TwidereUI
 
 final public class SceneCoordinator {
+    
+    let logger = Logger(subsystem: "SceneCoordinator", category: "Coordinator")
+    
+    private var disposeBag = Set<AnyCancellable>()
     
     private weak var scene: UIScene!
     private weak var sceneDelegate: SceneDelegate!
@@ -26,8 +32,10 @@ final public class SceneCoordinator {
         self.scene = scene
         self.sceneDelegate = sceneDelegate
         self.context = context
+        // end init
         
         scene.session.sceneCoordinator = self
+        setupPushNotificationRevealActionObserver()
     }
 }
 
@@ -86,14 +94,17 @@ extension SceneCoordinator {
         case searchResult(viewModel: SearchResultViewModel)
         
         // Settings
-        case setting
-        case appearance
+        case setting(viewModel: SettingListViewModel)
+        case accountPreference(viewModel: AccountPreferenceViewModel)
+        case appearancePreference
         case displayPreference
         case about
         
         #if DEBUG
         case developer
         case stubTimeline
+        
+        case pushNotificationScratch
         #endif
         
         case safari(url: String)
@@ -219,6 +230,17 @@ extension SceneCoordinator {
         
         return viewController
     }
+    
+    func switchToTabBar(tab: TabBarItem) {
+        // root is MainTabBarController
+        if let mainTabBarController = sceneDelegate.window?.rootViewController as? MainTabBarController {
+            mainTabBarController.select(tab: tab, isMainTabBarControllerActive: true)
+        }
+        // root is ContentSplitViewController
+        if let contentSplitViewController = sceneDelegate.window?.rootViewController as? ContentSplitViewController {
+            contentSplitViewController.select(tab: tab)
+        }
+    }
 
 }
 
@@ -333,10 +355,16 @@ private extension SceneCoordinator {
             _viewController.searchResultViewModel = viewModel
             _viewController.searchResultViewController = searchResultViewController
             viewController = _viewController
-        case .setting:
-            viewController = SettingListViewController()
-        case .appearance:
-            viewController = AppearanceViewController()
+        case .setting(let viewModel):
+            let _viewController = SettingListViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .accountPreference(let viewModel):
+            let _viewController = AccountPreferenceViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .appearancePreference:
+            viewController = AppearancePreferenceViewController()
         case .displayPreference:
             viewController = DisplayPreferenceViewController()
         case .about:
@@ -346,6 +374,8 @@ private extension SceneCoordinator {
             viewController = DeveloperViewController()
         case .stubTimeline:
             viewController = StubTimelineViewController()
+        case .pushNotificationScratch:
+            viewController = PushNotificationScratchViewController()
         #endif
         case .safari(let url):
             // escape non-ascii characters
@@ -374,6 +404,121 @@ private extension SceneCoordinator {
     private func setupDependency(for needs: NeedsDependency?) {
         needs?.context = context
         needs?.coordinator = self
+    }
+    
+}
+
+extension SceneCoordinator {
+    
+    private func setupPushNotificationRevealActionObserver() {
+        Task {
+            await context.notificationService.revealNotificationAction
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] pushNotification in
+                    guard let self = self else { return }
+                    Task {
+                        await self.coordinate(pushNotification: pushNotification)
+                    }
+                }
+                .store(in: &self.disposeBag)
+        }   // end Task
+    }
+    
+    // TODO: Twitter push notification
+    @MainActor
+    private func coordinate(pushNotification: MastodonPushNotification) async {
+        do {
+            let request = MastodonAuthentication.sortedFetchRequest
+            request.predicate = MastodonAuthentication.predicate(userAccessToken: pushNotification.accessToken)
+            request.fetchLimit = 1
+            guard let authentication = try context.managedObjectContext.fetch(request).first else {
+                assertionFailure()
+                return
+            }
+            
+            // 1. active notification account
+            guard let currentAuthenticationContext = context.authenticationService.activeAuthenticationContext else {
+                // discard task if no available account
+                return
+            }
+            let needsSwitchActiveAccount: Bool = {
+                switch currentAuthenticationContext {
+                case .mastodon(let authenticationContext):
+                    let result = authenticationContext.authorization.accessToken != pushNotification.accessToken
+                    return result
+                case .twitter:
+                    return true
+                }
+            }()
+            if needsSwitchActiveAccount {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [PUSH] needsSwitchActiveAccount: \(needsSwitchActiveAccount)")
+                let isActive = try await context.authenticationService.activeAuthenticationIndex(record: authentication.authenticationIndex.asRecrod)
+                guard isActive else { return }
+            }
+            
+            // 2. open notification tab
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [PUSH] switch to notification tab")
+            switchToTabBar(tab: .notification)
+            
+            // 3. load notification
+            let authenticationContext = MastodonAuthenticationContext(authentication: authentication)
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [PUSH] fetch notification: \(pushNotification.notificationID)…")
+            let response = try await context.apiService.mastodonNotification(
+                notificationID: String(pushNotification.notificationID),
+                authenticationContext: authenticationContext
+            )
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [PUSH] fetch notification success")
+            
+            // 4. push to notification content
+            let from = sceneDelegate.window?.rootViewController?.topMost
+            
+            let notification = response.value
+            switch notification.type {
+            case .follow:
+                let remoteProfileViewModel = RemoteProfileViewModel(
+                    context: context,
+                    profileContext: .mastodon(.userID(notification.account.id))
+                )
+                present(
+                    scene: .profile(viewModel: remoteProfileViewModel),
+                    from: from,
+                    transition: .show
+                )
+            case .followRequest:
+                // do nothing
+                break
+            case .mention, .reblog, .favourite, .poll, .status:
+                // FIXME: add RemoteViewModel
+                guard let status = notification.status else {
+                    return
+                }
+                let request = MastodonStatus.sortedFetchRequest
+                request.predicate = MastodonStatus.predicate(
+                    domain: authenticationContext.domain,
+                    id: status.id
+                )
+                request.fetchLimit = 1
+                guard let root = try context.managedObjectContext.fetch(request).first else {
+                    return
+                }
+                let statusThreadViewModel = StatusThreadViewModel(
+                    context: context,
+                    root: .root(context: .init(status: .mastodon(record: root.asRecrod)))
+                )
+                present(
+                    scene: .statusThread(viewModel: statusThreadViewModel),
+                    from: from,
+                    transition: .show
+                )
+            case ._other:
+                assertionFailure()
+                break
+            }
+            
+        } catch {
+            assertionFailure(error.localizedDescription)
+            return
+        }
     }
     
 }

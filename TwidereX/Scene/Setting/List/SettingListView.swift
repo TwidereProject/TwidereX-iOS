@@ -6,7 +6,10 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import CoreData
+import CoreDataStack
 import SwiftUI
+import TwidereUI
 
 struct TextCaseEraseStyle: ViewModifier {
     func body(content: Content) -> some View {
@@ -21,6 +24,7 @@ struct TextCaseEraseStyle: ViewModifier {
 }
 
 enum SettingListEntryType: Hashable {
+    case account
     case appearance
     case display
     case layout
@@ -33,6 +37,7 @@ enum SettingListEntryType: Hashable {
     
     var image: Image {
         switch self {
+        case .account:          return Image(systemName: "person")
         case .appearance:       return Image(uiImage: Asset.ObjectTools.clothes.image)
         case .display:          return Image(uiImage: Asset.TextFormatting.textHeaderRedaction.image)
         case .layout:           return Image(uiImage: Asset.sidebarLeft.image)
@@ -46,6 +51,7 @@ enum SettingListEntryType: Hashable {
     
     var title: String {
         switch self {
+        case .account:          return "Account"        // TODO: i18n
         case .appearance:       return L10n.Scene.Settings.Appearance.title
         case .display:          return L10n.Scene.Settings.Display.title
         case .layout:           return "Layout"
@@ -69,6 +75,23 @@ struct SettingListView: View {
     
     @EnvironmentObject var context: AppContext
     @ObservedObject var viewModel: SettingListViewModel
+    
+    static let accountListEntry: SettingListEntry = {
+        let type = SettingListEntryType.account
+        return SettingListEntry(type: type, image: type.image, title: type.title)
+    }()
+    
+    @ViewBuilder
+    var accountView: some View {
+        if let user = viewModel.user {
+            UserContentView(viewModel: .init(
+                user: user,
+                accessoryType: .disclosureIndicator
+            ))
+        } else {
+            EmptyView()
+        }
+    }
 
     static let generalSection: [SettingListEntry] = {
         let types: [SettingListEntryType]  = [
@@ -104,6 +127,13 @@ struct SettingListView: View {
     
     var body: some View {
         List {
+            Section(header: Text(verbatim: "Account")) {
+                Button {
+                    viewModel.settingListEntryPublisher.send(SettingListView.accountListEntry)
+                } label: {
+                    accountView
+                }
+            }
             Section(
                 // grouped tableView get header padding since iOS 15.
                 // no more top padding manually
@@ -155,9 +185,15 @@ struct SettingListView: View {
 struct SettingListView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            SettingListView(viewModel: SettingListViewModel())
-            SettingListView(viewModel: SettingListViewModel())
-                .preferredColorScheme(.dark)
+            SettingListView(viewModel: SettingListViewModel(
+                context: .shared,
+                auth: nil
+            ))
+            SettingListView(viewModel: SettingListViewModel(
+                context: .shared,
+                auth: nil
+            ))
+            .preferredColorScheme(.dark)
         }
     }
 }

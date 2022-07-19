@@ -15,12 +15,22 @@ struct SidebarView: View {
     
     @ObservedObject var viewModel: SidebarViewModel
     
+    func shouldUseAltStyle(for item: TabBarItem) -> Bool {
+        switch item {
+        case .notification:
+            return viewModel.hasUnreadPushNotification
+        default:
+            return false
+        }
+    }
+    
     var body: some View {
         VStack(spacing: .zero) {
             ForEach(viewModel.mainTabBarItems, id: \.self) { item in
                 EntryButton(
                     item: item,
-                    isActive: viewModel.activeTab == item
+                    isActive: viewModel.activeTab == item,
+                    useAltStyle: shouldUseAltStyle(for: item)
                 ) { item in
                     viewModel.setActiveTab(item: item)
                 }
@@ -37,7 +47,8 @@ struct SidebarView: View {
                 ForEach(viewModel.secondaryTabBarItems, id: \.self) { item in
                     EntryButton(
                         item: item,
-                        isActive: viewModel.activeTab == item
+                        isActive: viewModel.activeTab == item,
+                        useAltStyle: shouldUseAltStyle(for: item)
                     ) { item in
                         viewModel.setActiveTab(item: item)
                     }
@@ -50,7 +61,8 @@ struct SidebarView: View {
             Spacer()
             EntryButton(
                 item: .settings,
-                isActive: false
+                isActive: false,
+                useAltStyle: false
             ) { item in
                 viewModel.setActiveTab(item: item)
             }
@@ -67,6 +79,7 @@ extension SidebarView {
     struct EntryButton: View {
         let item: TabBarItem
         let isActive: Bool
+        let useAltStyle: Bool
         let action: (TabBarItem) -> ()
         
         var body: some View {
@@ -76,7 +89,7 @@ extension SidebarView {
                 action(item)
             } label: {
                 VectorImageView(
-                    image: item.image,
+                    image: useAltStyle ? item.altImage : item.image,
                     tintColor: isActive ? .tintColor : .secondaryLabel
                 )
                 .frame(width: dimension, height: dimension, alignment: .center)

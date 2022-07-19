@@ -1,5 +1,5 @@
 //
-//  AppearanceViewModel.swift
+//  AppearancePreferenceViewModel.swift
 //  TwidereX
 //
 //  Created by MainasuK on 2022-4-1.
@@ -16,7 +16,7 @@ import TwidereCore
 import TwitterSDK
 import MastodonSDK
 
-final class AppearanceViewModel: ObservableObject {
+final class AppearancePreferenceViewModel: ObservableObject {
     
     // input
     let context: AppContext

@@ -11,7 +11,7 @@ import TwidereCore
 
 public struct AvatarButtonRepresentable: UIViewRepresentable {
     
-    let configuration: AvatarImageView.Configuration
+    public let configuration: AvatarImageView.Configuration
     
     public func makeUIView(context: Context) -> AvatarButton {
         let view = AvatarButton()

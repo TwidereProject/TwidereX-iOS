@@ -1266,7 +1266,8 @@ public enum L10n {
       /// Settings
       public static let title = L10n.tr("Localizable", "Scene.Settings.Title")
       public enum About {
-        /// Next generation of Twidere for Android 5.0+. \nStill in early stage.
+        /// Next generation of Twidere for Android 5.0+. 
+        /// Still in early stage.
         public static let description = L10n.tr("Localizable", "Scene.Settings.About.Description")
         /// License
         public static let license = L10n.tr("Localizable", "Scene.Settings.About.License")
@@ -1507,7 +1508,8 @@ public enum L10n {
       }
     }
     public enum SignIn {
-      /// Hello!\nSign in to Get Started.
+      /// Hello!
+      /// Sign in to Get Started.
       public static let helloSignInToGetStarted = L10n.tr("Localizable", "Scene.SignIn.HelloSignInToGetStarted")
       /// Sign in with Mastodon
       public static let signInWithMastodon = L10n.tr("Localizable", "Scene.SignIn.SignInWithMastodon")

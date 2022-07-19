@@ -126,14 +126,14 @@ extension ProfileAvatarView {
         case inline
         case plain
         
-        var primitiveAvatarButtonSize: CGSize {
+        public var primitiveAvatarButtonSize: CGSize {
             switch self {
             case .inline:       return CGSize(width: 44, height: 44)
             case .plain:        return CGSize(width: 88, height: 88)
             }
         }
         
-        var primitiveBadgeImageViewSize: CGSize {
+        public var primitiveBadgeImageViewSize: CGSize {
             return CGSize(width: 24, height: 24)
         }
         

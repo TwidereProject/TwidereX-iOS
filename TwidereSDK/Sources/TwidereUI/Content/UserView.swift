@@ -67,6 +67,8 @@ public final class UserView: UIView {
     public let accessoryContainerView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
+        stackView.alignment = .firstBaseline
+        stackView.spacing = 8
         return stackView
     }()
     
@@ -162,6 +164,13 @@ public final class UserView: UIView {
         return activityIndicatorView
     }()
     
+    // badge
+    public let badgeImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .label
+        return imageView
+    }()
     
     public func prepareForReuse() {
         disposeBag.removeAll()
@@ -263,7 +272,7 @@ extension UserView {
     public enum Style {
         // headline: name | lock
         // subheadline: username
-        // accessory: menu
+        // accessory: [ badge | menu ]
         case account
         
         // headline: name | lock | username
@@ -279,7 +288,7 @@ extension UserView {
         // header: notification
         // headline: name | lock | username
         // subheadline: follower count
-        // accessory: [followRquest accept and reject button]
+        // accessory: [ followRquest accept and reject button ]
         case notification
         
         // headline: name | lock
@@ -356,8 +365,11 @@ extension UserView.Style {
         
         userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
         
+        userView.accessoryContainerView.addArrangedSubview(userView.badgeImageView)
         userView.accessoryContainerView.addArrangedSubview(userView.menuButton)
-        userView.menuButton.setContentHuggingPriority(.required - 9, for: .horizontal)
+        userView.badgeImageView.setContentHuggingPriority(.required - 2, for: .horizontal)
+        userView.badgeImageView.setContentCompressionResistancePriority(.required - 1, for: .vertical)
+        userView.menuButton.setContentHuggingPriority(.required - 1, for: .horizontal)
         
         userView.setNeedsLayout()
     }

@@ -92,6 +92,10 @@ extension HomeTimelineViewController {
                         transition: .alertController(animated: true, completion: nil)
                     )
                 }),
+                UIAction(title: "Push Notification", attributes: [], state: .off, handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.showPushNotification()
+                }),
                 UIAction(title: "Account List", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.showAccountListAction(action)
@@ -298,6 +302,14 @@ extension HomeTimelineViewController {
                 assertionFailure()
             }
         }   // end Task
+    }
+    
+    @objc private func showPushNotification() {
+         coordinator.present(
+            scene: .pushNotificationScratch,
+            from: nil,
+            transition: .modal(animated: true)
+         )
     }
     
     @objc private func showStubTimelineAction(_ sender: UIAction) {

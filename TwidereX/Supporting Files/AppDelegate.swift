@@ -5,11 +5,13 @@
 //  Created by Cirno MainasuK on 2020-8-31.
 //
 
+import os.log
 import AVKit
 import UIKit
 import Combine
 import Floaty
 import Firebase
+import FirebaseMessaging
 import Kingfisher
 import AppShared
 import TwidereCommon
@@ -18,6 +20,8 @@ import TwidereCommon
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    let logger = Logger(subsystem: "AppDelegate", category: "AppDelegate")
 
     var disposeBag = Set<AnyCancellable>()
 
@@ -25,9 +29,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        AppSecret.register()
+        
+        // setup push notification
+        UNUserNotificationCenter.current().delegate = self
+        application.registerForRemoteNotifications()
+
         // Firebase
         FirebaseApp.configure()
         Crashlytics.crashlytics().setCustomValue(Locale.preferredLanguages.first ?? "nil", forKey: "preferredLanguage")
+        Messaging.messaging().delegate = self
         
         // configure AudioSession
         try? AVAudioSession.sharedInstance().setCategory(.ambient)
@@ -80,6 +91,78 @@ extension AppDelegate {
             return .all
         }
         #endif
+    }
+}
+
+// MARK: - UNUserNotificationCenterDelegate
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    // notification present in the foreground
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [PUSH]")
+        guard let pushNotification = AppDelegate.mastodonPushNotification(from: notification) else {
+            completionHandler([])
+            return
+        }
+        
+        let notificationID = String(pushNotification.notificationID)
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [PUSH] notification \(notificationID)")
+        
+        let accessToken = pushNotification.accessToken
+        UserDefaults.shared.increaseNotificationCount(accessToken: accessToken)
+        Task {
+            await self.appContext.notificationService.applicationIconBadgeNeedsUpdate.send()
+            await self.appContext.notificationService.receive(pushNotification: pushNotification)
+        }   // end Task
+        
+        completionHandler([.sound])
+    }
+    
+    // response to user action for notification (e.g. redirect to post)
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [PUSH]")
+        
+        guard let pushNotification = AppDelegate.mastodonPushNotification(from: response.notification) else {
+            completionHandler()
+            return
+        }
+        
+        let notificationID = String(pushNotification.notificationID)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: [Push] notification %s", ((#file as NSString).lastPathComponent), #line, #function, notificationID)
+        Task {
+            await appContext.notificationService.receive(pushNotification: pushNotification)
+            await appContext.notificationService.revealNotificationAction.send(pushNotification)
+            completionHandler()            
+        }   // end Task
+    }
+    
+    private static func mastodonPushNotification(from notification: UNNotification) -> MastodonPushNotification? {
+        guard let plaintext = notification.request.content.userInfo["plaintext"] as? Data,
+              let mastodonPushNotification = try? JSONDecoder().decode(MastodonPushNotification.self, from: plaintext) else {
+            return nil
+        }
+        
+        return mastodonPushNotification
+    }
+    
+}
+
+// MARK: - MessagingDelegate
+extension AppDelegate: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fcmToken: \(fcmToken ?? "<nil>")")
+        
+        Task {
+            await appContext.notificationService.updateToken(fcmToken)
+        }   // end Task
     }
 }
 
