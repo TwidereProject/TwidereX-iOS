@@ -232,3 +232,113 @@ extension APIService {
     
 }
 
+// Fetch v2 API again to update v2 only properies
+extension APIService {
+    
+    public struct TwitterBatchLookupResponseV2 {
+        let logger = Logger(subsystem: "APIService", category: "TwitterBatchLookupResponseV2")
+        
+        let dictionary: Twitter.Response.V2.DictContent
+        
+        public func update(status: TwitterStatus, me: TwitterUser) {
+            guard let lookupStatus = dictionary.tweetDict[status.id] else { return }
+            guard let managedObjectContext = status.managedObjectContext else { return }
+            
+            let now = Date()
+            
+            // poll
+            if let poll = dictionary.poll(for: lookupStatus) {
+                let result = Persistence.TwitterPoll.createOrMerge(
+                    in: managedObjectContext,
+                    context: .init(
+                        entity: poll,
+                        me: me,
+                        networkDate: now
+                    )
+                )
+                status.attach(poll: result.poll)
+            }
+            
+            // reply settings
+            if let value = lookupStatus.replySettings {
+                let replySettings = TwitterReplySettings(value: value.rawValue)
+                status.update(replySettings: replySettings)
+            }
+        }
+        
+        public func update(statuses: [TwitterStatus], me: TwitterUser) {
+            for status in statuses {
+                update(status: status, me: me)
+            }
+        }
+    }
+    
+    public func twitterBatchLookupResponsesV2(
+        statusIDs: [Twitter.Entity.V2.Tweet.ID],
+        authenticationContext: TwitterAuthenticationContext
+    ) async -> [Twitter.Response.Content<Twitter.API.V2.Lookup.Content>] {
+        let chunks = stride(from: 0, to: statusIDs.count, by: 100).map {
+            statusIDs[$0..<Swift.min(statusIDs.count, $0 + 100)]
+        }
+
+        let _responses = await chunks.parallelMap { chunk -> Twitter.Response.Content<Twitter.API.V2.Lookup.Content>? in
+            let response = try? await Twitter.API.V2.Lookup.statuses(
+                session: self.session,
+                query: .init(statusIDs: Array(chunk)),
+                authorization: authenticationContext.authorization
+            )
+            return response
+        }
+
+        return _responses.compactMap { $0 }
+    }
+
+    public func twitterBatchLookupV2(
+        statusIDs: [Twitter.Entity.V2.Tweet.ID],
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> TwitterBatchLookupResponseV2 {
+        let responses = await twitterBatchLookupResponsesV2(
+            statusIDs: statusIDs,
+            authenticationContext: authenticationContext
+        )
+
+        var tweets: [Twitter.Entity.V2.Tweet] = []
+        var users: [Twitter.Entity.V2.User] = []
+        var media: [Twitter.Entity.V2.Media] = []
+        var places: [Twitter.Entity.V2.Place] = []
+        var polls: [Twitter.Entity.V2.Tweet.Poll] = []
+        
+        for response in responses {
+            if let value = response.value.data {
+                tweets.append(contentsOf: value)
+            }
+            if let value = response.value.includes?.tweets {
+                tweets.append(contentsOf: value)
+            }
+            if let value = response.value.includes?.users {
+                users.append(contentsOf: value)
+            }
+            if let value = response.value.includes?.media {
+                media.append(contentsOf: value)
+            }
+            if let value = response.value.includes?.places {
+                places.append(contentsOf: value)
+            }
+            if let value = response.value.includes?.polls {
+                polls.append(contentsOf: value)
+            }
+        }
+
+        let dictionary = Twitter.Response.V2.DictContent(
+            tweets: tweets,
+            users: users,
+            media: media,
+            places: places,
+            polls: polls
+        )
+        
+        return .init(dictionary: dictionary)
+    }
+    
+}
+

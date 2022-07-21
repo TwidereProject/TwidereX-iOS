@@ -177,14 +177,15 @@ extension TimelineViewModel.LoadOldestState {
                     break
                 case .hashtag, .public, .list, .search, .user:
                     switch output.result {
+                    case .twitter(let statuses):
+                        let statusIDs = statuses.map { $0.idStr }
+                        viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
                     case .twitterV2(let statuses):
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
                     case .mastodon(let statuses):
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
-                    default:
-                        assertionFailure()
                     }
                 }
             } catch {

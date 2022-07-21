@@ -10,7 +10,7 @@ import Foundation
 // Ref: https://developer.twitter.com/en/support/twitter-api/error-troubleshooting
 // Ref: https://developer.twitter.com/ja/docs/basics/response-codes (prefer)
 extension Twitter.API.Error {
-    public enum TwitterAPIError: Error {
+    public enum TwitterAPIError: Error, Hashable {
         
         case custom(code: Int, message: String)
         
