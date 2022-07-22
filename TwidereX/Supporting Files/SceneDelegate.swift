@@ -152,7 +152,7 @@ extension SceneDelegate {
         
 
         switch shortcutItem.type {
-        case "com.twidere.TwidereX.new-post":
+        case "com.twidere.TwidereX.compose":
             if let topMost = topMostViewController(), topMost.isModal {
                 topMost.dismiss(animated: false)
             }
