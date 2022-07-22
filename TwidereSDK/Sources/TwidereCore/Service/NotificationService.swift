@@ -114,7 +114,7 @@ extension NotificationService {
     public nonisolated func unreadApplicationShortcutItems() async -> [UIApplicationShortcutItem] {
         guard let authenticationService = await self.authenticationService else { return [] }
         let managedObjectContext = authenticationService.managedObjectContext
-        return await managedObjectContext.perform{
+        return await managedObjectContext.perform {
             var items: [UIApplicationShortcutItem] = []
             for object in authenticationService.authenticationIndexes {
                 guard let authenticationIndex = managedObjectContext.object(with: object.objectID) as? AuthenticationIndex else { continue }
@@ -128,7 +128,7 @@ extension NotificationService {
                 
                 guard let user = authenticationIndex.user else { continue}
                 let title = "@\(user.username)"
-                let subtitle = "\(count) notifications"
+                let subtitle = L10n.Count.notification(count)
                 
                 let item = UIApplicationShortcutItem(
                     type: NotificationService.unreadShortcutItemIdentifier,
