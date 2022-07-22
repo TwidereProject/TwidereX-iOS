@@ -19,9 +19,9 @@ final public class SceneCoordinator {
     
     private var disposeBag = Set<AnyCancellable>()
     
-    private weak var scene: UIScene!
-    private weak var sceneDelegate: SceneDelegate!
-    private weak var context: AppContext!
+    private(set) weak var scene: UIScene!
+    private(set) weak var sceneDelegate: SceneDelegate!
+    private(set) weak var context: AppContext!
     
     let id = UUID().uuidString
     

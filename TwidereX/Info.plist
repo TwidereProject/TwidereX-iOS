@@ -2,6 +2,25 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>square.and.pencil</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>ComposeShortcutItemTitle</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.twidere.TwidereX.compose</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>magnifyingglass</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>SearchShortcutItemTitle</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.twidere.TwidereX.search</string>
+		</dict>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -61,6 +80,10 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>Main</string>
 	<key>UIMainStoryboardFile</key>

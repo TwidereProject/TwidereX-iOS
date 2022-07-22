@@ -11,6 +11,8 @@ import Combine
 import Intents
 import FPSIndicator
 import CoreDataStack
+import TwidereCore
+import AppShared
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -133,6 +135,103 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
 
+}
+
+extension SceneDelegate {
+    
+    func windowScene(
+        _ windowScene: UIWindowScene,
+        performActionFor shortcutItem: UIApplicationShortcutItem
+    ) async -> Bool {
+        logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(shortcutItem.type)")
+        guard let coordinator = self.coordinator else { return false }
+        
+        func topMostViewController() -> UIViewController? {
+            return coordinator.sceneDelegate.window?.rootViewController?.topMost
+        }
+        
+
+        switch shortcutItem.type {
+        case "com.twidere.TwidereX.new-post":
+            if let topMost = topMostViewController(), topMost.isModal {
+                topMost.dismiss(animated: false)
+            }
+            let composeViewModel = ComposeViewModel(context: coordinator.context)
+            let composeContentViewModel = ComposeContentViewModel(
+                kind: .post,
+                configurationContext: .init(
+                    apiService: coordinator.context.apiService,
+                    authenticationService: coordinator.context.authenticationService,
+                    mastodonEmojiService: coordinator.context.mastodonEmojiService,
+                    statusViewConfigureContext: .init(
+                        dateTimeProvider: DateTimeSwiftProvider(),
+                        twitterTextProvider: OfficialTwitterTextProvider(),
+                        authenticationContext: coordinator.context.authenticationService.$activeAuthenticationContext
+                    )
+                )
+            )
+            coordinator.present(
+                scene: .compose(
+                    viewModel: composeViewModel,
+                    contentViewModel: composeContentViewModel
+                ),
+                from: nil,
+                transition: .modal(animated: true)
+            )
+            return true
+        case "com.twidere.TwidereX.search":
+            if let topMost = topMostViewController(), topMost.isModal {
+                topMost.dismiss(animated: false)
+            }
+            coordinator.switchToTabBar(tab: .search)
+            return true
+        case NotificationService.unreadShortcutItemIdentifier:
+            if let topMost = topMostViewController(), topMost.isModal {
+                topMost.dismiss(animated: false)
+            }
+            coordinator.switchToTabBar(tab: .notification)
+            return true
+        default:
+            assertionFailure()
+            return false
+        }
+    }
+    
+//    private func handler(shortcutItem: UIApplicationShortcutItem) async -> Bool {
+//
+//        switch shortcutItem.type {
+//        case "org.joinmastodon.app.new-post":
+//            if coordinator?.tabBarController.topMost is ComposeViewController {
+//                logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): composing…")
+//            } else {
+//                if let authenticationBox = AppContext.shared.authenticationService.activeMastodonAuthenticationBox.value {
+//                    let composeViewModel = ComposeViewModel(
+//                        context: AppContext.shared,
+//                        composeKind: .post,
+//                        authenticationBox: authenticationBox
+//                    )
+//                    coordinator?.present(scene: .compose(viewModel: composeViewModel), from: nil, transition: .modal(animated: true, completion: nil))
+//                    logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): present compose scene")
+//                } else {
+//                    logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): not authenticated")
+//                }
+//            }
+//        case "org.joinmastodon.app.search":
+//            coordinator?.switchToTabBar(tab: .search)
+//            logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): select search tab")
+//
+//            if let searchViewController = coordinator?.tabBarController.topMost as? SearchViewController {
+//                searchViewController.searchBarTapPublisher.send()
+//                logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): trigger search")
+//            }
+//        default:
+//            assertionFailure()
+//            break
+//        }
+//
+//        return true
+//    }
+    
 }
 
 #if DEBUG

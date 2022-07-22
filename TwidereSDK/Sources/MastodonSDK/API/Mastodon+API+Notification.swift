@@ -51,7 +51,15 @@ extension Mastodon.API.Notification {
         public var includeTypes: [Mastodon.Entity.Notification.NotificationType]? {
             switch self {
             case .all:
-                return nil
+                return [
+                    .follow,
+                    .followRequest,
+                    .mention,
+                    .reblog,
+                    .favourite,
+                    .poll,
+                    .status
+                ]
             case .mentions:
                 return [.mention, .status]
             }   // end switch
