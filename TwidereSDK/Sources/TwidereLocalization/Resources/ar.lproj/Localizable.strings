@@ -192,6 +192,8 @@
 "Common.Controls.Friendship.Actions.Unfollow" = "الغ متابعته";
 "Common.Controls.Friendship.Actions.Unmute" = "ألغ الكتم";
 "Common.Controls.Friendship.BlockUser" = "احجب %@";
+"Common.Controls.Friendship.DoYouWantToReportAnd BlockUser" = "Do you want to report and block %@";
+"Common.Controls.Friendship.DoYouWantToReportUser" = "Do you want to report %@";
 "Common.Controls.Friendship.Follower" = "متابِع";
 "Common.Controls.Friendship.Followers" = "متابِعون";
 "Common.Controls.Friendship.FollowsYou" = "يتابعك";
@@ -396,6 +398,11 @@
 "Scene.Settings.About.Logo.BackgroundShadow" = "تظليل شعار الخلفية لصفحة 'حول'";
 "Scene.Settings.About.Title" = "حول";
 "Scene.Settings.About.Version" = "النسخة %@";
+"Scene.Settings.Account.AccountSettings" = "Account Settings";
+"Scene.Settings.Account.BlockedPeople" = "Blocked People";
+"Scene.Settings.Account.MuteAndBlock" = "Mute and Block";
+"Scene.Settings.Account.MutedPeople" = "Muted People";
+"Scene.Settings.Account.Title" = "الحساب";
 "Scene.Settings.Appearance.AmoledOptimizedMode" = "الوضع المحسّن لـ AMOLED";
 "Scene.Settings.Appearance.AppIcon" = "أيقونة التطبيق";
 "Scene.Settings.Appearance.HighlightColor" = "لون النص البارز";
@@ -466,9 +473,16 @@
 "Scene.Settings.Misc.Proxy.Username" = "اسم المستخدم";
 "Scene.Settings.Misc.Title" = "متفرقات";
 "Scene.Settings.Notification.Accounts" = "الحسابات";
+"Scene.Settings.Notification.Mastodon.Favorite" = "Favorite";
+"Scene.Settings.Notification.Mastodon.Mention" = "Mention";
+"Scene.Settings.Notification.Mastodon.NewFollow" = "New Follow";
+"Scene.Settings.Notification.Mastodon.Poll" = "poll";
+"Scene.Settings.Notification.Mastodon.Reblog" = "Reblog";
 "Scene.Settings.Notification.NotificationSwitch" = "أظهر الإشعارات";
+"Scene.Settings.Notification.PushNotification" = "Push Notification";
 "Scene.Settings.Notification.Title" = "التنبيهات";
 "Scene.Settings.SectionHeader.About" = "حول";
+"Scene.Settings.SectionHeader.Account" = "الحساب";
 "Scene.Settings.SectionHeader.General" = "عامّ";
 "Scene.Settings.Storage.All.SubTitle" = "حذف كل التخزين المؤقت لـ Twidere X. لن تفقد بيانات اعتماد حسابك.";
 "Scene.Settings.Storage.All.Title" = "امسح التخزين المؤقت";

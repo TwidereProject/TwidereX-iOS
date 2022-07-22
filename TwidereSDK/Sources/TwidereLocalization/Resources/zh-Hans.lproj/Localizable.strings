@@ -192,6 +192,8 @@
 "Common.Controls.Friendship.Actions.Unfollow" = "取消关注";
 "Common.Controls.Friendship.Actions.Unmute" = "解除静音";
 "Common.Controls.Friendship.BlockUser" = "屏蔽 %@";
+"Common.Controls.Friendship.DoYouWantToReportAnd BlockUser" = "是否要举报并屏蔽 %@";
+"Common.Controls.Friendship.DoYouWantToReportUser" = "是否要举报 %@";
 "Common.Controls.Friendship.Follower" = "关注者";
 "Common.Controls.Friendship.Followers" = "关注者";
 "Common.Controls.Friendship.FollowsYou" = "关注了你";
@@ -396,6 +398,11 @@
 "Scene.Settings.About.Logo.BackgroundShadow" = "关于页面背景徽标阴影";
 "Scene.Settings.About.Title" = "关于";
 "Scene.Settings.About.Version" = "版本 %@";
+"Scene.Settings.Account.AccountSettings" = "账户设置";
+"Scene.Settings.Account.BlockedPeople" = "已屏蔽用户";
+"Scene.Settings.Account.MuteAndBlock" = "静音和屏蔽";
+"Scene.Settings.Account.MutedPeople" = "已静音用户";
+"Scene.Settings.Account.Title" = "账号";
 "Scene.Settings.Appearance.AmoledOptimizedMode" = "AMOLED 优化模式";
 "Scene.Settings.Appearance.AppIcon" = "应用图标";
 "Scene.Settings.Appearance.HighlightColor" = "高亮颜色";
@@ -466,9 +473,16 @@
 "Scene.Settings.Misc.Proxy.Username" = "用户名";
 "Scene.Settings.Misc.Title" = "其它";
 "Scene.Settings.Notification.Accounts" = "帐号";
+"Scene.Settings.Notification.Mastodon.Favorite" = "喜欢";
+"Scene.Settings.Notification.Mastodon.Mention" = "提及";
+"Scene.Settings.Notification.Mastodon.NewFollow" = "新关注者";
+"Scene.Settings.Notification.Mastodon.Poll" = "投票";
+"Scene.Settings.Notification.Mastodon.Reblog" = "转发";
 "Scene.Settings.Notification.NotificationSwitch" = "显示通知";
+"Scene.Settings.Notification.PushNotification" = "推送通知";
 "Scene.Settings.Notification.Title" = "通知";
 "Scene.Settings.SectionHeader.About" = "关于";
+"Scene.Settings.SectionHeader.Account" = "账号";
 "Scene.Settings.SectionHeader.General" = "通用";
 "Scene.Settings.Storage.All.SubTitle" = "删除所有 Twidere X 缓存。您的帐户凭据不会丢失。";
 "Scene.Settings.Storage.All.Title" = "清除所有缓存";

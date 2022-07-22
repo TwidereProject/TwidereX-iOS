@@ -2,6 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>count.notification</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count.notification@</string>
+      <key>count.notification</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld notifications</string>
+      </dict>
+    </dict>
     <key>count.media</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>
@@ -13,7 +27,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld media</string>
+        <string>%ld개의 미디어</string>
       </dict>
     </dict>
     <key>count.input_limit_remains</key>
@@ -27,7 +41,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld characters</string>
+        <string>남은 글자 수: %ld</string>
       </dict>
     </dict>
     <key>count.metric_formatted.post</key>
@@ -41,7 +55,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>posts</string>
+        <string>게시글</string>
       </dict>
     </dict>
     <key>count.post</key>
@@ -55,7 +69,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld posts</string>
+        <string>%ld개의 게시물</string>
       </dict>
     </dict>
     <key>count.quote</key>
@@ -69,7 +83,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld quotes</string>
+        <string>%ld개의 인용</string>
       </dict>
     </dict>
     <key>count.like</key>
@@ -83,7 +97,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld likes</string>
+        <string>%ld개의 마음에 들어요</string>
       </dict>
     </dict>
     <key>count.retweet</key>
@@ -97,7 +111,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld retweets</string>
+        <string>%ld개의 리트윗</string>
       </dict>
     </dict>
     <key>count.reblog</key>
@@ -111,7 +125,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld reblogs</string>
+        <string>%ld개의 리블로그</string>
       </dict>
     </dict>
     <key>count.reply</key>
@@ -125,7 +139,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld replies</string>
+        <string>%ld개의 답글</string>
       </dict>
     </dict>
     <key>count.vote</key>

@@ -1,3 +1,5 @@
+"ComposeShortcutItemTitle" = "Oluştur";
 "NSCameraUsageDescription" = "Tweet için fotoğraf çekmekte kullanılır";
 "NSLocationWhenInUseUsageDescription" = "Coğrafi işaretli tweet göndermekte kullanılır";
 "NSPhotoLibraryAddUsageDescription" = "Fotoğrafı Fotoğraf Kitaplığına kaydetmekte kullanılır";
+"SearchShortcutItemTitle" = "Ara";

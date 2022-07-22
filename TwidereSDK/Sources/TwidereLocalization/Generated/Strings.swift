@@ -595,6 +595,14 @@ public enum L10n {
         public static func blockUser(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Controls.Friendship.BlockUser", String(describing: p1))
         }
+        /// Do you want to report and block %@
+        public static func doYouWantToReportAndBlockUser(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Controls.Friendship.DoYouWantToReportAnd BlockUser", String(describing: p1))
+        }
+        /// Do you want to report %@
+        public static func doYouWantToReportUser(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Controls.Friendship.DoYouWantToReportUser", String(describing: p1))
+        }
         /// follower
         public static let follower = L10n.tr("Localizable", "Common.Controls.Friendship.Follower")
         /// followers
@@ -1284,6 +1292,18 @@ public enum L10n {
           public static let backgroundShadow = L10n.tr("Localizable", "Scene.Settings.About.Logo.BackgroundShadow")
         }
       }
+      public enum Account {
+        /// Account Settings
+        public static let accountSettings = L10n.tr("Localizable", "Scene.Settings.Account.AccountSettings")
+        /// Blocked People
+        public static let blockedPeople = L10n.tr("Localizable", "Scene.Settings.Account.BlockedPeople")
+        /// Mute and Block
+        public static let muteAndBlock = L10n.tr("Localizable", "Scene.Settings.Account.MuteAndBlock")
+        /// Muted People
+        public static let mutedPeople = L10n.tr("Localizable", "Scene.Settings.Account.MutedPeople")
+        /// Account
+        public static let title = L10n.tr("Localizable", "Scene.Settings.Account.Title")
+      }
       public enum Appearance {
         /// AMOLED optimized mode
         public static let amoledOptimizedMode = L10n.tr("Localizable", "Scene.Settings.Appearance.AmoledOptimizedMode")
@@ -1477,12 +1497,28 @@ public enum L10n {
         public static let accounts = L10n.tr("Localizable", "Scene.Settings.Notification.Accounts")
         /// Show Notification
         public static let notificationSwitch = L10n.tr("Localizable", "Scene.Settings.Notification.NotificationSwitch")
+        /// Push Notification
+        public static let pushNotification = L10n.tr("Localizable", "Scene.Settings.Notification.PushNotification")
         /// Notification
         public static let title = L10n.tr("Localizable", "Scene.Settings.Notification.Title")
+        public enum Mastodon {
+          /// Favorite
+          public static let favorite = L10n.tr("Localizable", "Scene.Settings.Notification.Mastodon.Favorite")
+          /// Mention
+          public static let mention = L10n.tr("Localizable", "Scene.Settings.Notification.Mastodon.Mention")
+          /// New Follow
+          public static let newFollow = L10n.tr("Localizable", "Scene.Settings.Notification.Mastodon.NewFollow")
+          /// poll
+          public static let poll = L10n.tr("Localizable", "Scene.Settings.Notification.Mastodon.Poll")
+          /// Reblog
+          public static let reblog = L10n.tr("Localizable", "Scene.Settings.Notification.Mastodon.Reblog")
+        }
       }
       public enum SectionHeader {
         /// About
         public static let about = L10n.tr("Localizable", "Scene.Settings.SectionHeader.About")
+        /// Account
+        public static let account = L10n.tr("Localizable", "Scene.Settings.SectionHeader.Account")
         /// General
         public static let general = L10n.tr("Localizable", "Scene.Settings.SectionHeader.General")
       }
@@ -1594,6 +1630,10 @@ public enum L10n {
     /// Plural format key: "%#@count_media@"
     public static func media(_ p1: Int) -> String {
       return L10n.tr("Localizable", "count.media", p1)
+    }
+    /// Plural format key: "%#@count.notification@"
+    public static func notification(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.notification", p1)
     }
     /// Plural format key: "%#@count_people@"
     public static func people(_ p1: Int) -> String {

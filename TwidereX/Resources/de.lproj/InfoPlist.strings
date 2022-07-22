@@ -1,3 +1,5 @@
+"ComposeShortcutItemTitle" = "Erstellen";
 "NSCameraUsageDescription" = "Für Tweet Foto machen";
 "NSLocationWhenInUseUsageDescription" = "Wird zum Senden von geomarkierten Tweets verwendet";
 "NSPhotoLibraryAddUsageDescription" = "Wird zum Speichern von Fotos in der Fotogalerie verwendet";
+"SearchShortcutItemTitle" = "Suche";
