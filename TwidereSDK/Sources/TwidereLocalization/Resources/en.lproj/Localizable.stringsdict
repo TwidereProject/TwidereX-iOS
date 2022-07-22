@@ -5,8 +5,8 @@
     <key>count.notification</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>
-      <string>%#@count.notification@</string>
-      <key>count.notification</key>
+      <string>%#@count_notification@</string>
+      <key>count_notification</key>
       <dict>
         <key>NSStringFormatSpecTypeKey</key>
         <string>NSStringPluralRuleType</string>

@@ -1631,7 +1631,7 @@ public enum L10n {
     public static func media(_ p1: Int) -> String {
       return L10n.tr("Localizable", "count.media", p1)
     }
-    /// Plural format key: "%#@count.notification@"
+    /// Plural format key: "%#@count_notification@"
     public static func notification(_ p1: Int) -> String {
       return L10n.tr("Localizable", "count.notification", p1)
     }
