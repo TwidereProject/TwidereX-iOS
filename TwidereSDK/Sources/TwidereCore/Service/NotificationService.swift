@@ -11,6 +11,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import TwidereCommon
+import TwidereLocalization
 
 final public actor NotificationService {
     
