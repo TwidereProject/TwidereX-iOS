@@ -176,6 +176,15 @@ extension StatusFetchViewModel.Timeline {
             
             return true
         }
+        
+        public func isIncluded(_ status: Twitter.Entity.Tweet) -> Bool {
+            if rule.contains(.onlyMedia) {
+                // the repost also contains the mediaKeys. Not needs handle explicitly
+                guard let media = status.extendedEntities?.media, !media.isEmpty else { return false }
+            }
+            
+            return true
+        }
     }
     
 }
@@ -320,6 +329,7 @@ extension StatusFetchViewModel.Timeline {
                     searchText: hashtag,
                     untilID: nil,
                     nextToken: nil,
+                    maxID: nil,
                     maxResults: nil,
                     filter: fetchContext.filter
                 )))
@@ -365,6 +375,7 @@ extension StatusFetchViewModel.Timeline {
                     authenticationContext: authenticationContext,
                     list: record,
                     paginationToken: nil,
+                    maxID: nil,
                     maxResults: nil,
                     filter: fetchContext.filter
                 )))
@@ -389,6 +400,7 @@ extension StatusFetchViewModel.Timeline {
                     searchText: searchTimelineContext.searchText,
                     untilID: nil,
                     nextToken: nil,
+                    maxID: nil,
                     maxResults: nil,
                     filter: {
                         switch searchTimelineContext.timelineKind {
@@ -427,6 +439,7 @@ extension StatusFetchViewModel.Timeline {
                     authenticationContext: authenticationContext,
                     userID: userIdentifier.id,
                     paginationToken: nil,
+                    maxID: nil,
                     maxResults: nil,
                     filter: {
                         switch userTimelineContext.timelineKind {
