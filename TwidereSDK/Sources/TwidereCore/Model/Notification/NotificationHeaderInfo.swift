@@ -67,7 +67,7 @@ extension NotificationHeaderInfo {
         case .status:
             return nil
         case ._other:
-            assertionFailure()
+            // assertionFailure()
             return nil
         }
     }
@@ -97,7 +97,7 @@ extension NotificationHeaderInfo {
         case .status:
             return nil
         case ._other:
-            assertionFailure()
+            // assertionFailure()
             return nil
         }
         return Meta.convert(from: .mastodon(string: text, emojis: user.emojis.asDictionary))

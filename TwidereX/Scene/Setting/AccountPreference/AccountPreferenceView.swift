@@ -18,9 +18,9 @@ enum AccountPreferenceListEntry: Hashable {
     
     var title: String {
         switch self {
-        case .muted:                return "Muted People"
-        case .blocked:              return "Blocked People"
-        case .accountSettings:      return "Account Settings"
+        case .muted:                return L10n.Scene.Settings.Account.mutedPeople
+        case .blocked:              return L10n.Scene.Settings.Account.blockedPeople
+        case .accountSettings:      return L10n.Scene.Settings.Account.accountSettings
         case .signout:              return L10n.Common.Controls.Actions.signOut
         }
     }
@@ -33,7 +33,7 @@ struct AccountPreferenceView: View {
     @State var isPushNotificationEnabled = true
     
     var muteAndBlockSection: some View {
-        Section(header: Text("Mute and Block")) {
+        Section(header: Text(L10n.Scene.Settings.Account.muteAndBlock)) {
             let entries: [AccountPreferenceListEntry] = [
                 .muted, .blocked
             ]

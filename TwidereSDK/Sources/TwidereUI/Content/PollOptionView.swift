@@ -48,7 +48,7 @@ public final class PollOptionView: UIView {
         let textField = DeleteBackwardResponseTextField()
         textField.font = .systemFont(ofSize: 16, weight: .regular)
         textField.textColor = .label
-        textField.text = "Choice" // TODO: i18n
+        textField.text = "Choice"
         textField.textAlignment = UIApplication.shared.userInterfaceLayoutDirection == .leftToRight ? .left : .right
         return textField
     }()

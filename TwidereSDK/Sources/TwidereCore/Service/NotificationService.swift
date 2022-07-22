@@ -8,10 +8,13 @@
 import os.log
 import UIKit
 import Combine
+import CoreData
 import CoreDataStack
 import TwidereCommon
 
 final public actor NotificationService {
+    
+    public static let unreadShortcutItemIdentifier = "com.twidere.TwidereCore.NotificationService.unread-shortcut"
     
     let logger = Logger(subsystem: "NotificationService", category: "NotificationService")
     
@@ -107,6 +110,44 @@ final public actor NotificationService {
 }
 
 extension NotificationService {
+
+    public nonisolated func unreadApplicationShortcutItems() async -> [UIApplicationShortcutItem] {
+        guard let authenticationService = await self.authenticationService else { return [] }
+        let managedObjectContext = authenticationService.managedObjectContext
+        return await managedObjectContext.perform{
+            var items: [UIApplicationShortcutItem] = []
+            for object in authenticationService.authenticationIndexes {
+                guard let authenticationIndex = managedObjectContext.object(with: object.objectID) as? AuthenticationIndex else { continue }
+                let _accessToken: String? = {
+                    return authenticationIndex.mastodonAuthentication?.userAccessToken
+                }()
+                guard let accessToken = _accessToken else { continue}
+                
+                let count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
+                guard count > 0 else { continue }
+                
+                guard let user = authenticationIndex.user else { continue}
+                let title = "@\(user.username)"
+                let subtitle = "\(count) notifications"
+                
+                let item = UIApplicationShortcutItem(
+                    type: NotificationService.unreadShortcutItemIdentifier,
+                    localizedTitle: title,
+                    localizedSubtitle: subtitle,
+                    icon: nil,
+                    userInfo: [
+                        "accessToken": accessToken as NSSecureCoding
+                    ]
+                )
+                items.append(item)
+            }
+            return items
+        }
+    }
+    
+}
+
+extension NotificationService {
     
     public func clearNotificationCountForActiveUser() {
         guard let authenticationService = self.authenticationService else { return }
@@ -152,8 +193,9 @@ extension NotificationService {
 extension NotificationService {
     
     @MainActor
-    private func updateApplicationIconBadge(count: Int) {
+    private func updateApplicationIconBadge(count: Int) async {
         UIApplication.shared.applicationIconBadgeNumber = count
+        UIApplication.shared.shortcutItems = await unreadApplicationShortcutItems()
     }
     
     private func requestNotificationPermission() async {

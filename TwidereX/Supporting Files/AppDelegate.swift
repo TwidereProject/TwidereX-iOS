@@ -122,6 +122,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         completionHandler([.sound])
     }
     
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+        let shortcutItems = await appContext.notificationService.unreadApplicationShortcutItems()
+        UIApplication.shared.shortcutItems = shortcutItems
+        return .noData
+    }
+    
     // response to user action for notification (e.g. redirect to post)
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
