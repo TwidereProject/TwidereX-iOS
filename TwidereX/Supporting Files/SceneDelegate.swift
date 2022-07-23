@@ -186,9 +186,23 @@ extension SceneDelegate {
             coordinator.switchToTabBar(tab: .search)
             return true
         case NotificationService.unreadShortcutItemIdentifier:
-            if let topMost = topMostViewController(), topMost.isModal {
-                topMost.dismiss(animated: false)
+            guard let accessToken = shortcutItem.userInfo?["accessToken"] as? String else {
+                assertionFailure()
+                return false
             }
+            let request = MastodonAuthentication.sortedFetchRequest
+            request.predicate = MastodonAuthentication.predicate(userAccessToken: accessToken)
+            request.fetchLimit = 1
+            guard let authentication = try? coordinator.context.managedObjectContext.fetch(request).first else {
+                assertionFailure()
+                return false
+            }
+            
+            let _isActive = try? await coordinator.context.authenticationService.activeAuthenticationIndex(record: authentication.authenticationIndex.asRecrod)
+            guard _isActive == true else {
+                return false
+            }
+            
             coordinator.switchToTabBar(tab: .notification)
             return true
         default:
