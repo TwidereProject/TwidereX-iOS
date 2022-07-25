@@ -211,41 +211,6 @@ extension SceneDelegate {
         }
     }
     
-//    private func handler(shortcutItem: UIApplicationShortcutItem) async -> Bool {
-//
-//        switch shortcutItem.type {
-//        case "org.joinmastodon.app.new-post":
-//            if coordinator?.tabBarController.topMost is ComposeViewController {
-//                logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): composing…")
-//            } else {
-//                if let authenticationBox = AppContext.shared.authenticationService.activeMastodonAuthenticationBox.value {
-//                    let composeViewModel = ComposeViewModel(
-//                        context: AppContext.shared,
-//                        composeKind: .post,
-//                        authenticationBox: authenticationBox
-//                    )
-//                    coordinator?.present(scene: .compose(viewModel: composeViewModel), from: nil, transition: .modal(animated: true, completion: nil))
-//                    logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): present compose scene")
-//                } else {
-//                    logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): not authenticated")
-//                }
-//            }
-//        case "org.joinmastodon.app.search":
-//            coordinator?.switchToTabBar(tab: .search)
-//            logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): select search tab")
-//
-//            if let searchViewController = coordinator?.tabBarController.topMost as? SearchViewController {
-//                searchViewController.searchBarTapPublisher.send()
-//                logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): trigger search")
-//            }
-//        default:
-//            assertionFailure()
-//            break
-//        }
-//
-//        return true
-//    }
-    
 }
 
 #if DEBUG
