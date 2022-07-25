@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreDataStack
+import TwidereCommon
 
 public enum UserObject: Hashable {
     case twitter(object: TwitterUser)
@@ -30,6 +31,28 @@ extension UserObject {
             return .twitter(.init(id: object.id))
         case .mastodon(let object):
             return .mastodon(.init(domain: object.domain, id: object.id))
+        }
+    }
+    
+    public var authenticationContext: AuthenticationContext? {
+        switch self {
+        case .twitter(let object):
+            return object.twitterAuthentication.flatMap {
+                AuthenticationContext(authenticationIndex: $0.authenticationIndex, secret: AppSecret.default.secret)
+            }
+        case .mastodon(let object):
+            return object.mastodonAuthentication.flatMap {
+                AuthenticationContext(authenticationIndex: $0.authenticationIndex, secret: AppSecret.default.secret)
+            }
+        }
+    }
+    
+    public var notifications: Set<MastodonNotification> {
+        switch self {
+        case .twitter:
+            return []
+        case .mastodon(let object):
+            return object.notifications
         }
     }
 }

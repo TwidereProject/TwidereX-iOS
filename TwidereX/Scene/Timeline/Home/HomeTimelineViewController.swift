@@ -207,6 +207,30 @@ extension HomeTimelineViewController {
         }
     }
     
+    override func savePositionBeforeScrollToTop() {
+        guard let viewModel = self.viewModel as? HomeTimelineViewModel else { return }
+        let latestUnreadStatusItem = viewModel.latestUnreadStatusItem
+        viewModel.latestUnreadStatusItemBeforeScrollToTop = latestUnreadStatusItem
+        
+        super.savePositionBeforeScrollToTop()
+    }
+    
+    override func restorePositionWhenScrollToTop() {
+        super.restorePositionWhenScrollToTop()
+        
+        guard let viewModel = self.viewModel as? HomeTimelineViewModel else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            viewModel.latestUnreadStatusItem = viewModel.latestUnreadStatusItemBeforeScrollToTop
+            viewModel.latestUnreadStatusItemBeforeScrollToTop = nil
+            
+            if let latestUnreadStatusItem = viewModel.latestUnreadStatusItem,
+               let index = viewModel.diffableDataSource?.indexPath(for: latestUnreadStatusItem)
+            {
+                viewModel.unreadItemCount = index.row  // trigger update
+            }
+        }
+    }
+    
 }
 
 // MARK: - UITableViewDelegate

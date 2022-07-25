@@ -9,6 +9,7 @@ import Foundation
 import OrderedCollections
 
 extension Twitter.Response.V2 {
+    
     public class DictContent {
         public let tweetDict: OrderedDictionary<Twitter.Entity.V2.Tweet.ID, Twitter.Entity.V2.Tweet>
         public let userDict: OrderedDictionary<Twitter.Entity.V2.User.ID, Twitter.Entity.V2.User>
@@ -86,4 +87,5 @@ extension Twitter.Response.V2.DictContent {
         guard let pollID = tweet.attachments?.pollIDs?.first else { return nil }
         return pollDict[pollID]
     }
+    
 }

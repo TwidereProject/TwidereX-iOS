@@ -15,23 +15,32 @@ on:
 jobs:
   build:
     name: CI Build Test
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: force Xcode 13.2
-        run: sudo xcode-select -switch /Applications/Xcode_13.2.app
+      - name: force Xcode 13.4.1
+        run: sudo xcode-select -switch /Applications/Xcode_13.4.1.app
         
       - name: setup
         env: 
-            APP_SECRET: ${{ secrets.APP_SECRET }}
-            CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
-            CONSUMER_KEY_SECRET: ${{ secrets.CONSUMER_KEY_SECRET }}
-            HOST_KEY_PUBLIC: ${{ secrets.HOST_KEY_PUBLIC }}
-            OAUTH_ENDPOINT: ${{ secrets.OAUTH_ENDPOINT }}
-            OAUTH2_ENDPOINT: ${{ secrets.OAUTH2_ENDPOINT }}
-            OAUTH2_ENDPOINT_DEBUG: ${{ secrets.OAUTH2_ENDPOINT_DEBUG }}
+            AppSecret: ${{ secrets.AppSecret }}
+            HostKeyPublic: ${{ secrets.HostKeyPublic }}
+            ConsumerKeyDebug: ${{ secrets.ConsumerKeyDebug }}
+            ConsumerKeyRelease: ${{ secrets.ConsumerKeyRelease }}
+            ConsumerKeySecretDebug: ${{ secrets.ConsumerKeySecretDebug }}
+            ConsumerKeySecretRelease: ${{ secrets.ConsumerKeySecretRelease }}
+            OauthEndpointDebug: ${{ secrets.OauthEndpointDebug }}
+            OauthEndpointRelease: ${{ secrets.OauthEndpointRelease }}
+            ClientIDDebug: ${{ secrets.ClientIDDebug }}
+            ClientIDRelease: ${{ secrets.ClientIDRelease }}
+            ClientSecretDebug: ${{ secrets.ClientSecretDebug }}
+            ClientSecretRelease: ${{ secrets.ClientSecretRelease }}
+            Oauth2EndpointDebug: ${{ secrets.Oauth2EndpointDebug }}
+            Oauth2EndpointRelease: ${{ secrets.Oauth2EndpointRelease }}
+            MastodonNotificationEndpointDebug: ${{ secrets.MastodonNotificationEndpointDebug }}
+            MastodonNotificationEndpointRelease: ${{ secrets.MastodonNotificationEndpointRelease }}
         run: exec ./.github/scripts/setup.sh
 
       - name: build

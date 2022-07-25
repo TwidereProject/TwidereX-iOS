@@ -26,7 +26,7 @@ public class AuthenticationService: NSObject {
     let authenticationIndexFetchedResultsController: NSFetchedResultsController<AuthenticationIndex>
 
     // output
-    public let authenticationIndexes = CurrentValueSubject<[AuthenticationIndex], Never>([])
+    @Published public var authenticationIndexes: [AuthenticationIndex] = []
     public let activeAuthenticationIndex = CurrentValueSubject<AuthenticationIndex?, Never>(nil)
     
     @Published public var activeAuthenticationContext: AuthenticationContext? = nil
@@ -93,7 +93,7 @@ public class AuthenticationService: NSObject {
 //            .store(in: &disposeBag)
 
         // bind activeAuthenticationIndex
-        authenticationIndexes
+        $authenticationIndexes
             .map { $0.sorted(by: { $0.activeAt > $1.activeAt }).first }
             .assign(to: \.value, on: activeAuthenticationIndex)
             .store(in: &disposeBag)
@@ -109,7 +109,7 @@ public class AuthenticationService: NSObject {
 
         do {
             try authenticationIndexFetchedResultsController.performFetch()
-            authenticationIndexes.value = authenticationIndexFetchedResultsController.fetchedObjects ?? []
+            authenticationIndexes = authenticationIndexFetchedResultsController.fetchedObjects ?? []
         } catch {
             assertionFailure(error.localizedDescription)
         }
@@ -194,7 +194,7 @@ extension AuthenticationService: NSFetchedResultsControllerDelegate {
     public func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         switch controller {
         case authenticationIndexFetchedResultsController:
-            authenticationIndexes.value = authenticationIndexFetchedResultsController.fetchedObjects ?? []
+            authenticationIndexes = authenticationIndexFetchedResultsController.fetchedObjects ?? []
         default:
             assertionFailure()
         }

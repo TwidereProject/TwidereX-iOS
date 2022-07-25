@@ -99,6 +99,12 @@ extension APIService {
             authorization: authenticationContext.authorization
         )
         
+        let statusIDs: [Twitter.Entity.V2.Tweet.ID] = response.value.map { $0.idStr }
+        let _lookupResponse = try? await twitterBatchLookupV2(
+            statusIDs: statusIDs,
+            authenticationContext: authenticationContext
+        )
+        
         #if DEBUG
         // log time cost
         let start = CACurrentMediaTime()
@@ -114,7 +120,9 @@ extension APIService {
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
             let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            
             // persist status
+            var statusArray: [TwitterStatus] = []
             for entity in response.value {
                 let persistContext = Persistence.TwitterStatus.PersistContext(
                     entity: entity,
@@ -123,10 +131,16 @@ extension APIService {
                     userCache: nil,
                     networkDate: response.networkDate
                 )
-                let _ = Persistence.TwitterStatus.createOrMerge(
+                let result = Persistence.TwitterStatus.createOrMerge(
                     in: managedObjectContext,
                     context: persistContext
                 )
+                statusArray.append(result.status)
+            }
+            
+            // amend the v2 only properties
+            if let lookupResponse = _lookupResponse, let me = me {
+                lookupResponse.update(statuses: statusArray, me: me)
             }
         }
         

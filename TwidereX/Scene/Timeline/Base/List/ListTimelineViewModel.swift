@@ -7,8 +7,12 @@
 //
 
 import UIKit
+import TwidereCore
 
 class ListTimelineViewModel: TimelineViewModel {
+    
+    // input
+    @Published var scrollPositionRecord: ScrollPositionRecord? = nil
     
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
     
@@ -99,4 +103,12 @@ extension ListTimelineViewModel {
         updateDataSource(snapshot: snapshot, animatingDifferences: true)
     }
     
+}
+
+extension ListTimelineViewModel {
+    struct ScrollPositionRecord {
+        let item: StatusItem
+        let offset: CGFloat
+        let timestamp: Date
+    }
 }

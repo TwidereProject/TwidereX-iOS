@@ -14,6 +14,7 @@ final class HomeTimelineViewModel: ListTimelineViewModel {
     // input
     var isUpdaingDataSource = false
     var latestUnreadStatusItem: StatusItem?
+    var latestUnreadStatusItemBeforeScrollToTop: StatusItem?
     
     // output
     @Published var unreadItemCount = 0

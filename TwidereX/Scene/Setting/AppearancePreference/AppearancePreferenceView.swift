@@ -10,9 +10,9 @@ import SwiftUI
 import TwidereLocalization
 import TwidereUI
 
-struct AppearanceView: View {
+struct AppearancePreferenceView: View {
     
-    @ObservedObject var viewModel: AppearanceViewModel
+    @ObservedObject var viewModel: AppearancePreferenceViewModel
     
     @State private var isTranslateButtonPreferenceSheetPresented = false
 
@@ -74,7 +74,7 @@ struct AppearanceView: View {
 struct AppearanceView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            AppearanceView(viewModel: AppearanceViewModel(context: .shared))
+            AppearancePreferenceView(viewModel: AppearancePreferenceViewModel(context: .shared))
                 .navigationBarTitle(Text(L10n.Scene.Settings.Appearance.title))
                 .navigationBarTitleDisplayMode(.inline)
         }

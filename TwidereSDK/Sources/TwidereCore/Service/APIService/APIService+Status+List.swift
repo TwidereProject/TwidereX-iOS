@@ -5,10 +5,12 @@
 //  Created by MainasuK on 2022-3-2.
 //
 
+import os.log
 import Foundation
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
+import func QuartzCore.CACurrentMediaTime
 
 extension APIService {
     
@@ -40,6 +42,62 @@ extension APIService {
                 statusIDs: statusIDs,
                 authenticationContext: authenticationContext
             )
+        }
+        
+        return response
+    }
+    
+    public func twitterListStatusesV1(
+        query: Twitter.API.List.StatusesQuery,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
+        let response = try await Twitter.API.List.statuses(
+            session: session,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        let statusIDs: [Twitter.Entity.V2.Tweet.ID] = response.value.map { $0.idStr }
+        let _lookupResponse = try? await twitterBatchLookupV2(
+            statusIDs: statusIDs,
+            authenticationContext: authenticationContext
+        )
+                
+        #if DEBUG
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            // log rate limit
+            response.logRateLimit()
+            
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+        }
+        #endif
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            
+            var statusArray: [TwitterStatus] = []
+            for entity in response.value {
+                let result = Persistence.TwitterStatus.createOrMerge(
+                    in: managedObjectContext,
+                    context: .init(
+                        entity: entity,
+                        me: me,
+                        statusCache: nil,
+                        userCache: nil,
+                        networkDate: response.networkDate
+                    )
+                )
+                statusArray.append(result.status)
+            }   // end for in
+            
+            // amend the v2 only properties
+            if let lookupResponse = _lookupResponse, let me = me {
+                lookupResponse.update(statuses: statusArray, me: me)
+            }
         }
         
         return response

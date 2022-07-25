@@ -12,11 +12,20 @@ import MetaTextKit
 
 public struct MetaLabelRepresentable: UIViewRepresentable {
     
-    let textStyle: TextStyle
-    let metaContent: MetaContent
+    public let textStyle: TextStyle
+    public let metaContent: MetaContent
+    
+    public init(
+        textStyle: TextStyle,
+        metaContent: MetaContent
+    ) {
+        self.textStyle = textStyle
+        self.metaContent = metaContent
+    }
     
     public func makeUIView(context: Context) -> MetaLabel {
         let view = MetaLabel(style: textStyle)
+        view.isUserInteractionEnabled = false
         return view
     }
     

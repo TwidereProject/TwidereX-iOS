@@ -1,5 +1,5 @@
 //
-//  AppearanceViewController.swift
+//  AppearancePreferenceViewController.swift
 //  TwidereX
 //
 //  Created by MainasuK on 2022-4-1.
@@ -12,19 +12,16 @@ import Combine
 import SwiftUI
 import TwidereLocalization
 
-final class AppearanceViewController: UIViewController, NeedsDependency {
+final class AppearancePreferenceViewController: UIViewController, NeedsDependency {
     
-    let logger = Logger(subsystem: "AppearanceViewController", category: "ViewController")
+    let logger = Logger(subsystem: "AppearancePreferenceViewController", category: "ViewController")
         
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
 
     var disposeBag = Set<AnyCancellable>()
-    private(set) lazy var viewModel = AppearanceViewModel(context: context)
-    
-    // weak var delegate: EditListViewControllerDelegate?
-    
-    private(set) lazy var appearanceView = AppearanceView(viewModel: viewModel)
+    private(set) lazy var viewModel = AppearancePreferenceViewModel(context: context)
+    private(set) lazy var appearanceView = AppearancePreferenceView(viewModel: viewModel)
 
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -32,7 +29,7 @@ final class AppearanceViewController: UIViewController, NeedsDependency {
     
 }
 
-extension AppearanceViewController {
+extension AppearancePreferenceViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -22,13 +22,14 @@ target 'TwidereX' do
   pod 'Firebase/AnalyticsWithoutAdIdSupport'
   pod 'FirebaseCrashlytics'
   pod 'FirebasePerformance'
+  pod 'FirebaseMessaging'
   
   # misc
-  pod 'SwiftGen', '~> 6.3.0'
-  pod 'Sourcery', '~> 1.6.1'
+  pod 'SwiftGen', '~> 6.5.1'
+  pod 'Sourcery', '~> 1.8.1'
 
   # Debug
-  pod 'FLEX', '~> 4.4.0', :configurations => ['Debug']
+  pod 'FLEX', '~> 4.7.0', :configurations => ['Debug']
   pod 'ZIPFoundation', '~> 0.9.11', :configurations => ['Debug']
   
   target 'TwidereXTests' do
@@ -47,22 +48,6 @@ target 'AppShared' do
   use_frameworks!
   common_pods
 end
-
-plugin 'cocoapods-keys', {
-  :project => "TwidereX",
-  :keys => [
-    "app_secret",
-    "consumer_key",
-    "consumer_key_secret",
-    "client_id",
-    "client_id_debug",
-    "host_key_public",
-    "oauth_endpoint",
-    "oauth_endpoint_debug",
-    "oauth2_endpoint",
-    "oauth2_endpoint_debug"
-  ]
-}
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|

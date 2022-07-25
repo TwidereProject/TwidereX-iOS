@@ -14,19 +14,20 @@ extension Twitter.API.Search {
 
     public static func tweets(
         session: URLSession,
-        authorization: Twitter.API.OAuth.Authorization,
-        query: Twitter.API.Statuses.Timeline.TimelineQuery
-    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
-        let url = tweetsEndpointURL
-        let request = Twitter.API.request(url: url, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems, encodedQueryItems: query.encodedQueryItems)
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                let value = try Twitter.API.decode(type: Twitter.API.Search.Content.self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
-            }
-            .eraseToAnyPublisher()
+        query: Twitter.API.Statuses.Timeline.TimelineQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.API.Search.Content> {
+        let request = Twitter.API.request(
+            url: tweetsEndpointURL,
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: Twitter.API.Search.Content.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
     }
-    
+
 }
 
 extension Twitter.API.Search {
@@ -41,7 +42,7 @@ extension Twitter.API.Search {
         }
         
         public struct SearchMetadata: Codable {
-            public let nextResults: String
+            public let nextResults: String?
             public let query: String
             public let count: Int
             

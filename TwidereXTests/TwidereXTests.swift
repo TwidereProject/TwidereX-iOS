@@ -5,12 +5,13 @@
 //  Created by Cirno MainasuK on 2020-8-31.
 //
 
+import os.log
 import XCTest
 @testable import TwidereX
-import CryptoKit
-import CryptoSwift
 
 class TwidereXTests: XCTestCase {
+    
+    let logger = Logger(subsystem: "TwidereXTests", category: "UnitTest")
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -34,6 +35,4 @@ class TwidereXTests: XCTestCase {
 
 }
 
-extension TwidereXTests {
-    
-}
+

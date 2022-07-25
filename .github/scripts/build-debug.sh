@@ -16,4 +16,4 @@ xcrun xcodebuild \
     -parallelizeTargets \
     -showBuildTimingSummary \
     clean \
-    build | xcpretty
+    build

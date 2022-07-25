@@ -22,7 +22,88 @@ extension APIService {
     
 }
 
-// MARK: - Twitter
+// MARK: - Twitter V1
+extension APIService {
+    
+    // for thread
+    public func searchTwitterStatusV1(
+        conversationRootTweetID: Twitter.Entity.Tweet.ID,
+        authorUsername: String,
+        maxID: String?,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.Search.Content> {
+        let query = Twitter.API.Statuses.Timeline.TimelineQuery(
+            count: APIService.conversationSearchCount,
+            maxID: maxID,
+            sinceID: conversationRootTweetID,
+            query: "to:\(authorUsername) OR from:\(authorUsername) -filter:retweets"
+        )
+        return try await searchTwitterStatusV1(
+            query: query,
+            authenticationContext: authenticationContext
+        )
+    }
+    
+    // for search
+    public func searchTwitterStatusV1(
+        query: Twitter.API.Statuses.Timeline.TimelineQuery,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.Search.Content> {
+        let response = try await Twitter.API.Search.tweets(
+            session: session,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        let statusIDs: [Twitter.Entity.V2.Tweet.ID] = (response.value.statuses ?? []).map { $0.idStr }
+        let _lookupResponse = try? await twitterBatchLookupV2(
+            statusIDs: statusIDs,
+            authenticationContext: authenticationContext
+        )
+        
+        #if DEBUG
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            // log rate limit
+            response.logRateLimit()
+            
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+        }
+        #endif
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+         
+            var statusArray: [TwitterStatus] = []
+            for entity in response.value.statuses ?? [] {
+                let result = Persistence.TwitterStatus.createOrMerge(
+                    in: managedObjectContext,
+                    context: .init(
+                        entity: entity,
+                        me: me,
+                        statusCache: nil,
+                        userCache: nil,
+                        networkDate: response.networkDate
+                    )
+                )
+                statusArray.append(result.status)
+            }   // end for in
+            
+            // amend the v2 only properties
+            if let lookupResponse = _lookupResponse, let me = me {
+                lookupResponse.update(statuses: statusArray, me: me)
+            }
+        }
+
+        return response
+    }
+    
+}
+
+// MARK: - Twitter V2
 extension APIService {
     
     // for search
@@ -101,7 +182,7 @@ extension APIService {
         try await managedObjectContext.performChanges {
             let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             
-            Persistence.Twitter.persist(
+            _ = Persistence.Twitter.persist(
                 in: managedObjectContext,
                 context: Persistence.Twitter.PersistContextV2(
                     dictionary: dictionary,
