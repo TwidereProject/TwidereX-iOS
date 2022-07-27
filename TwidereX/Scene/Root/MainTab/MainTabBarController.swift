@@ -209,6 +209,19 @@ extension MainTabBarController {
 
 extension MainTabBarController {
 
+    // A. trigger select by MainTabBarController.tabBarController(_:didSelect:)
+    //    The device is horizontal compact size class
+    //    and user tap on TabBar directly.
+    //    And navigation stack is already pop to root in
+    //    MainTabBarController.tabBarController(_:shouldSelect:)
+    // B. trigger select by ContentSplitViewController.sidebarViewModel(_:active:)
+    //    The device is horizontal regular size class and user tap on sidebar.
+    //    And there are two conditions (true/false) for `isMainTabBarControllerActive` value.
+    //    Only trigger pop and scroll action when main tab isActive (a.k.a secondary tab bar controller hidden)
+    // C. trigger select by SceneCoordinator.switchToTabBar(tab:)
+    //    The device idiom is phone.
+    //    Follows B. workflow with default true of `isMainTabBarControllerActive` value
+    //    And maybe force pop to root needs 
     func select(tab: TabBarItem, isMainTabBarControllerActive: Bool = true) {
         let _index = tabBar.items?.firstIndex(where: { $0.tag == tab.tag })
         guard let index = _index else {
@@ -243,6 +256,18 @@ extension MainTabBarController {
 
 extension MainTabBarController {
     
+    @objc private func doubleTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        switch sender.state {
+        case .ended:
+            guard let scrollViewContainer = selectedViewController?.topMost as? ScrollViewContainer else { return }
+            scrollViewContainer.scrollToTop(animated: true)
+        default:
+            break
+        }
+    }
+
+    
     @objc private func tabBarLongPressGestureRecognizerHandler(_ sender: UILongPressGestureRecognizer) {
         guard sender.state == .began else { return }
 
@@ -275,6 +300,23 @@ extension MainTabBarController {
 
 // MARK: - UITabBarControllerDelegate
 extension MainTabBarController: UITabBarControllerDelegate {
+    
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        // fix issue 102: https://github.com/TwidereProject/TwidereX-iOS/issues/102
+        // try to pop to root when tap on the same tabBarItem and break select
+        if tabBarController.selectedViewController === viewController,
+           let navigationController = viewController as? UINavigationController,
+           navigationController.viewControllers.count > 1
+        {
+            navigationController.popToRootViewController(animated: true)
+            return false
+        }
+        
+        return true
+    }
+    
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
@@ -285,4 +327,5 @@ extension MainTabBarController: UITabBarControllerDelegate {
         
         select(tab: tab)
     }
+    
 }
