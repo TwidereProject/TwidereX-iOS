@@ -141,19 +141,38 @@ extension Persistence.TwitterPoll {
         poll: TwitterPoll,
         context: PersistContext
     ) {
-        let optionEntities = context.entity.options
+        let optionEntities = context.entity.options.sorted(by: { $0.position < $1.position })
         let options = poll.options.sorted(by: { $0.position < $1.position })
-        for (option, entity) in zip(options, optionEntities) {
-            Persistence.TwitterPollOption.merge(
-                option: option,
-                context: Persistence.TwitterPollOption.PersistContext(
-                    entity: entity,
-                    me: context.me,
-                    networkDate: context.networkDate
+        
+        for entity in optionEntities {
+            let position = entity.position
+            for option in options.filter({ $0.position == position }) {
+                Persistence.TwitterPollOption.merge(
+                    option: option,
+                    context: Persistence.TwitterPollOption.PersistContext(
+                        entity: entity,
+                        me: context.me,
+                        networkDate: context.networkDate
+                    )
                 )
-            )
-        }   // end for in
-
+            }
+        }
+        
+        // remove duplicated options
+        //
+        // note:
+        // some dev builds intro duplicated options
+        // the release builds could just ignore it
+        if let managedObjectContext = poll.managedObjectContext {
+            let positions = Set<Int64>(options.map { $0.position })
+            for position in positions {
+                let optionsAtPosition = options.filter { $0.position == position }
+                optionsAtPosition.dropFirst().forEach { option in
+                    managedObjectContext.delete(option)
+                }
+            }
+        }
+        
         poll.update(updatedAt: context.networkDate)
     }
     

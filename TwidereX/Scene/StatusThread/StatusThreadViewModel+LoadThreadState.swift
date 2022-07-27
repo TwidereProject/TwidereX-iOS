@@ -136,7 +136,7 @@ extension StatusThreadViewModel.LoadThreadState {
         }
         
         func prepareMastodonStatusThread(record: ManagedObjectRecord<MastodonStatus>) async {
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            guard let viewModel = viewModel else { return }
             
             let managedObjectContext = viewModel.context.managedObjectContext
             let _mastodonContext: StatusThreadViewModel.ThreadContext.MastodonContext? = await managedObjectContext.perform {
@@ -207,6 +207,9 @@ extension StatusThreadViewModel.LoadThreadState {
     class Loading: StatusThreadViewModel.LoadThreadState {
         override var name: String { "Loading" }
 
+        var needsFallback = false
+        
+        var maxID: String?          // v1
         var nextToken: String?      // v2
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
@@ -223,7 +226,7 @@ extension StatusThreadViewModel.LoadThreadState {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
 
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            guard let viewModel = viewModel else { return }
             guard let threadContext = viewModel.threadContext.value else {
                 assertionFailure()
                 return
@@ -232,8 +235,13 @@ extension StatusThreadViewModel.LoadThreadState {
             Task {
                 switch threadContext {
                 case .twitter(let twitterConversation):
-                    let nodes = await fetch(twitterConversation: twitterConversation)
-                    await append(nodes: nodes)
+                    if needsFallback {
+                        let nodes = await fetchFallback(twitterConversation: twitterConversation)
+                        await append(nodes: nodes)
+                    } else {
+                        let nodes = await fetch(twitterConversation: twitterConversation)
+                        await append(nodes: nodes)
+                    }
                 case .mastodon(let mastodonContext):
                     let response = await fetch(mastodonContext: mastodonContext)
                     await append(response: response)
@@ -284,7 +292,7 @@ extension StatusThreadViewModel.LoadThreadState {
                 } else {
                     hasMore = false
                 }
-
+                
                 if hasMore {
                     await enter(state: Idle.self)
                 } else {
@@ -292,6 +300,63 @@ extension StatusThreadViewModel.LoadThreadState {
                 }
                 
                 return nodes
+            } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded {
+                self.needsFallback = true
+                stateMachine.enter(Idle.self)
+                stateMachine.enter(Loading.self)
+                return []
+            } catch {
+                await enter(state: Fail.self)
+                return []
+            }
+        }
+        
+        // fetch thread via V1 API
+        func fetchFallback(
+            twitterConversation: StatusThreadViewModel.ThreadContext.TwitterConversation
+        ) async -> [TwitterStatusThreadLeafViewModel.Node] {
+            guard let viewModel = viewModel, let stateMachine = stateMachine else { return [] }
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext?.twitterAuthenticationContext,
+                  let _ = twitterConversation.conversationID
+            else {
+                await enter(state: Fail.self)
+                return []
+            }
+            
+            do {
+                let response = try await viewModel.context.apiService.searchTwitterStatusV1(
+                    conversationRootTweetID: twitterConversation.statusID,
+                    authorUsername: twitterConversation.authorUsername,
+                    maxID: maxID,
+                    authenticationContext: authenticationContext
+                )
+                let nodes = TwitterStatusThreadLeafViewModel.Node.children(
+                    of: twitterConversation.statusID,
+                    from: response.value
+                )
+                
+                var hasMore = false
+                if let nextResult = response.value.searchMetadata.nextResults,
+                   let components = URLComponents(string: nextResult),
+                   let maxID = components.queryItems?.first(where: { $0.name == "max_id" })?.value,
+                   maxID != self.maxID
+                {
+                    self.maxID = maxID
+                    hasMore = !(response.value.statuses ?? []).isEmpty
+                }
+                
+                if hasMore {
+                    await enter(state: Idle.self)
+                } else {
+                    await enter(state: NoMore.self)
+                }
+                
+                return nodes
+            } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded {
+                self.needsFallback = true
+                stateMachine.enter(Idle.self)
+                stateMachine.enter(Loading.self)
+                return []
             } catch {
                 await enter(state: Fail.self)
                 return []
@@ -329,7 +394,7 @@ extension StatusThreadViewModel.LoadThreadState {
         func fetch(
             mastodonContext: StatusThreadViewModel.ThreadContext.MastodonContext
         ) async -> MastodonContextResponse {
-            guard let viewModel = viewModel, let stateMachine = stateMachine else {
+            guard let viewModel = viewModel else {
                 return MastodonContextResponse(
                     domain: "",
                     ancestorNodes: [],
@@ -393,7 +458,6 @@ extension StatusThreadViewModel.LoadThreadState {
 
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-            guard let viewModel = viewModel else { return }
         }
     }
     
@@ -406,7 +470,6 @@ extension StatusThreadViewModel.LoadThreadState {
 
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-            guard let viewModel = viewModel else { return }
         }
     }
     

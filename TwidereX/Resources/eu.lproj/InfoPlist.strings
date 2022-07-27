@@ -1,3 +1,5 @@
+"ComposeShortcutItemTitle" = "Idatzi";
 "NSCameraUsageDescription" = "Tweeterako argazkia ateratzeko erabiltzen da";
 "NSLocationWhenInUseUsageDescription" = "Geografikoki markatutako tweet bat bidaltzeko erabiltzen da";
 "NSPhotoLibraryAddUsageDescription" = "Argazki-liburutegian gordetzeko balio du";
+"SearchShortcutItemTitle" = "Bilatu";

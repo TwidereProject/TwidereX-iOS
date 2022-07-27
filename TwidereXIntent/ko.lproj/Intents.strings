@@ -12,61 +12,61 @@
 
 "8WWS78" = "사용자 이름";
 
-"9OV1Ic" = "Posts";
+"9OV1Ic" = "게시글";
 
-"ApmQKm" = "Switch Account";
+"ApmQKm" = "계정 전환";
 
 "BS59z4" = "공개";
 
 "Ciuk7c" = "이름";
 
-"DBgjXT" = "Account";
+"DBgjXT" = "계정";
 
-"Fn8AQn" = "URL";
+"Fn8AQn" = "링크";
 
-"G5v3xr" = "Set active account";
+"G5v3xr" = "계정 활성화";
 
-"GILN5g" = "There are ${count} options matching ‘${accounts}’.";
+"GILN5g" = "${count}개의 설정이 '${accounts}'(와)과 일치합니다.";
 
 "N4GVJI" = "${errorDescription}";
 
-"QSA5ql" = "Account";
+"QSA5ql" = "계정";
 
-"QWcTQP" = "Switch to ${account}";
+"QWcTQP" = "${account}로 전환";
 
-"SnCJhk" = "Publish Post";
+"SnCJhk" = "공개 게시";
 
 "SqRrlA" = "Just to confirm, you wanted ‘${accounts}’?";
 
-"SrV2FP" = "Error Description";
+"SrV2FP" = "오류 설명";
 
-"TzDamL" = "Toot Visibility";
+"TzDamL" = "툿 공개범위";
 
 "WVP0I1" = "${errorDescription}";
 
-"Xs6a35" = "Toot Visibility";
+"Xs6a35" = "툿 공개범위";
 
 "YNUo2I" = "There are ${count} options matching ‘${account}’.";
 
 "Yb4tzx" = "계정";
 
-"aV5Ezl" = "Default";
+"aV5Ezl" = "기본값";
 
 "aV8f0g" = "비공개";
 
 "aeaw8w" = "직접";
 
-"ch7ADX" = "Compose new post";
+"ch7ADX" = "새로 글쓰기";
 
-"f1YNIs" = "Post Content";
+"f1YNIs" = "작성할 콘텐츠";
 
 "jEAHra" = "리스트 되지 않음";
 
-"kWl9zU" = "Post ${content}with ${accounts}";
+"kWl9zU" = "${accounts}(와)과 함께 ${content} 작성";
 
-"noeHVX" = "Post";
+"noeHVX" = "게시글";
 
-"vbgnbQ" = "Post ${content}with ${accounts}";
+"vbgnbQ" = "${accounts}(와)과 함께 ${content} 작성";
 
 "xeqcBa-BS59z4" = "There are ${count} options matching ‘Public’.";
 
@@ -78,6 +78,6 @@
 
 "xeqcBa-jEAHra" = "There are ${count} options matching ‘Unlisted’.";
 
-"z3DAP7" = "Switch to ${account}";
+"z3DAP7" = "${account}로 전환";
 
-"zlMGvn" = "Content";
+"zlMGvn" = "콘텐츠";

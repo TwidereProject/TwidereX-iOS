@@ -352,12 +352,12 @@ extension DataSourceFacade {
                         authenticationContext: authenticationContext
                     )
                     notificationFeedbackGenerator.notificationOccurred(.success)
-                    presentSuccessBanner(title: "List Deleted")   // TODO: i18n
+                    presentSuccessBanner(title: L10n.Common.Alerts.ListDeleted.title)
                 } catch {
                     notificationFeedbackGenerator.notificationOccurred(.error)
                     presentWarningBanner(
-                        title: "Failed to Delete List", // TODO: i18n
-                        message: "Please try again",    // TODO: i18n
+                        title: L10n.Common.Alerts.FailedToDeleteList.title,
+                        message: L10n.Common.Alerts.FailedToDeleteList.message,
                         error: error
                     )
                 }

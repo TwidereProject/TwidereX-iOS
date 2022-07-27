@@ -19,7 +19,7 @@ struct MastodonNotificationSectionView: View {
         Group {
             // push notification secion
             Section {
-                Toggle("Push Notification", isOn: Binding(
+                Toggle(L10n.Scene.Settings.Notification.pushNotification, isOn: Binding(
                     get: { viewModel.isActive },
                     set: { newValue in
                         viewModel.isActive = newValue
@@ -47,8 +47,8 @@ struct MastodonNotificationSectionView: View {
 extension MastodonNotificationSectionView {
     
     var notificationOptionSection: some View {
-        Section(header: Text("Notifications")) {
-            Toggle("New Follow", isOn: Binding(
+        Section(header: Text(L10n.Scene.Settings.Notification.title)) {
+            Toggle(L10n.Scene.Settings.Notification.Mastodon.newFollow, isOn: Binding(
                 get: { viewModel.isNewFollowEnabled },
                 set: { newValue in
                     viewModel.isNewFollowEnabled = newValue
@@ -57,7 +57,7 @@ extension MastodonNotificationSectionView {
                     }
                 }
             ))
-            Toggle("Reblog", isOn: Binding(
+            Toggle(L10n.Scene.Settings.Notification.Mastodon.reblog, isOn: Binding(
                 get: { viewModel.isReblogEnabled },
                 set: { newValue in
                     viewModel.isReblogEnabled = newValue
@@ -66,7 +66,7 @@ extension MastodonNotificationSectionView {
                     }
                 }
             ))
-            Toggle("Favorite", isOn: Binding(
+            Toggle(L10n.Scene.Settings.Notification.Mastodon.favorite, isOn: Binding(
                 get: { viewModel.isFavoriteEnabled },
                 set: { newValue in
                     viewModel.isFavoriteEnabled = newValue
@@ -75,7 +75,7 @@ extension MastodonNotificationSectionView {
                     }
                 }
             ))
-            Toggle("Poll", isOn: Binding(
+            Toggle(L10n.Scene.Settings.Notification.Mastodon.poll, isOn: Binding(
                 get: { viewModel.isPollEnabled },
                 set: { newValue in
                     viewModel.isPollEnabled = newValue
@@ -84,7 +84,7 @@ extension MastodonNotificationSectionView {
                     }
                 }
             ))
-            Toggle("Mention", isOn: Binding(
+            Toggle(L10n.Scene.Settings.Notification.Mastodon.mention, isOn: Binding(
                 get: { viewModel.isMentionEnabled },
                 set: { newValue in
                     viewModel.isMentionEnabled = newValue
@@ -98,7 +98,7 @@ extension MastodonNotificationSectionView {
     
     var mentionPreferenceSection: some View {
         Section(
-            header: Text("Notifications: Mention"),
+            header: Text("Notifications: Mention"), // TODO: i18n
             footer:
                 Group {
                     switch viewModel.mentionPreference {

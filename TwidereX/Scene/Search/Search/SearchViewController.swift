@@ -79,50 +79,6 @@ extension SearchViewController {
         super.viewDidLoad()
         
         drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
-        
-//        viewModel.trendViewModel.$twitterTrendPlaces
-//            .removeDuplicates()
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] places in
-//                guard let self = self else { return }
-//                self.navigationItem.rightBarButtonItem = places.isEmpty ? nil : self.trendPreferenceBarButtonItem
-//                self.trendPreferenceBarButtonItem.menu = {
-//                    let worldwideMenu = UIMenu(
-//                        title: "",
-//                        image: nil,
-//                        identifier: nil,
-//                        options: [.displayInline],
-//                        children: [
-//                            UIAction(
-//                                title: L10n.Scene.Trends.worldWideWithoutPrefix,
-//                                image: UIImage(systemName: "globe"),
-//                                identifier: nil,
-//                                discoverabilityTitle: nil,
-//                                attributes: [],
-//                                state: .off
-//                            ) { [weak self] _ in
-//                                guard let self = self else { return }
-//                                self.viewModel.trendViewModel.resetTrendGroupIndex()
-//                            }
-//                        ]
-//                    )
-//                    let placeActions: [UIMenuElement] = places.map { place in
-//                        UIAction(
-//                            title: place.name,
-//                            image: nil,
-//                            identifier: nil,
-//                            discoverabilityTitle: nil,
-//                            attributes: [],
-//                            state: .off
-//                        ) { [weak self] _ in
-//                            guard let self = self else { return }
-//                            self.viewModel.trendViewModel.updateTrendGroupIndex(place: place)
-//                        }
-//                    }
-//                    return UIMenu(title: "Trend Places", image: nil, identifier: nil, options: [], children: [worldwideMenu] + placeActions)
-//                }()
-//            }
-//            .store(in: &disposeBag)
 
         view.backgroundColor = .systemGroupedBackground
         navigationItem.searchController = searchController
@@ -353,6 +309,7 @@ extension SearchViewController {
     private func searchText(_ text: String) {
         searchController.isActive = true
         searchController.searchBar.text = text
+        searchResultViewController.viewModel.selectedScope = searchResultViewController.viewModel.scopes.first
     }
 
 }

@@ -11,6 +11,8 @@ import Combine
 import Intents
 import FPSIndicator
 import CoreDataStack
+import TwidereCore
+import AppShared
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -133,6 +135,82 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
 
+}
+
+extension SceneDelegate {
+    
+    func windowScene(
+        _ windowScene: UIWindowScene,
+        performActionFor shortcutItem: UIApplicationShortcutItem
+    ) async -> Bool {
+        logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(shortcutItem.type)")
+        guard let coordinator = self.coordinator else { return false }
+        
+        func topMostViewController() -> UIViewController? {
+            return coordinator.sceneDelegate.window?.rootViewController?.topMost
+        }
+        
+
+        switch shortcutItem.type {
+        case "com.twidere.TwidereX.compose":
+            if let topMost = topMostViewController(), topMost.isModal {
+                topMost.dismiss(animated: false)
+            }
+            let composeViewModel = ComposeViewModel(context: coordinator.context)
+            let composeContentViewModel = ComposeContentViewModel(
+                kind: .post,
+                configurationContext: .init(
+                    apiService: coordinator.context.apiService,
+                    authenticationService: coordinator.context.authenticationService,
+                    mastodonEmojiService: coordinator.context.mastodonEmojiService,
+                    statusViewConfigureContext: .init(
+                        dateTimeProvider: DateTimeSwiftProvider(),
+                        twitterTextProvider: OfficialTwitterTextProvider(),
+                        authenticationContext: coordinator.context.authenticationService.$activeAuthenticationContext
+                    )
+                )
+            )
+            coordinator.present(
+                scene: .compose(
+                    viewModel: composeViewModel,
+                    contentViewModel: composeContentViewModel
+                ),
+                from: nil,
+                transition: .modal(animated: true)
+            )
+            return true
+        case "com.twidere.TwidereX.search":
+            if let topMost = topMostViewController(), topMost.isModal {
+                topMost.dismiss(animated: false)
+            }
+            coordinator.switchToTabBar(tab: .search)
+            return true
+        case NotificationService.unreadShortcutItemIdentifier:
+            guard let accessToken = shortcutItem.userInfo?["accessToken"] as? String else {
+                assertionFailure()
+                return false
+            }
+            let request = MastodonAuthentication.sortedFetchRequest
+            request.predicate = MastodonAuthentication.predicate(userAccessToken: accessToken)
+            request.fetchLimit = 1
+            guard let authentication = try? coordinator.context.managedObjectContext.fetch(request).first else {
+                assertionFailure()
+                return false
+            }
+            
+            let _isActive = try? await coordinator.context.authenticationService.activeAuthenticationIndex(record: authentication.authenticationIndex.asRecrod)
+            guard _isActive == true else {
+                return false
+            }
+            
+            coordinator.switchToTabBar(tab: .notification)
+            return true
+        default:
+            assertionFailure()
+            return false
+        }
+    }
+    
 }
 
 #if DEBUG

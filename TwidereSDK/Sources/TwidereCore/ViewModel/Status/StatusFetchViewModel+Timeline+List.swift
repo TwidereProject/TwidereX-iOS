@@ -28,19 +28,24 @@ extension StatusFetchViewModel.Timeline.List {
         public let authenticationContext: TwitterAuthenticationContext
         public let list: ManagedObjectRecord<TwitterList>
         public let paginationToken: String?
+        public let maxID: Twitter.Entity.Tweet.ID?
         public let maxResults: Int?
         public let filter: StatusFetchViewModel.Timeline.Filter
+        
+        public var needsAPIFallback = false
         
         public init(
             authenticationContext: TwitterAuthenticationContext,
             list: ManagedObjectRecord<TwitterList>,
             paginationToken: String?,
+            maxID: Twitter.Entity.Tweet.ID?,
             maxResults: Int?,
             filter: StatusFetchViewModel.Timeline.Filter
         ) {
             self.authenticationContext = authenticationContext
             self.list = list
             self.paginationToken = paginationToken
+            self.maxID = maxID
             self.maxResults = maxResults
             self.filter = filter
         }
@@ -50,6 +55,18 @@ extension StatusFetchViewModel.Timeline.List {
                 authenticationContext: authenticationContext,
                 list: list,
                 paginationToken: paginationToken,
+                maxID: maxID,
+                maxResults: maxResults,
+                filter: filter
+            )
+        }
+        
+        func map(maxID: Twitter.Entity.Tweet.ID) -> TwitterFetchContext {
+            return TwitterFetchContext(
+                authenticationContext: authenticationContext,
+                list: list,
+                paginationToken: paginationToken,
+                maxID: maxID,
                 maxResults: maxResults,
                 filter: filter
             )
@@ -107,30 +124,97 @@ extension StatusFetchViewModel.Timeline.List {
 
 extension StatusFetchViewModel.Timeline.List {
     
-    public static func fetch(api: APIService, input: Input) async throws -> StatusFetchViewModel.Timeline.Output {
-        switch input {
-        case .twitter(let fetchContext):
-            let query = Twitter.API.V2.Status.List.StatusesQuery(
-                maxResults: fetchContext.maxResults ?? 20,
-                nextToken: fetchContext.paginationToken
-            )
-            let response = try await api.twitterListStatuses(
-                list: fetchContext.list,
-                query: query,
-                authenticationContext: fetchContext.authenticationContext
-            )
-            let backInput: Input? = {
+    enum TwitterResponse {
+        case v2(Twitter.Response.Content<Twitter.API.V2.Status.List.StatusesContent>)
+        case v1(Twitter.Response.Content<[Twitter.Entity.Tweet]>)
+        
+        func filter(fetchContext: TwitterFetchContext) -> StatusFetchViewModel.Result {
+            switch self {
+            case .v2(let response):
+                let statuses = response.value.data ?? []
+                let result = statuses.filter(fetchContext.filter.isIncluded)
+                return .twitterV2(result)
+            case .v1(let response):
+                let result = response.value.filter(fetchContext.filter.isIncluded)
+                return .twitter(result)
+            }
+        }
+        
+        func backInput(fetchContext: TwitterFetchContext) -> Input? {
+            switch self {
+            case .v2(let response):
                 guard let nextToken = response.value.meta.previousToken else { return nil }
                 let fetchContext = fetchContext.map(paginationToken: nextToken)
                 return .twitter(fetchContext)
-            }()
-            let nextInput: Input? = {
+            case .v1:
+                return nil
+            }
+        }
+        
+        func nextInput(fetchContext: TwitterFetchContext) -> Input? {
+            switch self {
+            case .v2(let response):
                 guard let nextToken = response.value.meta.nextToken else { return nil }
                 let fetchContext = fetchContext.map(paginationToken: nextToken)
                 return .twitter(fetchContext)
+            case .v1(let response):
+                guard let maxID = response.value.last?.idStr else { return nil }
+                guard maxID != fetchContext.maxID else { return nil }
+                var fetchContext = fetchContext.map(maxID: maxID)
+                fetchContext.needsAPIFallback = true
+                return .twitter(fetchContext)
+            }
+        }
+    }
+    
+    public static func fetch(api: APIService, input: Input) async throws -> StatusFetchViewModel.Timeline.Output {
+        switch input {
+        case .twitter(let fetchContext):
+            let response: TwitterResponse = try await {
+                do {
+                    guard !fetchContext.needsAPIFallback else {
+                        throw Twitter.API.Error.ResponseError(httpResponseStatus: .ok, twitterAPIError: .rateLimitExceeded)
+                    }
+                    let query = Twitter.API.V2.Status.List.StatusesQuery(
+                        maxResults: fetchContext.maxResults ?? 20,
+                        nextToken: fetchContext.paginationToken
+                    )
+                    let response = try await api.twitterListStatuses(
+                        list: fetchContext.list,
+                        query: query,
+                        authenticationContext: fetchContext.authenticationContext
+                    )
+                    return .v2(response)
+                } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Rate Limit] fallback to v1")
+                    let managedObjectContext = api.backgroundManagedObjectContext
+                    let _listID: TwitterList.ID? = await managedObjectContext.perform {
+                        guard let list = fetchContext.list.object(in: managedObjectContext) else { return nil }
+                        return list.id
+                    }
+                    guard let listID = _listID else {
+                        throw AppError.implicit(.badRequest)
+                    }
+                    let response = try await api.twitterListStatusesV1(
+                        query: .init(
+                            id: listID,
+                            maxID: fetchContext.maxID
+                        ),
+                        authenticationContext: fetchContext.authenticationContext
+                    )
+                    return .v1(response)
+                } catch {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                    throw error
+                }
             }()
+            
+            let backInput = response.backInput(fetchContext: fetchContext)
+            let nextInput = response.nextInput(fetchContext: fetchContext)
+            let result = response.filter(fetchContext: fetchContext)
+            
             return .init(
-                result: .twitterV2(response.value.data ?? []),
+                result: result,
                 backInput: backInput.flatMap { .list($0) },
                 nextInput: nextInput.flatMap { .list($0) }
             )

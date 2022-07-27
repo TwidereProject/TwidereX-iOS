@@ -192,6 +192,8 @@
 "Common.Controls.Friendship.Actions.Unfollow" = "팔로우 끊기";
 "Common.Controls.Friendship.Actions.Unmute" = "숨기기 풀기";
 "Common.Controls.Friendship.BlockUser" = "%@ 차단하기";
+"Common.Controls.Friendship.DoYouWantToReportAnd BlockUser" = "Do you want to report and block %@";
+"Common.Controls.Friendship.DoYouWantToReportUser" = "Do you want to report %@";
 "Common.Controls.Friendship.Follower" = "팔로워";
 "Common.Controls.Friendship.Followers" = "팔로워";
 "Common.Controls.Friendship.FollowsYou" = "나를 팔로우하고 있음";
@@ -396,6 +398,11 @@
 "Scene.Settings.About.Logo.BackgroundShadow" = "페이지 바탕 로고의 그림자에 대하여";
 "Scene.Settings.About.Title" = "정보";
 "Scene.Settings.About.Version" = "%@ 버전";
+"Scene.Settings.Account.AccountSettings" = "Account Settings";
+"Scene.Settings.Account.BlockedPeople" = "Blocked People";
+"Scene.Settings.Account.MuteAndBlock" = "Mute and Block";
+"Scene.Settings.Account.MutedPeople" = "Muted People";
+"Scene.Settings.Account.Title" = "계정";
 "Scene.Settings.Appearance.AmoledOptimizedMode" = "AMOLED 최적화 모드";
 "Scene.Settings.Appearance.AppIcon" = "App Icon";
 "Scene.Settings.Appearance.HighlightColor" = "강조색";
@@ -466,9 +473,16 @@
 "Scene.Settings.Misc.Proxy.Username" = "사용자 이름";
 "Scene.Settings.Misc.Title" = "잡동사니";
 "Scene.Settings.Notification.Accounts" = "계정";
+"Scene.Settings.Notification.Mastodon.Favorite" = "Favorite";
+"Scene.Settings.Notification.Mastodon.Mention" = "Mention";
+"Scene.Settings.Notification.Mastodon.NewFollow" = "New Follow";
+"Scene.Settings.Notification.Mastodon.Poll" = "poll";
+"Scene.Settings.Notification.Mastodon.Reblog" = "Reblog";
 "Scene.Settings.Notification.NotificationSwitch" = "알림 보이기";
+"Scene.Settings.Notification.PushNotification" = "Push Notification";
 "Scene.Settings.Notification.Title" = "알림";
 "Scene.Settings.SectionHeader.About" = "정보";
+"Scene.Settings.SectionHeader.Account" = "계정";
 "Scene.Settings.SectionHeader.General" = "일반";
 "Scene.Settings.Storage.All.SubTitle" = "트위데레X의 모든 캐시를 지웁니다. 계정은 지워지지 않습니다.";
 "Scene.Settings.Storage.All.Title" = "모든 캐시 지우기";
