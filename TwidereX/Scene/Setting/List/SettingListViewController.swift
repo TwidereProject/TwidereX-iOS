@@ -63,13 +63,20 @@ extension SettingListViewController {
                         from: self,
                         transition: .show
                     )
-                case .appearance:
-                    self.coordinator.present(scene: .appearancePreference, from: self, transition: .show)
+                case .behaviors:
+                    let behaviorsPreferenceViewModel = BehaviorsPreferenceViewModel(context: self.context)
+                    self.coordinator.present(
+                        scene: .behaviorsPreference(viewModel: behaviorsPreferenceViewModel),
+                        from: self,
+                        transition: .show
+                    )
                 case .display:
                     self.coordinator.present(scene: .displayPreference, from: self, transition: .show)
                 case .layout:
                     break
                 case .webBrowser:
+                    break
+                case .appIcon:
                     break
                 case .about:
                     self.coordinator.present(scene: .about, from: self, transition: .show)

@@ -195,7 +195,18 @@ extension TimelineViewController {
         
         Task { @MainActor in
             assert(self._viewModel != nil)
+            
             await self._viewModel.loadLatest()
+            
+            if self._viewModel.preferredTimelineResetToTop,
+               let scrollViewContainer = self as? ScrollViewContainer
+            {
+                await _ = try self._viewModel.didLoadLatest.eraseToAnyPublisher().singleOutput()
+                scrollViewContainer.scrollToTop(
+                    animated: true,
+                    option: .init(tryRefreshWhenStayAtTop: false)
+                )
+            }
         }
     }
 

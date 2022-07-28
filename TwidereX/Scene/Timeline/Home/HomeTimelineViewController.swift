@@ -111,6 +111,19 @@ extension HomeTimelineViewController {
         super.viewDidAppear(animated)
         
         unreadIndicatorView.startDisplayLink()
+        
+        DispatchQueue.once {
+            guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
+            let settingListViewModel = SettingListViewModel(
+                context: self.context,
+                auth: .init(authenticationContext: authenticationContext)
+            )
+            self.coordinator.present(
+                scene: .setting(viewModel: settingListViewModel),
+                from: self,
+                transition: .modal(animated: true)
+            )
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -261,6 +274,8 @@ extension HomeTimelineViewController {
         }
 
         guard indexPath.row < oldIndexPath.row else {
+            // always update the number
+            viewModel.unreadItemCount = oldIndexPath.row
             return
         }
 

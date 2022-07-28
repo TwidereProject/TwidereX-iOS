@@ -14,7 +14,8 @@ import TwidereCore
 import TwidereAsset
 
 protocol SidebarViewModelDelegate: AnyObject {
-    func sidebarViewModel(_ viewModel: SidebarViewModel, active item: TabBarItem)
+    func sidebarViewModel(_ viewModel: SidebarViewModel, didTapItem item: TabBarItem)
+    func sidebarViewModel(_ viewModel: SidebarViewModel, didDoubleTapItem item: TabBarItem)
 }
 
 final class SidebarViewModel: ObservableObject {
@@ -82,8 +83,12 @@ final class SidebarViewModel: ObservableObject {
 
 extension SidebarViewModel {
     
-    func setActiveTab(item: TabBarItem) {
-        delegate?.sidebarViewModel(self, active: item)
+    func tap(item: TabBarItem) {
+        delegate?.sidebarViewModel(self, didTapItem: item)
+    }
+    
+    func doubleTap(item: TabBarItem) {
+        delegate?.sidebarViewModel(self, didDoubleTapItem: item)
     }
     
 }

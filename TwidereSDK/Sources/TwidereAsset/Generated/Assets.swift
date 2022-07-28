@@ -24,6 +24,7 @@ public enum Asset {
   public static let accentColor = ColorAsset(name: "AccentColor")
   public enum Arrows {
     public static let arrowLeft = ImageAsset(name: "Arrows/arrow.left")
+    public static let arrowRampRight = ImageAsset(name: "Arrows/arrow.ramp.right")
     public static let arrowRight = ImageAsset(name: "Arrows/arrow.right")
     public static let arrowTriangle2Circlepath = ImageAsset(name: "Arrows/arrow.triangle.2.circlepath")
     public static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")

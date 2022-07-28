@@ -29,7 +29,10 @@ final class SettingListViewModel: ObservableObject {
     
     // account
     @Published var user: UserObject?
-
+    
+    // App Icon
+    @Published var alternateIconNamePreference = UserDefaults.shared.alternateIconNamePreference
+    
     init(
         context: AppContext,
         auth: AuthContext?
@@ -41,6 +44,10 @@ final class SettingListViewModel: ObservableObject {
         Task {
             await setupAccountSource()
         }
+        
+        // App Icon
+        UserDefaults.shared.publisher(for: \.alternateIconNamePreference)
+            .assign(to: &$alternateIconNamePreference)
     }
 
 }

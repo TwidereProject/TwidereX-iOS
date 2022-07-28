@@ -12,6 +12,7 @@ import Combine
 import CoreDataStack
 import GameplayKit
 import TwidereCore
+import func QuartzCore.CACurrentMediaTime
 
 class TimelineViewModel: TimelineViewModelDriver {
     
@@ -34,11 +35,20 @@ class TimelineViewModel: TimelineViewModelDriver {
     @Published var isRefreshControlEnabled = true
     @Published var isFloatyButtonDisplay = true
     @Published var isLoadingLatest = false
-    @Published var lastAutomaticFetchTimestamp: Date?
+    
+    @Published private(set) var timelineRefreshInterval = UserDefaults.shared.timelineRefreshInterval
+    @Published private(set) var preferredTimelineResetToTop = UserDefaults.shared.preferredTimelineResetToTop
     
     // output
-    // @Published var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
     let didLoadLatest = PassthroughSubject<Void, Never>()
+    
+    // auto fetch
+    private var autoFetchLatestActionTime = CACurrentMediaTime()
+    let autoFetchLatestAction = PassthroughSubject<Void, Never>()
+    let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
+        .autoconnect()
+        .share()
+        .eraseToAnyPublisher()
     
     // bottom loader
     @MainActor private(set) lazy var stateMachine: GKStateMachine = {
@@ -63,7 +73,31 @@ class TimelineViewModel: TimelineViewModelDriver {
         self.kind = kind
         self.feedFetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
         self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
+        super.init()
         // end init
+        
+        UserDefaults.shared.publisher(for: \.timelineRefreshInterval)
+            .removeDuplicates()
+            .assign(to: &$timelineRefreshInterval)
+        
+        UserDefaults.shared.publisher(for: \.preferredTimelineResetToTop)
+            .removeDuplicates()
+            .assign(to: &$preferredTimelineResetToTop)
+        
+        timestampUpdatePublisher
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                let now = CACurrentMediaTime()
+                let elapse = now - self.autoFetchLatestActionTime
+                guard elapse > self.timelineRefreshInterval.seconds else {
+                    let remains = self.timelineRefreshInterval.seconds - elapse
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): (\(String(describing: self)) auto fetch in \(remains, format: .fixed(precision: 2))s")
+                    return
+                }
+                self.autoFetchLatestActionTime = now
+                self.autoFetchLatestAction.send()
+            }
+            .store(in: &disposeBag)
     }
     
 }

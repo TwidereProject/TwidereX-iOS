@@ -96,7 +96,7 @@ extension SceneCoordinator {
         // Settings
         case setting(viewModel: SettingListViewModel)
         case accountPreference(viewModel: AccountPreferenceViewModel)
-        case appearancePreference
+        case behaviorsPreference(viewModel: BehaviorsPreferenceViewModel)
         case displayPreference
         case about
         
@@ -363,8 +363,10 @@ private extension SceneCoordinator {
             let _viewController = AccountPreferenceViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
-        case .appearancePreference:
-            viewController = AppearancePreferenceViewController()
+        case .behaviorsPreference(let viewModel):
+            let _viewController = BehaviorsPreferenceViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .displayPreference:
             viewController = DisplayPreferenceViewController()
         case .about:
