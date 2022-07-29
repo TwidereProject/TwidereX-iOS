@@ -69,6 +69,15 @@ extension AuthenticationContext {
         }
     }
 }
+
+extension AuthenticationContext {
+    public var platform: Platform {
+        switch self {
+        case .twitter:      return .twitter
+        case .mastodon:     return .mastodon
+        }
+    }
+}
         
 public struct TwitterAuthenticationContext: Hashable {
     public let authenticationRecord: ManagedObjectRecord<TwitterAuthentication>

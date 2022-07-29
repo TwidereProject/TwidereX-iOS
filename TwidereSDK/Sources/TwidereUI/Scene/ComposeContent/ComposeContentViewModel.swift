@@ -38,7 +38,8 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     public let kind: Kind
     public let configurationContext: ConfigurationContext
     public let customEmojiPickerInputViewModel = CustomEmojiPickerInputView.ViewModel()
-
+    public let platform: Platform
+    
     // reply-to
     public private(set) var replyTo: StatusObject?
 
@@ -77,7 +78,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     }
     @Published public var isContentWarningEditing = false
 
-    // avatar
+    // avatar (me)
     @Published public var author: UserObject?
         
     // mention (Twitter)
@@ -156,6 +157,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     ) {
         self.kind = kind
         self.configurationContext = configurationContext
+        self.platform = configurationContext.authenticationService.activeAuthenticationContext?.platform ?? .none
         super.init()
         // end init
 
@@ -214,8 +216,32 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                     isContentWarningComposing = true
                     contentWarning = spoilerText
                 }
+                
+                // set content text
+                var mentionAccts: [String] = []
+                let _authorUserIdentifier: MastodonUserIdentifier? = {
+                    switch configurationContext.authenticationService.activeAuthenticationContext?.userIdentifier {
+                    case .mastodon(let userIdentifier):     return userIdentifier
+                    default:                                return nil
+                    }
+                }()
+                if _authorUserIdentifier?.id != status.author.id {
+                    mentionAccts.append("@" + status.author.acct)
+                }
+                for mention in status.mentions {
+                    let acct = "@" + mention.acct
+                    guard !mentionAccts.contains(acct) else { continue }
+                    guard mention.id != _authorUserIdentifier?.id else { continue }
+                    mentionAccts.append(acct)
+                }
+                for acct in mentionAccts {
+                    UITextChecker.learnWord(acct)
+                }
+                content = mentionAccts.joined(separator: " ") + " "
             }
         }
+        
+        initialContent = content
         
         // bind text
         $content
