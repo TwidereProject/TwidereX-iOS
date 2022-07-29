@@ -219,10 +219,19 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 
                 // set content text
                 var mentionAccts: [String] = []
-                mentionAccts.append("@" + status.author.acct)
+                let _authorUserIdentifier: MastodonUserIdentifier? = {
+                    switch configurationContext.authenticationService.activeAuthenticationContext?.userIdentifier {
+                    case .mastodon(let userIdentifier):     return userIdentifier
+                    default:                                return nil
+                    }
+                }()
+                if _authorUserIdentifier?.id != status.author.id {
+                    mentionAccts.append("@" + status.author.acct)
+                }
                 for mention in status.mentions {
                     let acct = "@" + mention.acct
                     guard !mentionAccts.contains(acct) else { continue }
+                    guard mention.id != _authorUserIdentifier?.id else { continue }
                     mentionAccts.append(acct)
                 }
                 for acct in mentionAccts {
