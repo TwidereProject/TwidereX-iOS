@@ -45,6 +45,8 @@ final class ContentSplitViewController: UIViewController, NeedsDependency {
     @Published var isSidebarDisplay = false
     @Published var isSecondaryTabBarControllerActive = false
     
+    @Published var tabBarTapScrollPreference = UserDefaults.shared.tabBarTapScrollPreference
+    
     // [Tab: HashValue]
     var transformNavigationStackRecord: [TabBarItem: [Int]] = [:]
 
@@ -58,6 +60,10 @@ extension ContentSplitViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        UserDefaults.shared.publisher(for: \.tabBarTapScrollPreference)
+            .removeDuplicates()
+            .assign(to: &$tabBarTapScrollPreference)
         
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = .opaqueSeparator
@@ -129,7 +135,7 @@ extension ContentSplitViewController {
 
 extension ContentSplitViewController {
     func select(tab: TabBarItem) {
-        sidebarViewController.viewModel.setActiveTab(item: tab)
+        sidebarViewController.viewModel.tap(item: tab)
     }
 }
 
@@ -217,7 +223,7 @@ extension ContentSplitViewController {
 // MARK: - SidebarViewModelDelegate
 extension ContentSplitViewController: SidebarViewModelDelegate {
 
-    func sidebarViewModel(_ viewModel: SidebarViewModel, active tab: TabBarItem) {
+    func sidebarViewModel(_ viewModel: SidebarViewModel, didTapItem tab: TabBarItem) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
 
         switch tab {
@@ -240,6 +246,30 @@ extension ContentSplitViewController: SidebarViewModelDelegate {
             } else if secondaryTabBarController.tabs.contains(tab) {
                 secondaryTabBarController.select(tab: tab, isSecondaryTabBarControllerActive: isSecondaryTabBarControllerActive)
                 isSecondaryTabBarControllerActive = true
+            } else {
+                assertionFailure()
+            }
+        }
+    }
+    
+    func sidebarViewModel(_ viewModel: SidebarViewModel, didDoubleTapItem tab: TabBarItem) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        switch tabBarTapScrollPreference {
+        case .single:       return
+        case .double:       break
+        }
+
+        switch tab {
+        case .settings:
+            // do nothing
+            break
+        default:
+            guard viewModel.activeTab == tab else { return }
+            if mainTabBarController.tabs.contains(tab) {
+                mainTabBarController.scrollToTop(tab: tab, isMainTabBarControllerActive: !isSecondaryTabBarControllerActive)
+            } else if secondaryTabBarController.tabs.contains(tab) {
+                secondaryTabBarController.scrollToTop(tab: tab, isSecondaryTabBarControllerActive: isSecondaryTabBarControllerActive)
             } else {
                 assertionFailure()
             }

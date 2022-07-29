@@ -1,8 +1,8 @@
 //
-//  AppearancePreferenceViewController.swift
+//  BehaviorsPreferenceViewController.swift
 //  TwidereX
 //
-//  Created by MainasuK on 2022-4-1.
+//  Created by MainasuK on 2022-7-27.
 //  Copyright © 2022 Twidere. All rights reserved.
 //
 
@@ -12,31 +12,31 @@ import Combine
 import SwiftUI
 import TwidereLocalization
 
-final class AppearancePreferenceViewController: UIViewController, NeedsDependency {
+final class BehaviorsPreferenceViewController: UIViewController, NeedsDependency {
     
-    let logger = Logger(subsystem: "AppearancePreferenceViewController", category: "ViewController")
+    let logger = Logger(subsystem: "BehaviorsPreferenceViewController", category: "ViewController")
         
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
 
     var disposeBag = Set<AnyCancellable>()
-    private(set) lazy var viewModel = AppearancePreferenceViewModel(context: context)
-    private(set) lazy var appearanceView = AppearancePreferenceView(viewModel: viewModel)
+    var viewModel: BehaviorsPreferenceViewModel!
+    private(set) lazy var behaviorsPreferenceView = BehaviorsPreferenceView(viewModel: viewModel)
 
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
-    
+
 }
 
-extension AppearancePreferenceViewController {
+extension BehaviorsPreferenceViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = L10n.Scene.Settings.Appearance.title
+        title = "Behaviors"     // TODO: i18n
         
-        let hostingViewController = UIHostingController(rootView: appearanceView)
+        let hostingViewController = UIHostingController(rootView: behaviorsPreferenceView)
         addChild(hostingViewController)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hostingViewController.view)

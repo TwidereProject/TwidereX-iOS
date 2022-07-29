@@ -37,21 +37,11 @@ public final class ThemeService {
         UINavigationBar.appearance().compactScrollEdgeAppearance = appearance
         
         // set tab bar appearance
-        let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.configureWithDefaultBackground()
-        tabBarAppearance.stackedLayoutAppearance = {
-            let tabBarItemAppearance = UITabBarItemAppearance()
-            tabBarItemAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.clear]
-            tabBarItemAppearance.focused.titleTextAttributes = [.foregroundColor: UIColor.clear]
-            tabBarItemAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.clear]
-            tabBarItemAppearance.disabled.titleTextAttributes = [.foregroundColor: UIColor.clear]
-            return tabBarItemAppearance
-        }()
+        let tabBarAppearance = ThemeService.setupTabBarAppearance()
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-        // UITabBar.appearance().barTintColor = theme.tabBarBackgroundColor
     }
-    
+
 }
 
 extension Theme {
@@ -66,5 +56,23 @@ extension Theme {
         case .lime:             return Asset.Colors.Theme.lime.color
         case .seafoam:          return Asset.Colors.Theme.seafoam.color
         }
+    }
+}
+
+extension ThemeService {
+    public static func setupTabBarAppearance() -> UITabBarAppearance {
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithDefaultBackground()
+        tabBarAppearance.stackedLayoutAppearance = {
+            let tabBarItemAppearance = UITabBarItemAppearance()
+            if !UserDefaults.shared.preferredTabBarLabelDisplay {
+                tabBarItemAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.clear]
+                tabBarItemAppearance.focused.titleTextAttributes = [.foregroundColor: UIColor.clear]
+                tabBarItemAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.clear]
+                tabBarItemAppearance.disabled.titleTextAttributes = [.foregroundColor: UIColor.clear]
+            }
+            return tabBarItemAppearance
+        }()
+        return tabBarAppearance
     }
 }

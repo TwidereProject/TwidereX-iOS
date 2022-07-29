@@ -121,9 +121,13 @@ extension TwitterUser {
         }
         set {
             let keyPath = #keyPath(TwitterUser.urlEntities)
-            let data = try? JSONEncoder().encode(newValue)
             willChangeValue(forKey: keyPath)
-            setPrimitiveValue(data, forKey: keyPath)
+            if let newValue = newValue {
+                let data = try? JSONEncoder().encode(newValue)
+                setPrimitiveValue(data, forKey: keyPath)
+            } else {
+                setPrimitiveValue(nil, forKey: keyPath)
+            }
             didChangeValue(forKey: keyPath)
         }
     }

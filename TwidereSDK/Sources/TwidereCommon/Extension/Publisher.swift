@@ -7,6 +7,43 @@
 
 import Combine
 
+// Ref: https://www.swiftbysundell.com/articles/connecting-async-await-with-other-swift-code/
+
+extension Publishers {
+    public struct MissingOutputError: Error {}
+}
+
+extension Publisher {
+    public func singleOutput() async throws -> Output {
+        var cancellable: AnyCancellable?
+        var didReceiveValue = false
+
+        return try await withCheckedThrowingContinuation { continuation in
+            cancellable = sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                    case .finished:
+                        if !didReceiveValue {
+                            continuation.resume(
+                                throwing: Publishers.MissingOutputError()
+                            )
+                        }
+                    }
+                },
+                receiveValue: { value in
+                    guard !didReceiveValue else { return }
+
+                    didReceiveValue = true
+                    cancellable?.cancel()
+                    continuation.resume(returning: value)
+                }
+            )
+        }
+    }
+}
+
 // ref: https://www.swiftbysundell.com/articles/calling-async-functions-within-a-combine-pipeline/
 
 extension Publisher {

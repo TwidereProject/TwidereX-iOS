@@ -77,6 +77,14 @@ extension ListTimelineViewController {
             }
             .store(in: &disposeBag)
         
+        viewModel.autoFetchLatestAction
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.autoFetchLatest()
+            }
+            .store(in: &disposeBag)
+        
         NotificationCenter.default
             .publisher(for: .statusBarTapped, object: nil)
             .throttle(for: 0.5, scheduler: DispatchQueue.main, latest: false)
@@ -108,13 +116,6 @@ extension ListTimelineViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        // FIXME: use timer to auto refresh
-        autoFetchLatest()
-    }
-    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -144,29 +145,9 @@ extension ListTimelineViewController {
               !diffableDataSource.snapshot().itemIdentifiers.isEmpty        // conflict with LoadOldestState
         else { return }
         
-        if !viewModel.isLoadingLatest {
-            let now = Date()
-            if let timestamp = viewModel.lastAutomaticFetchTimestamp {
-                #if DEBUG
-                let throttle: TimeInterval = 1
-                #else
-                let throttle: TimeInterval = 60
-                #endif
-                if now.timeIntervalSince(timestamp) > throttle {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline…")
-                    Task {
-                        await _viewModel.loadLatest()
-                    }
-                    viewModel.lastAutomaticFetchTimestamp = now
-                } else {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline skip. Reason: updated in recent 60s")
-                }
-            } else {
-                Task {
-                    await self.viewModel.loadLatest()
-                }
-                viewModel.lastAutomaticFetchTimestamp = now
-            }
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline…")
+        Task {
+            await _viewModel.loadLatest()
         }
     }   // end func
     
@@ -302,11 +283,13 @@ extension ListTimelineViewController: ScrollViewContainer {
 
     var scrollView: UIScrollView { return tableView }
 
-    func scrollToTop(animated: Bool) {
+    func scrollToTop(animated: Bool, option: ScrollViewContainerOption) {
         if scrollView.contentOffset.y < scrollView.frame.height,
            !viewModel.isLoadingLatest,
            (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
-           !refreshControl.isRefreshing {
+           !refreshControl.isRefreshing,
+           option.tryRefreshWhenStayAtTop
+        {
             scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }

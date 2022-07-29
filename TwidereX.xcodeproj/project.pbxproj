@@ -239,6 +239,10 @@
 		DB8761CC2745530200BA7EE2 /* CoverFlowStackItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761BC2745515F00BA7EE2 /* CoverFlowStackItem.swift */; };
 		DB8761D02745553700BA7EE2 /* MediaSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761CF2745553600BA7EE2 /* MediaSection.swift */; };
 		DB88AC3C250B26F40009E562 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB88AC3B250B26F40009E562 /* Preview Assets.xcassets */; };
+		DB88E626288EA1F7009A01F5 /* DisplayPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88E625288EA1F7009A01F5 /* DisplayPreferenceView.swift */; };
+		DB88E6292890DF67009A01F5 /* BehaviorsPreferenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88E6282890DF67009A01F5 /* BehaviorsPreferenceViewController.swift */; };
+		DB88E62C2890DF79009A01F5 /* BehaviorsPreferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88E62B2890DF79009A01F5 /* BehaviorsPreferenceViewModel.swift */; };
+		DB88E62E2890DF7E009A01F5 /* BehaviorsPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88E62D2890DF7E009A01F5 /* BehaviorsPreferenceView.swift */; };
 		DB89F591257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB89F590257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift */; };
 		DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC0F725401BA200E636BE /* UIViewController.swift */; };
 		DB8E4FD92563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8E4FD82563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift */; };
@@ -350,13 +354,10 @@
 		DBF739CF275C247F00BF6AB5 /* DataSourceFacade+Mute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF739CE275C247F00BF6AB5 /* DataSourceFacade+Mute.swift */; };
 		DBF739D1275C3EF300BF6AB5 /* DataSourceFacade+Report.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF739D0275C3EF300BF6AB5 /* DataSourceFacade+Report.swift */; };
 		DBF81C7C27F6A93E00004A56 /* DataSourceFacade+Translate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C7B27F6A93E00004A56 /* DataSourceFacade+Translate.swift */; };
-		DBF81C7E27F6E7F500004A56 /* AppearancePreferenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C7D27F6E7F500004A56 /* AppearancePreferenceViewController.swift */; };
-		DBF81C8027F6E80700004A56 /* AppearancePreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C7F27F6E80700004A56 /* AppearancePreferenceView.swift */; };
-		DBF81C8327F6ECF400004A56 /* AppearancePreferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C8227F6ECF400004A56 /* AppearancePreferenceViewModel.swift */; };
-		DBF81C8527F709EF00004A56 /* TranslateButtonPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C8427F709EF00004A56 /* TranslateButtonPreferenceView.swift */; };
-		DBF81C8827F7141600004A56 /* TranslationServicePreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C8727F7141600004A56 /* TranslationServicePreferenceView.swift */; };
 		DBF81C8E27F843D700004A56 /* AppIconAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C8C27F843D700004A56 /* AppIconAssets.swift */; };
-		DBF81C9127F8448C00004A56 /* AppIconPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C9027F8448C00004A56 /* AppIconPreferenceView.swift */; };
+		DBF87AD52892A6740029A7C7 /* AppIconPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF87AD42892A6740029A7C7 /* AppIconPreferenceView.swift */; };
+		DBF87AD92892A67D0029A7C7 /* TranslateButtonPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF87AD72892A67D0029A7C7 /* TranslateButtonPreferenceView.swift */; };
+		DBF87ADA2892A67D0029A7C7 /* TranslationServicePreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF87AD82892A67D0029A7C7 /* TranslationServicePreferenceView.swift */; };
 		DBFA471C2859C33500C9FF7F /* MeLikeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA471B2859C33500C9FF7F /* MeLikeTimelineViewModel.swift */; };
 		DBFA471F2859C4AE00C9FF7F /* UserLikeTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA471E2859C4AE00C9FF7F /* UserLikeTimelineViewController.swift */; };
 		DBFA47212859C4F300C9FF7F /* UserLikeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA47202859C4F300C9FF7F /* UserLikeTimelineViewModel.swift */; };
@@ -736,6 +737,10 @@
 		DB8761BC2745515F00BA7EE2 /* CoverFlowStackItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackItem.swift; sourceTree = "<group>"; };
 		DB8761CF2745553600BA7EE2 /* MediaSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSection.swift; sourceTree = "<group>"; };
 		DB88AC3B250B26F40009E562 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		DB88E625288EA1F7009A01F5 /* DisplayPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayPreferenceView.swift; sourceTree = "<group>"; };
+		DB88E6282890DF67009A01F5 /* BehaviorsPreferenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorsPreferenceViewController.swift; sourceTree = "<group>"; };
+		DB88E62B2890DF79009A01F5 /* BehaviorsPreferenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorsPreferenceViewModel.swift; sourceTree = "<group>"; };
+		DB88E62D2890DF7E009A01F5 /* BehaviorsPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorsPreferenceView.swift; sourceTree = "<group>"; };
 		DB89F590257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB8AC0F725401BA200E636BE /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		DB8AC18F2542DA9500E636BE /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
@@ -900,13 +905,10 @@
 		DBF81C7327F68AA800004A56 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBF81C7A27F696E000004A56 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBF81C7B27F6A93E00004A56 /* DataSourceFacade+Translate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Translate.swift"; sourceTree = "<group>"; };
-		DBF81C7D27F6E7F500004A56 /* AppearancePreferenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearancePreferenceViewController.swift; sourceTree = "<group>"; };
-		DBF81C7F27F6E80700004A56 /* AppearancePreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearancePreferenceView.swift; sourceTree = "<group>"; };
-		DBF81C8227F6ECF400004A56 /* AppearancePreferenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearancePreferenceViewModel.swift; sourceTree = "<group>"; };
-		DBF81C8427F709EF00004A56 /* TranslateButtonPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslateButtonPreferenceView.swift; sourceTree = "<group>"; };
-		DBF81C8727F7141600004A56 /* TranslationServicePreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationServicePreferenceView.swift; sourceTree = "<group>"; };
 		DBF81C8C27F843D700004A56 /* AppIconAssets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppIconAssets.swift; sourceTree = "<group>"; };
-		DBF81C9027F8448C00004A56 /* AppIconPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconPreferenceView.swift; sourceTree = "<group>"; };
+		DBF87AD42892A6740029A7C7 /* AppIconPreferenceView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppIconPreferenceView.swift; sourceTree = "<group>"; };
+		DBF87AD72892A67D0029A7C7 /* TranslateButtonPreferenceView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslateButtonPreferenceView.swift; sourceTree = "<group>"; };
+		DBF87AD82892A67D0029A7C7 /* TranslationServicePreferenceView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslationServicePreferenceView.swift; sourceTree = "<group>"; };
 		DBFA471B2859C33500C9FF7F /* MeLikeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeLikeTimelineViewModel.swift; sourceTree = "<group>"; };
 		DBFA471E2859C4AE00C9FF7F /* UserLikeTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLikeTimelineViewController.swift; sourceTree = "<group>"; };
 		DBFA47202859C4F300C9FF7F /* UserLikeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLikeTimelineViewModel.swift; sourceTree = "<group>"; };
@@ -1216,8 +1218,9 @@
 			children = (
 				DB2C8739274F4B7D00CE0398 /* List */,
 				DB580EAE288187BD00BC4A0F /* AccountPreference */,
-				DBF81C8127F6E84300004A56 /* AppearancePreference */,
+				DB88E62A2890DF6A009A01F5 /* BehaviorsPreference */,
 				DB2C8733274F4B7D00CE0398 /* DisplayPreference */,
+				DBF87AD32892A6540029A7C7 /* AppIconPreference */,
 				DB2C8736274F4B7D00CE0398 /* About */,
 				DB2C872F274F4B7D00CE0398 /* Developer */,
 				DBE6357B28855546001C114B /* PushNotificationScratch */,
@@ -1238,8 +1241,10 @@
 		DB2C8733274F4B7D00CE0398 /* DisplayPreference */ = {
 			isa = PBXGroup;
 			children = (
+				DBF87AD62892A67D0029A7C7 /* Translation */,
 				DB2C8734274F4B7D00CE0398 /* DisplayPreferenceViewController.swift */,
 				DB2C8735274F4B7D00CE0398 /* DisplayPreferenceViewModel.swift */,
+				DB88E625288EA1F7009A01F5 /* DisplayPreferenceView.swift */,
 			);
 			path = DisplayPreference;
 			sourceTree = "<group>";
@@ -1257,9 +1262,9 @@
 		DB2C8739274F4B7D00CE0398 /* List */ = {
 			isa = PBXGroup;
 			children = (
-				DB2C873A274F4B7D00CE0398 /* SettingListView.swift */,
-				DB235EF32834DD0900398FCA /* SettingListViewModel.swift */,
 				DB2C873B274F4B7D00CE0398 /* SettingListViewController.swift */,
+				DB235EF32834DD0900398FCA /* SettingListViewModel.swift */,
+				DB2C873A274F4B7D00CE0398 /* SettingListView.swift */,
 			);
 			path = List;
 			sourceTree = "<group>";
@@ -1760,6 +1765,16 @@
 				DBE635832886940B001C114B /* UIStatusBarManager+HandleTapAction.m */,
 			);
 			path = Vender;
+			sourceTree = "<group>";
+		};
+		DB88E62A2890DF6A009A01F5 /* BehaviorsPreference */ = {
+			isa = PBXGroup;
+			children = (
+				DB88E6282890DF67009A01F5 /* BehaviorsPreferenceViewController.swift */,
+				DB88E62B2890DF79009A01F5 /* BehaviorsPreferenceViewModel.swift */,
+				DB88E62D2890DF7E009A01F5 /* BehaviorsPreferenceView.swift */,
+			);
+			path = BehaviorsPreference;
 			sourceTree = "<group>";
 		};
 		DB8AC1122540501A00E636BE /* Compose */ = {
@@ -2367,27 +2382,6 @@
 			path = SearchDetail;
 			sourceTree = "<group>";
 		};
-		DBF81C8127F6E84300004A56 /* AppearancePreference */ = {
-			isa = PBXGroup;
-			children = (
-				DBF81C9227F8449800004A56 /* AppIcon */,
-				DBF81C8627F709F200004A56 /* Translation */,
-				DBF81C7D27F6E7F500004A56 /* AppearancePreferenceViewController.swift */,
-				DBF81C8227F6ECF400004A56 /* AppearancePreferenceViewModel.swift */,
-				DBF81C7F27F6E80700004A56 /* AppearancePreferenceView.swift */,
-			);
-			path = AppearancePreference;
-			sourceTree = "<group>";
-		};
-		DBF81C8627F709F200004A56 /* Translation */ = {
-			isa = PBXGroup;
-			children = (
-				DBF81C8427F709EF00004A56 /* TranslateButtonPreferenceView.swift */,
-				DBF81C8727F7141600004A56 /* TranslationServicePreferenceView.swift */,
-			);
-			name = Translation;
-			sourceTree = "<group>";
-		};
 		DBF81C8B27F843D700004A56 /* Generated */ = {
 			isa = PBXGroup;
 			children = (
@@ -2396,12 +2390,21 @@
 			path = Generated;
 			sourceTree = "<group>";
 		};
-		DBF81C9227F8449800004A56 /* AppIcon */ = {
+		DBF87AD32892A6540029A7C7 /* AppIconPreference */ = {
 			isa = PBXGroup;
 			children = (
-				DBF81C9027F8448C00004A56 /* AppIconPreferenceView.swift */,
+				DBF87AD42892A6740029A7C7 /* AppIconPreferenceView.swift */,
 			);
-			name = AppIcon;
+			path = AppIconPreference;
+			sourceTree = "<group>";
+		};
+		DBF87AD62892A67D0029A7C7 /* Translation */ = {
+			isa = PBXGroup;
+			children = (
+				DBF87AD72892A67D0029A7C7 /* TranslateButtonPreferenceView.swift */,
+				DBF87AD82892A67D0029A7C7 /* TranslationServicePreferenceView.swift */,
+			);
+			path = Translation;
 			sourceTree = "<group>";
 		};
 		DBFA471D2859C33900C9FF7F /* Like */ = {
@@ -2984,6 +2987,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBF87ADA2892A67D0029A7C7 /* TranslationServicePreferenceView.swift in Sources */,
 				DB2D36F627D5E73A00C1FBE0 /* CompositeListViewController.swift in Sources */,
 				DB5FD9B726D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift in Sources */,
 				DB8761BE274552F800BA7EE2 /* StatusMediaGallerySection.swift in Sources */,
@@ -3013,7 +3017,6 @@
 				DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */,
 				DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */,
 				DBDA8E9824FE075E006750DC /* MainTabBarController.swift in Sources */,
-				DBF81C8827F7141600004A56 /* TranslationServicePreferenceView.swift in Sources */,
 				DB76A66F276083CB00A50673 /* MediaPreviewTransitionViewController.swift in Sources */,
 				DBCB408A255D8C2B00DD8D8F /* SafariActivity.swift in Sources */,
 				DBD0B4992758B58F0015A388 /* DrawerSidebarAnimatedTransitioning.swift in Sources */,
@@ -3030,6 +3033,7 @@
 				DB2C8740274F4B7D00CE0398 /* DisplayPreferenceViewModel.swift in Sources */,
 				DBFA471C2859C33500C9FF7F /* MeLikeTimelineViewModel.swift in Sources */,
 				DBCE2E992591A44000926D09 /* UIViewAnimatingPosition.swift in Sources */,
+				DB88E626288EA1F7009A01F5 /* DisplayPreferenceView.swift in Sources */,
 				DB262A422722970000D18EF3 /* SearchResultViewModel.swift in Sources */,
 				DB9B3256285737FE00AC818D /* GridTimelineViewModel.swift in Sources */,
 				DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */,
@@ -3113,7 +3117,6 @@
 				DB580EB9288187BD00BC4A0F /* AccountPreferenceViewModel.swift in Sources */,
 				DB33A4A925A319A0003CED7D /* ActionToolbarContainer.swift in Sources */,
 				DB2C873C274F4B7D00CE0398 /* DeveloperView.swift in Sources */,
-				DBF81C8327F6ECF400004A56 /* AppearancePreferenceViewModel.swift in Sources */,
 				DB2C8742274F4B7D00CE0398 /* AboutViewController.swift in Sources */,
 				DB442465285AD8660095AECF /* ListStatusTimelineViewModel+Diffable.swift in Sources */,
 				DB5FD9B326D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift in Sources */,
@@ -3196,7 +3199,6 @@
 				DB01091526E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift in Sources */,
 				DBA2103B275A0E91000B7CB2 /* FollowerListViewController+DataSourceProvider.swift in Sources */,
 				DB5632BC26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift in Sources */,
-				DBF81C8527F709EF00004A56 /* TranslateButtonPreferenceView.swift in Sources */,
 				DB51DC1A2715581E00A0D8FB /* ProfileDashboardView.swift in Sources */,
 				DB442471285B17730095AECF /* SearchMediaTimelineViewController.swift in Sources */,
 				DB2C873D274F4B7D00CE0398 /* DeveloperViewModel.swift in Sources */,
@@ -3207,7 +3209,6 @@
 				DB5632B026DCED1300FC893F /* StatusThreadRootTableViewCell.swift in Sources */,
 				DB8761C4274552FB00BA7EE2 /* HashtagData.swift in Sources */,
 				DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */,
-				DBF81C7E27F6E7F500004A56 /* AppearancePreferenceViewController.swift in Sources */,
 				DB46D11F27DB2B50003B8BA1 /* ListUserViewModel+Diffable.swift in Sources */,
 				DB442459285A42B50095AECF /* HashtagTimelineViewController.swift in Sources */,
 				DB56329726DCBE1600FC893F /* StatusThreadViewController.swift in Sources */,
@@ -3281,23 +3282,26 @@
 				DB5632AB26DCCD3900FC893F /* DataSourceFacade.swift in Sources */,
 				DB8761D02745553700BA7EE2 /* MediaSection.swift in Sources */,
 				DB51DC1C2715588E00A0D8FB /* ProfileDashboardMeterView.swift in Sources */,
+				DBF87AD52892A6740029A7C7 /* AppIconPreferenceView.swift in Sources */,
 				DBB04A352861AE4D003799CA /* TrendPlaceViewModel.swift in Sources */,
 				DB2C8743274F4B7D00CE0398 /* SettingListView.swift in Sources */,
 				DB76A650275F1C3200A50673 /* MediaPreviewTransitionController.swift in Sources */,
-				DBF81C8027F6E80700004A56 /* AppearancePreferenceView.swift in Sources */,
+				DB88E62E2890DF7E009A01F5 /* BehaviorsPreferenceView.swift in Sources */,
 				DB8761C5274552FB00BA7EE2 /* HashtagItem.swift in Sources */,
 				DB76A65B275F49AE00A50673 /* MediaInfoDescriptionView.swift in Sources */,
 				DB76A64D275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift in Sources */,
+				DBF87AD92892A67D0029A7C7 /* TranslateButtonPreferenceView.swift in Sources */,
 				DB76A66A27606F6900A50673 /* MediaPreviewVideoViewController.swift in Sources */,
 				DB148B0C281A837E00B596C7 /* SidebarView.swift in Sources */,
+				DB88E6292890DF67009A01F5 /* BehaviorsPreferenceViewController.swift in Sources */,
 				DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */,
 				DB1D7B4325B5938400397DCD /* TwitterAuthenticationOptionViewController.swift in Sources */,
 				DB830209273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB8761C1274552F800BA7EE2 /* UserItem.swift in Sources */,
 				DB5FB0102727FCC5006520FA /* SearchUserViewModel.swift in Sources */,
+				DB88E62C2890DF79009A01F5 /* BehaviorsPreferenceViewModel.swift in Sources */,
 				DB5632A926DCC96C00FC893F /* ListTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB56329A26DCBE7300FC893F /* StatusThreadViewModel.swift in Sources */,
-				DBF81C9127F8448C00004A56 /* AppIconPreferenceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
