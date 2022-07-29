@@ -54,7 +54,8 @@ final public class TwitterStatus: NSManagedObject {
         
     // one-to-many relationship
     @NSManaged public private(set) var feeds: Set<Feed>
-    
+    @NSManaged public private(set) var histories: Set<History>
+
     // many-to-one relationship
     // sourcery: autoGenerateRelationship
     @NSManaged public private(set) var author: TwitterUser

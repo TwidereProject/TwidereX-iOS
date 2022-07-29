@@ -100,10 +100,6 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.showAccountListAction(action)
                 }),
-                UIAction(title: "Stub Timeline", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.showStubTimelineAction(action)
-                }),
                 UIAction(title: "Local Timeline", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.showLocalTimelineAction(action)
@@ -310,10 +306,6 @@ extension HomeTimelineViewController {
             from: nil,
             transition: .modal(animated: true)
          )
-    }
-    
-    @objc private func showStubTimelineAction(_ sender: UIAction) {
-        coordinator.present(scene: .stubTimeline, from: self, transition: .show)
     }
     
     @objc private func showLocalTimelineAction(_ sender: UIAction) {

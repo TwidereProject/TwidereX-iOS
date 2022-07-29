@@ -30,6 +30,7 @@ public enum Asset {
     public static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")
     public static let arrowTurnUpLeftMini = ImageAsset(name: "Arrows/arrow.turn.up.left.mini")
     public static let arrowshapeTurnUpLeftFill = ImageAsset(name: "Arrows/arrowshape.turn.up.left.fill")
+    public static let clockArrowCirclepath = ImageAsset(name: "Arrows/clock.arrow.circlepath")
     public static let squareAndArrowUp = ImageAsset(name: "Arrows/square.and.arrow.up")
     public static let squareAndArrowUpMini = ImageAsset(name: "Arrows/square.and.arrow.up.mini")
     public static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")

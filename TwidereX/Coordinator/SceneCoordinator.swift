@@ -93,6 +93,9 @@ extension SceneCoordinator {
         case trendPlace(viewModel: TrendViewModel)
         case searchResult(viewModel: SearchResultViewModel)
         
+        // Hisotry
+        case history(viewModel: HistoryViewModel)
+        
         // Settings
         case setting(viewModel: SettingListViewModel)
         case accountPreference(viewModel: AccountPreferenceViewModel)
@@ -102,7 +105,6 @@ extension SceneCoordinator {
         
         #if DEBUG
         case developer
-        case stubTimeline
         
         case pushNotificationScratch
         #endif
@@ -155,8 +157,8 @@ extension SceneCoordinator {
         }
     }
     
-    @discardableResult
     @MainActor
+    @discardableResult
     func present(scene: Scene, from sender: UIViewController?, transition: Transition) -> UIViewController? {
         guard let viewController = get(scene: scene) else {
             return nil
@@ -355,6 +357,10 @@ private extension SceneCoordinator {
             _viewController.searchResultViewModel = viewModel
             _viewController.searchResultViewController = searchResultViewController
             viewController = _viewController
+        case .history(let viewModel):
+            let _viewController = HistoryViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .setting(let viewModel):
             let _viewController = SettingListViewController()
             _viewController.viewModel = viewModel
@@ -374,8 +380,6 @@ private extension SceneCoordinator {
         #if DEBUG
         case .developer:
             viewController = DeveloperViewController()
-        case .stubTimeline:
-            viewController = StubTimelineViewController()
         case .pushNotificationScratch:
             viewController = PushNotificationScratchViewController()
         #endif

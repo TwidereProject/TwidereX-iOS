@@ -12,6 +12,7 @@ import Combine
 import Floaty
 import Firebase
 import FirebaseMessaging
+import FirebaseCrashlytics
 import Kingfisher
 import AppShared
 import TwidereCommon
@@ -39,6 +40,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         Crashlytics.crashlytics().setCustomValue(Locale.preferredLanguages.first ?? "nil", forKey: "preferredLanguage")
         Messaging.messaging().delegate = self
+        #if DEBUG
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(false)
+        #endif
         
         // configure AudioSession
         try? AVAudioSession.sharedInstance().setCategory(.ambient)

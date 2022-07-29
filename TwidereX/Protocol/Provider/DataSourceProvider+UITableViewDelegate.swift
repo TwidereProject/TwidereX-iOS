@@ -64,6 +64,17 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewableV
         
         guard let cell = tableView.cellForRow(at: indexPath) as? StatusViewContainerTableViewCell else { return nil }
         
+        defer {
+            Task {
+                guard let item = await item(from: .init(tableViewCell: cell, indexPath: indexPath)) else { return }
+                guard let status = await item.status(in: context.managedObjectContext) else { return }
+                await DataSourceFacade.recordStatusHistory(
+                    denpendency: self,
+                    status: status
+                )
+            }   // end Task
+        }
+        
         // TODO:
         // this must call before check `isContentWarningOverlayDisplay`. otherwise, will get BadAccess exception
         let mediaViews = cell.statusView.mediaGridContainerView.mediaViews

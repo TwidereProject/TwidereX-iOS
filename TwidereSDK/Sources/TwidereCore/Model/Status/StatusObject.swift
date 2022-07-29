@@ -71,3 +71,14 @@ extension StatusObject {
         }
     }
 }
+
+extension StatusObject {
+    public var histories: Set<History> {
+        switch self {
+        case .twitter(let status):
+            return status.histories
+        case .mastodon(let status):
+            return status.histories
+        }
+    }
+}

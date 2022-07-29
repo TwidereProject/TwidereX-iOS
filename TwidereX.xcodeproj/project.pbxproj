@@ -39,6 +39,10 @@
 		DB148B03281A7AB300B596C7 /* ContentSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB148B02281A7AB300B596C7 /* ContentSplitViewController.swift */; };
 		DB148B05281A81AE00B596C7 /* SidebarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB148B04281A81AE00B596C7 /* SidebarViewModel.swift */; };
 		DB148B0C281A837E00B596C7 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB148B0B281A837E00B596C7 /* SidebarView.swift */; };
+		DB1D3DEA289388CD008F0BD0 /* HistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D3DE9289388CD008F0BD0 /* HistoryViewController.swift */; };
+		DB1D3DED28938ACD008F0BD0 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D3DEC28938ACD008F0BD0 /* HistoryViewModel.swift */; };
+		DB1D3DEF28938CD1008F0BD0 /* StatusHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D3DEE28938CD1008F0BD0 /* StatusHistoryViewController.swift */; };
+		DB1D3DF228938CDF008F0BD0 /* StatusHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D3DF128938CDF008F0BD0 /* StatusHistoryViewModel.swift */; };
 		DB1D7B4325B5938400397DCD /* TwitterAuthenticationOptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B4225B5938300397DCD /* TwitterAuthenticationOptionViewController.swift */; };
 		DB1D7B5525B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B5425B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift */; };
 		DB1E48122772CE380074F6A0 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB36F375257F79DB0028F81E /* SearchViewModel.swift */; };
@@ -335,9 +339,6 @@
 		DBE6357A28855302001C114B /* PushNotificationScratchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE6357928855302001C114B /* PushNotificationScratchViewController.swift */; };
 		DBE6357D2885557C001C114B /* PushNotificationScratchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE6357C2885557C001C114B /* PushNotificationScratchViewModel.swift */; };
 		DBE6357F288555AE001C114B /* PushNotificationScratchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE6357E288555AE001C114B /* PushNotificationScratchView.swift */; };
-		DBE71B7A26B7AF5C00DFAB8E /* StubTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE71B7926B7AF5C00DFAB8E /* StubTimelineViewController.swift */; };
-		DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE71B7C26B7C5FD00DFAB8E /* StubTimelineViewModel.swift */; };
-		DBE71B7F26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE71B7E26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift */; };
 		DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */; };
 		DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = DBEA4F832511F7460007FEC5 /* Kanna */; };
 		DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D7253F5D7800C5383A /* NamingState.swift */; };
@@ -368,6 +369,13 @@
 		DBFC0AE9276118240011E99B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		DBFC0AEA276118240011E99B /* AppShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DBFCC44725667C620016698E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC44625667C620016698E /* UILabel.swift */; };
+		DBFCEF1228939C9600EEBFB1 /* UserHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCEF1128939C9600EEBFB1 /* UserHistoryViewController.swift */; };
+		DBFCEF1528939CAC00EEBFB1 /* UserHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCEF1428939CAC00EEBFB1 /* UserHistoryViewModel.swift */; };
+		DBFCEF172893B92B00EEBFB1 /* StatusHistoryViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCEF162893B92B00EEBFB1 /* StatusHistoryViewModel+Diffable.swift */; };
+		DBFCEF192893BA8A00EEBFB1 /* StatusHistoryViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCEF182893BA8A00EEBFB1 /* StatusHistoryViewController+DataSourceProvider.swift */; };
+		DBFCEF1B2893D5C500EEBFB1 /* HistorySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCEF1A2893D5C500EEBFB1 /* HistorySection.swift */; };
+		DBFCEF1E2893D5D400EEBFB1 /* HistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCEF1D2893D5D400EEBFB1 /* HistoryItem.swift */; };
+		DBFCEF202893E18400EEBFB1 /* DataSourceFacade+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCEF1F2893E18400EEBFB1 /* DataSourceFacade+History.swift */; };
 		DBFDCE4127F450FC00BE99E3 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBFDCE0327F446BB00BE99E3 /* Intents.framework */; };
 		DBFDCE4427F450FC00BE99E3 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4327F450FC00BE99E3 /* IntentHandler.swift */; };
 		DBFDCE4827F450FC00BE99E3 /* TwidereXIntent.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -547,6 +555,10 @@
 		DB148B02281A7AB300B596C7 /* ContentSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSplitViewController.swift; sourceTree = "<group>"; };
 		DB148B04281A81AE00B596C7 /* SidebarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarViewModel.swift; sourceTree = "<group>"; };
 		DB148B0B281A837E00B596C7 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		DB1D3DE9289388CD008F0BD0 /* HistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewController.swift; sourceTree = "<group>"; };
+		DB1D3DEC28938ACD008F0BD0 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
+		DB1D3DEE28938CD1008F0BD0 /* StatusHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusHistoryViewController.swift; sourceTree = "<group>"; };
+		DB1D3DF128938CDF008F0BD0 /* StatusHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusHistoryViewModel.swift; sourceTree = "<group>"; };
 		DB1D7B4225B5938300397DCD /* TwitterAuthenticationOptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationOptionViewController.swift; sourceTree = "<group>"; };
 		DB1D7B5425B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationOptionViewModel.swift; sourceTree = "<group>"; };
 		DB1E48132772CE850074F6A0 /* SearchViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchViewModel+Diffable.swift"; sourceTree = "<group>"; };
@@ -869,9 +881,6 @@
 		DBE635822886940A001C114B /* TwidereX-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TwidereX-Bridging-Header.h"; sourceTree = "<group>"; };
 		DBE635832886940B001C114B /* UIStatusBarManager+HandleTapAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIStatusBarManager+HandleTapAction.m"; sourceTree = "<group>"; };
 		DBE6358528869441001C114B /* Notification+Name+HandleTapAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Name+HandleTapAction.swift"; sourceTree = "<group>"; };
-		DBE71B7926B7AF5C00DFAB8E /* StubTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineViewController.swift; sourceTree = "<group>"; };
-		DBE71B7C26B7C5FD00DFAB8E /* StubTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineViewModel.swift; sourceTree = "<group>"; };
-		DBE71B7E26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineCollectionViewCell.swift; sourceTree = "<group>"; };
 		DBE76CD2250095D900DEB0FC /* TwidereX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TwidereX.entitlements; sourceTree = "<group>"; };
 		DBE76CEA2500B29300DEB0FC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBE76CEC2500B29300DEB0FC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -915,6 +924,13 @@
 		DBFA4A1F25A5924C00D51703 /* ListTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ListTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBFCC44625667C620016698E /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 		DBFCC46225668B860016698E /* DrawerSidebarPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarPresentationController.swift; sourceTree = "<group>"; };
+		DBFCEF1128939C9600EEBFB1 /* UserHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHistoryViewController.swift; sourceTree = "<group>"; };
+		DBFCEF1428939CAC00EEBFB1 /* UserHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHistoryViewModel.swift; sourceTree = "<group>"; };
+		DBFCEF162893B92B00EEBFB1 /* StatusHistoryViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusHistoryViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DBFCEF182893BA8A00EEBFB1 /* StatusHistoryViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusHistoryViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
+		DBFCEF1A2893D5C500EEBFB1 /* HistorySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistorySection.swift; sourceTree = "<group>"; };
+		DBFCEF1D2893D5D400EEBFB1 /* HistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryItem.swift; sourceTree = "<group>"; };
+		DBFCEF1F2893E18400EEBFB1 /* DataSourceFacade+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+History.swift"; sourceTree = "<group>"; };
 		DBFDCE0327F446BB00BE99E3 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		DBFDCE2227F44C7100BE99E3 /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
 		DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TwidereXIntent.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1144,6 +1160,28 @@
 			children = (
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		DB1D3DEB289388CF008F0BD0 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				DB1D3DF028938CD4008F0BD0 /* Status */,
+				DBFCEF1328939C9900EEBFB1 /* User */,
+				DB1D3DE9289388CD008F0BD0 /* HistoryViewController.swift */,
+				DB1D3DEC28938ACD008F0BD0 /* HistoryViewModel.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		DB1D3DF028938CD4008F0BD0 /* Status */ = {
+			isa = PBXGroup;
+			children = (
+				DB1D3DEE28938CD1008F0BD0 /* StatusHistoryViewController.swift */,
+				DBFCEF182893BA8A00EEBFB1 /* StatusHistoryViewController+DataSourceProvider.swift */,
+				DB1D3DF128938CDF008F0BD0 /* StatusHistoryViewModel.swift */,
+				DBFCEF162893B92B00EEBFB1 /* StatusHistoryViewModel+Diffable.swift */,
+			);
+			path = Status;
 			sourceTree = "<group>";
 		};
 		DB1D7B5925B5A87600397DCD /* Option */ = {
@@ -1436,6 +1474,7 @@
 				DB76A661275F65FE00A50673 /* DataSourceFacade+Model.swift */,
 				DB3B906A26E8D3AB0010F64C /* DataSourceFacade+Status.swift */,
 				DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */,
+				DBFCEF1F2893E18400EEBFB1 /* DataSourceFacade+History.swift */,
 				DB262A382721621800D18EF3 /* DataSourceFacade+User.swift */,
 				DB25C4C427798E1A00EC1435 /* DataSourceFacade+SavedSearch.swift */,
 				DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */,
@@ -1716,6 +1755,7 @@
 				DB1E48172772CEC40074F6A0 /* Search */,
 				DB47AB1E27CCC18500CD73C7 /* List */,
 				DB66DB912823AC400071F5F3 /* TabBar */,
+				DBFCEF1C2893D5C800EEBFB1 /* History */,
 			);
 			path = Misc;
 			sourceTree = "<group>";
@@ -2184,14 +2224,14 @@
 				DB42411026C3E4C900B6C5F8 /* Onboarding */,
 				DBCB4032255B670F00DD8D8F /* Account */,
 				DB697DEB278FDB8A004EF2F7 /* Timeline */,
-				DB47AB1B27CCB7F100CD73C7 /* List */,
-				DBE71B7B26B7AF6100DFAB8E /* StubTimeline */,
 				DB56329826DCBE1900FC893F /* StatusThread */,
 				DB7274F0273BB25A00577D95 /* Notification */,
 				DB747FFD251C496E000C4BD7 /* Profile */,
 				DB8AC1122540501A00E636BE /* Compose */,
 				DBF69E932549601C00E2A915 /* Search */,
 				DBA5F9E42553CFEB00D2E98E /* MediaPreview */,
+				DB47AB1B27CCB7F100CD73C7 /* List */,
+				DB1D3DEB289388CF008F0BD0 /* History */,
 				DB2C872E274F4B7D00CE0398 /* Setting */,
 			);
 			path = Scene;
@@ -2234,16 +2274,6 @@
 				DBE6357E288555AE001C114B /* PushNotificationScratchView.swift */,
 			);
 			path = PushNotificationScratch;
-			sourceTree = "<group>";
-		};
-		DBE71B7B26B7AF6100DFAB8E /* StubTimeline */ = {
-			isa = PBXGroup;
-			children = (
-				DBE71B7926B7AF5C00DFAB8E /* StubTimelineViewController.swift */,
-				DBE71B7C26B7C5FD00DFAB8E /* StubTimelineViewModel.swift */,
-				DBE71B7E26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift */,
-			);
-			path = StubTimeline;
 			sourceTree = "<group>";
 		};
 		DBE76CE92500B29300DEB0FC /* StubMixer */ = {
@@ -2415,6 +2445,24 @@
 				DBFA471B2859C33500C9FF7F /* MeLikeTimelineViewModel.swift */,
 			);
 			path = Like;
+			sourceTree = "<group>";
+		};
+		DBFCEF1328939C9900EEBFB1 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				DBFCEF1128939C9600EEBFB1 /* UserHistoryViewController.swift */,
+				DBFCEF1428939CAC00EEBFB1 /* UserHistoryViewModel.swift */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
+		DBFCEF1C2893D5C800EEBFB1 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				DBFCEF1A2893D5C500EEBFB1 /* HistorySection.swift */,
+				DBFCEF1D2893D5D400EEBFB1 /* HistoryItem.swift */,
+			);
+			path = History;
 			sourceTree = "<group>";
 		};
 		DBFDCE4227F450FC00BE99E3 /* TwidereXIntent */ = {
@@ -2996,6 +3044,7 @@
 				DB7274F2273BB29600577D95 /* NotificationViewModel.swift in Sources */,
 				DB5FB0112727FD02006520FA /* SearchUserViewModel+Diffable.swift in Sources */,
 				DBA7DD74256B96450008A95A /* UIFont.swift in Sources */,
+				DB1D3DF228938CDF008F0BD0 /* StatusHistoryViewModel.swift in Sources */,
 				DB76A652275F1C3200A50673 /* MediaPreviewTransitionItem.swift in Sources */,
 				DB697DF3278FDDF7004EF2F7 /* TimelineViewModel.swift in Sources */,
 				DB235EF42834DD0900398FCA /* SettingListViewModel.swift in Sources */,
@@ -3023,6 +3072,7 @@
 				DB02C76D27350D71007EA0BF /* SearchHashtagViewController.swift in Sources */,
 				DB2C873E274F4B7D00CE0398 /* DeveloperViewController.swift in Sources */,
 				DBFA4A2025A5924C00D51703 /* ListTimelineViewModel+Diffable.swift in Sources */,
+				DBFCEF1E2893D5D400EEBFB1 /* HistoryItem.swift in Sources */,
 				DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */,
 				DB932E5227FEC7390036A824 /* Intents.intentdefinition in Sources */,
 				DBA210362759D7B1000B7CB2 /* FollowingListViewModel+State.swift in Sources */,
@@ -3054,7 +3104,6 @@
 				DBCB4060255CAC0300DD8D8F /* TwitterAuthenticationController.swift in Sources */,
 				DB5632B426DDE3F300FC893F /* StatusThreadViewModel+LoadThreadState.swift in Sources */,
 				DBD0B49D2758B5F50015A388 /* SidebarSection.swift in Sources */,
-				DBE71B7F26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift in Sources */,
 				DB0AD4EB28587B520002ABDB /* FederatedTimelineViewModel+Diffable.swift in Sources */,
 				DBF739CF275C247F00BF6AB5 /* DataSourceFacade+Mute.swift in Sources */,
 				DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */,
@@ -3088,9 +3137,12 @@
 				DB697E0C27904C56004EF2F7 /* FederatedTimelineViewModel.swift in Sources */,
 				DB01A9A427637FE60055FABC /* DataSourceFacade+Meta.swift in Sources */,
 				DB30ADDD26CFD3CC00B2D2BE /* HomeTimelineViewController+DebugAction.swift in Sources */,
+				DBFCEF192893BA8A00EEBFB1 /* StatusHistoryViewController+DataSourceProvider.swift in Sources */,
 				DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */,
 				DB56329C26DCC23700FC893F /* DataSourceProvider.swift in Sources */,
 				DB44A56226C4FEAB004C8B78 /* WelcomeViewModel.swift in Sources */,
+				DBFCEF1B2893D5C500EEBFB1 /* HistorySection.swift in Sources */,
+				DB1D3DED28938ACD008F0BD0 /* HistoryViewModel.swift in Sources */,
 				DB522F172886A08F0088017C /* UIStatusBarManager+HandleTapAction.m in Sources */,
 				DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */,
 				DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */,
@@ -3102,6 +3154,7 @@
 				DBA6B30E27E9CB6F004D052D /* AddListMemberViewController.swift in Sources */,
 				DBF63A38259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift in Sources */,
 				DB0CC4BA27D5F7BA00A051B4 /* CompositeListViewModel+Diffable.swift in Sources */,
+				DBFCEF172893B92B00EEBFB1 /* StatusHistoryViewModel+Diffable.swift in Sources */,
 				DB02C77527351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift in Sources */,
 				DB0AD4E22858734A0002ABDB /* UserMediaTimelineViewModel.swift in Sources */,
 				DB522F1628869DAE0088017C /* Notification+Name+HandleTapAction.swift in Sources */,
@@ -3109,7 +3162,9 @@
 				DB6BCD70277AEAC700847054 /* TrendTableViewCell.swift in Sources */,
 				DB442461285AD8530095AECF /* ListStatusTimelineViewController.swift in Sources */,
 				DB914C4A26C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift in Sources */,
+				DB1D3DEF28938CD1008F0BD0 /* StatusHistoryViewController.swift in Sources */,
 				DBD0B4A02758B6010015A388 /* SidebarItem.swift in Sources */,
+				DBFCEF1228939C9600EEBFB1 /* UserHistoryViewController.swift in Sources */,
 				DB76A67127609A8700A50673 /* RemoteProfileViewModel.swift in Sources */,
 				DB6BCD6B277ADBF300847054 /* TrendViewController.swift in Sources */,
 				DB76A656275F354800A50673 /* MediaPreviewViewModel.swift in Sources */,
@@ -3143,7 +3198,6 @@
 				DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */,
 				DB12BEE727329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift in Sources */,
 				DB42411426C3E55200B6C5F8 /* WelcomeView.swift in Sources */,
-				DBE71B7A26B7AF5C00DFAB8E /* StubTimelineViewController.swift in Sources */,
 				DB1D7B5525B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift in Sources */,
 				DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */,
 				DBA210382759EA91000B7CB2 /* FollowingListViewController+DataSourceProvider.swift in Sources */,
@@ -3166,6 +3220,7 @@
 				DB1E48142772CE850074F6A0 /* SearchViewModel+Diffable.swift in Sources */,
 				DB71C7D1271EB09A00BE3819 /* DataSourceFacade+Friendship.swift in Sources */,
 				DB442473285B177B0095AECF /* SearchMediaTimelineViewModel.swift in Sources */,
+				DB1D3DEA289388CD008F0BD0 /* HistoryViewController.swift in Sources */,
 				DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */,
 				DB915406254FC8CE00613473 /* FollowActionButton.swift in Sources */,
 				DB8761C0274552F800BA7EE2 /* StatusSection.swift in Sources */,
@@ -3208,6 +3263,7 @@
 				DB76A657275F498F00A50673 /* MediaPreviewImageViewController.swift in Sources */,
 				DB5632B026DCED1300FC893F /* StatusThreadRootTableViewCell.swift in Sources */,
 				DB8761C4274552FB00BA7EE2 /* HashtagData.swift in Sources */,
+				DBFCEF1528939CAC00EEBFB1 /* UserHistoryViewModel.swift in Sources */,
 				DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */,
 				DB46D11F27DB2B50003B8BA1 /* ListUserViewModel+Diffable.swift in Sources */,
 				DB442459285A42B50095AECF /* HashtagTimelineViewController.swift in Sources */,
@@ -3223,6 +3279,7 @@
 				DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */,
 				DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */,
 				DB01092026E60756005F67D7 /* DataSourceFacade+StatusThread.swift in Sources */,
+				DBFCEF202893E18400EEBFB1 /* DataSourceFacade+History.swift in Sources */,
 				DBDAF244274F530B00050319 /* NeedsDependency.swift in Sources */,
 				DB8761C3274552FB00BA7EE2 /* HashtagSection.swift in Sources */,
 				DB9B325C2857493D00AC818D /* UserTimelineViewModel+Diffable.swift in Sources */,
@@ -3236,7 +3293,6 @@
 				DBBF70F726D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift in Sources */,
 				DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
-				DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */,
 				DB76A658275F498F00A50673 /* MediaPreviewImageViewModel.swift in Sources */,
 				DB47AB2E27CE097C00CD73C7 /* ListItem.swift in Sources */,
 				DBB04A372861AF2D003799CA /* TrendPlaceView.swift in Sources */,

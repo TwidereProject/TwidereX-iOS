@@ -68,6 +68,15 @@ extension AuthenticationContext {
             return .mastodon(.init(domain: authenticationContext.domain, id: authenticationContext.userID))
         }
     }
+    
+    public var acct: Feed.Acct {
+        switch self {
+        case .twitter(let authenticationContext):
+            return .twitter(userID: authenticationContext.userID)
+        case .mastodon(let authenticationContext):
+            return .mastodon(domain: authenticationContext.domain, userID: authenticationContext.userID)
+        }
+    }
 }
 
 extension AuthenticationContext {

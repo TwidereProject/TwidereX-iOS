@@ -56,6 +56,13 @@ extension DataSourceFacade {
             status: redirectRecord,
             mediaPreviewContext: mediaPreviewContext
         )
+        
+        Task {
+            await recordStatusHistory(
+                denpendency: provider,
+                status: status
+            )
+        }   // end Task
     }
     
 }
