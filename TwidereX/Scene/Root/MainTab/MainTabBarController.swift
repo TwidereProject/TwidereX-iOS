@@ -25,6 +25,7 @@ final class MainTabBarController: UITabBarController {
         
     weak var context: AppContext!
     weak var coordinator: SceneCoordinator!
+    let authContext: AuthContext
     
     private let doubleTapGestureRecognizer = UITapGestureRecognizer.doubleTapGestureRecognizer
     
@@ -40,9 +41,14 @@ final class MainTabBarController: UITabBarController {
     var lastPopToRootTime = CACurrentMediaTime()
     @Published var tabBarTapScrollPreference = UserDefaults.shared.tabBarTapScrollPreference
     
-    init(context: AppContext, coordinator: SceneCoordinator) {
+    init(
+        context: AppContext,
+        coordinator: SceneCoordinator,
+        authContext: AuthContext
+    ) {
         self.context = context
         self.coordinator = coordinator
+        self.authContext = authContext
         super.init(nibName: nil, bundle: nil)
         
         UserDefaults.shared.publisher(for: \.tabBarTapScrollPreference)
@@ -73,7 +79,7 @@ extension MainTabBarController {
         view.backgroundColor = .systemBackground
         
         let viewControllers: [UIViewController] = tabs.map { tab in
-            let rootViewController = tab.viewController(context: context, coordinator: coordinator)
+            let rootViewController = tab.viewController(context: context, coordinator: coordinator, authContext: authContext)
             let viewController = AdaptiveStatusBarStyleNavigationController(rootViewController: rootViewController)
             viewController.tabBarItem.tag = tab.tag
             viewController.tabBarItem.title = tab.title

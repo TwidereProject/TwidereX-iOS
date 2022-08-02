@@ -117,44 +117,53 @@ extension SceneCoordinator {
 
 extension SceneCoordinator {
     
+    @MainActor
     func setup() {
         let rootViewController: UIViewController
-        switch UIDevice.current.userInterfaceIdiom {
-        case .phone:
-            let viewController = MainTabBarController(context: context, coordinator: self)
-            rootViewController = viewController
-            needsSetupAvatarBarButtonItem = true
-        default:
-            let contentSplitViewController = ContentSplitViewController()
-            contentSplitViewController.context = context
-            contentSplitViewController.coordinator = self
-            rootViewController = contentSplitViewController
-            contentSplitViewController.$isSidebarDisplay
-                .sink { [weak self] isSidebarDisplay in
-                    guard let self = self else { return }
-                    self.needsSetupAvatarBarButtonItem = !isSidebarDisplay
-                }
-                .store(in: &contentSplitViewController.disposeBag)
-        }
         
-        sceneDelegate.window?.rootViewController = rootViewController
-    }
-    
-    func setupWelcomeIfNeeds() {
         do {
             let request = AuthenticationIndex.sortedFetchRequest
-            let count = try context.managedObjectContext.count(for: request)
-            if count == 0 {
-                DispatchQueue.main.async {
-                    let configuration = WelcomeViewModel.Configuration(allowDismissModal: false)
-                    let welcomeViewModel = WelcomeViewModel(context: self.context, configuration: configuration)
-                    self.present(scene: .welcome(viewModel: welcomeViewModel), from: nil, transition: .modal(animated: false, completion: nil))
-                }
+            request.fetchLimit = 1
+            let _authenticationIndex = try context.managedObjectContext.fetch(request).first
+            guard let authenticationIndex = _authenticationIndex,
+                  let authContext = AuthContext(authenticationIndex: authenticationIndex)
+            else {
+                let configuration = WelcomeViewModel.Configuration(allowDismissModal: false)
+                let welcomeViewModel = WelcomeViewModel(context: context, configuration: configuration)
+                let welcomeViewController = WelcomeViewController()
+                welcomeViewController.viewModel = welcomeViewModel
+                welcomeViewController.context = context
+                welcomeViewController.coordinator = self
+                rootViewController = welcomeViewController
+                sceneDelegate.window?.rootViewController = rootViewController               // entry #1: Welcome
+                return
             }
+        
+            switch UIDevice.current.userInterfaceIdiom {
+            case .phone:
+                let viewController = MainTabBarController(context: context, coordinator: self, authContext: authContext)
+                rootViewController = viewController
+                needsSetupAvatarBarButtonItem = true
+            default:
+                let contentSplitViewController = ContentSplitViewController(context: context, coordinator: self, authContext: authContext)
+                rootViewController = contentSplitViewController
+                contentSplitViewController.$isSidebarDisplay
+                    .sink { [weak self] isSidebarDisplay in
+                        guard let self = self else { return }
+                        self.needsSetupAvatarBarButtonItem = !isSidebarDisplay
+                    }
+                    .store(in: &contentSplitViewController.disposeBag)
+            }
+            sceneDelegate.window?.rootViewController = rootViewController                   // entry #2: main app
             
         } catch {
             assertionFailure(error.localizedDescription)
+            Task {
+                try? await Task.sleep(nanoseconds: .second * 2)
+                setup()                                                                     // entry #3: retry
+            }   // end Task
         }
+        
     }
     
     @MainActor

@@ -87,6 +87,7 @@ class TimelineViewModel: TimelineViewModelDriver {
         timestampUpdatePublisher
             .sink { [weak self] _ in
                 guard let self = self else { return }
+                guard self.enableAutoFetchLatest else { return }
                 let now = CACurrentMediaTime()
                 let elapse = now - self.autoFetchLatestActionTime
                 guard elapse > self.timelineRefreshInterval.seconds else {

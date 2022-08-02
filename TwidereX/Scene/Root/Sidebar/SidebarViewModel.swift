@@ -46,9 +46,9 @@ final class SidebarViewModel: ObservableObject {
                 var items: [TabBarItem] = []
                 switch authenticationContext {
                 case .twitter:
-                    items.append(contentsOf: [.likes, .lists])
+                    items.append(contentsOf: [.likes, .history, .lists])
                 case .mastodon:
-                    items.append(contentsOf: [.local, .federated, .likes, .lists])
+                    items.append(contentsOf: [.local, .federated, .likes, .history, .lists])
                 case .none:
                     break
                 }

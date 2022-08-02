@@ -61,7 +61,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.coordinator = sceneCoordinator
         
         sceneCoordinator.setup()
-        sceneCoordinator.setupWelcomeIfNeeds()
         
         window.makeKeyAndVisible()
 
