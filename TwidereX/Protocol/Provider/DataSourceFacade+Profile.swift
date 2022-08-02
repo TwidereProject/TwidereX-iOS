@@ -46,6 +46,13 @@ extension DataSourceFacade {
             from: provider,
             transition: .show
         )
+        
+        Task {
+            await recordUserHistory(
+                denpendency: provider,
+                user: user
+            )
+        }   // end Task
     }
     
 }

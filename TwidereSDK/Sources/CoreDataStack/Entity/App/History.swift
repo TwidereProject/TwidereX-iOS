@@ -104,7 +104,7 @@ extension History {
         return NSPredicate(format: "%K != nil", #keyPath(History.mastodonUser))
     }
     
-    static func predicate(acct: Acct) -> NSPredicate {
+    public static func predicate(acct: Acct) -> NSPredicate {
         return NSPredicate(format: "%K == %@", #keyPath(History.acctRaw), acct.rawValue)
     }
     

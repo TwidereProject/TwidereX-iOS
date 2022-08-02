@@ -27,6 +27,9 @@ extension HistorySection {
     struct Configuration {
         weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
         let statusViewConfigurationContext: StatusView.ConfigurationContext
+        
+        weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
+        let userViewConfigurationContext: UserView.ConfigurationContext
     }
     
     static func diffableDataSource(
@@ -35,27 +38,54 @@ extension HistorySection {
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<HistorySection, HistoryItem> {
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
-        
+        tableView.register(UserRelationshipStyleTableViewCell.self, forCellReuseIdentifier: String(describing: UserRelationshipStyleTableViewCell.self))
+
         let diffableDataSource = UITableViewDiffableDataSource<HistorySection, HistoryItem>(tableView: tableView) { tableView, indexPath, item in
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
             
             switch item {
             case .history(let record):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
-                StatusSection.setupStatusPollDataSource(
-                    context: context,
-                    statusView: cell.statusView,
-                    configurationContext: configuration.statusViewConfigurationContext
-                )
-                context.managedObjectContext.performAndWait {
-                    guard let status = record.object(in: context.managedObjectContext)?.statusObject else { return }
-                    configure(
-                        tableView: tableView,
-                        cell: cell,
-                        viewModel: StatusTableViewCell.ViewModel(value: .statusObject(status)),
-                        configuration: configuration
-                    )
+                let cell: UITableViewCell = context.managedObjectContext.performAndWait {
+                    guard let history = record.object(in: context.managedObjectContext) else {
+                        assertionFailure()
+                        return UITableViewCell()
+                    }
+                    // status
+                    if let status = history.statusObject {
+                        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                        StatusSection.setupStatusPollDataSource(
+                            context: context,
+                            statusView: cell.statusView,
+                            configurationContext: configuration.statusViewConfigurationContext
+                        )
+                        configure(
+                            tableView: tableView,
+                            cell: cell,
+                            viewModel: StatusTableViewCell.ViewModel(value: .statusObject(status)),
+                            configuration: configuration
+                        )
+                        return cell
+                    }
+                    // user
+                    if let user = history.userObject {
+                        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserRelationshipStyleTableViewCell.self), for: indexPath) as! UserRelationshipStyleTableViewCell
+                        let authenticationContext = context.authenticationService.activeAuthenticationContext
+                        let me = authenticationContext?.user(in: context.managedObjectContext)
+                        let viewModel = UserTableViewCell.ViewModel(
+                            user: user,
+                            me: me,
+                            notification: nil
+                        )
+                        configure(
+                            cell: cell,
+                            viewModel: viewModel,
+                            configuration: configuration
+                        )
+                        return cell
+                    }
+                    
+                    return UITableViewCell()
                 }
                 return cell
             }
@@ -82,6 +112,21 @@ extension HistorySection {
                 statusViewTableViewCellDelegate: configuration.statusViewTableViewCellDelegate,
                 timelineMiddleLoaderTableViewCellDelegate: nil,
                 statusViewConfigurationContext: configuration.statusViewConfigurationContext
+            )
+        )
+    }
+    
+    static func configure(
+        cell: UserTableViewCell,
+        viewModel: UserTableViewCell.ViewModel,
+        configuration: Configuration
+    ) {
+        UserSection.configure(
+            cell: cell,
+            viewModel: viewModel,
+            configuration: .init(
+                userViewTableViewCellDelegate: configuration.userViewTableViewCellDelegate,
+                userViewConfigurationContext: configuration.userViewConfigurationContext
             )
         )
     }

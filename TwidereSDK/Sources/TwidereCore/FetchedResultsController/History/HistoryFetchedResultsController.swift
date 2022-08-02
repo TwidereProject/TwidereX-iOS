@@ -1,5 +1,5 @@
 //
-//  StatusHistoryFetchedResultsController.swift
+//  HistoryFetchedResultsController.swift
 //  
 //
 //  Created by MainasuK on 2022-7-29.
@@ -14,7 +14,7 @@ import CoreDataStack
 import TwitterSDK
 import OrderedCollections
 
-final public class StatusHistoryFetchedResultsController: NSObject {
+final public class HistoryFetchedResultsController: NSObject {
     
     public let logger = Logger(subsystem: "StatusHistoryFetchedResultsController", category: "DB")
     
@@ -32,7 +32,7 @@ final public class StatusHistoryFetchedResultsController: NSObject {
         self.fetchedResultsController = {
             let fetchRequest = History.sortedFetchRequest
             // make sure initial query return empty results
-            fetchRequest.predicate = History.statusPredicate(acct: .none)
+            fetchRequest.predicate = History.predicate(acct: .none)
             fetchRequest.returnsObjectsAsFaults = false
             fetchRequest.shouldRefreshRefetchedObjects = true
             fetchRequest.fetchBatchSize = 15
@@ -45,7 +45,7 @@ final public class StatusHistoryFetchedResultsController: NSObject {
             
             return controller
         }()
-        self.predicate = History.statusPredicate(acct: .none)
+        self.predicate = History.predicate(acct: .none)
         super.init()
         
         fetchedResultsController.delegate = self
@@ -71,7 +71,7 @@ final public class StatusHistoryFetchedResultsController: NSObject {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension StatusHistoryFetchedResultsController: NSFetchedResultsControllerDelegate {
+extension HistoryFetchedResultsController: NSFetchedResultsControllerDelegate {
     public func controller(
         _ controller: NSFetchedResultsController<NSFetchRequestResult>,
         didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference

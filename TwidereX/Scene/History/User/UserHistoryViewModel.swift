@@ -23,10 +23,10 @@ final class UserHistoryViewModel {
     // input
     let context: AppContext
     let authContext: AuthContext
-    
+    let historyFetchedResultsController: HistoryFetchedResultsController
+
     // output
-    // var diffableDataSource: UITableViewDiffableDataSource<NotificationSection, NotificationItem>?
-    // var didLoadLatest = PassthroughSubject<Void, Never>()
+    var diffableDataSource: UITableViewDiffableDataSource<HistorySection, HistoryItem>?
 
     init(
         context: AppContext,
@@ -34,7 +34,10 @@ final class UserHistoryViewModel {
     ) {
         self.context = context
         self.authContext = authContext
+        self.historyFetchedResultsController = HistoryFetchedResultsController(managedObjectContext: context.managedObjectContext)
         // end init
+        
+        historyFetchedResultsController.predicate = History.userPredicate(acct: authContext.authenticationContext.acct)
     }
     
     deinit {

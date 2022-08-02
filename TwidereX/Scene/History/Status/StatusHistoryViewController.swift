@@ -120,6 +120,7 @@ extension StatusHistoryViewController: UITableViewDelegate, AutoGenerateTableVie
             return container
         }
     }
+    
 }
 
 // MARK: - StatusViewTableViewCellDelegate

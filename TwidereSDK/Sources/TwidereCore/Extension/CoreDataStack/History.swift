@@ -20,5 +20,16 @@ extension History {
         
         return nil
     }
+    
+    public var userObject: UserObject? {
+        if let user = twitterUser {
+            return .twitter(object: user)
+        }
+        if let user = mastodonUser {
+            return .mastodon(object: user)
+        }
+        
+        return nil
+    }
 
 }

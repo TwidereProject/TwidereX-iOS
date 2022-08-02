@@ -56,12 +56,10 @@ extension HistoryViewController {
         
         view.backgroundColor = .systemBackground
 
-        // TODO:
-        // setupSegmentedControl(scopes: viewModel.scopes)
-        // navigationItem.titleView = pageSegmentedControl
+        setupSegmentedControl(scopes: viewModel.scopes)
+        navigationItem.titleView = pageSegmentedControl
+        pageSegmentedControl.addTarget(self, action: #selector(HistoryViewController.pageSegmentedControlValueChanged(_:)), for: .valueChanged)
         
-        title = "Hisotry"
-
         dataSource = viewModel
     }
     
@@ -88,4 +86,15 @@ extension HistoryViewController {
             pageSegmentedControl.widthAnchor.constraint(greaterThanOrEqualToConstant: 240)
         ])
     }
+}
+
+extension HistoryViewController {
+    
+    @objc private func pageSegmentedControlValueChanged(_ sender: UISegmentedControl) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        let index = sender.selectedSegmentIndex
+        scrollToPage(.at(index: index), animated: true, completion: nil)
+    }
+
 }

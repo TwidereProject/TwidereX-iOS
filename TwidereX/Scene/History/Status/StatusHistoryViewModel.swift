@@ -23,7 +23,7 @@ final class StatusHistoryViewModel {
     // input
     let context: AppContext
     let authContext: AuthContext
-    let statusHistoryFetchedResultsController: StatusHistoryFetchedResultsController
+    let historyFetchedResultsController: HistoryFetchedResultsController
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<HistorySection, HistoryItem>?
@@ -34,10 +34,10 @@ final class StatusHistoryViewModel {
     ) {
         self.context = context
         self.authContext = authContext
-        self.statusHistoryFetchedResultsController = StatusHistoryFetchedResultsController(managedObjectContext: context.managedObjectContext)
+        self.historyFetchedResultsController = HistoryFetchedResultsController(managedObjectContext: context.managedObjectContext)
         // end init
         
-        statusHistoryFetchedResultsController.predicate = History.statusPredicate(acct: authContext.authenticationContext.acct)
+        historyFetchedResultsController.predicate = History.statusPredicate(acct: authContext.authenticationContext.acct)
     }
     
     deinit {

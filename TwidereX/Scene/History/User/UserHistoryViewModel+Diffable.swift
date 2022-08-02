@@ -1,8 +1,8 @@
 //
-//  StatusHistoryViewModel+Diffable.swift
+//  UserHistoryViewModel+Diffable.swift
 //  TwidereX
 //
-//  Created by MainasuK on 2022-7-29.
+//  Created by MainasuK on 2022-8-1.
 //  Copyright © 2022 Twidere. All rights reserved.
 //
 
@@ -10,23 +10,23 @@ import UIKit
 import Combine
 import AppShared
 
-extension StatusHistoryViewModel {
+extension UserHistoryViewModel {
     
     func setupDiffableDataSource(
         tableView: UITableView,
-        statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
+        userViewTableViewCellDelegate: UserViewTableViewCellDelegate
     ) {
         diffableDataSource = HistorySection.diffableDataSource(
             tableView: tableView,
             context: context,
             configuration: .init(
-                statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
+                statusViewTableViewCellDelegate: nil,
                 statusViewConfigurationContext: .init(
                     dateTimeProvider: DateTimeSwiftProvider(),
                     twitterTextProvider: OfficialTwitterTextProvider(),
                     authenticationContext: context.authenticationService.$activeAuthenticationContext
                 ),
-                userViewTableViewCellDelegate: nil,
+                userViewTableViewCellDelegate: userViewTableViewCellDelegate,
                 userViewConfigurationContext: .init(
                     listMembershipViewModel: nil,
                     authenticationContext: context.authenticationService.activeAuthenticationContext
@@ -57,4 +57,3 @@ extension StatusHistoryViewModel {
     }
     
 }
- 

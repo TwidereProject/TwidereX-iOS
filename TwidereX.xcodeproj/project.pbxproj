@@ -256,6 +256,8 @@
 		DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */; };
 		DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */; };
 		DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */; };
+		DB92DB3F2898026B0011B564 /* UserHistoryViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB92DB3E2898026B0011B564 /* UserHistoryViewController+DataSourceProvider.swift */; };
+		DB92DB41289804440011B564 /* UserHistoryViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB92DB40289804440011B564 /* UserHistoryViewModel+Diffable.swift */; };
 		DB932E5227FEC7390036A824 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DB932E5527FEC7390036A824 /* Intents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
 		DB932E5327FEC7390036A824 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DB932E5527FEC7390036A824 /* Intents.intentdefinition */; };
 		DB94B6B426C65BE100A2E8A1 /* MastodonAuthenticationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */; };
@@ -763,6 +765,8 @@
 		DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderViewController.swift; sourceTree = "<group>"; };
 		DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewController.swift; sourceTree = "<group>"; };
 		DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewModel.swift; sourceTree = "<group>"; };
+		DB92DB3E2898026B0011B564 /* UserHistoryViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserHistoryViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
+		DB92DB40289804440011B564 /* UserHistoryViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserHistoryViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB932E5427FEC7390036A824 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = Base; path = Base.lproj/Intents.intentdefinition; sourceTree = "<group>"; };
 		DB932E5727FEC73B0036A824 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Intents.strings; sourceTree = "<group>"; };
 		DB932E5927FEC73C0036A824 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Intents.strings; sourceTree = "<group>"; };
@@ -2451,7 +2455,9 @@
 			isa = PBXGroup;
 			children = (
 				DBFCEF1128939C9600EEBFB1 /* UserHistoryViewController.swift */,
+				DB92DB3E2898026B0011B564 /* UserHistoryViewController+DataSourceProvider.swift */,
 				DBFCEF1428939CAC00EEBFB1 /* UserHistoryViewModel.swift */,
+				DB92DB40289804440011B564 /* UserHistoryViewModel+Diffable.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -3221,6 +3227,7 @@
 				DB71C7D1271EB09A00BE3819 /* DataSourceFacade+Friendship.swift in Sources */,
 				DB442473285B177B0095AECF /* SearchMediaTimelineViewModel.swift in Sources */,
 				DB1D3DEA289388CD008F0BD0 /* HistoryViewController.swift in Sources */,
+				DB92DB3F2898026B0011B564 /* UserHistoryViewController+DataSourceProvider.swift in Sources */,
 				DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */,
 				DB915406254FC8CE00613473 /* FollowActionButton.swift in Sources */,
 				DB8761C0274552F800BA7EE2 /* StatusSection.swift in Sources */,
@@ -3291,6 +3298,7 @@
 				DB2D36F927D5E74D00C1FBE0 /* CompositeListViewModel.swift in Sources */,
 				DBB47DAB26EB3BF8001590F7 /* ProfileFieldContentView.swift in Sources */,
 				DBBF70F726D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift in Sources */,
+				DB92DB41289804440011B564 /* UserHistoryViewModel+Diffable.swift in Sources */,
 				DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
 				DB76A658275F498F00A50673 /* MediaPreviewImageViewModel.swift in Sources */,
