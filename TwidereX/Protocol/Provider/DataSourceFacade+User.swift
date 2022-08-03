@@ -374,7 +374,6 @@ extension DataSourceFacade {
                 
                 guard isSignOut else { return }
                 dependency.coordinator.setup()
-                dependency.coordinator.setupWelcomeIfNeeds()
             }   // end Task
         }
         alertController.addAction(signOutAction)

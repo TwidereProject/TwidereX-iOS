@@ -19,37 +19,47 @@ struct BehaviorsPreferenceView: View {
             // Tab Bar
             Section {
                 Toggle(isOn: $viewModel.preferredTabBarLabelDisplay) {
-                    Text(verbatim: "Show tab bar labels")       // TODO: i18n
+                    Text(verbatim: L10n.Scene.Settings.Behaviors.TabBarSection.showTabBarLabels)
                 }
                 Picker(selection: $viewModel.tabBarTapScrollPreference) {
                     ForEach(UserDefaults.TabBarTapScrollPreference.allCases, id: \.self) { preference in
                         Text(preference.title)
                     }
                 } label: {
-                    Text(verbatim: "Tap tab bar scroll to top")     // TODO: i18n
+                    Text(verbatim: L10n.Scene.Settings.Behaviors.TabBarSection.tapTabBarScrollToTop)
                 }
             } header: {
-                Text(verbatim: "Tab Bar")       // TODO: i18n
+                Text(verbatim: L10n.Scene.Settings.Behaviors.TabBarSection.tabBar)
                     .textCase(nil)
             }
             // Timeline Refreshing
             Section {
                 Toggle(isOn: $viewModel.preferredTimelineAutoRefresh) {
-                    Text(verbatim: "Automatically refresh timeline")        // TODO: i18n
+                    Text(verbatim: L10n.Scene.Settings.Behaviors.TimelineRefreshingSection.automaticallyRefreshTimeline)
                 }
-                Picker(selection: $viewModel.timelineRefreshInterval) {
-                    ForEach(UserDefaults.TimelineRefreshInterval.allCases, id: \.self) { preference in
-                        Text(preference.title)
+                if viewModel.preferredTimelineAutoRefresh {
+                    Picker(selection: $viewModel.timelineRefreshInterval) {
+                        ForEach(UserDefaults.TimelineRefreshInterval.allCases, id: \.self) { preference in
+                            Text(preference.title)
+                        }
+                    } label: {
+                        Text(verbatim: L10n.Scene.Settings.Behaviors.TimelineRefreshingSection.refreshInterval)
                     }
-                } label: {
-                    Text(verbatim: "Refresh Interval")        // TODO: i18n
-
                 }
                 Toggle(isOn: $viewModel.preferredTimelineResetToTop) {
-                    Text(verbatim: "Reset to top")       // TODO: i18n
+                    Text(verbatim: L10n.Scene.Settings.Behaviors.TimelineRefreshingSection.resetToTop)
                 }
             } header: {
-                Text(verbatim: "Timeline Refreshing")       // TODO: i18n
+                Text(verbatim: L10n.Scene.Settings.Behaviors.TimelineRefreshingSection.timelineRefreshing)
+                    .textCase(nil)
+            }
+            // History
+            Section {
+                Toggle(isOn: $viewModel.preferredEnableHistory) {
+                    Text(verbatim: L10n.Scene.Settings.Behaviors.HistorySection.enableHistoryRecord)
+                }
+            } header: {
+                Text(verbatim: L10n.Scene.Settings.Behaviors.HistorySection.history)
                     .textCase(nil)
             }
         }

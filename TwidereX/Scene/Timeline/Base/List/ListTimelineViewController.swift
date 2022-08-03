@@ -237,7 +237,8 @@ extension ListTimelineViewController {
 
 // MARK: - UITableViewDelegate
 extension ListTimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
-    // sourcery:inline:ListTimelineView
+    // sourcery:inline:ListTimelineViewController.AutoGenerateTableViewDelegate
+
     // Generated using Sourcery
     // DO NOT EDIT
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

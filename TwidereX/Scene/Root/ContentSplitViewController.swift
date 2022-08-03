@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import TwidereCore
 
 final class ContentSplitViewController: UIViewController, NeedsDependency {
     
@@ -20,7 +21,8 @@ final class ContentSplitViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
-        
+    let authContext: AuthContext
+
     private(set) lazy var sidebarViewController: SidebarViewController = {
         let sidebarViewController = SidebarViewController()
         sidebarViewController.context = context
@@ -31,12 +33,12 @@ final class ContentSplitViewController: UIViewController, NeedsDependency {
     }()
     
     private(set) lazy var mainTabBarController: MainTabBarController = {
-        let mainTabBarController = MainTabBarController(context: context, coordinator: coordinator)
+        let mainTabBarController = MainTabBarController(context: context, coordinator: coordinator, authContext: authContext)
         return mainTabBarController
     }()
     
     private(set) lazy var secondaryTabBarController: SecondaryTabBarController = {
-        let secondaryTabBarController = SecondaryTabBarController(context: context, coordinator: coordinator)
+        let secondaryTabBarController = SecondaryTabBarController(context: context, coordinator: coordinator, authContext: authContext)
         return secondaryTabBarController
     }()
     
@@ -49,7 +51,22 @@ final class ContentSplitViewController: UIViewController, NeedsDependency {
     
     // [Tab: HashValue]
     var transformNavigationStackRecord: [TabBarItem: [Int]] = [:]
-
+    
+    init(
+        context: AppContext,
+        coordinator: SceneCoordinator,
+        authContext: AuthContext
+    ) {
+        self.context = context
+        self.coordinator = coordinator
+        self.authContext = authContext
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
@@ -211,7 +228,7 @@ extension ContentSplitViewController {
         for tab in secondaryTabBarController.tabs {
             guard let secondaryTabBarNavigationController = secondaryTabBarController.navigationController(for: tab) else { continue }
             if secondaryTabBarNavigationController.viewControllers.count == 1 {
-                let viewController = tab.viewController(context: context, coordinator: coordinator)
+                let viewController = tab.viewController(context: context, coordinator: coordinator, authContext: authContext)
                 viewController.navigationItem.hidesBackButton = true
                 secondaryTabBarNavigationController.pushViewController(viewController, animated: false)
             }

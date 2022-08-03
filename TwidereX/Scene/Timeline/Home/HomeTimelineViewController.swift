@@ -112,18 +112,21 @@ extension HomeTimelineViewController {
         
         unreadIndicatorView.startDisplayLink()
         
-        DispatchQueue.once {
-            guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
-            let settingListViewModel = SettingListViewModel(
-                context: self.context,
-                auth: .init(authenticationContext: authenticationContext)
-            )
-            self.coordinator.present(
-                scene: .setting(viewModel: settingListViewModel),
-                from: self,
-                transition: .modal(animated: true)
-            )
-        }
+//        #if DEBUG
+//        DispatchQueue.once {
+//            guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
+//            let historyViewModel = HistoryViewModel(
+//                context: self.context,
+//                coordinator: coordinator,
+//                authContext: .init(authenticationContext: authenticationContext)
+//            )
+//            self.coordinator.present(
+//                scene: .history(viewModel: historyViewModel),
+//                from: self,
+//                transition: .show
+//            )
+//        }
+//        #endif
     }
     
     override func viewDidDisappear(_ animated: Bool) {

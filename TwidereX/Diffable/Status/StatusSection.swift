@@ -16,7 +16,7 @@ import TwidereUI
 import AppShared
 import TwitterSDK
 
-enum StatusSection: Int, Hashable {
+enum StatusSection: Hashable {
     case main
     case footer
 }

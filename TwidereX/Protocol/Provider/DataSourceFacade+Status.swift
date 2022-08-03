@@ -22,12 +22,25 @@ extension DataSourceFacade {
         sender: UIButton,
         authenticationContext: AuthenticationContext
     ) async {
+        defer {
+            Task {
+                await recordStatusHistory(
+                    denpendency: provider,
+                    status: status
+                )
+            }   // end Task
+        }
+        
         switch action {
         case .reply:
             guard let status = status.object(in: provider.context.managedObjectContext) else {
                 assertionFailure()
                 return
             }
+            
+            let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+            impactFeedbackGenerator.impactOccurred()
+            
             let composeViewModel = ComposeViewModel(context: provider.context)
             let composeContentViewModel = ComposeContentViewModel(
                 kind: .reply(status: status),
@@ -78,6 +91,9 @@ extension DataSourceFacade {
             }
         case .menu:
             // media menu button trigger this
+            let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+            impactFeedbackGenerator.impactOccurred()
+            
             await DataSourceFacade.responseToStatusShareAction(
                 provider: provider,
                 status: status,
@@ -105,6 +121,13 @@ extension DataSourceFacade {
             provider: provider,
             status: redirectRecord
         )
+        
+        Task {
+            await recordStatusHistory(
+                denpendency: provider,
+                status: status
+            )
+        }   // end Task
     }
     
     @MainActor
@@ -144,6 +167,13 @@ extension DataSourceFacade {
             provider: provider,
             status: redirectRecord
         )
+        
+        Task {
+            await recordStatusHistory(
+                denpendency: provider,
+                status: status
+            )
+        }   // end Task
     }
     
     @MainActor

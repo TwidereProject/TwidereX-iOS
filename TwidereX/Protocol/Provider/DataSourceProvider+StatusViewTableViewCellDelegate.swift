@@ -319,7 +319,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
                 return
             }
-            
+                        
             await DataSourceFacade.responseToStatusToolbar(
                 provider: self,
                 status: status,
@@ -398,6 +398,20 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                     UIPasteboard.general.string = statusID
                 }
             #endif
+            case .appearEvent:
+                let _record = await DataSourceFacade.status(
+                    managedObjectContext: context.managedObjectContext,
+                    status: status,
+                    target: .status
+                )
+                guard let record = _record else {
+                    return
+                }
+
+                await DataSourceFacade.recordStatusHistory(
+                    denpendency: self,
+                    status: record
+                )
             }   // end switch
         }   // end Task
     }   // end func

@@ -282,6 +282,14 @@ extension StatusToolbar {
             children.append(debugMenu)
             #endif
             
+            let appearEventAction = UIDeferredMenuElement.uncached { [weak self] completion in
+                if let self = self {
+                    self.delegate?.statusToolbar(self, menuActionDidPressed: .appearEvent, menuButton: self.menuButton)
+                }
+                completion([])
+            }
+            children.append(appearEventAction)
+            
             return UIMenu(title: "", options: [], children: children)
         }()
         

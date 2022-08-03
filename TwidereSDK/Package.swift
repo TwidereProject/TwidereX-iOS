@@ -91,6 +91,11 @@ let package = Package(
                 "MastodonSDK",
                 .product(name: "KeychainAccess", package: "KeychainAccess"),
                 .product(name: "ArkanaKeys", package: "ArkanaKeys"),
+            ],
+            exclude: [
+                "Template/AutoGenerateProtocolDelegate.swifttemplate",
+                "Template/AutoGenerateProtocolRelayDelegate.swifttemplate",
+                "Template/AutoGenerateTableViewDelegate.stencil",
             ]
         ),
         .target(

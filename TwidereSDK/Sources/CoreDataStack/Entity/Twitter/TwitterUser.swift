@@ -57,7 +57,8 @@ public final class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var statuses: Set<TwitterStatus>
     @NSManaged public private(set) var savedSearches: Set<TwitterSavedSearch>
     @NSManaged public private(set) var ownedLists: Set<TwitterList>
-
+    @NSManaged public private(set) var histories: Set<History>
+    
     // many-to-many relationship
     @NSManaged public private(set) var like: Set<TwitterStatus>
     @NSManaged public private(set) var reposts: Set<TwitterStatus>

@@ -51,6 +51,7 @@ final class NotificationViewController: TabmanViewController, NeedsDependency, D
 }
 
 extension NotificationViewController {
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -175,6 +176,11 @@ extension NotificationViewController {
         } else {
             pageSegmentedControl.selectedSegmentIndex = 0
         }
+        
+        pageSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pageSegmentedControl.widthAnchor.constraint(greaterThanOrEqualToConstant: 240)
+        ])
     }
 }
 

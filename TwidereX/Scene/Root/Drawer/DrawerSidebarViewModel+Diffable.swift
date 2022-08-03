@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Combine
 import TwidereAsset
 
 extension DrawerSidebarViewModel {
@@ -20,22 +21,34 @@ extension DrawerSidebarViewModel {
         sidebarSnapshot.appendSections([.main])
         sidebarDiffableDataSource?.applySnapshotUsingReloadData(sidebarSnapshot)
         
-        context.authenticationService.$activeAuthenticationContext
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                var snapshot = NSDiffableDataSourceSnapshot<SidebarSection, SidebarItem>()
-                snapshot.appendSections([.main])
-                switch authenticationContext {
-                case .twitter:
-                    snapshot.appendItems([.likes, .lists], toSection: .main)
-                case .mastodon:
-                    snapshot.appendItems([.local, .federated, .likes, .lists], toSection: .main)
-                case .none:
-                    break
+        Publishers.CombineLatest(
+            context.authenticationService.$activeAuthenticationContext.removeDuplicates(),
+            UserDefaults.shared.publisher(for: \.preferredEnableHistory).removeDuplicates()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] authenticationContext, preferredEnableHistory in
+            guard let self = self else { return }
+            var snapshot = NSDiffableDataSourceSnapshot<SidebarSection, SidebarItem>()
+            snapshot.appendSections([.main])
+            switch authenticationContext {
+            case .twitter:
+                snapshot.appendItems([.likes], toSection: .main)
+                if preferredEnableHistory {
+                    snapshot.appendItems([.history], toSection: .main)
                 }
-                self.sidebarDiffableDataSource?.applySnapshotUsingReloadData(snapshot)
+                snapshot.appendItems([.lists], toSection: .main)
+            case .mastodon:
+                snapshot.appendItems([.local, .federated, .likes], toSection: .main)
+                if preferredEnableHistory {
+                    snapshot.appendItems([.history], toSection: .main)
+                }
+                snapshot.appendItems([.lists], toSection: .main)
+            case .none:
+                break
             }
-            .store(in: &disposeBag)
+            self.sidebarDiffableDataSource?.applySnapshotUsingReloadData(snapshot)
+        }
+        .store(in: &disposeBag)
         
         // setting
         settingDiffableDataSource = setupDiffableDataSource(collectionView: settingCollectionView)

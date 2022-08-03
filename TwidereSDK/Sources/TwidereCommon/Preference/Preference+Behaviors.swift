@@ -65,7 +65,7 @@ extension UserDefaults {
     @objc dynamic public var timelineRefreshInterval: TimelineRefreshInterval {
         get {
             guard let rawValue: Int = self[#function] else { return ._60s }
-            return TimelineRefreshInterval (rawValue: rawValue) ?? ._60s
+            return TimelineRefreshInterval(rawValue: rawValue) ?? ._60s
         }
         set { self[#function] = newValue.rawValue }
     }
@@ -74,6 +74,16 @@ extension UserDefaults {
         get {
             return bool(forKey: #function)
         }
+        set { self[#function] = newValue }
+    }
+    
+}
+
+// MARK: - History
+extension UserDefaults {
+    
+    @objc dynamic public var preferredEnableHistory: Bool {
+        get { return bool(forKey: #function) }
         set { self[#function] = newValue }
     }
     

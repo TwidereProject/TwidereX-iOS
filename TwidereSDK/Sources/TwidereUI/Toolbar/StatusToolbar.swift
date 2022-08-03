@@ -172,6 +172,7 @@ extension StatusToolbar {
         #if DEBUG
         case copyID
         #endif
+        case appearEvent
     }
 
     public enum Style {

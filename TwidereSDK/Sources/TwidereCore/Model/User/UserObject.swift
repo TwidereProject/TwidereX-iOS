@@ -87,3 +87,14 @@ extension UserObject {
         }
     }
 }
+
+extension UserObject {
+    public var histories: Set<History> {
+        switch self {
+        case .twitter(let user):
+            return user.histories
+        case .mastodon(let user):
+            return user.histories
+        }
+    }
+}

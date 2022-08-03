@@ -954,7 +954,7 @@ public enum L10n {
         }
       }
       public enum ReplySettings {
-        /// Everyone can peply
+        /// Everyone can reply
         public static let everyoneCanReply = L10n.tr("Localizable", "Scene.Compose.ReplySettings.EveryoneCanReply")
         /// Only people you mention can reply
         public static let onlyPeopleYouMentionCanReply = L10n.tr("Localizable", "Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply")
@@ -1055,6 +1055,20 @@ public enum L10n {
     public enum Following {
       /// Following
       public static let title = L10n.tr("Localizable", "Scene.Following.Title")
+    }
+    public enum History {
+      /// Clear
+      public static let clear = L10n.tr("Localizable", "Scene.History.Clear")
+      /// History
+      public static let title = L10n.tr("Localizable", "Scene.History.Title")
+      public enum Scope {
+        /// Toot
+        public static let toot = L10n.tr("Localizable", "Scene.History.Scope.Toot")
+        /// Tweet
+        public static let tweet = L10n.tr("Localizable", "Scene.History.Scope.Tweet")
+        /// User
+        public static let user = L10n.tr("Localizable", "Scene.History.Scope.User")
+      }
     }
     public enum Likes {
       /// Likes
@@ -1293,8 +1307,6 @@ public enum L10n {
         }
       }
       public enum Account {
-        /// Account Settings
-        public static let accountSettings = L10n.tr("Localizable", "Scene.Settings.Account.AccountSettings")
         /// Blocked People
         public static let blockedPeople = L10n.tr("Localizable", "Scene.Settings.Account.BlockedPeople")
         /// Mute and Block
@@ -1360,6 +1372,50 @@ public enum L10n {
           public static let translateButton = L10n.tr("Localizable", "Scene.Settings.Appearance.Translation.TranslateButton")
         }
       }
+      public enum Behaviors {
+        /// Behaviors
+        public static let title = L10n.tr("Localizable", "Scene.Settings.Behaviors.Title")
+        public enum HistorySection {
+          /// Enable History Record
+          public static let enableHistoryRecord = L10n.tr("Localizable", "Scene.Settings.Behaviors.HistorySection.EnableHistoryRecord")
+          /// History
+          public static let history = L10n.tr("Localizable", "Scene.Settings.Behaviors.HistorySection.History")
+        }
+        public enum TabBarSection {
+          /// Show tab bar labels
+          public static let showTabBarLabels = L10n.tr("Localizable", "Scene.Settings.Behaviors.TabBarSection.ShowTabBarLabels")
+          /// Tab Bar
+          public static let tabBar = L10n.tr("Localizable", "Scene.Settings.Behaviors.TabBarSection.TabBar")
+          /// Tap tab bar scroll to top
+          public static let tapTabBarScrollToTop = L10n.tr("Localizable", "Scene.Settings.Behaviors.TabBarSection.TapTabBarScrollToTop")
+        }
+        public enum TimelineRefreshingSection {
+          /// Automatically refresh timeline
+          public static let automaticallyRefreshTimeline = L10n.tr("Localizable", "Scene.Settings.Behaviors.TimelineRefreshingSection.AutomaticallyRefreshTimeline")
+          /// Refresh interval
+          public static let refreshInterval = L10n.tr("Localizable", "Scene.Settings.Behaviors.TimelineRefreshingSection.RefreshInterval")
+          /// Reset to top
+          public static let resetToTop = L10n.tr("Localizable", "Scene.Settings.Behaviors.TimelineRefreshingSection.ResetToTop")
+          /// Timeline Refreshing
+          public static let timelineRefreshing = L10n.tr("Localizable", "Scene.Settings.Behaviors.TimelineRefreshingSection.TimelineRefreshing")
+          public enum RefreshIntervalOption {
+            /// 120 seconds
+            public static let _120Seconds = L10n.tr("Localizable", "Scene.Settings.Behaviors.TimelineRefreshingSection.RefreshIntervalOption.120Seconds")
+            /// 300 seconds
+            public static let _300Seconds = L10n.tr("Localizable", "Scene.Settings.Behaviors.TimelineRefreshingSection.RefreshIntervalOption.300Seconds")
+            /// 30 seconds
+            public static let _30Seconds = L10n.tr("Localizable", "Scene.Settings.Behaviors.TimelineRefreshingSection.RefreshIntervalOption.30Seconds")
+            /// 60 seconds
+            public static let _60Seconds = L10n.tr("Localizable", "Scene.Settings.Behaviors.TimelineRefreshingSection.RefreshIntervalOption.60Seconds")
+          }
+          public enum ResetToTopOption {
+            /// Double Tap
+            public static let doubleTap = L10n.tr("Localizable", "Scene.Settings.Behaviors.TimelineRefreshingSection.ResetToTopOption.DoubleTap")
+            /// Single Tap
+            public static let singleTap = L10n.tr("Localizable", "Scene.Settings.Behaviors.TimelineRefreshingSection.ResetToTopOption.SingleTap")
+          }
+        }
+      }
       public enum Display {
         /// Display
         public static let title = L10n.tr("Localizable", "Scene.Settings.Display.Title")
@@ -1390,6 +1446,8 @@ public enum L10n {
           public static let thankForUsingTwidereX = L10n.tr("Localizable", "Scene.Settings.Display.Preview.ThankForUsingTwidereX")
         }
         public enum SectionHeader {
+          /// Avatar
+          public static let avatar = L10n.tr("Localizable", "Scene.Settings.Display.SectionHeader.Avatar")
           /// Date Format
           public static let dateFormat = L10n.tr("Localizable", "Scene.Settings.Display.SectionHeader.DateFormat")
           /// Media

@@ -79,6 +79,7 @@ final public class MastodonStatus: NSManagedObject {
     @NSManaged public private(set) var feeds: Set<Feed>
     @NSManaged public private(set) var repostFrom: Set<MastodonStatus>
     @NSManaged public private(set) var notifications: Set<MastodonNotification>
+    @NSManaged public private(set) var histories: Set<History>
     
     // many-to-one relationship
     // sourcery: autoGenerateRelationship

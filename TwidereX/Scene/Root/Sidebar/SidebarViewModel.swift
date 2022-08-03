@@ -39,21 +39,39 @@ final class SidebarViewModel: ObservableObject {
     init(context: AppContext) {
         self.context = context
         
+        Publishers.CombineLatest(
+            context.authenticationService.$activeAuthenticationContext.removeDuplicates(),
+            UserDefaults.shared.publisher(for: \.preferredEnableHistory).removeDuplicates()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] authenticationContext, preferredEnableHistory in
+            guard let self = self else { return }
+
+            var items: [TabBarItem] = []
+            switch authenticationContext {
+            case .twitter:
+                items.append(contentsOf: [.likes])
+                if preferredEnableHistory {
+                    items.append(contentsOf: [.history])
+                }
+                items.append(contentsOf: [.lists])
+            case .mastodon:
+                items.append(contentsOf: [.local, .federated, .likes])
+                if preferredEnableHistory {
+                    items.append(contentsOf: [.history])
+                }
+                items.append(contentsOf: [.lists])
+            case .none:
+                break
+            }
+            self.secondaryTabBarItems = items
+        }
+        .store(in: &disposeBag)
+        
         context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
-                
-                var items: [TabBarItem] = []
-                switch authenticationContext {
-                case .twitter:
-                    items.append(contentsOf: [.likes, .lists])
-                case .mastodon:
-                    items.append(contentsOf: [.local, .federated, .likes, .lists])
-                case .none:
-                    break
-                }
-                self.secondaryTabBarItems = items
-                
+
                 let user = authenticationContext?.user(in: context.managedObjectContext)
                 switch user {
                 case .twitter(let object):

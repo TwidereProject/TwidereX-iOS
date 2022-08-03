@@ -20,6 +20,7 @@ enum TabBarItem: Int, Hashable {
     case federated          // Mastodon only
     case messages
     case likes
+    case history
     case lists
     case trends
     case drafts
@@ -42,6 +43,7 @@ extension TabBarItem {
         case .federated:    return L10n.Scene.Federated.title
         case .messages:     return L10n.Scene.Messages.title
         case .likes:        return L10n.Scene.Likes.title
+        case .history:      return L10n.Scene.History.title
         case .lists:        return L10n.Scene.Lists.title
         case .trends:       return L10n.Scene.Trends.title
         case .drafts:       return L10n.Scene.Drafts.title
@@ -59,6 +61,7 @@ extension TabBarItem {
         case .federated:        return Asset.ObjectTools.globe.image.withRenderingMode(.alwaysTemplate)
         case .messages:         return Asset.Communication.mail.image.withRenderingMode(.alwaysTemplate)
         case .likes:            return Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
+        case .history:          return Asset.Arrows.clockArrowCirclepath.image.withRenderingMode(.alwaysTemplate)
         case .lists:            return Asset.TextFormatting.listBullet.image.withRenderingMode(.alwaysTemplate)
         case .trends:           return Asset.Arrows.trendingUp.image.withRenderingMode(.alwaysTemplate)
         case .drafts:           return Asset.ObjectTools.note.image.withRenderingMode(.alwaysTemplate)
@@ -80,7 +83,7 @@ extension TabBarItem {
 }
 
 extension TabBarItem {
-    func viewController(context: AppContext, coordinator: SceneCoordinator) -> UIViewController {
+    func viewController(context: AppContext, coordinator: SceneCoordinator, authContext: AuthContext) -> UIViewController {
         let viewController: UIViewController
         switch self {
         case .home:
@@ -112,6 +115,14 @@ extension TabBarItem {
         case .likes:
             let _viewController = UserLikeTimelineViewController()
             _viewController.viewModel = MeLikeTimelineViewModel(context: context)
+            viewController = _viewController
+        case .history:
+            let _viewController = HistoryViewController()
+            _viewController.viewModel = HistoryViewModel(
+                context: context,
+                coordinator: coordinator,
+                authContext: authContext
+            )
             viewController = _viewController
         case .lists:
             guard let me = context.authenticationService.activeAuthenticationContext?.user(in: context.managedObjectContext)?.asRecord else {

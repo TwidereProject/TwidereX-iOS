@@ -10,6 +10,7 @@ import os.log
 import Foundation
 import UIKit
 import Combine
+import TwidereCore
 import func QuartzCore.CACurrentMediaTime
 
 final class SecondaryTabBarController: UITabBarController {
@@ -20,6 +21,7 @@ final class SecondaryTabBarController: UITabBarController {
 
     weak var context: AppContext!
     weak var coordinator: SceneCoordinator!
+    let authContext: AuthContext
     
     @Published var tabs: [TabBarItem] = [] {
         didSet {
@@ -32,9 +34,10 @@ final class SecondaryTabBarController: UITabBarController {
     var lastPopToRootTime = CACurrentMediaTime()
     @Published var tabBarTapScrollPreference = UserDefaults.shared.tabBarTapScrollPreference
 
-    init(context: AppContext, coordinator: SceneCoordinator) {
+    init(context: AppContext, coordinator: SceneCoordinator, authContext: AuthContext) {
         self.context = context
         self.coordinator = coordinator
+        self.authContext = authContext
         super.init(nibName: nil, bundle: nil)
         
         UserDefaults.shared.publisher(for: \.tabBarTapScrollPreference)
@@ -159,7 +162,7 @@ extension SecondaryTabBarController {
     private func update(tabs: [TabBarItem]) {
         let viewControllers: [UIViewController] = tabs.map { tab in
             let viewController = AdaptiveStatusBarStyleNavigationController(rootViewController: SecondaryTabBarRootController())
-            let _rootViewController = tab.viewController(context: context, coordinator: coordinator)
+            let _rootViewController = tab.viewController(context: context, coordinator: coordinator, authContext: authContext)
             _rootViewController.navigationItem.hidesBackButton = true
             viewController.pushViewController(_rootViewController, animated: false)
             viewController.tabBarItem.tag = tab.tag

@@ -215,6 +215,11 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
             case .likes:
                 let meLikeTimelineViewModel = MeLikeTimelineViewModel(context: context)
                 coordinator.present(scene: .userLikeTimeline(viewModel: meLikeTimelineViewModel), from: presentingViewController, transition: .show)
+            case .history:
+                guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else { return }
+                let authContext = AuthContext(authenticationContext: authenticationContext)
+                let historyViewModel = HistoryViewModel(context: context, coordinator: coordinator, authContext: authContext)
+                coordinator.present(scene: .history(viewModel: historyViewModel), from: presentingViewController, transition: .show)
             case .lists:
                 guard let me = context.authenticationService.activeAuthenticationContext?.user(in: context.managedObjectContext)?.asRecord else { return }
                 

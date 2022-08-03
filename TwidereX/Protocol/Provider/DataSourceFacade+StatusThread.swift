@@ -72,5 +72,13 @@ extension DataSourceFacade {
             from: provider,
             transition: .show
         )
+        
+        Task {
+            guard case let .root(threadContext) = root else { return }
+            await recordStatusHistory(
+                denpendency: provider,
+                status: threadContext.status
+            )
+        }   // end Task
     }
 }
