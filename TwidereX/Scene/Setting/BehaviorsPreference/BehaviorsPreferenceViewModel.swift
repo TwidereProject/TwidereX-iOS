@@ -32,8 +32,10 @@ final class BehaviorsPreferenceViewModel: ObservableObject {
     @Published var timelineRefreshInterval = UserDefaults.shared.timelineRefreshInterval
     @Published var preferredTimelineResetToTop = UserDefaults.shared.preferredTimelineResetToTop
     
-    // output
-    
+    // History
+    @Published var preferredEnableHistory = UserDefaults.shared.preferredEnableHistory
+
+    // output    
     
     init(
         context: AppContext
@@ -88,6 +90,16 @@ final class BehaviorsPreferenceViewModel: ObservableObject {
         $preferredTimelineResetToTop
             .sink { preferredTimelineResetToTop in
                 UserDefaults.shared.preferredTimelineResetToTop = preferredTimelineResetToTop
+            }
+            .store(in: &disposeBag)
+        
+        // preferredEnableHistory
+        UserDefaults.shared.publisher(for: \.preferredEnableHistory)
+            .removeDuplicates()
+            .assign(to: &$preferredEnableHistory)
+        $preferredEnableHistory
+            .sink { preferredEnableHistory in
+                UserDefaults.shared.preferredEnableHistory = preferredEnableHistory
             }
             .store(in: &disposeBag)
     }

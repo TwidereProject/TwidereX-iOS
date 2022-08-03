@@ -9,6 +9,8 @@
 import os.log
 import UIKit
 import Combine
+import CoreData
+import CoreDataStack
 import Tabman
 import Pageboy
 import TwidereCore
@@ -27,6 +29,8 @@ final class HistoryViewController: TabmanViewController, NeedsDependency, Drawer
     let avatarBarButtonItem = AvatarBarButtonItem()
     
     private(set) lazy var pageSegmentedControl = UISegmentedControl()
+    
+    let optionBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"))
     
     override func pageboyViewController(
         _ pageboyViewController: PageboyViewController,
@@ -59,6 +63,25 @@ extension HistoryViewController {
         setupSegmentedControl(scopes: viewModel.scopes)
         navigationItem.titleView = pageSegmentedControl
         pageSegmentedControl.addTarget(self, action: #selector(HistoryViewController.pageSegmentedControlValueChanged(_:)), for: .valueChanged)
+        
+        navigationItem.rightBarButtonItem = optionBarButtonItem
+        optionBarButtonItem.menu = UIMenu(title: "", image: nil, identifier: nil, options: [], children: [
+            UIAction(title: "Clear", image: UIImage(systemName: "minus.circle"), identifier: nil, discoverabilityTitle: nil, attributes: [.destructive], state: .off, handler: { [weak self] action in
+                guard let self = self else { return }
+                Task {
+                    let managedObjectContext = self.context.backgroundManagedObjectContext
+                    let acct = self.viewModel.authContext.authenticationContext.acct
+                    try await managedObjectContext.performChanges {
+                        let request = History.sortedFetchRequest
+                        request.predicate = History.predicate(acct: acct)
+                        let histories = try managedObjectContext.fetch(request)
+                        for history in histories {
+                            managedObjectContext.delete(history)
+                        }
+                    }
+                }   // end Task
+            })
+        ])
         
         dataSource = viewModel
     }

@@ -37,19 +37,29 @@ struct BehaviorsPreferenceView: View {
                 Toggle(isOn: $viewModel.preferredTimelineAutoRefresh) {
                     Text(verbatim: "Automatically refresh timeline")        // TODO: i18n
                 }
-                Picker(selection: $viewModel.timelineRefreshInterval) {
-                    ForEach(UserDefaults.TimelineRefreshInterval.allCases, id: \.self) { preference in
-                        Text(preference.title)
+                if viewModel.preferredTimelineAutoRefresh {
+                    Picker(selection: $viewModel.timelineRefreshInterval) {
+                        ForEach(UserDefaults.TimelineRefreshInterval.allCases, id: \.self) { preference in
+                            Text(preference.title)
+                        }
+                    } label: {
+                        Text(verbatim: "Refresh Interval")        // TODO: i18n
                     }
-                } label: {
-                    Text(verbatim: "Refresh Interval")        // TODO: i18n
-
                 }
                 Toggle(isOn: $viewModel.preferredTimelineResetToTop) {
                     Text(verbatim: "Reset to top")       // TODO: i18n
                 }
             } header: {
                 Text(verbatim: "Timeline Refreshing")       // TODO: i18n
+                    .textCase(nil)
+            }
+            // History
+            Section {
+                Toggle(isOn: $viewModel.preferredEnableHistory) {
+                    Text(verbatim: "Enable History Record")        // TODO: i18n
+                }
+            } header: {
+                Text(verbatim: "History")       // TODO: i18n
                     .textCase(nil)
             }
         }
