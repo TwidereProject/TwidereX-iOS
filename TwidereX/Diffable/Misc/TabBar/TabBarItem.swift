@@ -43,7 +43,7 @@ extension TabBarItem {
         case .federated:    return L10n.Scene.Federated.title
         case .messages:     return L10n.Scene.Messages.title
         case .likes:        return L10n.Scene.Likes.title
-        case .history:      return "History"        // TODO: i18n
+        case .history:      return L10n.Scene.History.title
         case .lists:        return L10n.Scene.Lists.title
         case .trends:       return L10n.Scene.Trends.title
         case .drafts:       return L10n.Scene.Drafts.title

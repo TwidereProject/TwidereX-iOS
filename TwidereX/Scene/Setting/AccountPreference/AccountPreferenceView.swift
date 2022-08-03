@@ -20,7 +20,7 @@ enum AccountPreferenceListEntry: Hashable {
         switch self {
         case .muted:                return L10n.Scene.Settings.Account.mutedPeople
         case .blocked:              return L10n.Scene.Settings.Account.blockedPeople
-        case .accountSettings:      return L10n.Scene.Settings.Account.accountSettings
+        case .accountSettings:      return "Account Settings"   // TODO: i18n
         case .signout:              return L10n.Common.Controls.Actions.signOut
         }
     }

@@ -1,14 +1,14 @@
-"0e8JfP" = "Just to confirm, you wanted ‘${account}’?";
+"0e8JfP" = "Onaylamak için, \"${account}\" mu istediniz?";
 
-"1iPE2d-BS59z4" = "Just to confirm, you wanted ‘Public’?";
+"1iPE2d-BS59z4" = "Sadece onaylamak için \"Halka açık\" olarak mı istediniz?";
 
-"1iPE2d-aV5Ezl" = "Just to confirm, you wanted ‘Default’?";
+"1iPE2d-aV5Ezl" = "Sadece onaylamak için \"Varsayılan\" olarak mı istediniz?";
 
-"1iPE2d-aV8f0g" = "Just to confirm, you wanted ‘Private’?";
+"1iPE2d-aV8f0g" = "Sadece onaylamak için \"Özel\" olarak mı istediniz?";
 
-"1iPE2d-aeaw8w" = "Just to confirm, you wanted ‘Direct’?";
+"1iPE2d-aeaw8w" = "Sadece onaylamak için \"Direkt\" olarak mı istediniz?";
 
-"1iPE2d-jEAHra" = "Just to confirm, you wanted ‘Unlisted’?";
+"1iPE2d-jEAHra" = "Sadece onaylamak için \"Listelenmemiş\" olarak mı istediniz?";
 
 "8WWS78" = "Kullanıcı adı";
 
@@ -26,7 +26,7 @@
 
 "G5v3xr" = "Hesabı etkinleştir";
 
-"GILN5g" = "There are ${count} options matching ‘${accounts}’.";
+"GILN5g" = "\"${accounts}\" ile eşleşen ${count} seçenek var.";
 
 "N4GVJI" = "${errorDescription}";
 
@@ -36,7 +36,7 @@
 
 "SnCJhk" = "Gönderiyi Yayınla";
 
-"SqRrlA" = "Just to confirm, you wanted ‘${accounts}’?";
+"SqRrlA" = "Sadece onaylamak için, \"${accounts}\" mu istediniz?";
 
 "SrV2FP" = "Hata Açıklaması";
 
@@ -46,7 +46,7 @@
 
 "Xs6a35" = "Toot Görünürlüğü";
 
-"YNUo2I" = "There are ${count} options matching ‘${account}’.";
+"YNUo2I" = "\"${account}\" ile eşleşen ${count} seçenek var.";
 
 "Yb4tzx" = "Hesaplar";
 
@@ -56,27 +56,27 @@
 
 "aeaw8w" = "Direkt";
 
-"ch7ADX" = "Compose new post";
+"ch7ADX" = "Yeni bir gönderi oluştur";
 
 "f1YNIs" = "Gönderi İçeriği";
 
 "jEAHra" = "Liste dışı";
 
-"kWl9zU" = "Post ${content}with ${accounts}";
+"kWl9zU" = "${content} ${accounts} ile yayınla";
 
 "noeHVX" = "Gönderi";
 
-"vbgnbQ" = "Post ${content}with ${accounts}";
+"vbgnbQ" = "${content} ${accounts} ile yayınla";
 
-"xeqcBa-BS59z4" = "There are ${count} options matching ‘Public’.";
+"xeqcBa-BS59z4" = "\"Herkese açık\" olarak eşleşen ${count} seçenek var.";
 
-"xeqcBa-aV5Ezl" = "There are ${count} options matching ‘Default’.";
+"xeqcBa-aV5Ezl" = "\"Varsayılan\" olarak eşleşen ${count} seçenek var.";
 
-"xeqcBa-aV8f0g" = "There are ${count} options matching ‘Private’.";
+"xeqcBa-aV8f0g" = "\"Özel\" olarak eşleşen ${count} seçenek var.";
 
-"xeqcBa-aeaw8w" = "There are ${count} options matching ‘Direct’.";
+"xeqcBa-aeaw8w" = "\"Direkt\" olarak eşleşen ${count} seçenek var.";
 
-"xeqcBa-jEAHra" = "There are ${count} options matching ‘Unlisted’.";
+"xeqcBa-jEAHra" = "\"Liste dışı\" olarak eşleşen ${count} seçenek var.";
 
 "z3DAP7" = "${account} hesabına geç";
 

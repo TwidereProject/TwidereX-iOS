@@ -136,7 +136,7 @@ extension MastodonNotificationSectionView {
 extension MastodonNotificationSubscription.MentionPreference.Preference {
     fileprivate var title: String {
         switch self {
-        case .everyone:     return "Everyone"
+        case .everyone:     return "Everyone"   // TODO: i18n
         case .follows:      return "Follows"
         }
     }

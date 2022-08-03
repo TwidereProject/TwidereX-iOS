@@ -85,8 +85,7 @@ extension DataSourceFacade {
             }
         }
         
-        // TODO: i18n
-        let alertControllerTitle = performBlock ? "Do you want to report and block \(reportAlertContext.name)" : "Do you want to report \(reportAlertContext.name)"
+        let alertControllerTitle = performBlock ? L10n.Common.Controls.Friendship.doYouWantToReportAndBlockUser(reportAlertContext.name) : L10n.Common.Controls.Friendship.doYouWantToReportUser(reportAlertContext.name)
         
         let alertController = UIAlertController(
             title: alertControllerTitle,

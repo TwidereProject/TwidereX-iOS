@@ -68,14 +68,14 @@ extension HistoryViewModel {
             switch self {
             case .status:
                 switch platform {
-                case .twitter:      return "Tweet"
-                case .mastodon:     return "Toot"
+                case .twitter:      return L10n.Scene.History.Scope.tweet
+                case .mastodon:     return L10n.Scene.History.Scope.toot
                 case .none:
                     assertionFailure()
                     return "Post"
                 }
             case .user:
-                return "User"       // TODO: i18n
+                return L10n.Scene.History.Scope.user
             }
         }
     }

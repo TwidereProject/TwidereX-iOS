@@ -54,7 +54,7 @@ enum SettingListEntryType: Hashable {
     var title: String {
         switch self {
         case .account:          return L10n.Scene.Settings.SectionHeader.account
-        case .behaviors:        return "Behaviors"      // TODO: i18n
+        case .behaviors:        return L10n.Scene.Settings.Behaviors.title
         case .display:          return L10n.Scene.Settings.Display.title
         case .layout:           return "Layout"
         case .webBrowser:       return "Web Browser"

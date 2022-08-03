@@ -34,7 +34,7 @@ extension BehaviorsPreferenceViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Behaviors"     // TODO: i18n
+        title = L10n.Scene.Settings.Behaviors.title
         
         let hostingViewController = UIHostingController(rootView: behaviorsPreferenceView)
         addChild(hostingViewController)

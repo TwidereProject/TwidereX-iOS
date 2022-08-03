@@ -43,7 +43,7 @@ struct DisplayPreferenceView: View {
             Section {
                 avatarStylePicker
             } header: {
-                Text(verbatim: "Avatar")        // TODO: i18n
+                Text(verbatim: L10n.Scene.Settings.Display.SectionHeader.avatar)
             }   // end Section
 
             // Translation

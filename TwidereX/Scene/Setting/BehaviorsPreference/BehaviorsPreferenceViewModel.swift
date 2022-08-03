@@ -35,7 +35,7 @@ final class BehaviorsPreferenceViewModel: ObservableObject {
     // History
     @Published var preferredEnableHistory = UserDefaults.shared.preferredEnableHistory
 
-    // output    
+    // output
     
     init(
         context: AppContext
