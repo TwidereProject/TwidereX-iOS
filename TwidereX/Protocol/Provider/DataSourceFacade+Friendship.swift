@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import CoreDataStack
 import TwidereCore
+import TwitterSDK
 import MastodonSDK
 import TwidereUI
 import SwiftMessages
@@ -30,6 +31,12 @@ extension DataSourceFacade {
                 authenticationContext: authenticationContext
             )
             await notificationFeedbackGenerator.notificationOccurred(.success)
+        } catch let error as Twitter.API.Error.ResponseError where error.httpResponseStatus == .forbidden {
+            await notificationFeedbackGenerator.notificationOccurred(.error)
+            await presentForbiddenBanner(
+                error: error,
+                dependency: provider
+            )
         } catch {
             await notificationFeedbackGenerator.notificationOccurred(.error)
         }
