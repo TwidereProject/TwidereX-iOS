@@ -9,6 +9,7 @@ import UIKit
 import SwiftUI
 import TwidereCore
 import MetaTextKit
+import MetaLabel
 
 public struct MetaLabelRepresentable: UIViewRepresentable {
     

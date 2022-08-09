@@ -1,5 +1,5 @@
 //
-//  Twitter+User.swift
+//  Twitter+Entity+User.swift
 //  TwitterAPI
 //
 //  Created by Cirno MainasuK on 2020-9-3.

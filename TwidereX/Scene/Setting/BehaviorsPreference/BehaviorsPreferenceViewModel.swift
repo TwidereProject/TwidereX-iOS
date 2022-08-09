@@ -109,8 +109,8 @@ final class BehaviorsPreferenceViewModel: ObservableObject {
 extension UserDefaults.TabBarTapScrollPreference {
     var title: String {
         switch self {
-        case .single:       return "Single Tap"
-        case .double:       return "Double Tap"
+        case .single:       return L10n.Scene.Settings.Behaviors.TimelineRefreshingSection.ResetToTopOption.singleTap
+        case .double:       return L10n.Scene.Settings.Behaviors.TimelineRefreshingSection.ResetToTopOption.doubleTap
         }
     }
 }
@@ -118,10 +118,9 @@ extension UserDefaults.TabBarTapScrollPreference {
 extension UserDefaults.TimelineRefreshInterval {
     var title: String {
         switch self {
-        case ._30s:         return "30 seconds"
-        case ._60s:         return "60 seconds"
-        case ._120s:        return "120 seconds"
-        case ._300s:        return "300 seconds"
+        case ._60s:         return L10n.Scene.Settings.Behaviors.TimelineRefreshingSection.RefreshIntervalOption._60Seconds
+        case ._120s:        return L10n.Scene.Settings.Behaviors.TimelineRefreshingSection.RefreshIntervalOption._120Seconds
+        case ._300s:        return L10n.Scene.Settings.Behaviors.TimelineRefreshingSection.RefreshIntervalOption._300Seconds
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Twiiter+Entity+V2+ReferencedTweet.swift
+//  Twitter+Entity+V2+ReferencedTweet.swift
 //  
 //
 //  Created by Cirno MainasuK on 2020-10-19.
