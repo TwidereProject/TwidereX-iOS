@@ -8,6 +8,7 @@
 
 import UIKit
 import MetaTextKit
+import MetaLabel
 
 final class HashtagTableViewCell: UITableViewCell {
     

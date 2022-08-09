@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import MetaTextKit
+import MetaLabel
 import Meta
 
 protocol ProfileFieldListViewDelegate: AnyObject {

@@ -13,8 +13,9 @@ import CoreDataStack
 import AppShared
 import Floaty
 import Meta
-import MetaTextArea
 import MetaTextKit
+import MetaTextArea
+import MetaLabel
 import TabBarPager
 import XLPagerTabStrip
 import TwidereUI

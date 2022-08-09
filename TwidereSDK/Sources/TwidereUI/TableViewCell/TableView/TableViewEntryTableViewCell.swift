@@ -22,6 +22,7 @@ public final class TableViewEntryTableViewCell: TableViewPlainCell {
 #if canImport(SwiftUI) && DEBUG
 import SwiftUI
 import TwidereCore
+import MetaTextKit
 
 struct ListEntryTableViewCell_Previews: PreviewProvider {
     

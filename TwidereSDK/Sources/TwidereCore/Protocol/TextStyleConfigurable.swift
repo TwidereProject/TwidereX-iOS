@@ -9,6 +9,7 @@
 import UIKit
 import Meta
 import MetaTextKit
+import MetaLabel
 import MetaTextArea
 import TwidereAsset
 
@@ -201,7 +202,8 @@ extension TextStyle {
         case .profileFieldValue:
             return .label
         case .mediaDescriptionAuthorName:
-            return .label
+            // force white due to media view controller override to dark mode
+            return .white
         case .hashtagTitle:
             return .label
         case .hashtagDescription:
@@ -235,79 +237,12 @@ extension MetaLabel: TextStyleConfigurable {
     }
     
     public func setupLayout(style: TextStyle) {
-        lineBreakMode = .byTruncatingTail
-        textContainer.lineBreakMode = .byTruncatingTail
-        textContainer.lineFragmentPadding = 0
-        
-        numberOfLines = style.numberOfLines
-        
-        switch style {
-        case .statusHeader:
-            break
-        case .statusAuthorName:
-            break
-        case .statusAuthorUsername:
-            break
-        case .statusTimestamp:
-            break
-        case .statusLocation:
-            break
-        case .statusContent:
-            break
-        case .statusMetrics:
-            break
-        case .pollOptionTitle:
-            break
-        case .pollOptionPercentage:
-            break
-        case .pollVoteDescription:
-            break
-        case .userAuthorName:
-            break
-        case .userAuthorUsername:
-            break
-        case .userDescription:
-            break
-        case .profileAuthorName, .profileAuthorUsername:
-            textAlignment = .center
-            paragraphStyle.alignment = .center
-        case .profileAuthorBio:
-            break
-        case .profileFieldKey:
-            break
-        case .profileFieldValue:
-            break
-        case .mediaDescriptionAuthorName:
-            break
-        case .hashtagTitle:
-            break
-        case .hashtagDescription:
-            break
-        case .listPrimaryText:
-            break
-        case .searchHistoryTitle:
-            break
-        case .searchTrendTitle:
-            break
-        case .searchTrendSubtitle:
-            break
-        case .searchTrendCount:
-            break
-        case .sidebarAuthorName:
-            break
-        case .sidebarAuthorUsername:
-            break
-        case .custom:
-            break
-        }
+        // do nothing due to cannot tweak TextKit 2
     }
     
     public func setupAttributes(style: TextStyle) {
         let font = style.font
         let textColor = style.textColor
-        
-        self.font = font
-        self.textColor = textColor
         
         textAttributes = [
             .font: font,

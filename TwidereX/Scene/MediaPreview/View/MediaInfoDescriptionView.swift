@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import MetaTextKit
 import MetaTextArea
+import MetaLabel
 import TwidereUI
 
 protocol MediaInfoDescriptionViewDelegate: AnyObject {
