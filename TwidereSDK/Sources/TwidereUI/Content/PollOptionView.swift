@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 import MetaTextKit
+import MetaLabel
 import TwidereLocalization
 import UITextView_Placeholder
 import TwidereCore

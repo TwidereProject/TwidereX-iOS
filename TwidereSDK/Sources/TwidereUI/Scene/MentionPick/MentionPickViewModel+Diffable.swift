@@ -7,7 +7,7 @@
 
 import UIKit
 import CoreData
-import TwidereUI
+import MetaTextKit
 
 extension MentionPickViewModel {
     struct DataSourceConfiguration {

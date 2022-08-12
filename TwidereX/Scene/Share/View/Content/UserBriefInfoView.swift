@@ -9,6 +9,7 @@
 import UIKit
 import Combine
 import MetaTextKit
+import MetaLabel
 
 final class UserBriefInfoView: UIView {
     

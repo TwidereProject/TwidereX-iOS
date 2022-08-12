@@ -13,6 +13,7 @@ import TwidereCore
 import TwidereUI
 import AppShared
 import MetaTextKit
+import MetaLabel
 
 extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarButtonDidPressed button: UIButton) {

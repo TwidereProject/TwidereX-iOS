@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import Combine
 import MetaTextKit
+import MetaLabel
 import TwidereCore
 
 protocol UserViewDelegate: AnyObject {
