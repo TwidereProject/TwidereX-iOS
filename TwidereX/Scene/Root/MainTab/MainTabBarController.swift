@@ -157,7 +157,7 @@ extension MainTabBarController {
                     }
                     
                     var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
+                    config.duration = .seconds(seconds: 10)
                     config.interactiveHide = true
                     
                     let bannerView = NotificationBannerView()

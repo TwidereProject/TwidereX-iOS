@@ -133,6 +133,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "Taxa de uso superada";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "Denunciaches e bloqueaches a %@ por spam";
 "Common.Alerts.ReportUserSuccess.Title" = "Denunciaches a %@ por spam";
+"Common.Alerts.RequestThrottle.Message" = "Operation too frequent. Please try again later";
+"Common.Alerts.RequestThrottle.Title" = "Request Throttle";
 "Common.Alerts.SignOutUserConfirm.Message" = "Queres pechar a sesión?";
 "Common.Alerts.SignOutUserConfirm.Title" = "Pechar sesión";
 "Common.Alerts.TooManyRequests.Title" = "Demasiadas peticións";

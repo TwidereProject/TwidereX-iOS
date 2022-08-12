@@ -133,6 +133,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "Kullanım limiti aşıldı";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ spam için şikayet edildi ve engellendi";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ spam için şikayet edildi";
+"Common.Alerts.RequestThrottle.Message" = "Operation too frequent. Please try again later";
+"Common.Alerts.RequestThrottle.Title" = "Request Throttle";
 "Common.Alerts.SignOutUserConfirm.Message" = "Çıkış yapmak istiyor musunuz?";
 "Common.Alerts.SignOutUserConfirm.Title" = "Çıkış Yap";
 "Common.Alerts.TooManyRequests.Title" = "Çok Fazla İstek";
@@ -429,7 +431,7 @@ Hala erken aşamada.";
 "Scene.Settings.Appearance.Translation.Off" = "Kapalı";
 "Scene.Settings.Appearance.Translation.Service" = "Hizmet";
 "Scene.Settings.Appearance.Translation.TranslateButton" = "Çevir butonu";
-"Scene.Settings.Behaviors.HistorySection.EnableHistoryRecord" = "Enable History Record";
+"Scene.Settings.Behaviors.HistorySection.EnableHistoryRecord" = "Geçmiş Kaydını Etkinleştir";
 "Scene.Settings.Behaviors.HistorySection.History" = "Geçmiş";
 "Scene.Settings.Behaviors.TabBarSection.ShowTabBarLabels" = "Sekme çubuğu etiketlerini göster";
 "Scene.Settings.Behaviors.TabBarSection.TabBar" = "Sekme Çubuğu";

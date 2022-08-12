@@ -133,6 +133,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "اجتزت الحد المسموح به";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "أُبلغ عن %@ وحجب بسبب الازعاج";
 "Common.Alerts.ReportUserSuccess.Title" = "أُبلغ عن %@ بسبب الازعاج";
+"Common.Alerts.RequestThrottle.Message" = "Operation too frequent. Please try again later";
+"Common.Alerts.RequestThrottle.Title" = "Request Throttle";
 "Common.Alerts.SignOutUserConfirm.Message" = "هل تريد الخروج؟";
 "Common.Alerts.SignOutUserConfirm.Title" = "خروج";
 "Common.Alerts.TooManyRequests.Title" = "طلبات كثيرة";

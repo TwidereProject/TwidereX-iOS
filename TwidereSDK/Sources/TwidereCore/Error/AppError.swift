@@ -63,7 +63,7 @@ extension AppError.ErrorReason: LocalizedError {
         case .badRequest:
             return "Bad Request"
         case .requestThrottle:
-            return "Request Throttle"
+            return L10n.Common.Alerts.RequestThrottle.title
         case .twitterResponseError(let error):
             guard let twitterAPIError = error.twitterAPIError else {
                 return error.httpResponseStatus.reasonPhrase
@@ -90,7 +90,7 @@ extension AppError.ErrorReason: LocalizedError {
         case .badRequest:
             return "The request is invalid"
         case .requestThrottle:
-            return "The requests are too frequent"
+            return L10n.Common.Alerts.RequestThrottle.message
         case .twitterResponseError(let error):
             guard let twitterAPIError = error.twitterAPIError else {
                 return nil

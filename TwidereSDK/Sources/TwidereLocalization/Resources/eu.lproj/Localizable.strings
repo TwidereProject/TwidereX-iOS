@@ -133,6 +133,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "Tasaren muga gainditu da";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ spam bidez salatu da eta blokeatu da";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ spam bidez salatu da";
+"Common.Alerts.RequestThrottle.Message" = "Operation too frequent. Please try again later";
+"Common.Alerts.RequestThrottle.Title" = "Request Throttle";
 "Common.Alerts.SignOutUserConfirm.Message" = "Saiotik irten nahi duzu?";
 "Common.Alerts.SignOutUserConfirm.Title" = "Amaitu saioa";
 "Common.Alerts.TooManyRequests.Title" = "Eskaera gehiegi";
