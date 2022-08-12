@@ -11,6 +11,7 @@ import Combine
 import UIKit
 import MetaTextKit
 import MetaTextArea
+import MetaLabel
 import TwidereCommon
 import TwidereCore
 import NIOPosix
@@ -432,6 +433,7 @@ extension StatusView.Style {
         
         // authorNameLabel
         authorContentStackView.addArrangedSubview(statusView.authorNameLabel)
+        statusView.authorNameLabel.setContentHuggingPriority(.required - 10, for: .horizontal)
         statusView.authorNameLabel.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
         // lockImageView
         statusView.lockImageView.translatesAutoresizingMaskIntoConstraints = false

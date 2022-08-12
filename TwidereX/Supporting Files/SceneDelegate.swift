@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var coordinator: SceneCoordinator?
 
-    #if PROFILE
+    #if DEBUG
     var fpsIndicator: FPSIndicator?
     #endif
 
@@ -64,7 +64,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window.makeKeyAndVisible()
 
-        #if PROFILE
+        #if DEBUG
         fpsIndicator = FPSIndicator(windowScene: windowScene)
         #endif
     }

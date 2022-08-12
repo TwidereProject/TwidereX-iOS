@@ -133,6 +133,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "Taxa d'ús excedida";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ ha estat denunciat per publicitat abusiva i blocat";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ ha estat denunciat per publicitat abusiva";
+"Common.Alerts.RequestThrottle.Message" = "Operation too frequent. Please try again later";
+"Common.Alerts.RequestThrottle.Title" = "Request Throttle";
 "Common.Alerts.SignOutUserConfirm.Message" = "Do you want to sign out?";
 "Common.Alerts.SignOutUserConfirm.Title" = "Sign out";
 "Common.Alerts.TooManyRequests.Title" = "Massa soŀlicituds";

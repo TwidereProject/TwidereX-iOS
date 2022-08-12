@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import TwidereCore
 import MetaTextKit
+import MetaLabel
 import TwidereUI
 
 protocol DrawerSidebarHeaderViewDelegate: AnyObject {

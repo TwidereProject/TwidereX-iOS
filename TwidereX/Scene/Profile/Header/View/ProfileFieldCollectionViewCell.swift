@@ -8,6 +8,7 @@
 
 import UIKit
 import MetaTextKit
+import MetaLabel
 import Meta
 
 protocol ProfileFieldCollectionViewCellDelegate: AnyObject {

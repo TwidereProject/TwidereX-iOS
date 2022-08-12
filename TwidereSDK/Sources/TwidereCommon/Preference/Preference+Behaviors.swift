@@ -40,21 +40,18 @@ extension UserDefaults {
     
     @objc dynamic public var preferredTimelineAutoRefresh: Bool {
         get {
-            register(defaults: [#function: true])
             return bool(forKey: #function)
         }
         set { self[#function] = newValue }
     }
     
     @objc public enum TimelineRefreshInterval: Int, Hashable, CaseIterable {
-        case _30s
         case _60s
         case _120s
         case _300s
         
         public var seconds: TimeInterval {
             switch self {
-            case ._30s:     return 30
             case ._60s:     return 60
             case ._120s:    return 120
             case ._300s:    return 300

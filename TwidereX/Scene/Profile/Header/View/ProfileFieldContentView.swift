@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import MetaTextKit
+import MetaLabel
 
 protocol ProfileFieldContentViewDelegate: AnyObject {
     func profileFieldContentView(_ contentView: ProfileFieldContentView, metaLabel: MetaLabel, didSelectMeta meta: Meta)
@@ -110,7 +111,7 @@ extension ProfileFieldContentView {
         valueMetaLabel.setContentHuggingPriority(.required - 10, for: .horizontal)
         valueMetaLabel.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
         
-        valueMetaLabel.linkDelegate = self
+        valueMetaLabel.delegate = self
     }
     
     private func apply(configuration: ContentConfiguration) {

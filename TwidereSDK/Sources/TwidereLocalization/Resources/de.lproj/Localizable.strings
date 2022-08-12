@@ -133,6 +133,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "Kappungsgrenze überschritten";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ wurde wegen Spam gemeldet und blockiert";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ wurde wegen Spam gemeldet";
+"Common.Alerts.RequestThrottle.Message" = "Operation too frequent. Please try again later";
+"Common.Alerts.RequestThrottle.Title" = "Request Throttle";
 "Common.Alerts.SignOutUserConfirm.Message" = "Möchtest du dich abmelden?";
 "Common.Alerts.SignOutUserConfirm.Title" = "Abmelden";
 "Common.Alerts.TooManyRequests.Title" = "Zu viele Anfragen";

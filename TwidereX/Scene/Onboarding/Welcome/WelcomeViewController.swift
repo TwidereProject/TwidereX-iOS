@@ -75,6 +75,15 @@ extension WelcomeViewController {
             .sink { [weak self] error in
                 guard let self = self else { return }
                 let alertController = UIAlertController.standardAlert(of: error)
+                let action = UIAlertAction(title: "Contact", style: .default) { _ in
+                    let url = URL(string: "https://twitter.com/twidereproject")!
+                    self.coordinator.present(
+                        scene: .safari(url: url.absoluteString),
+                        from: nil,
+                        transition: .safariPresent(animated: true, completion: nil)
+                    )
+                }
+                alertController.addAction(action)
                 self.present(alertController, animated: true)
             }
             .store(in: &disposeBag)

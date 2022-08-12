@@ -8,6 +8,7 @@
 
 import UIKit
 import MetaTextKit
+import MetaLabel
 import TwidereCore
 
 final class TrendTableViewCell: UITableViewCell {

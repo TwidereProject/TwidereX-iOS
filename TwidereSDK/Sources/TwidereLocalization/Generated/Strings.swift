@@ -448,6 +448,12 @@ public enum L10n {
           return L10n.tr("Localizable", "Common.Alerts.ReportUserSuccess.Title", String(describing: p1))
         }
       }
+      public enum RequestThrottle {
+        /// Operation too frequent. Please try again later
+        public static let message = L10n.tr("Localizable", "Common.Alerts.RequestThrottle.Message")
+        /// Request Throttle
+        public static let title = L10n.tr("Localizable", "Common.Alerts.RequestThrottle.Title")
+      }
       public enum SignOutUserConfirm {
         /// Do you want to sign out?
         public static let message = L10n.tr("Localizable", "Common.Alerts.SignOutUserConfirm.Message")

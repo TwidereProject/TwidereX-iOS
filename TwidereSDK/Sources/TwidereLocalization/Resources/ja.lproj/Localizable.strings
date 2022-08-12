@@ -133,6 +133,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "レート制限を超えました";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ はスパムとして報告されブロックされました";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ はスパムとして報告されました";
+"Common.Alerts.RequestThrottle.Message" = "Operation too frequent. Please try again later";
+"Common.Alerts.RequestThrottle.Title" = "Request Throttle";
 "Common.Alerts.SignOutUserConfirm.Message" = "サインアウトしますか？";
 "Common.Alerts.SignOutUserConfirm.Title" = "サインアウト";
 "Common.Alerts.TooManyRequests.Title" = "リクエストが多すぎます";

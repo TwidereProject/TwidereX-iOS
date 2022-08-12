@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import CoreDataStack
+import TwitterSDK
 
 extension DataSourceFacade {
     static func responseToStatusLikeAction(
@@ -26,6 +27,12 @@ extension DataSourceFacade {
                 authenticationContext: authenticationContext
             )
             await notificationFeedbackGenerator.notificationOccurred(.success)
+        } catch let error as Twitter.API.Error.ResponseError where error.httpResponseStatus == .forbidden {
+            await notificationFeedbackGenerator.notificationOccurred(.error)
+            await presentForbiddenBanner(
+                error: error,
+                dependency: provider
+            )
         } catch {
             await notificationFeedbackGenerator.notificationOccurred(.error)
         }

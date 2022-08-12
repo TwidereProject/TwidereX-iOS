@@ -95,10 +95,22 @@ extension APIService {
         query: Twitter.API.V2.Status.PublishQuery,
         twitterAuthenticationContext: TwitterAuthenticationContext
     ) async throws -> Twitter.Response.Content<Twitter.API.V2.Status.PublishContent> {
+        let authenticationContext = AuthenticationContext.twitter(authenticationContext: twitterAuthenticationContext)
+        
+        let now = Date()
+        if let rateLimit = authenticationContext.rateLimit(scope: .publish), now < rateLimit.reset, rateLimit.remaining <= 0 {
+            throw AppError.explicit(.requestThrottle)
+        }
+        
         let response = try await Twitter.API.V2.Status.publish(
             session: session,
             query: query,
             authorization: twitterAuthenticationContext.authorization
+        )
+        
+        authenticationContext.updateRateLimit(
+            scope: .publish,
+            now: response.networkDate
         )
         
         return response
@@ -112,6 +124,13 @@ extension APIService {
         excludeReplyUserIDs: [TwitterUser.ID]?,
         twitterAuthenticationContext: TwitterAuthenticationContext
     ) async throws -> Twitter.Response.Content<Twitter.Entity.Tweet> {
+        let authenticationContext = AuthenticationContext.twitter(authenticationContext: twitterAuthenticationContext)
+        
+        let now = Date()
+        if let rateLimit = authenticationContext.rateLimit(scope: .publish), now < rateLimit.reset, rateLimit.remaining <= 0 {
+            throw AppError.explicit(.requestThrottle)
+        }
+        
         let authorization = twitterAuthenticationContext.authorization
         let managedObjectContext = backgroundManagedObjectContext
 
@@ -138,6 +157,11 @@ extension APIService {
             session: session,
             query: query,
             authorization: authorization
+        )
+        
+        authenticationContext.updateRateLimit(
+            scope: .publish,
+            now: response.networkDate
         )
         
         return response

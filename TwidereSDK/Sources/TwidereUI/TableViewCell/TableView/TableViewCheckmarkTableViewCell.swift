@@ -7,7 +7,6 @@
 //
 
 import UIKit
-
 public final class TableViewCheckmarkTableViewCell: TableViewPlainCell {
     
     override func _init() {
@@ -21,6 +20,7 @@ public final class TableViewCheckmarkTableViewCell: TableViewPlainCell {
 #if canImport(SwiftUI) && DEBUG
 import SwiftUI
 import TwidereCore
+import MetaTextKit
 
 struct ListCheckmarkTableViewCell_Previews: PreviewProvider {
     

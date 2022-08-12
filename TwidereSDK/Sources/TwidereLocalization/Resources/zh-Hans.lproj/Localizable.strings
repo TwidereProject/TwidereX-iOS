@@ -133,6 +133,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "超出用量限制";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ 已被举报为垃圾信息用户并被屏蔽";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ 已被举报为垃圾信息用户";
+"Common.Alerts.RequestThrottle.Message" = "操作过于频繁，请稍后再试";
+"Common.Alerts.RequestThrottle.Title" = "请求受限";
 "Common.Alerts.SignOutUserConfirm.Message" = "确定要登出吗？";
 "Common.Alerts.SignOutUserConfirm.Title" = "登出";
 "Common.Alerts.TooManyRequests.Title" = "请求次数过多";

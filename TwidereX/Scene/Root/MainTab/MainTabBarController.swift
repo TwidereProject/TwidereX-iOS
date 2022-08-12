@@ -17,14 +17,14 @@ import TwidereUI
 import TwidereCommon
 import func QuartzCore.CACurrentMediaTime
 
-final class MainTabBarController: UITabBarController {
+final class MainTabBarController: UITabBarController, NeedsDependency {
     
     let logger = Logger(subsystem: "MainTabBarController", category: "TabBar")
     
     var disposeBag = Set<AnyCancellable>()
         
-    weak var context: AppContext!
-    weak var coordinator: SceneCoordinator!
+    weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
+    weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     let authContext: AuthContext
     
     private let doubleTapGestureRecognizer = UITapGestureRecognizer.doubleTapGestureRecognizer
@@ -119,7 +119,7 @@ extension MainTabBarController {
         context.publisherService.statusPublishResult
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
-                guard let _ = self else { return }
+                guard let self = self else { return }
                 switch result {
                 case .success(let result):
                     var config = SwiftMessages.defaultConfig
@@ -146,8 +146,18 @@ extension MainTabBarController {
                         return
                     }
                     
+                    if let error = error as? Twitter.API.Error.ResponseError {
+                        Task { @MainActor in
+                            DataSourceFacade.presentForbiddenBanner(
+                                error: error,
+                                dependency: self
+                            )
+                        }   // end Task
+                        return
+                    }
+                    
                     var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
+                    config.duration = .seconds(seconds: 10)
                     config.interactiveHide = true
                     
                     let bannerView = NotificationBannerView()

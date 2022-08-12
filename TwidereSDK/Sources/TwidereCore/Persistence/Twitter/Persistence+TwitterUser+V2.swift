@@ -6,11 +6,11 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import CoreData
 import CoreDataStack
 import Foundation
 import TwitterSDK
-import os.log
 
 extension Persistence.TwitterUser {
     
