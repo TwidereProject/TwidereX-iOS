@@ -153,9 +153,11 @@ extension TimelineViewModel {
                     assertionFailure("do not support refresh for search")
                     return .top(anchor: nil)
                 case .user:
-                    // FIXME: use anchor with minID or reset the data source
-                    // the like timeline gap may missing
-                    return .top(anchor: nil)
+                    let anchor: StatusRecord? = {
+                        guard let record = statusRecordFetchedResultController.records.first else { return nil }
+                        return record
+                    }()
+                    return .top(anchor: anchor)
                 }
             }(),
             filter: StatusFetchViewModel.Timeline.Filter(rule: .empty)

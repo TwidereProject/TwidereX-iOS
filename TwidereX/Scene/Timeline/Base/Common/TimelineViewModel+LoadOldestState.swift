@@ -133,10 +133,8 @@ extension TimelineViewModel.LoadOldestState {
                     authenticationContext: authenticationContext,
                     kind: viewModel.kind,
                     position: {
-                        guard let record = record else {
-                            return .top(anchor: nil)
-                        }
-                        return .bottom(anchor: record)
+                        // always reload at top when nextInput is nil
+                        return .top(anchor: nil)
                     }(),
                     filter: StatusFetchViewModel.Timeline.Filter(rule: .empty)
                 )
