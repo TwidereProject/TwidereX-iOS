@@ -40,7 +40,6 @@ extension UserDefaults {
     
     @objc dynamic public var preferredTimelineAutoRefresh: Bool {
         get {
-            register(defaults: [#function: true])
             return bool(forKey: #function)
         }
         set { self[#function] = newValue }
