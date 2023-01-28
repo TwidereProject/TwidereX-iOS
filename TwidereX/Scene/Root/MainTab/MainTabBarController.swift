@@ -384,7 +384,7 @@ extension MainTabBarController {
         for item in tabBar.items ?? [] {
             guard let tab = TabBarItem(rawValue: item.tag) else { continue }
             guard let view = item.value(forKey: "view") as? UIView else { continue }
-            guard view.frame.contains(location) else { continue}
+            guard view.frame.contains(location) else { continue }
 
             _tab = tab
             break

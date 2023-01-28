@@ -1,5 +1,5 @@
 //
-//  Twitter+Coordinates.swift
+//  Twitter+Entity+Coordinates.swift
 //  TwitterAPI
 //
 //  Created by Cirno MainasuK on 2020-9-16.

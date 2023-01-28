@@ -32,6 +32,7 @@ class TimelineViewModel: TimelineViewModelDriver {
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     
     @Published var enableAutoFetchLatest = false
+    @Published var didAutoFetchLatest = false
     @Published var isRefreshControlEnabled = true
     @Published var isFloatyButtonDisplay = true
     @Published var isLoadingLatest = false

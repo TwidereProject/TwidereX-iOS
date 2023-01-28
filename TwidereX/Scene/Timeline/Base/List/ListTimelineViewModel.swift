@@ -22,6 +22,10 @@ class ListTimelineViewModel: TimelineViewModel {
         animatingDifferences: Bool
     ) {
         diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
+        
+        if enableAutoFetchLatest, !didAutoFetchLatest {
+            autoFetchLatestAction.send()
+        }
     }
     
     @MainActor
@@ -29,6 +33,10 @@ class ListTimelineViewModel: TimelineViewModel {
         snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>
     ) {
         diffableDataSource?.applySnapshotUsingReloadData(snapshot)
+        
+        if enableAutoFetchLatest, !didAutoFetchLatest {
+            autoFetchLatestAction.send()
+        }
     }
     
 }

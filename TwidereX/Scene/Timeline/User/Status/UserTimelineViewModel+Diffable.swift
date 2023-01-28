@@ -83,7 +83,7 @@ extension UserTimelineViewModel {
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
                     }
                     
-                    await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
+                    self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
                 
                     self.didLoadLatest.send()
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")

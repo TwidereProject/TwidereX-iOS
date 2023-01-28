@@ -40,6 +40,8 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     public let customEmojiPickerInputViewModel = CustomEmojiPickerInputView.ViewModel()
     public let platform: Platform
     
+    @Published var authContext: AuthContext?
+    
     // reply-to
     public private(set) var replyTo: StatusObject?
 
@@ -721,7 +723,9 @@ extension ComposeContentViewModel {
     }
     
     public func statusPublisher() throws -> StatusPublisher {
-        guard let author = self.author else {
+        guard let authContext = self.authContext,
+              let author = self.author
+        else {
             throw AppError.implicit(.authenticationMissing)
         }
         
@@ -766,6 +770,7 @@ extension ComposeContentViewModel {
             )
         case .mastodon(let author):
             return MastodonStatusPublisher(
+                authContext: authContext,
                 author: author,
                 replyTo: {
                     guard case let .mastodon(status) = replyTo else { return nil }

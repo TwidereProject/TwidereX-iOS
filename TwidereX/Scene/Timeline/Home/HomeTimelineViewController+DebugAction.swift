@@ -526,14 +526,18 @@ extension HomeTimelineViewController {
         let droppingObjectIDs = snapshot.itemIdentifiers.prefix(count).compactMap { item -> [NSManagedObjectID]? in
             switch item {
             case .feed(let record):
-                var ids: [NSManagedObjectID] = [record.objectID]
-                if let feed = record.object(in: context.apiService.backgroundManagedObjectContext) {
-                    if let objectID = feed.twitterStatus?.objectID {
-                        ids.append(objectID)
+                let managedObjectContext = context.managedObjectContext
+                let ids: [NSManagedObjectID] = managedObjectContext.performAndWait {
+                    var ids: [NSManagedObjectID] = [record.objectID]
+                    if let feed = record.object(in: managedObjectContext) {
+                        if let objectID = feed.twitterStatus?.objectID {
+                            ids.append(objectID)
+                        }
+                        if let objectID = feed.mastodonStatus?.objectID {
+                            ids.append(objectID)
+                        }
                     }
-                    if let objectID = feed.mastodonStatus?.objectID {
-                        ids.append(objectID)
-                    }
+                    return ids
                 }
                 return ids
             default:

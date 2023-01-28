@@ -72,7 +72,20 @@ extension ListTimelineViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
+                // do not fetch more when on background
                 guard self.isDisplaying else { return }
+                
+                switch self.viewModel.kind {
+                case .home:
+                    // do not fetch more when empty on home timeline
+                    // otherwise the fetchLatest will be override at app launch
+                    guard let snapshot = self.viewModel.diffableDataSource?.snapshot(),
+                          snapshot.numberOfItems > 0
+                    else { return }
+                default:
+                    break
+                }
+                
                 self.viewModel.stateMachine.enter(TimelineViewModel.LoadOldestState.Loading.self)
             }
             .store(in: &disposeBag)

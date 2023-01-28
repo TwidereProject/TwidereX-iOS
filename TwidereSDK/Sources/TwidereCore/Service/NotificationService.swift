@@ -58,16 +58,23 @@ final public actor NotificationService {
             .sink { [weak self] authenticationIndexes in
                 guard let self = self else { return }
                 
+                let managedObjectContext = authenticationService.managedObjectContext
                 // request permission when sign-in account
                 Task {
-                    if !authenticationIndexes.isEmpty {
+                    let isEmpty = await managedObjectContext.perform {
+                        return authenticationIndexes.isEmpty
+                    }
+                    if !isEmpty {
                         await self.requestNotificationPermission()
                     }
                 }   // end Task
                 
                 Task {
-                    let authenticationContexts = authenticationIndexes.compactMap { authenticationIndex in
-                        AuthenticationContext(authenticationIndex: authenticationIndex, secret: self.appSecret.secret)
+                    let authenticationContexts: [AuthenticationContext] = await managedObjectContext.perform {
+                        let authenticationContexts = authenticationIndexes.compactMap { authenticationIndex in
+                            AuthenticationContext(authenticationIndex: authenticationIndex, secret: self.appSecret.secret)
+                        }
+                        return authenticationContexts
                     }
                     await self.updateSubscribers(authenticationContexts)
                 }   // end Task

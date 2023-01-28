@@ -31,8 +31,7 @@ public struct ComposeContentToolbarView: View {
                 // replySettings | visibility menu button
                 switch viewModel.author {
                 case .twitter:
-                    EmptyView()
-                     twitterReplySettingsMenuButton
+                    twitterReplySettingsMenuButton
                 case .mastodon:
                     mastodonVisibilityMenuButton
                 case .none:
