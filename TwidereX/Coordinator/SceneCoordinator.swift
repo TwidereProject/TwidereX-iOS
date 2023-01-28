@@ -122,20 +122,25 @@ extension SceneCoordinator {
         let rootViewController: UIViewController
         
         do {
+            // check AuthContext
             let request = AuthenticationIndex.sortedFetchRequest
             request.fetchLimit = 1
             let _authenticationIndex = try context.managedObjectContext.fetch(request).first
             guard let authenticationIndex = _authenticationIndex,
                   let authContext = AuthContext(authenticationIndex: authenticationIndex)
             else {
+                // no AuthContext, use empty ViewController as root and show welcome via modal
                 let configuration = WelcomeViewModel.Configuration(allowDismissModal: false)
                 let welcomeViewModel = WelcomeViewModel(context: context, configuration: configuration)
-                let welcomeViewController = WelcomeViewController()
-                welcomeViewController.viewModel = welcomeViewModel
-                welcomeViewController.context = context
-                welcomeViewController.coordinator = self
-                rootViewController = welcomeViewController
-                sceneDelegate.window?.rootViewController = rootViewController               // entry #1: Welcome
+                sceneDelegate.window?.rootViewController = UIViewController()
+                // use async without animation modal to fix the UIKit safe-area not take effect issue
+                DispatchQueue.main.async {
+                    self.present(
+                        scene: .welcome(viewModel: welcomeViewModel),
+                        from: nil,
+                        transition: .modal(animated: false)
+                    )                                                                       // entry #1: Welcome
+                }
                 return
             }
         
