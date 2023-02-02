@@ -34,9 +34,7 @@ final class SearchMediaTimelineViewModel: GridTimelineViewModel {
         isRefreshControlEnabled = false
         isFloatyButtonDisplay = false
         
-        context.authenticationService.$activeAuthenticationContext
-            .map { $0?.userIdentifier }
-            .assign(to: &statusRecordFetchedResultController.$userIdentifier)
+        statusRecordFetchedResultController.userIdentifier = authContext.authenticationContext.userIdentifier
         
         // bind searchText
         $searchText.assign(to: &searchTimelineContext.$searchText)

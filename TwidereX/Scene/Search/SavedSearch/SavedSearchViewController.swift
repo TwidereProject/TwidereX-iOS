@@ -88,9 +88,10 @@ extension SavedSearchViewController: UITableViewDelegate {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
         guard let diffableDataSource = self.viewModel.diffableDataSource,
-              case let .history(record) = diffableDataSource.itemIdentifier(for: indexPath),
-              let authenticationContext = self.viewModel.context.authenticationService.activeAuthenticationContext
+              case let .history(record) = diffableDataSource.itemIdentifier(for: indexPath)
         else { return nil }
+        
+        let authenticationContext = authContext.authenticationContext
         
         let deleteAction = UIContextualAction(
             style: .destructive,

@@ -61,8 +61,8 @@ extension NotificationSection {
                         switch object {
                         case .mastodon(let notification):
                             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserNotificationStyleTableViewCell.self), for: indexPath) as! UserNotificationStyleTableViewCell
-                            let authenticationContext = context.authenticationService.activeAuthenticationContext
-                            let me = authenticationContext?.user(in: context.managedObjectContext)
+                            let authenticationContext = configuration.statusViewConfigurationContext.authContext.authenticationContext
+                            let me = authenticationContext.user(in: context.managedObjectContext)
                             let user: UserObject = .mastodon(object: notification.account)
                             configure(
                                 cell: cell,

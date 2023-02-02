@@ -273,7 +273,7 @@ extension HomeTimelineViewController {
     
     @objc private func showStatusByID(_ id: String) {
         Task { @MainActor in
-            let authenticationContext = self.context.authenticationService.activeAuthenticationContext
+            let authenticationContext = self.viewModel.authContext.authenticationContext
             switch authenticationContext {
             case .twitter(let authenticationContext):
                 _ = try await self.context.apiService.twitterStatus(
@@ -324,7 +324,7 @@ extension HomeTimelineViewController {
     }
     
     @objc private func showAccountListAction(_ sender: UIAction) {
-        let accountListViewModel = AccountListViewModel(context: context)
+        let accountListViewModel = AccountListViewModel(context: context, authContext: authContext)
         coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
@@ -340,8 +340,8 @@ extension HomeTimelineViewController {
         case status(id: String)
         case duplicated
         
-        func match(item: StatusItem) -> Bool {
-            let authenticationContext = AppContext.shared.authenticationService.activeAuthenticationContext
+        func match(item: StatusItem, authContext: AuthContext) -> Bool {
+            let authenticationContext = authContext.authenticationContext
             switch item {
             case .feed(let record):
                 guard let feed = record.object(in: AppContext.shared.managedObjectContext) else { return false }
@@ -382,7 +382,7 @@ extension HomeTimelineViewController {
             }
         }
         
-        func firstMatch(in items: [StatusItem]) -> StatusItem? {
+        func firstMatch(in items: [StatusItem], authContext: AuthContext) -> StatusItem? {
             switch self {
             case .duplicated:
                 var index = 0
@@ -424,7 +424,7 @@ extension HomeTimelineViewController {
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): not found duplicated in \(index) count items")
                 return nil
             default:
-                return items.first { item in self.match(item: item) }
+                return items.first { item in self.match(item: item, authContext: authContext) }
             }
         }
     }
@@ -433,7 +433,7 @@ extension HomeTimelineViewController {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         let snapshot = diffableDataSource.snapshot()
         let items = snapshot.itemIdentifiers
-        guard let targetItem = category.firstMatch(in: items),
+        guard let targetItem = category.firstMatch(in: items, authContext: authContext),
               let index = snapshot.indexOfItem(targetItem)
         else { return }
         let indexPath = IndexPath(row: index, section: 0)

@@ -163,7 +163,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         self.authContext = authContext
         self.kind = kind
         self.configurationContext = configurationContext
-        self.platform = configurationContext.authenticationService.activeAuthenticationContext?.platform ?? .none
+        self.platform = authContext.authenticationContext.platform
         super.init()
         // end init
 
@@ -226,7 +226,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 // set content text
                 var mentionAccts: [String] = []
                 let _authorUserIdentifier: MastodonUserIdentifier? = {
-                    switch configurationContext.authenticationService.activeAuthenticationContext?.userIdentifier {
+                    switch authContext.authenticationContext.userIdentifier {
                     case .mastodon(let userIdentifier):     return userIdentifier
                     default:                                return nil
                     }
@@ -466,17 +466,16 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             }
             .store(in: &disposeBag)
         
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             $isRequestLocation,
-            $currentLocation
+            $currentLocation,
+            $authContext
         )
-        .asyncMap { [weak self] isRequestLocation, currentLocation -> Twitter.Entity.Place? in
+        .asyncMap { [weak self] isRequestLocation, currentLocation, authContext -> Twitter.Entity.Place? in
             guard let self = self else { return nil }
             guard isRequestLocation, let currentLocation = currentLocation else { return nil }
             
-            guard let authenticationContext = self.configurationContext.authenticationService.activeAuthenticationContext,
-                  case let .twitter(twitterAuthenticationContext) = authenticationContext
-            else { return nil }
+            guard case let .twitter(twitterAuthenticationContext) = authContext?.authenticationContext else { return nil }
             
             do {
                 let response = try await self.configurationContext.apiService.geoSearch(

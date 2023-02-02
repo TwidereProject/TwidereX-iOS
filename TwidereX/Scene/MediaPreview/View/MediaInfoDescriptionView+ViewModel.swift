@@ -192,7 +192,6 @@ extension MediaInfoDescriptionView {
         viewModel.platform = .twitter
         viewModel.dateTimeProvider = configurationContext.dateTimeProvider
         viewModel.twitterTextProvider = configurationContext.twitterTextProvider
-        configurationContext.authenticationContext.assign(to: \.authenticationContext, on: viewModel).store(in: &disposeBag)
 
         configureAuthor(twitterStatus: status)
         configureContent(twitterStatus: status)
@@ -278,7 +277,6 @@ extension MediaInfoDescriptionView {
         viewModel.platform = .mastodon
         viewModel.dateTimeProvider = configurationContext.dateTimeProvider
         viewModel.twitterTextProvider = configurationContext.twitterTextProvider
-        configurationContext.authenticationContext.assign(to: \.authenticationContext, on: viewModel).store(in: &disposeBag)
         
 //        configureHeader(mastodonStatus: status, mastodonNotification: notification)
         configureAuthor(mastodonStatus: status)

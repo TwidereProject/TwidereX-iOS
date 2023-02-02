@@ -58,7 +58,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
 }
 
 // MARK: - membership
-extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
+extension UserViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
 
     func tableViewCell(
         _ cell: UITableViewCell,
@@ -70,9 +70,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
         }
         
         Task { @MainActor in
-            guard let authenticationContext = context.authenticationService.activeAuthenticationContext else {
-                return
-            }
+            let authenticationContext = self.authContext.authenticationContext
             
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
             guard let item = await item(from: source) else {
@@ -111,7 +109,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
 }
 
 // MARK: - follow request
-extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
+extension UserViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
 
     func tableViewCell(
         _ cell: UITableViewCell,
@@ -119,9 +117,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
         acceptFollowReqeustButtonDidPressed button: UIButton
     ) {
         Task {
-            guard let authenticationContext = context.authenticationService.activeAuthenticationContext else {
-                return
-            }
+            let authenticationContext = self.authContext.authenticationContext
             
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
             guard let item = await item(from: source) else {
@@ -148,9 +144,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
         rejectFollowReqeustButtonDidPressed button: UIButton
     ) {
         Task {
-            guard let authenticationContext = context.authenticationService.activeAuthenticationContext else {
-                return
-            }
+            let authenticationContext = self.authContext.authenticationContext
             
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
             guard let item = await item(from: source) else {

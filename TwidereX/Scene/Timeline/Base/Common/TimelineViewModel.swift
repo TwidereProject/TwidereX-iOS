@@ -136,10 +136,9 @@ extension TimelineViewModel {
             isLoadingLatest = false
         }
         
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         let fetchContext = StatusFetchViewModel.Timeline.FetchContext(
             managedObjectContext: context.managedObjectContext,
-            authenticationContext: authenticationContext,
+            authenticationContext: authContext.authenticationContext,
             kind: kind,
             position: {
                 switch kind {

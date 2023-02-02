@@ -100,11 +100,11 @@ extension SceneCoordinator {
         case setting(viewModel: SettingListViewModel)
         case accountPreference(viewModel: AccountPreferenceViewModel)
         case behaviorsPreference(viewModel: BehaviorsPreferenceViewModel)
-        case displayPreference
+        case displayPreference(viewModel: DisplayPreferenceViewModel)
         case about(viewModel: AboutViewModel)
         
         #if DEBUG
-        case developer
+        case developer(viewModel: DeveloperViewModel)
         
         case pushNotificationScratch
         #endif
@@ -386,15 +386,19 @@ private extension SceneCoordinator {
             let _viewController = BehaviorsPreferenceViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
-        case .displayPreference:
-            viewController = DisplayPreferenceViewController()
+        case .displayPreference(let viewModel):
+            let _viewController = DisplayPreferenceViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .about(let viewModel):
             let _viewController = AboutViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         #if DEBUG
-        case .developer:
-            viewController = DeveloperViewController()
+        case .developer(let viewModel):
+            let _viewController = DeveloperViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .pushNotificationScratch:
             viewController = PushNotificationScratchViewController()
         #endif
@@ -461,12 +465,15 @@ extension SceneCoordinator {
             let authConext = AuthContext(authenticationContext: .mastodon(authenticationContext: mastodonAuthenticationContext))
             
             // 1. active notification account
-            guard let currentAuthenticationContext = context.authenticationService.activeAuthenticationContext else {
-                // discard task if no available account
-                return
-            }
+            let authenticationIndexRequest = AuthenticationIndex.sortedFetchRequest
+            authenticationIndexRequest.fetchLimit = 1
+            let _authenticationIndex = try context.managedObjectContext.fetch(authenticationIndexRequest).first
+            guard let authenticationIndex = _authenticationIndex,
+                  let currentAuthenticationContext = AuthContext(authenticationIndex: authenticationIndex)
+            else { return }
+                    
             let needsSwitchActiveAccount: Bool = {
-                switch currentAuthenticationContext {
+                switch currentAuthenticationContext.authenticationContext {
                 case .mastodon(let authenticationContext):
                     let result = authenticationContext.authorization.accessToken != pushNotification.accessToken
                     return result

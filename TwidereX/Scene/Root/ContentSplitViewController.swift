@@ -245,10 +245,9 @@ extension ContentSplitViewController: SidebarViewModelDelegate {
 
         switch tab {
         case .settings:
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else { return }
             let settingListViewModel = SettingListViewModel(
                 context: context,
-                authContext: .init(authenticationContext: authenticationContext)
+                authContext: viewModel.authContext
             )
             coordinator.present(
                 scene: .setting(viewModel: settingListViewModel),

@@ -25,9 +25,9 @@ extension HashtagTimelineViewModel {
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
             timelineMiddleLoaderTableViewCellDelegate: nil,
             statusViewConfigurationContext: StatusView.ConfigurationContext(
+                authContext: authContext,
                 dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider(),
-                authenticationContext: context.authenticationService.$activeAuthenticationContext
+                twitterTextProvider: OfficialTwitterTextProvider()
             )
         )
         diffableDataSource = StatusSection.diffableDataSource(

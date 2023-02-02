@@ -72,17 +72,14 @@ extension NotificationViewController {
         avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(NotificationViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         avatarBarButtonItem.delegate = self
         
-        Publishers.CombineLatest(
-            context.authenticationService.$activeAuthenticationContext,
-            viewModel.viewDidAppear
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] authenticationContext, _ in
-            guard let self = self else { return }
-            let user = authenticationContext?.user(in: self.context.managedObjectContext)
-            self.avatarBarButtonItem.configure(user: user)
-        }
-        .store(in: &disposeBag)
+        viewModel.viewDidAppear
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                let user = self.viewModel.authContext.authenticationContext.user(in: self.context.managedObjectContext)
+                self.avatarBarButtonItem.configure(user: user)
+            }
+            .store(in: &disposeBag)
         
         dataSource = viewModel
         viewModel.$viewControllers

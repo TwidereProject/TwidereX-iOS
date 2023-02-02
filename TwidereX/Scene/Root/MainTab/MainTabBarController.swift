@@ -241,17 +241,16 @@ extension MainTabBarController {
     @MainActor
     private func setupNotificationTabIconUpdater() async {
         // notification tab bar icon updater
-        await Publishers.CombineLatest3(
-            context.authenticationService.$activeAuthenticationContext,
+        await Publishers.CombineLatest(
             context.notificationService.unreadNotificationCountDidUpdate,   // <-- actor property
             $currentTab
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] authenticationContext, _, currentTab in
+        .sink { [weak self] _, currentTab in
             guard let self = self else { return }
-            guard let authenticationContext = authenticationContext else { return }
             guard let notificationViewController = self.notificationViewController else { return }
 
+            let authenticationContext = self.authContext.authenticationContext
             let hasUnreadPushNotification: Bool = {
                 switch authenticationContext {
                 case .twitter:
@@ -397,7 +396,7 @@ extension MainTabBarController {
         case .me:
             let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
             feedbackGenerator.impactOccurred()
-            let accountListViewModel = AccountListViewModel(context: context)
+            let accountListViewModel = AccountListViewModel(context: context, authContext: authContext)
             coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: self, transition: .modal(animated: true, completion: nil))
         default:
             break

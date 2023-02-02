@@ -92,6 +92,7 @@ extension TabBarItem {
             viewController = _viewController
         case .notification:
             let _viewController = NotificationViewController()
+            _viewController.viewModel = NotificationViewModel(context: context, authContext: authContext, coordinator: coordinator)
             viewController = _viewController
         case .search:
             let _viewController = SearchViewController()
@@ -99,7 +100,7 @@ extension TabBarItem {
             viewController = _viewController
         case .me:
             let _viewController = ProfileViewController()
-            let profileViewModel = ProfileViewModel(context: context, authContext: authContext)
+            let profileViewModel = MeProfileViewModel(context: context, authContext: authContext)
             _viewController.viewModel = profileViewModel
             viewController = _viewController
         case .local:
@@ -125,7 +126,7 @@ extension TabBarItem {
             )
             viewController = _viewController
         case .lists:
-            guard let me = context.authenticationService.activeAuthenticationContext?.user(in: context.managedObjectContext)?.asRecord else {
+            guard let me = authContext.authenticationContext.user(in: context.managedObjectContext)?.asRecord else {
                 return AdaptiveStatusBarStyleNavigationController(rootViewController: UIViewController())
             }
             let _viewController = CompositeListViewController()

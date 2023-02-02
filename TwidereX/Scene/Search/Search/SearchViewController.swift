@@ -126,27 +126,20 @@ extension SearchViewController {
             .store(in: &disposeBag)
         
         // bind twitter trend place entry
-        viewModel.context.authenticationService.$activeAuthenticationContext
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                switch authenticationContext {
-                case .twitter:
-                    self.trendSectionHeaderView.button.isHidden = false
-                default:
-                    self.trendSectionHeaderView.button.isHidden = true
-                }
-            }
-            .store(in: &disposeBag)
+        switch viewModel.authContext.authenticationContext {
+        case .twitter:
+            self.trendSectionHeaderView.button.isHidden = false
+        default:
+            self.trendSectionHeaderView.button.isHidden = true
+        }
         
         // bind searchBar bookmark
-        Publishers.CombineLatest3(
+        Publishers.CombineLatest(
             viewModel.$savedSearchTexts,
-            searchResultViewModel.$searchText,
-            context.authenticationService.$activeAuthenticationContext
+            searchResultViewModel.$searchText
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] texts, searchText, activeAuthenticationContext in
+        .sink { [weak self] texts, searchText in
             guard let self = self else { return }
             let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !text.isEmpty,
@@ -155,12 +148,8 @@ extension SearchViewController {
                 self.searchController.searchBar.showsBookmarkButton = false
                 return
             }
-            switch activeAuthenticationContext {
-            case .twitter, .mastodon:
-                self.searchController.searchBar.showsBookmarkButton = true
-            case nil:
-                self.searchController.searchBar.showsBookmarkButton = false
-            }
+            
+            self.searchController.searchBar.showsBookmarkButton = true
         }
         .store(in: &disposeBag)
     }
@@ -268,9 +257,10 @@ extension SearchViewController: UITableViewDelegate {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
         guard let diffableDataSource = self.viewModel.diffableDataSource,
-              case let .history(record) = diffableDataSource.itemIdentifier(for: indexPath),
-              let authenticationContext = self.viewModel.context.authenticationService.activeAuthenticationContext
+              case let .history(record) = diffableDataSource.itemIdentifier(for: indexPath)
         else { return nil }
+        
+        let authenticationContext = viewModel.authContext.authenticationContext
         
         let deleteAction = UIContextualAction(
             style: .destructive,

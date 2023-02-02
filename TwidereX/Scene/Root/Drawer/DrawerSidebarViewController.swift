@@ -102,15 +102,9 @@ extension DrawerSidebarViewController {
             settingCollectionView: settingCollectionView
         )
         
-        context.authenticationService.$activeAuthenticationContext
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                let user = authenticationContext?.user(in: self.context.managedObjectContext)
-                self.headerView.configure(user: user)
-            }
-            .store(in: &disposeBag)
-        
         headerView.delegate = self
+        let user = viewModel.authContext.authenticationContext.user(in: self.context.managedObjectContext)
+        headerView.configure(user: user)
     }
     
 }
@@ -123,7 +117,7 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
         _ headerView: DrawerSidebarHeaderView,
         avatarButtonDidPressed button: UIButton
     ) {
-        let profileViewModel = ProfileViewModel(
+        let profileViewModel = MeProfileViewModel(
             context: context,
             authContext: viewModel.authContext  // me
         )
@@ -138,7 +132,7 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
         menuButtonDidPressed button: UIButton
     ) {
         dismiss(animated: true) {
-            let accountListViewModel = AccountListViewModel(context: self.context)
+            let accountListViewModel = AccountListViewModel(context: self.context, authContext: self.viewModel.authContext)
             self.coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: nil, transition: .modal(animated: true, completion: nil))
         }
     }
@@ -181,7 +175,7 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
         profileDashboardView: ProfileDashboardView,
         listedMeterViewDidPressed meterView: ProfileDashboardMeterView
     ) {
-        guard let me = context.authenticationService.activeAuthenticationContext?.user(in: context.managedObjectContext)?.asRecord else { return }
+        guard let me = viewModel.authContext.authenticationContext.user(in: context.managedObjectContext)?.asRecord else { return }
         switch me {
         case .twitter:      break
         case .mastodon:     return
@@ -220,12 +214,10 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
                 let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context, authContext: viewModel.authContext, timelineContext: .init(timelineKind: .like, userIdentifier: viewModel.authContext.authenticationContext.userIdentifier))
                 coordinator.present(scene: .userLikeTimeline(viewModel: userLikeTimelineViewModel), from: presentingViewController, transition: .show)
             case .history:
-                guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else { return }
-                let authContext = AuthContext(authenticationContext: authenticationContext)
-                let historyViewModel = HistoryViewModel(context: context, coordinator: coordinator, authContext: authContext)
+                let historyViewModel = HistoryViewModel(context: context, coordinator: coordinator, authContext: viewModel.authContext)
                 coordinator.present(scene: .history(viewModel: historyViewModel), from: presentingViewController, transition: .show)
             case .lists:
-                guard let me = context.authenticationService.activeAuthenticationContext?.user(in: context.managedObjectContext)?.asRecord else { return }
+                guard let me = viewModel.authContext.authenticationContext.user(in: context.managedObjectContext)?.asRecord else { return }
                 
                 let compositeListViewModel = CompositeListViewModel(
                     context: context,

@@ -69,7 +69,8 @@ extension SettingListViewController {
                         transition: .show
                     )
                 case .display:
-                    self.coordinator.present(scene: .displayPreference, from: self, transition: .show)
+                    let displayPreferenceViewModel = DisplayPreferenceViewModel(authContext: self.viewModel.authContext)
+                    self.coordinator.present(scene: .displayPreference(viewModel: displayPreferenceViewModel), from: self, transition: .show)
                 case .layout:
                     break
                 case .webBrowser:
@@ -81,7 +82,8 @@ extension SettingListViewController {
                     self.coordinator.present(scene: .about(viewModel: aboutViewModel), from: self, transition: .show)
                 #if DEBUG
                 case .developer:
-                    self.coordinator.present(scene: .developer, from: self, transition: .show)
+                    let developerViewModel = DeveloperViewModel(authContext: self.viewModel.authContext)
+                    self.coordinator.present(scene: .developer(viewModel: developerViewModel), from: self, transition: .show)
                 #endif
                 }
             }

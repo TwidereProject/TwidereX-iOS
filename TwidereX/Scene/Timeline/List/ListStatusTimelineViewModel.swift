@@ -30,10 +30,7 @@ final class ListStatusTimelineViewModel: ListTimelineViewModel {
         )
         
         isFloatyButtonDisplay = false
-        
-        context.authenticationService.$activeAuthenticationContext
-            .map { $0?.userIdentifier }
-            .assign(to: &statusRecordFetchedResultController.$userIdentifier)
+        statusRecordFetchedResultController.userIdentifier = authContext.authenticationContext.userIdentifier
         
         // bind titile
         if let object = list.object(in: context.managedObjectContext) {

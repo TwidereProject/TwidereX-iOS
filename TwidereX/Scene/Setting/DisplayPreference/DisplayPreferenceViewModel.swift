@@ -23,7 +23,8 @@ final class DisplayPreferenceViewModel: ObservableObject {
     @Published var viewSize: CGSize = .zero
 
     // input
-        
+    let authContext: AuthContext
+    
     // avatar
     @Published var avatarStyle = UserDefaults.shared.avatarStyle
     
@@ -34,7 +35,10 @@ final class DisplayPreferenceViewModel: ObservableObject {
     // output
     @Published var authenticationContext: AuthenticationContext?
 
-    init() {
+    init(authContext: AuthContext) {
+        self.authContext = authContext
+        // end init
+        
         // avatar style
         UserDefaults.shared.publisher(for: \.avatarStyle)
             .removeDuplicates()

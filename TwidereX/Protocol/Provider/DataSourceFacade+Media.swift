@@ -95,7 +95,7 @@ extension DataSourceFacade {
                         return status?.id
                     }
                     guard let statusID = _statusID,
-                          case let .twitter(authenticationContext) = provider.context.authenticationService.activeAuthenticationContext
+                          case let .twitter(authenticationContext) = provider.authContext.authenticationContext
                     else { return }
                     
                     let _response = try? await provider.context.apiService.twitterStatusV1(statusIDs: [statusID], authenticationContext: authenticationContext)

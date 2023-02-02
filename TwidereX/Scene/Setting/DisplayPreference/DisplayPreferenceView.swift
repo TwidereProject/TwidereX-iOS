@@ -27,9 +27,9 @@ struct DisplayPreferenceView: View {
                 PrototypeStatusViewRepresentable(
                     style: .timeline,
                     configurationContext: StatusView.ConfigurationContext(
+                        authContext: viewModel.authContext,
                         dateTimeProvider: DateTimeSwiftProvider(),
-                        twitterTextProvider: OfficialTwitterTextProvider(),
-                        authenticationContext: viewModel.$authenticationContext
+                        twitterTextProvider: OfficialTwitterTextProvider()
                     ),
                     height: $timelineStatusViewHeight
                 )

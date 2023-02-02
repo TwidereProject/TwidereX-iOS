@@ -25,6 +25,7 @@ extension UserSection {
     static func diffableDataSource(
         tableView: UITableView,
         context: AppContext,
+        authContext: AuthContext,
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<UserSection, UserItem> {
         let cellTypes = [
@@ -69,8 +70,8 @@ extension UserSection {
                 let cell = dequeueReusableCell(tableView: tableView, indexPath: indexPath, style: style)
                 context.managedObjectContext.performAndWait {
                     guard let user = record.object(in: context.managedObjectContext) else { return }
-                    let authenticationContext = context.authenticationService.activeAuthenticationContext
-                    let me = authenticationContext?.user(in: context.managedObjectContext)
+                    let authenticationContext = authContext.authenticationContext
+                    let me = authenticationContext.user(in: context.managedObjectContext)
                     let viewModel = UserTableViewCell.ViewModel(
                         user: user,
                         me: me,

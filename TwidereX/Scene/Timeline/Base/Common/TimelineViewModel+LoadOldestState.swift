@@ -121,10 +121,7 @@ extension TimelineViewModel.LoadOldestState {
         private func fetch(anchor record: StatusRecord?) async {
             guard let viewModel = viewModel, let _ = stateMachine else { return }
             
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else {
-                enter(state: Fail.self)
-                return
-            }
+            let authenticationContext = viewModel.authContext.authenticationContext
             
             if nextInput == nil {
                 let managedObjectContext = viewModel.context.managedObjectContext

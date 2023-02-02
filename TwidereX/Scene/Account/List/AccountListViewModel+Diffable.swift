@@ -20,11 +20,12 @@ extension AccountListViewModel {
         diffableDataSource = UserSection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: UserSection.Configuration(
                 userViewTableViewCellDelegate: userViewTableViewCellDelegate,
                 userViewConfigurationContext: .init(
-                    listMembershipViewModel: nil,
-                    authenticationContext: context.authenticationService.activeAuthenticationContext
+                    authContext: authContext,
+                    listMembershipViewModel: nil
                 )
             )
         )
@@ -33,18 +34,14 @@ extension AccountListViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.apply(snapshot)
         
-        context.authenticationService.$authenticationIndexes
+        $items
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] authenticationIndexes in
+            .sink { [weak self] items in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
-                
+
                 var snapshot = NSDiffableDataSourceSnapshot<UserSection, UserItem>()
                 snapshot.appendSections([.main])
-                let items = authenticationIndexes.map { authenticationIndex -> UserItem in
-                    let record = ManagedObjectRecord<AuthenticationIndex>(objectID: authenticationIndex.objectID)
-                    return UserItem.authenticationIndex(record: record)
-                }
                 snapshot.appendItems(items, toSection: .main)
                 diffableDataSource.apply(snapshot)
             }

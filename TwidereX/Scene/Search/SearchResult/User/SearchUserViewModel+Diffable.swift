@@ -22,11 +22,12 @@ extension SearchUserViewModel {
         diffableDataSource = UserSection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: UserSection.Configuration(
                 userViewTableViewCellDelegate: userViewTableViewCellDelegate,
                 userViewConfigurationContext: .init(
-                    listMembershipViewModel: listMembershipViewModel,
-                    authenticationContext: context.authenticationService.activeAuthenticationContext
+                    authContext: authContext,
+                    listMembershipViewModel: listMembershipViewModel
                 )
             )
         )

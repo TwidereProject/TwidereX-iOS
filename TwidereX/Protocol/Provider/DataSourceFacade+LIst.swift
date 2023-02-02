@@ -377,12 +377,13 @@ extension DataSourceFacade {
     
     @MainActor
     static func responseToListEditAction(
-        dependency: NeedsDependency & UIViewController,
+        dependency: NeedsDependency & AuthContextProvider & UIViewController,
         list: ListRecord,
         authenticationContext: AuthenticationContext
     ) async throws {
         let editListViewModel = EditListViewModel(
             context: dependency.context,
+            authContext: dependency.authContext,
             platform: {
                 switch list {
                 case .twitter:      return .twitter

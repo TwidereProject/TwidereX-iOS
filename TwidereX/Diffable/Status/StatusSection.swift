@@ -223,7 +223,7 @@ extension StatusSection {
                     // trigger update if needs
                     // check is the first option in poll to trigger update poll only once
                     if option.index == 0, option.poll.needsUpdate {
-                        let authenticationContext = context.authenticationService.activeAuthenticationContext
+                        let authenticationContext = configurationContext.authContext.authenticationContext
                         switch (option, authenticationContext) {
                         case (.twitter(let object), .twitter(let authenticationContext)):
                             let status: ManagedObjectRecord<TwitterStatus> = .init(objectID: object.poll.status.objectID)

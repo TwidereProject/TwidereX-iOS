@@ -139,9 +139,9 @@ extension MediaPreviewViewController {
             mediaInfoDescriptionView.configure(
                 statusObject: status,
                 configurationContext: .init(
+                    authContext: authContext,
                     dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+                    twitterTextProvider: OfficialTwitterTextProvider()
                 )
             )
         } else {

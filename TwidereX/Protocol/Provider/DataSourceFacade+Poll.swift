@@ -82,7 +82,7 @@ extension DataSourceFacade {
 extension DataSourceFacade {
     
     public static func responseToStatusPollOption(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         target: StatusTarget,
         status: StatusRecord,
         voteButtonDidPressed button: UIButton
@@ -102,7 +102,7 @@ extension DataSourceFacade {
     }
     
     static func responseToStatusPollOption(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         status: StatusRecord,
         voteButtonDidPressed button: UIButton
     ) async {
@@ -123,11 +123,11 @@ extension DataSourceFacade {
     }
     
     private static func responseToStatusPollOption(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         status: ManagedObjectRecord<MastodonStatus>,
         voteButtonDidPressed button: UIButton
     ) async throws {
-        guard case let .mastodon(authenticationContext) = provider.context.authenticationService.activeAuthenticationContext else { return }
+        guard case let .mastodon(authenticationContext) = provider.authContext.authenticationContext else { return }
         
         // should use same context on UI to make transient property trigger update
         let managedObjectContext = provider.context.managedObjectContext

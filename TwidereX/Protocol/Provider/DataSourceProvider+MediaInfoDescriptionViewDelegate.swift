@@ -75,7 +75,6 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider & Auth
 
     
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         Task {
             let source = DataSourceItem.Source(tableViewCell: nil, indexPath: nil)
             guard let item = await item(from: source) else {
@@ -92,7 +91,7 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider & Auth
                 status: status,
                 action: action,
                 sender: button,
-                authenticationContext: authenticationContext
+                authenticationContext: authContext.authenticationContext
             )
         }   // end Task
     }   // end func

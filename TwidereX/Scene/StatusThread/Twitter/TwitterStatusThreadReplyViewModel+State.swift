@@ -220,9 +220,7 @@ extension TwitterStatusThreadReplyViewModel.State {
             super.didEnter(from: previousState)
 
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext,
-                  case let .twitter(twitterAuthenticationContext) = authenticationContext
-            else {
+            guard case let .twitter(twitterAuthenticationContext) = viewModel.authContext.authenticationContext else {
                 return
             }
 

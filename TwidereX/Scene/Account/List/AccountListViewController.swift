@@ -127,6 +127,11 @@ extension AccountListViewController: UITableViewDelegate {
     }
 }
 
+// MARK: - AuthContextProvider
+extension AccountListViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - UserViewTableViewCellDelegate
 extension AccountListViewController: UserViewTableViewCellDelegate { }
 

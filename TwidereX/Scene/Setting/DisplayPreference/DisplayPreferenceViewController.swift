@@ -16,7 +16,7 @@ final class DisplayPreferenceViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    let viewModel = DisplayPreferenceViewModel()
+    var viewModel: DisplayPreferenceViewModel!
     private(set) lazy var displayPreferenceView = DisplayPreferenceView(viewModel: viewModel)
 
     private(set) lazy var tableView: UITableView = {

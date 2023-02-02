@@ -24,10 +24,6 @@ extension PollOptionView {
         pollOption: PollOptionObject,
         configurationContext: ConfigurationContext
     ) {
-        configurationContext.authenticationContext
-            .assign(to: \.authenticationContext, on: viewModel)
-            .store(in: &disposeBag)
-
         switch pollOption {
         case .twitter(let object):
             configure(

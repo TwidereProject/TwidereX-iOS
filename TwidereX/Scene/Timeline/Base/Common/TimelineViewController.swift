@@ -98,17 +98,14 @@ extension TimelineViewController {
         avatarBarButtonItem.delegate = self
         
         // bind avatarBarButtonItem data
-        Publishers.CombineLatest(
-            context.authenticationService.$activeAuthenticationContext,
-            _viewModel.viewDidAppear.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] authenticationContext, _ in
-            guard let self = self else { return }
-            let user = authenticationContext?.user(in: self.context.managedObjectContext)
-            self.avatarBarButtonItem.configure(user: user)
-        }
-        .store(in: &disposeBag)
+        _viewModel.viewDidAppear
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                let user = self._viewModel.authContext.authenticationContext.user(in: self.context.managedObjectContext)
+                self.avatarBarButtonItem.configure(user: user)
+            }
+            .store(in: &disposeBag)
         
         // layout publish progress
         publishProgressView.translatesAutoresizingMaskIntoConstraints = false
@@ -251,9 +248,9 @@ extension TimelineViewController {
                 authenticationService: context.authenticationService,
                 mastodonEmojiService: context.mastodonEmojiService,
                 statusViewConfigureContext: .init(
+                    authContext: authContext,
                     dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+                    twitterTextProvider: OfficialTwitterTextProvider()
                 )
             )
         )

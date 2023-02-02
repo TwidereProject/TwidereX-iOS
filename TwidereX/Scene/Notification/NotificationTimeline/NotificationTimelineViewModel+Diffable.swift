@@ -25,13 +25,13 @@ extension NotificationTimelineViewModel {
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
             userViewTableViewCellDelegate: userViewTableViewCellDelegate,
             statusViewConfigurationContext: .init(
+                authContext: authContext,
                 dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider(),
-                authenticationContext: context.authenticationService.$activeAuthenticationContext
+                twitterTextProvider: OfficialTwitterTextProvider()
             ),
             userViewConfigurationContext: .init(
-                listMembershipViewModel: nil,
-                authenticationContext: context.authenticationService.activeAuthenticationContext
+                authContext: authContext,
+                listMembershipViewModel: nil
             )
         )
         diffableDataSource = NotificationSection.diffableDataSource(
@@ -166,7 +166,8 @@ extension NotificationTimelineViewModel {
     // load timeline gap
     func loadMore(item: NotificationItem) async {
         guard case let .feedLoader(record) = item else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
+        
+        let authenticationContext = authContext.authenticationContext
 
         let managedObjectContext = context.managedObjectContext
         let key = "LoadMore@\(record.objectID)"

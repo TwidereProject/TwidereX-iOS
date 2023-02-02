@@ -149,17 +149,15 @@ extension ProfileViewController {
             avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
             avatarBarButtonItem.delegate = self
             
-            Publishers.CombineLatest(
-                context.authenticationService.$activeAuthenticationContext,
-                viewModel.viewDidAppear
-            )
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] authenticationContext, _ in
-                guard let self = self else { return }
-                let user = authenticationContext?.user(in: self.context.managedObjectContext)
-                self.avatarBarButtonItem.configure(user: user)
-            }
-            .store(in: &disposeBag)
+            viewModel.viewDidAppear
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    guard let self = self else { return }
+                    let user = self.viewModel.authContext.authenticationContext.user(in: self.context.managedObjectContext)
+                    self.avatarBarButtonItem.configure(user: user)
+                }
+                .store(in: &disposeBag)
+            
         }
         
         addChild(tabBarPagerController)
@@ -204,21 +202,19 @@ extension ProfileViewController {
         }
         .store(in: &disposeBag)
         
-        Publishers.CombineLatest3(
+        Publishers.CombineLatest(
             viewModel.relationshipViewModel.$optionSet,  // update trigger
-            viewModel.$userRecord,
-            context.authenticationService.$activeAuthenticationContext
+            viewModel.$userRecord
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] optionSet, userRecord, authenticationContext in
+        .sink { [weak self] optionSet, userRecord in
             guard let self = self else { return }
-            guard let userRecord = userRecord,
-                  let authenticationContext = authenticationContext
-            else {
+            guard let userRecord = userRecord else {
                 self.moreMenuBarButtonItem.menu = nil
                 self.navigationItem.rightBarButtonItems = []
                 return
             }
+            let authenticationContext = self.viewModel.authContext.authenticationContext
             Task {
                 do {
                     let menu = try await DataSourceFacade.createMenuForUser(
@@ -318,9 +314,9 @@ extension ProfileViewController {
                 authenticationService: context.authenticationService,
                 mastodonEmojiService: context.mastodonEmojiService,
                 statusViewConfigureContext: .init(
+                    authContext: authContext,
                     dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+                    twitterTextProvider: OfficialTwitterTextProvider()
                 )
             )
         )
@@ -337,9 +333,9 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
     
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, friendshipButtonDidPressed button: UIButton) {
         guard let user = viewModel.user else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         guard let relationshipOptionSet = viewModel.relationshipViewModel.optionSet else { return }
         let record = UserRecord(object: user)
+        let authenticationContext = viewModel.authContext.authenticationContext
 
         Task {
             if relationshipOptionSet.contains(.blocking) {

@@ -39,13 +39,7 @@ final class NotificationViewModel {
         self._coordinator = coordinator
         // end init
         
-        context.authenticationService.$activeAuthenticationContext
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                self.setup(for: authenticationContext)
-            }
-            .store(in: &disposeBag)
+        setup(for: authContext.authenticationContext)
     }
     
 }

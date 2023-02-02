@@ -71,9 +71,11 @@ struct DeveloperView: View {
 struct DeveloperView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            DeveloperView(viewModel: DeveloperViewModel())
-            DeveloperView(viewModel: DeveloperViewModel())
-                .preferredColorScheme(.dark)
+            if let authContext = AuthContext.mock(context: .shared) {
+                DeveloperView(viewModel: DeveloperViewModel(authContext: authContext))
+                DeveloperView(viewModel: DeveloperViewModel(authContext: authContext))
+                    .preferredColorScheme(.dark)
+            }
         }
     }
 }

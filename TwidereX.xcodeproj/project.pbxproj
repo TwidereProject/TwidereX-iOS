@@ -151,6 +151,7 @@
 		DB580EB8288187BD00BC4A0F /* AccountPreferenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB580EB3288187BD00BC4A0F /* AccountPreferenceViewController.swift */; };
 		DB580EB9288187BD00BC4A0F /* AccountPreferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB580EB4288187BD00BC4A0F /* AccountPreferenceViewModel.swift */; };
 		DB581A0127D89A3700C35B91 /* DataSourceFacade+LIst.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB581A0027D89A3700C35B91 /* DataSourceFacade+LIst.swift */; };
+		DB58F1EC298BD07400836FBE /* MeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB58F1EB298BD07400836FBE /* MeProfileViewModel.swift */; };
 		DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */; };
 		DB5BF12327F5A549002A3EF5 /* PublishPostIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12227F5A549002A3EF5 /* PublishPostIntentHandler.swift */; };
 		DB5BF12527F5A5C1002A3EF5 /* Account+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12427F5A5C1002A3EF5 /* Account+Fetch.swift */; };
@@ -668,6 +669,7 @@
 		DB580EB3288187BD00BC4A0F /* AccountPreferenceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountPreferenceViewController.swift; sourceTree = "<group>"; };
 		DB580EB4288187BD00BC4A0F /* AccountPreferenceViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountPreferenceViewModel.swift; sourceTree = "<group>"; };
 		DB581A0027D89A3700C35B91 /* DataSourceFacade+LIst.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+LIst.swift"; sourceTree = "<group>"; };
+		DB58F1EB298BD07400836FBE /* MeProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeProfileViewModel.swift; sourceTree = "<group>"; };
 		DB5918F6255E81FB00B20F6F /* MediaPreviewViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MediaPreviewViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB5BF12227F5A549002A3EF5 /* PublishPostIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishPostIntentHandler.swift; sourceTree = "<group>"; };
@@ -1655,6 +1657,7 @@
 				DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */,
 				DB3B906826E8D1D80010F64C /* LocalProfileViewModel.swift */,
 				DB76A67027609A8700A50673 /* RemoteProfileViewModel.swift */,
+				DB58F1EB298BD07400836FBE /* MeProfileViewModel.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -3229,6 +3232,7 @@
 				DB25C4C8277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift in Sources */,
 				DBA210352759D7B1000B7CB2 /* FollowingListViewModel+Diffable.swift in Sources */,
 				DB2C8744274F4B7D00CE0398 /* SettingListViewController.swift in Sources */,
+				DB58F1EC298BD07400836FBE /* MeProfileViewModel.swift in Sources */,
 				DBE6357F288555AE001C114B /* PushNotificationScratchView.swift in Sources */,
 				DB47AB3E27CE1F9E00CD73C7 /* TimelineTopLoaderTableViewCell.swift in Sources */,
 				DB0AD4E62858742D0002ABDB /* UserMediaTimelineViewModel+Diffable.swift in Sources */,

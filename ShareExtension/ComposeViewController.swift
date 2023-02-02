@@ -109,9 +109,9 @@ extension ComposeViewController {
                     authenticationService: context.authenticationService,
                     mastodonEmojiService: context.mastodonEmojiService,
                     statusViewConfigureContext: .init(
+                        authContext: authContext,
                         dateTimeProvider: DateTimeSwiftProvider(),
-                        twitterTextProvider: OfficialTwitterTextProvider(),
-                        authenticationContext: context.authenticationService.$activeAuthenticationContext
+                        twitterTextProvider: OfficialTwitterTextProvider()
                     )
                 )
             )

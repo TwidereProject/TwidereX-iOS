@@ -63,7 +63,7 @@ final class StatusThreadViewModel {
     ) {
         self.context = context
         self.authContext = authContext
-        self.twitterStatusThreadReplyViewModel = TwitterStatusThreadReplyViewModel(context: context)
+        self.twitterStatusThreadReplyViewModel = TwitterStatusThreadReplyViewModel(context: context, authContext: authContext)
         self.twitterStatusThreadLeafViewModel = TwitterStatusThreadLeafViewModel(context: context)
         self.mastodonStatusThreadViewModel = MastodonStatusThreadViewModel(context: context)
         self.root = CurrentValueSubject(optionalRoot)

@@ -14,11 +14,11 @@ import TwidereCore
 extension DataSourceFacade {
 
     static func recordStatusHistory(
-        denpendency: NeedsDependency,
+        denpendency: NeedsDependency & AuthContextProvider,
         status: StatusRecord
     ) async {
         let now = Date()
-        guard let authenticationContext = denpendency.context.authenticationService.activeAuthenticationContext else { return }
+        let authenticationContext = denpendency.authContext.authenticationContext
 
         let acct = authenticationContext.acct
         let managedObjectContext = denpendency.context.backgroundManagedObjectContext
@@ -54,12 +54,12 @@ extension DataSourceFacade {
     }   // end func
 
     static func recordUserHistory(
-        denpendency: NeedsDependency,
+        denpendency: NeedsDependency & AuthContextProvider,
         user: UserRecord
     ) async {
         let now = Date()
-        guard let authenticationContext = denpendency.context.authenticationService.activeAuthenticationContext else { return }
-        
+        let authenticationContext = denpendency.authContext.authenticationContext
+
         let acct = authenticationContext.acct
         let managedObjectContext = denpendency.context.backgroundManagedObjectContext
         let _history: ManagedObjectRecord<History>? = await managedObjectContext.perform {

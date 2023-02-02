@@ -126,13 +126,12 @@ extension SearchResultViewController: UISearchBarDelegate {
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         guard let searchText = searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines), !searchText.isEmpty else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         
         Task {
             try await DataSourceFacade.responseToCreateSavedSearch(
                 dependency: self,
                 searchText: searchText,
-                authenticationContext: authenticationContext
+                authenticationContext: viewModel.authContext.authenticationContext
             )
         }
     }

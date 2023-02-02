@@ -81,7 +81,7 @@ extension SidebarViewController {
         let impactFeedbackGenerator = UIImpactFeedbackGenerator()
         impactFeedbackGenerator.impactOccurred()
         
-        let accountListViewModel = AccountListViewModel(context: context)
+        let accountListViewModel = AccountListViewModel(context: context, authContext: viewModel.authContext)
         coordinator.present(
             scene: .accountList(viewModel: accountListViewModel),
             from: nil,

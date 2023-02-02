@@ -33,28 +33,20 @@ final class HomeTimelineViewModel: ListTimelineViewModel {
 
         enableAutoFetchLatest = true
         
-        context.authenticationService.$activeAuthenticationContext
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                let emptyFeedPredicate = Feed.nonePredicate()
-                guard let authenticationContext = authenticationContext else {
-                    self.feedFetchedResultsController.predicate = emptyFeedPredicate
-                    return
-                }
-                
-                let predicate: NSPredicate
-                switch authenticationContext {
-                case .twitter(let authenticationContext):
-                    let userID = authenticationContext.userID
-                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: userID))
-                case .mastodon(let authenticationContext):
-                    let domain = authenticationContext.domain
-                    let userID = authenticationContext.userID
-                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
-                }
-                self.feedFetchedResultsController.predicate = predicate
+        feedFetchedResultsController.predicate = {
+            let predicate: NSPredicate
+            let authenticationContext = authContext.authenticationContext
+            switch authenticationContext {
+            case .twitter(let authenticationContext):
+                let userID = authenticationContext.userID
+                predicate = Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: userID))
+            case .mastodon(let authenticationContext):
+                let domain = authenticationContext.domain
+                let userID = authenticationContext.userID
+                predicate = Feed.predicate(kind: .home, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
             }
-            .store(in: &disposeBag)
+            return predicate
+        }()
     }
     
     deinit {

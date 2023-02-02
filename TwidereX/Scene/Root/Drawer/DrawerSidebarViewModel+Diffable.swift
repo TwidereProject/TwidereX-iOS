@@ -21,34 +21,32 @@ extension DrawerSidebarViewModel {
         sidebarSnapshot.appendSections([.main])
         sidebarDiffableDataSource?.applySnapshotUsingReloadData(sidebarSnapshot)
         
-        Publishers.CombineLatest(
-            context.authenticationService.$activeAuthenticationContext.removeDuplicates(),
-            UserDefaults.shared.publisher(for: \.preferredEnableHistory).removeDuplicates()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] authenticationContext, preferredEnableHistory in
-            guard let self = self else { return }
-            var snapshot = NSDiffableDataSourceSnapshot<SidebarSection, SidebarItem>()
-            snapshot.appendSections([.main])
-            switch authenticationContext {
-            case .twitter:
-                snapshot.appendItems([.likes], toSection: .main)
-                if preferredEnableHistory {
-                    snapshot.appendItems([.history], toSection: .main)
+        UserDefaults.shared.publisher(for: \.preferredEnableHistory).removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] preferredEnableHistory in
+                guard let self = self else { return }
+
+                var snapshot = NSDiffableDataSourceSnapshot<SidebarSection, SidebarItem>()
+                snapshot.appendSections([.main])
+
+                let authenticationContext = self.authContext.authenticationContext
+                switch authenticationContext {
+                case .twitter:
+                    snapshot.appendItems([.likes], toSection: .main)
+                    if preferredEnableHistory {
+                        snapshot.appendItems([.history], toSection: .main)
+                    }
+                    snapshot.appendItems([.lists], toSection: .main)
+                case .mastodon:
+                    snapshot.appendItems([.local, .federated, .likes], toSection: .main)
+                    if preferredEnableHistory {
+                        snapshot.appendItems([.history], toSection: .main)
+                    }
+                    snapshot.appendItems([.lists], toSection: .main)
                 }
-                snapshot.appendItems([.lists], toSection: .main)
-            case .mastodon:
-                snapshot.appendItems([.local, .federated, .likes], toSection: .main)
-                if preferredEnableHistory {
-                    snapshot.appendItems([.history], toSection: .main)
-                }
-                snapshot.appendItems([.lists], toSection: .main)
-            case .none:
-                break
+                self.sidebarDiffableDataSource?.applySnapshotUsingReloadData(snapshot)
             }
-            self.sidebarDiffableDataSource?.applySnapshotUsingReloadData(snapshot)
-        }
-        .store(in: &disposeBag)
+            .store(in: &disposeBag)
         
         // setting
         settingDiffableDataSource = setupDiffableDataSource(collectionView: settingCollectionView)

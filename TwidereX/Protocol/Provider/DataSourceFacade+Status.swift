@@ -51,9 +51,9 @@ extension DataSourceFacade {
                     authenticationService: provider.context.authenticationService,
                     mastodonEmojiService: provider.context.mastodonEmojiService,
                     statusViewConfigureContext: .init(
+                        authContext: provider.authContext,
                         dateTimeProvider: DateTimeSwiftProvider(),
-                        twitterTextProvider: OfficialTwitterTextProvider(),
-                        authenticationContext: provider.context.authenticationService.$activeAuthenticationContext
+                        twitterTextProvider: OfficialTwitterTextProvider()
                     )
                 )
             )
@@ -108,7 +108,7 @@ extension DataSourceFacade {
 extension DataSourceFacade {
 
     static func responseToExpandContentAction(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         target: StatusTarget,
         status: StatusRecord
     ) async throws {
@@ -154,7 +154,7 @@ extension DataSourceFacade {
 extension DataSourceFacade {
 
     static func responseToToggleMediaSensitiveAction(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         target: StatusTarget,
         status: StatusRecord
     ) async throws {

@@ -85,11 +85,12 @@ extension ComposeContentViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
+                guard let authContext = self.viewModel.authContext else { return }
                 guard let primaryItem = self.viewModel.primaryMentionPickItem else { return }
                 
                 let mentionPickViewModel = MentionPickViewModel(
-                    apiService: self.viewModel.configurationContext.apiService,
-                    authenticationService: self.viewModel.configurationContext.authenticationService,
+                    context: self.viewModel.context,
+                    authContext: authContext,
                     primaryItem: primaryItem,
                     secondaryItems: self.viewModel.secondaryMentionPickItems
                 )

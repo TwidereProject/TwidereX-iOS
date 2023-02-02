@@ -43,59 +43,50 @@ final class SidebarViewModel: ObservableObject {
     ) {
         self.context = context
         self.authContext = authContext
+        // end init
         
-        Publishers.CombineLatest(
-            context.authenticationService.$activeAuthenticationContext.removeDuplicates(),
-            UserDefaults.shared.publisher(for: \.preferredEnableHistory).removeDuplicates()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] authenticationContext, preferredEnableHistory in
-            guard let self = self else { return }
-
-            var items: [TabBarItem] = []
-            switch authenticationContext {
-            case .twitter:
-                items.append(contentsOf: [.likes])
-                if preferredEnableHistory {
-                    items.append(contentsOf: [.history])
-                }
-                items.append(contentsOf: [.lists])
-            case .mastodon:
-                items.append(contentsOf: [.local, .federated, .likes])
-                if preferredEnableHistory {
-                    items.append(contentsOf: [.history])
-                }
-                items.append(contentsOf: [.lists])
-            case .none:
-                break
-            }
-            self.secondaryTabBarItems = items
-        }
-        .store(in: &disposeBag)
-        
-        context.authenticationService.$activeAuthenticationContext
-            .sink { [weak self] authenticationContext in
+        UserDefaults.shared.publisher(for: \.preferredEnableHistory)
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] preferredEnableHistory in
                 guard let self = self else { return }
 
-                let user = authenticationContext?.user(in: context.managedObjectContext)
-                switch user {
-                case .twitter(let object):
-                    self.avatarURLSubscription = object.publisher(for: \.profileImageURL)
-                        .sink { [weak self] _ in
-                            guard let self = self else { return }
-                            self.avatarURL = object.avatarImageURL()
-                        }
-                case .mastodon(let object):
-                    self.avatarURLSubscription = object.publisher(for: \.avatar)
-                        .sink { [weak self] _ in
-                            guard let self = self else { return }
-                            self.avatarURL = object.avatar.flatMap { URL(string: $0) }
-                        }
-                case .none:
-                    self.avatarURL = nil
+                var items: [TabBarItem] = []
+                switch self.authContext.authenticationContext {
+                case .twitter:
+                    items.append(contentsOf: [.likes])
+                    if preferredEnableHistory {
+                        items.append(contentsOf: [.history])
+                    }
+                    items.append(contentsOf: [.lists])
+                case .mastodon:
+                    items.append(contentsOf: [.local, .federated, .likes])
+                    if preferredEnableHistory {
+                        items.append(contentsOf: [.history])
+                    }
+                    items.append(contentsOf: [.lists])
                 }
+                self.secondaryTabBarItems = items
             }
             .store(in: &disposeBag)
+        
+        let user = authContext.authenticationContext.user(in: context.managedObjectContext)
+        switch user {
+        case .twitter(let object):
+            self.avatarURLSubscription = object.publisher(for: \.profileImageURL)
+                .sink { [weak self] _ in
+                    guard let self = self else { return }
+                    self.avatarURL = object.avatarImageURL()
+                }
+        case .mastodon(let object):
+            self.avatarURLSubscription = object.publisher(for: \.avatar)
+                .sink { [weak self] _ in
+                    guard let self = self else { return }
+                    self.avatarURL = object.avatar.flatMap { URL(string: $0) }
+                }
+        case .none:
+            self.avatarURL = nil
+        }
         
         Task {
             await setupNotificationTabIconUpdater()
@@ -121,16 +112,14 @@ extension SidebarViewModel {
     @MainActor
     private func setupNotificationTabIconUpdater() async {
         // notification tab bar icon updater
-        await Publishers.CombineLatest3(
-            context.authenticationService.$activeAuthenticationContext,
+        await Publishers.CombineLatest(
             context.notificationService.unreadNotificationCountDidUpdate,   // <-- actor property
             $activeTab
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] authenticationContext, _, activeTab in
+        .sink { [weak self] _, activeTab in
             guard let self = self else { return }
-            guard let authenticationContext = authenticationContext else { return }
-
+            let authenticationContext = self.authContext.authenticationContext
             let hasUnreadPushNotification: Bool = {
                 switch authenticationContext {
                 case .twitter:

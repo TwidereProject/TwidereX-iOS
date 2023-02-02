@@ -51,7 +51,7 @@ extension AboutViewController {
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS")!
                     self.coordinator.present(scene: .safari(url: url.absoluteString), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 case .twitter:
-                    switch self.context.authenticationService.activeAuthenticationContext {
+                    switch self.viewModel.authContext.authenticationContext {
                     case .twitter:
                         let profileViewModel = RemoteProfileViewModel(
                             context: self.context,
@@ -60,8 +60,6 @@ extension AboutViewController {
                         )
                         self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                     case .mastodon:
-                        fallthrough
-                    case .none:
                         let url = URL(string: "https://twitter.com/twidereproject")!
                         self.coordinator.present(scene: .safari(url: url.absoluteString), from: nil, transition: .safariPresent(animated: true, completion: nil))
                     }

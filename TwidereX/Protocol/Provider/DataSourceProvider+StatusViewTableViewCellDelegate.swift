@@ -25,7 +25,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.coordinateToProfileScene(
@@ -52,7 +53,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.coordinateToProfileScene(
@@ -75,7 +77,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.coordinateToProfileScene(
@@ -89,7 +92,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
 }
 
 // MARK: - spoiler
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, expandContentButtonDidPressed button: UIButton) {
         Task {
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
@@ -97,7 +100,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             
@@ -119,7 +123,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             
@@ -140,7 +145,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             
@@ -171,7 +177,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }   // end switch
             
@@ -202,7 +209,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.coordinateToMediaPreviewScene(
@@ -225,7 +233,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             try await DataSourceFacade.responseToToggleMediaSensitiveAction(
@@ -237,8 +246,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
     }
 }
 
-// poll
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+// MARK: - poll
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         Task {
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
@@ -246,7 +255,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.responseToStatusPollOption(
@@ -265,7 +275,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             await DataSourceFacade.responseToStatusPollOption(
@@ -286,7 +297,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
             guard let item = await item(from: source) else {
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             
@@ -309,14 +321,14 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         actionDidPressed action: StatusToolbar.Action,
         button: UIButton
     ) {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         Task {
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
             guard let item = await item(from: source) else {
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
                         
@@ -325,7 +337,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 status: status,
                 action: action,
                 sender: button,
-                authenticationContext: authenticationContext
+                authenticationContext: self.authContext.authenticationContext
             )
         }   // end Task
     }   // end func
@@ -343,7 +355,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 assertionFailure()
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
 
@@ -381,12 +394,11 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                     button: button
                 )
             case .remove:
-                guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
                 try await DataSourceFacade.responseToRemoveStatusAction(
                     provider: self,
                     target: .status,
                     status: status,
-                    authenticationContext: authenticationContext
+                    authenticationContext: self.authContext.authenticationContext
                 )
             #if DEBUG
             case .copyID:
@@ -425,7 +437,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             guard let item = await item(from: source) else {
                 return
             }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {                assertionFailure("only works for status data provider")
+            guard let status = await item.status(in: self.context.managedObjectContext) else {
+                assertionFailure("only works for status data provider")
                 return
             }
             

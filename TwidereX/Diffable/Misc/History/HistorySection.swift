@@ -70,8 +70,8 @@ extension HistorySection {
                     // user
                     if let user = history.userObject {
                         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserRelationshipStyleTableViewCell.self), for: indexPath) as! UserRelationshipStyleTableViewCell
-                        let authenticationContext = context.authenticationService.activeAuthenticationContext
-                        let me = authenticationContext?.user(in: context.managedObjectContext)
+                        let authenticationContext = configuration.userViewConfigurationContext.authContext.authenticationContext
+                        let me = authenticationContext.user(in: context.managedObjectContext)
                         let viewModel = UserTableViewCell.ViewModel(
                             user: user,
                             me: me,

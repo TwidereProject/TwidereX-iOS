@@ -17,15 +17,15 @@ import MastodonSDK
 
 extension UserView {
     public struct ConfigurationContext {
+        public let authContext: AuthContext
         public let listMembershipViewModel: ListMembershipViewModel?
-        public let authenticationContext: AuthenticationContext?
         
         public init(
-            listMembershipViewModel: ListMembershipViewModel?,
-            authenticationContext: AuthenticationContext?
+            authContext: AuthContext,
+            listMembershipViewModel: ListMembershipViewModel?
         ) {
+            self.authContext = authContext
             self.listMembershipViewModel = listMembershipViewModel
-            self.authenticationContext = authenticationContext
         }
     }
 }
@@ -37,8 +37,6 @@ extension UserView {
         notification: NotificationObject?,
         configurationContext: ConfigurationContext
     ) {
-        viewModel.authenticationContext = configurationContext.authenticationContext
-        
         switch user {
         case .twitter(let user):
             configure(twitterUser: user)

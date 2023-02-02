@@ -21,6 +21,7 @@ final class TwitterStatusThreadReplyViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     @Published var root: ManagedObjectRecord<TwitterStatus>?
     @Published var nodes: [TwitterStatusReplyNode] = []
     @Published private(set) var deletedObjectIDs: Set<NSManagedObjectID> = Set()
@@ -44,8 +45,12 @@ final class TwitterStatusThreadReplyViewModel {
         return stateMachine
     }()
     
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
         self.context = context
+        self.authContext = authContext
         // end init
         
         Publishers.CombineLatest(

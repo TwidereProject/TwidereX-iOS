@@ -19,18 +19,18 @@ import Meta
 
 extension StatusView {
     public struct ConfigurationContext {
+        public let authContext: AuthContext
         public let dateTimeProvider: DateTimeProvider
         public let twitterTextProvider: TwitterTextProvider
-        public let authenticationContext: Published<AuthenticationContext?>.Publisher
         
         public init(
+            authContext: AuthContext,
             dateTimeProvider: DateTimeProvider,
-            twitterTextProvider: TwitterTextProvider,
-            authenticationContext: Published<AuthenticationContext?>.Publisher
+            twitterTextProvider: TwitterTextProvider
         ) {
+            self.authContext = authContext
             self.dateTimeProvider = dateTimeProvider
             self.twitterTextProvider = twitterTextProvider
-            self.authenticationContext = authenticationContext
         }
     }
 }
@@ -103,7 +103,6 @@ extension StatusView {
         viewModel.platform = .twitter
         viewModel.dateTimeProvider = configurationContext.dateTimeProvider
         viewModel.twitterTextProvider = configurationContext.twitterTextProvider
-        configurationContext.authenticationContext.assign(to: \.authenticationContext, on: viewModel).store(in: &disposeBag)
         
         configureHeader(status)
         configureAuthor(status)
@@ -341,7 +340,6 @@ extension StatusView {
         viewModel.platform = .mastodon
         viewModel.dateTimeProvider = configurationContext.dateTimeProvider
         viewModel.twitterTextProvider = configurationContext.twitterTextProvider
-        configurationContext.authenticationContext.assign(to: \.authenticationContext, on: viewModel).store(in: &disposeBag)
 
         configureHeader(status, notification: notification)
         configureAuthor(status)

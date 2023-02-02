@@ -99,6 +99,7 @@ extension CompositeListViewController {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         let editListViewModel = EditListViewModel(
             context: context,
+            authContext: viewModel.authContext,
             platform: {
                 switch viewModel.kind.user {
                 case .twitter:      return .twitter

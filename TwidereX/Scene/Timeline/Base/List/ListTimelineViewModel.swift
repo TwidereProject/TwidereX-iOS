@@ -46,9 +46,10 @@ extension ListTimelineViewModel {
     @MainActor
     func loadMore(item: StatusItem) async {
         guard case let .feedLoader(record) = item else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         guard let diffableDataSource = diffableDataSource else { return }
         var snapshot = diffableDataSource.snapshot()
+
+        let authenticationContext = authContext.authenticationContext
 
         let managedObjectContext = context.managedObjectContext
         let key = "LoadMore@\(record.objectID)#\(UUID().uuidString)"
