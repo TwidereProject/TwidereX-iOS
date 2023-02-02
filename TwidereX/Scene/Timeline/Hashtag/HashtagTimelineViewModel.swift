@@ -14,16 +14,16 @@ final class HashtagTimelineViewModel: ListTimelineViewModel {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         hashtag: String
     ) {
         super.init(
             context: context,
+            authContext: authContext,
             kind: .hashtag(hashtag: hashtag)
         )
-                
-        context.authenticationService.$activeAuthenticationContext
-            .map { $0?.userIdentifier }
-            .assign(to: &statusRecordFetchedResultController.$userIdentifier)
+
+        statusRecordFetchedResultController.userIdentifier = authContext.authenticationContext.userIdentifier
     }
     
     deinit {

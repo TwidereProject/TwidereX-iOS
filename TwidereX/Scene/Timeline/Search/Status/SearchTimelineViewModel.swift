@@ -18,7 +18,8 @@ final class SearchTimelineViewModel: ListTimelineViewModel {
     // output
     
     init(
-        context: AppContext
+        context: AppContext,
+        authContext: AuthContext
     ) {
         let searchTimelineContext = StatusFetchViewModel.Timeline.Kind.SearchTimelineContext(
             timelineKind: .status,
@@ -26,6 +27,7 @@ final class SearchTimelineViewModel: ListTimelineViewModel {
         )
         super.init(
             context: context,
+            authContext: authContext,
             kind: .search(searchTimelineContext: searchTimelineContext)
         )
         

@@ -123,7 +123,10 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
         _ headerView: DrawerSidebarHeaderView,
         avatarButtonDidPressed button: UIButton
     ) {
-        let profileViewModel = MeProfileViewModel(context: self.context)
+        let profileViewModel = ProfileViewModel(
+            context: context,
+            authContext: viewModel.authContext  // me
+        )
         
         // present from `presentingViewController` here to reduce transition delay
         coordinator.present(scene: .profile(viewModel: profileViewModel), from: presentingViewController, transition: .show)
@@ -152,7 +155,7 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
         profileDashboardView: ProfileDashboardView,
         followingMeterViewDidPressed meterView: ProfileDashboardMeterView
     ) {
-        guard let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .following) else {
+        guard let friendshipListViewModel = FriendshipListViewModel(context: context, authContext: viewModel.authContext, kind: .following) else {
             assertionFailure()
             return
         }
@@ -165,7 +168,7 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
         profileDashboardView: ProfileDashboardView,
         followersMeterViewDidPressed meterView: ProfileDashboardMeterView
     ) {
-        guard let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .follower) else {
+        guard let friendshipListViewModel = FriendshipListViewModel(context: context, authContext: viewModel.authContext, kind: .follower) else {
             assertionFailure()
             return
         }
@@ -186,6 +189,7 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
         
         let compositeListViewModel = CompositeListViewModel(
             context: context,
+            authContext: viewModel.authContext,
             kind: .listed(me)
         )
         coordinator.present(
@@ -207,14 +211,14 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
             guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
             switch item {
             case .local:
-                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, isLocal: true)
+                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, authContext: viewModel.authContext, isLocal: true)
                 coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: presentingViewController, transition: .show)
             case .federated:
-                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, isLocal: false)
+                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, authContext: viewModel.authContext, isLocal: false)
                 coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: presentingViewController, transition: .show)
             case .likes:
-                let meLikeTimelineViewModel = MeLikeTimelineViewModel(context: context)
-                coordinator.present(scene: .userLikeTimeline(viewModel: meLikeTimelineViewModel), from: presentingViewController, transition: .show)
+                let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context, authContext: viewModel.authContext, timelineContext: .init(timelineKind: .like, userIdentifier: viewModel.authContext.authenticationContext.userIdentifier))
+                coordinator.present(scene: .userLikeTimeline(viewModel: userLikeTimelineViewModel), from: presentingViewController, transition: .show)
             case .history:
                 guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else { return }
                 let authContext = AuthContext(authenticationContext: authenticationContext)
@@ -225,6 +229,7 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
                 
                 let compositeListViewModel = CompositeListViewModel(
                     context: context,
+                    authContext: viewModel.authContext,
                     kind: .lists(me)
                 )
                 coordinator.present(
@@ -240,11 +245,10 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
             guard let diffableDataSource = viewModel.settingDiffableDataSource else { return }
             guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
             guard case .settings = item else { return }
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else { return }
             dismiss(animated: true) {
                 let settingListViewModel = SettingListViewModel(
                     context: self.context,
-                    auth: .init(authenticationContext: authenticationContext)
+                    authContext: self.viewModel.authContext
                 )
                 self.coordinator.present(
                     scene: .setting(viewModel: settingListViewModel),

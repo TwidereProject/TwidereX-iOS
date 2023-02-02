@@ -10,8 +10,15 @@ import Foundation
 
 final class LocalProfileViewModel: ProfileViewModel {
     
-    init(context: AppContext, userRecord: UserRecord) {
-        super.init(context: context)
+    init(
+        context: AppContext,
+        authContext: AuthContext,
+        userRecord: UserRecord
+    ) {
+        super.init(
+            context: context,
+            authContext: authContext
+        )
         
         setup(user: userRecord)
     }

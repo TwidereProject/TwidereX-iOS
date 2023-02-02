@@ -14,7 +14,7 @@ import TwidereCore
 
 extension DataSourceFacade {
     static func createMenuForUser(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         user: UserRecord,
         authenticationContext: AuthenticationContext
     ) async throws -> UIMenu {
@@ -102,7 +102,7 @@ extension DataSourceFacade {
 
     @MainActor
     private static func createMenuViewListsActionForUser(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         record: UserRecord,
         authenticationContext: AuthenticationContext
     ) async -> UIAction? {
@@ -138,6 +138,7 @@ extension DataSourceFacade {
             
             let compositeListViewModel = CompositeListViewModel(
                 context: provider.context,
+                authContext: provider.authContext,
                 kind: .lists(record)
             )
             provider.coordinator.present(
@@ -151,7 +152,7 @@ extension DataSourceFacade {
     
     @MainActor
     private static func createMenuViewListedActionForUser(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         record: UserRecord,
         authenticationContext: AuthenticationContext
     ) async -> UIAction? {
@@ -172,6 +173,7 @@ extension DataSourceFacade {
             
             let compositeListViewModel = CompositeListViewModel(
                 context: provider.context,
+                authContext: provider.authContext,
                 kind: .listed(record)
             )
             provider.coordinator.present(

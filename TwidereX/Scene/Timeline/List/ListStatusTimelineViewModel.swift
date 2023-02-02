@@ -20,10 +20,12 @@ final class ListStatusTimelineViewModel: ListTimelineViewModel {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         list: ListRecord
     ) {
         super.init(
             context: context,
+            authContext: authContext,
             kind: .list(list: list)
         )
         

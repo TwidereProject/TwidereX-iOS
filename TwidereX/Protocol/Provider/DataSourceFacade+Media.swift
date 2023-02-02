@@ -39,7 +39,7 @@ extension DataSourceFacade {
     }
     
     static func coordinateToMediaPreviewScene(
-        provider: DataSourceProvider & MediaPreviewableViewController,
+        provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
         target: StatusTarget,
         status: StatusRecord,
         mediaPreviewContext: MediaPreviewContext
@@ -71,7 +71,7 @@ extension DataSourceFacade {
     
     @MainActor
     static func coordinateToMediaPreviewScene(
-        provider: DataSourceProvider & MediaPreviewableViewController,
+        provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
         status: StatusRecord,
         mediaPreviewContext: MediaPreviewContext
     ) async {
@@ -171,7 +171,7 @@ extension DataSourceFacade {
     
     @MainActor
     static func coordinateToMediaPreviewScene(
-        provider: DataSourceProvider & MediaPreviewableViewController,
+        provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
         status: StatusRecord,
         mediaPreviewItem: MediaPreviewViewModel.Item,
         mediaPreviewTransitionItem: MediaPreviewTransitionItem,
@@ -179,6 +179,7 @@ extension DataSourceFacade {
     ) async {
         let mediaPreviewViewModel = MediaPreviewViewModel(
             context: provider.context,
+            authContext: provider.authContext,
             item: mediaPreviewItem,
             transitionItem: mediaPreviewTransitionItem
         )

@@ -205,6 +205,10 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.moveToFirst(action, category: .blockingAuthor)
                 }),
+                UIAction(title: "First Duplicated Status", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirst(action, category: .duplicated)
+                }),
             ]
         )
     }
@@ -268,7 +272,7 @@ extension HomeTimelineViewController {
     }
     
     @objc private func showStatusByID(_ id: String) {
-        Task {
+        Task { @MainActor in
             let authenticationContext = self.context.authenticationService.activeAuthenticationContext
             switch authenticationContext {
             case .twitter(let authenticationContext):
@@ -285,9 +289,10 @@ extension HomeTimelineViewController {
                 }
                 let statusThreadViewModel = StatusThreadViewModel(
                     context: self.context,
+                    authContext: self.authContext,
                     root: .root(context: .init(status: .twitter(record: .init(objectID: status.objectID))))
                 )
-                await self.coordinator.present(
+                self.coordinator.present(
                     scene: .statusThread(viewModel: statusThreadViewModel),
                     from: self,
                     transition: .show
@@ -309,12 +314,12 @@ extension HomeTimelineViewController {
     }
     
     @objc private func showLocalTimelineAction(_ sender: UIAction) {
-        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, isLocal: true)
+        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, authContext: authContext, isLocal: true)
         coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
     }
     
     @objc private func showPublicTimelineAction(_ sender: UIAction) {
-        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, isLocal: false)
+        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, authContext: authContext, isLocal: false)
         coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
     }
     
@@ -333,6 +338,7 @@ extension HomeTimelineViewController {
         case followsYouAuthor
         case blockingAuthor
         case status(id: String)
+        case duplicated
         
         func match(item: StatusItem) -> Bool {
             let authenticationContext = AppContext.shared.authenticationService.activeAuthenticationContext
@@ -361,6 +367,8 @@ extension HomeTimelineViewController {
                         return (status.repost ?? status).author.blockingBy.contains(me)
                     case .status(let id):
                         return status.id == id
+                    case .duplicated:
+                        return false
                     default:
                         return false
                     }
@@ -375,7 +383,49 @@ extension HomeTimelineViewController {
         }
         
         func firstMatch(in items: [StatusItem]) -> StatusItem? {
-            return items.first { item in self.match(item: item) }
+            switch self {
+            case .duplicated:
+                var index = 0
+                while index < items.count - 2 {
+                    defer { index += 1 }
+                    
+                    let this = items[index]
+                    let next = items[index + 1]
+                    
+                    switch (this, next) {
+                    case (.feed(let thisRecord), .feed(let nextRecord)):
+                        guard let thisFeed = thisRecord.object(in: AppContext.shared.managedObjectContext) else { continue }
+                        guard let nextFeed = nextRecord.object(in: AppContext.shared.managedObjectContext) else { continue }
+                        
+                        if let thisTwitterStatus = thisFeed.twitterStatus,
+                           let nextTwitterStatus = nextFeed.twitterStatus
+                        {
+                            if thisTwitterStatus.id == nextTwitterStatus.id {
+                                return this
+                            } else {
+                                continue
+                            }
+                        } else if let thisMastodonStatus = thisFeed.mastodonStatus,
+                                  let nextMastodonStatus = nextFeed.mastodonStatus
+                        {
+                            if thisMastodonStatus.id == nextMastodonStatus.id {
+                                return this
+                            } else {
+                                continue
+                            }
+                        } else {
+                            continue
+                        }
+                    default:
+                        continue
+                    }
+                }
+                let logger = Logger(subsystem: "HomeTimelineViewController", category: "DebugAction")
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): not found duplicated in \(index) count items")
+                return nil
+            default:
+                return items.first { item in self.match(item: item) }
+            }
         }
     }
     

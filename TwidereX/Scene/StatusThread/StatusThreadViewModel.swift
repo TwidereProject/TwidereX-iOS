@@ -24,6 +24,7 @@ final class StatusThreadViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let twitterStatusThreadReplyViewModel: TwitterStatusThreadReplyViewModel
     let twitterStatusThreadLeafViewModel: TwitterStatusThreadLeafViewModel
     let mastodonStatusThreadViewModel: MastodonStatusThreadViewModel
@@ -57,9 +58,11 @@ final class StatusThreadViewModel {
 
     private init(
         context: AppContext,
+        authContext: AuthContext,
         optionalRoot: StatusItem.Thread?
     ) {
         self.context = context
+        self.authContext = authContext
         self.twitterStatusThreadReplyViewModel = TwitterStatusThreadReplyViewModel(context: context)
         self.twitterStatusThreadLeafViewModel = TwitterStatusThreadLeafViewModel(context: context)
         self.mastodonStatusThreadViewModel = MastodonStatusThreadViewModel(context: context)
@@ -116,10 +119,12 @@ final class StatusThreadViewModel {
     
     convenience init(
         context: AppContext,
+        authContext: AuthContext,
         root: StatusItem.Thread
     ) {
         self.init(
             context: context,
+            authContext: authContext,
             optionalRoot: root
         )
     }

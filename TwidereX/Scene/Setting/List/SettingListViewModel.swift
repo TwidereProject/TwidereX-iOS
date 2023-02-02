@@ -22,7 +22,7 @@ final class SettingListViewModel: ObservableObject {
 
     // input
     let context: AppContext
-    let auth: AuthContext?
+    let authContext: AuthContext
     
     // output
     let settingListEntryPublisher = PassthroughSubject<SettingListEntry, Never>()
@@ -35,10 +35,10 @@ final class SettingListViewModel: ObservableObject {
     
     init(
         context: AppContext,
-        auth: AuthContext?
+        authContext: AuthContext
     ) {
         self.context = context
-        self.auth = auth
+        self.authContext = authContext
         // end init
         
         Task {
@@ -55,6 +55,6 @@ final class SettingListViewModel: ObservableObject {
 extension SettingListViewModel {
     @MainActor
     func setupAccountSource() async {
-        user = auth?.authenticationContext.user(in: context.managedObjectContext)
+        user = authContext.authenticationContext.user(in: context.managedObjectContext)
     }
 }

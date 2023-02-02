@@ -88,33 +88,33 @@ extension TabBarItem {
         switch self {
         case .home:
             let _viewController = HomeTimelineViewController()
-            _viewController.viewModel = HomeTimelineViewModel(context: context)
+            _viewController.viewModel = HomeTimelineViewModel(context: context, authContext: authContext)
             viewController = _viewController
         case .notification:
             let _viewController = NotificationViewController()
             viewController = _viewController
         case .search:
             let _viewController = SearchViewController()
-            _viewController.viewModel = SearchViewModel(context: context)
+            _viewController.viewModel = SearchViewModel(context: context, authContext: authContext)
             viewController = _viewController
         case .me:
             let _viewController = ProfileViewController()
-            let profileViewModel = MeProfileViewModel(context: context)
+            let profileViewModel = ProfileViewModel(context: context, authContext: authContext)
             _viewController.viewModel = profileViewModel
             viewController = _viewController
         case .local:
             let _viewController = FederatedTimelineViewController()
-            _viewController.viewModel = FederatedTimelineViewModel(context: context, isLocal: true)
+            _viewController.viewModel = FederatedTimelineViewModel(context: context, authContext: authContext, isLocal: true)
             viewController = _viewController
         case .federated:
             let _viewController = FederatedTimelineViewController()
-            _viewController.viewModel = FederatedTimelineViewModel(context: context, isLocal: false)
+            _viewController.viewModel = FederatedTimelineViewModel(context: context, authContext: authContext, isLocal: false)
             viewController = _viewController
         case .messages:
             fatalError()
         case .likes:
             let _viewController = UserLikeTimelineViewController()
-            _viewController.viewModel = MeLikeTimelineViewModel(context: context)
+            _viewController.viewModel = UserLikeTimelineViewModel(context: context, authContext: authContext, timelineContext: .init(timelineKind: .like, userIdentifier: authContext.authenticationContext.userIdentifier))
             viewController = _viewController
         case .history:
             let _viewController = HistoryViewController()
@@ -129,7 +129,7 @@ extension TabBarItem {
                 return AdaptiveStatusBarStyleNavigationController(rootViewController: UIViewController())
             }
             let _viewController = CompositeListViewController()
-            _viewController.viewModel = CompositeListViewModel(context: context, kind: .lists(me))
+            _viewController.viewModel = CompositeListViewModel(context: context, authContext: authContext, kind: .lists(me))
             viewController = _viewController
         case .trends:
             fatalError()

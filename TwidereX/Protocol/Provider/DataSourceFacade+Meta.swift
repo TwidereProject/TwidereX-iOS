@@ -14,7 +14,7 @@ import Meta
 
 extension DataSourceFacade {
     static func responseToMetaTextAreaView(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         target: StatusTarget,
         status: StatusRecord,
         metaTextAreaView: MetaTextAreaView,
@@ -36,7 +36,7 @@ extension DataSourceFacade {
     }
     
     static func responseToMetaTextAreaView(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         status: StatusRecord,
         metaTextAreaView: MetaTextAreaView,
         didSelectMeta meta: Meta
@@ -45,7 +45,7 @@ extension DataSourceFacade {
         case .url(_, _, let url, _):
             await provider.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
         case .hashtag(_, let hashtag, _):
-            let hashtagViewModel = HashtagTimelineViewModel(context: provider.context, hashtag: hashtag)
+            let hashtagViewModel = HashtagTimelineViewModel(context: provider.context, authContext: provider.authContext, hashtag: hashtag)
             await provider.coordinator.present(scene: .hashtagTimeline(viewModel: hashtagViewModel), from: provider, transition: .show)
         case .mention(_, let mention, let userInfo):
             await DataSourceFacade.coordinateToProfileScene(
@@ -62,7 +62,7 @@ extension DataSourceFacade {
 
 extension DataSourceFacade {
     static func responseToMetaTextAreaView(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         user: UserRecord,
         didSelectMeta meta: Meta
     ) async {
@@ -70,7 +70,7 @@ extension DataSourceFacade {
         case .url(_, _, let url, _):
             await provider.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
         case .hashtag(_, let hashtag, _):
-            let hashtagViewModel = HashtagTimelineViewModel(context: provider.context, hashtag: hashtag)
+            let hashtagViewModel = HashtagTimelineViewModel(context: provider.context, authContext: provider.authContext, hashtag: hashtag)
             await provider.coordinator.present(scene: .hashtagTimeline(viewModel: hashtagViewModel), from: provider, transition: .show)
         case .mention(_, let mention, let userInfo):
             await coordinateToProfileScene(

@@ -101,7 +101,7 @@ extension SceneCoordinator {
         case accountPreference(viewModel: AccountPreferenceViewModel)
         case behaviorsPreference(viewModel: BehaviorsPreferenceViewModel)
         case displayPreference
-        case about
+        case about(viewModel: AboutViewModel)
         
         #if DEBUG
         case developer
@@ -388,8 +388,10 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .displayPreference:
             viewController = DisplayPreferenceViewController()
-        case .about:
-            viewController = AboutViewController()
+        case .about(let viewModel):
+            let _viewController = AboutViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         #if DEBUG
         case .developer:
             viewController = DeveloperViewController()
@@ -455,6 +457,9 @@ extension SceneCoordinator {
                 return
             }
             
+            let mastodonAuthenticationContext = MastodonAuthenticationContext(authentication: authentication)
+            let authConext = AuthContext(authenticationContext: .mastodon(authenticationContext: mastodonAuthenticationContext))
+            
             // 1. active notification account
             guard let currentAuthenticationContext = context.authenticationService.activeAuthenticationContext else {
                 // discard task if no available account
@@ -496,6 +501,7 @@ extension SceneCoordinator {
             case .follow:
                 let remoteProfileViewModel = RemoteProfileViewModel(
                     context: context,
+                    authContext: authConext,
                     profileContext: .mastodon(.userID(notification.account.id))
                 )
                 present(
@@ -522,6 +528,7 @@ extension SceneCoordinator {
                 }
                 let statusThreadViewModel = StatusThreadViewModel(
                     context: context,
+                    authContext: authConext,
                     root: .root(context: .init(status: .mastodon(record: root.asRecrod)))
                 )
                 present(

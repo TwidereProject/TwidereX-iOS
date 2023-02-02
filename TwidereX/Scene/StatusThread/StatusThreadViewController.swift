@@ -135,6 +135,10 @@ extension StatusThreadViewController: UITableViewDelegate, AutoGenerateTableView
     
 }
 
+// MARK: - AuthContextProvider
+extension StatusThreadViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
 
 // MARK: - StatusViewTableViewCellDelegate
 extension StatusThreadViewController: StatusViewTableViewCellDelegate { }

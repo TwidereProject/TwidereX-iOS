@@ -21,7 +21,7 @@ final class NotificationViewController: TabmanViewController, NeedsDependency, D
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    private(set) lazy var viewModel = NotificationViewModel(context: context, coordinator: coordinator)
+    var viewModel: NotificationViewModel!
     
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     let avatarBarButtonItem = AvatarBarButtonItem()
@@ -135,7 +135,7 @@ extension NotificationViewController {
 
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context)
+        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context, authContext: viewModel.authContext)
         coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
     }
     
@@ -200,3 +200,7 @@ extension NotificationViewController {
 // MARK: - AvatarBarButtonItemDelegate
 extension NotificationViewController: AvatarBarButtonItemDelegate { }
 
+// MARK: - AuthContextProvider
+extension NotificationViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}

@@ -23,8 +23,8 @@ final class NotificationTimelineViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let scope: Scope
-    let authenticationContext: AuthenticationContext
     let fetchedResultsController: FeedFetchedResultsController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     
@@ -50,18 +50,18 @@ final class NotificationTimelineViewModel {
 
     init(
         context: AppContext,
-        scope: Scope,
-        authenticationContext: AuthenticationContext
+        authContext: AuthContext,
+        scope: Scope
     ) {
         self.context = context
+        self.authContext = authContext
         self.scope = scope
-        self.authenticationContext = authenticationContext
         self.fetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
         // end init
         
         let predicate = NotificationTimelineViewModel.feedPredicate(
             scope: scope,
-            authenticationContext: authenticationContext
+            authenticationContext: authContext.authenticationContext
         )
         self.fetchedResultsController.predicate = predicate
     }

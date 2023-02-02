@@ -64,6 +64,11 @@ extension SavedSearchViewController {
     
 }
 
+// MARK: - AuthContextProvider
+extension SavedSearchViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - UITableViewDelegate
 extension SavedSearchViewController: UITableViewDelegate {
     

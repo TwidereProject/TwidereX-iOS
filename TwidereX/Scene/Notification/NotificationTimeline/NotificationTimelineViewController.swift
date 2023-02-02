@@ -174,6 +174,11 @@ extension NotificationTimelineViewController: UITableViewDelegate, AutoGenerateT
 
 }
 
+// MARK: - AuthContextProvider
+extension NotificationTimelineViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - StatusViewTableViewCellDelegate
 extension NotificationTimelineViewController: StatusViewTableViewCellDelegate { }
 

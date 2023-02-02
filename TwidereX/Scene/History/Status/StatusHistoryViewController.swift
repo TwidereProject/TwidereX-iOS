@@ -123,5 +123,10 @@ extension StatusHistoryViewController: UITableViewDelegate, AutoGenerateTableVie
     
 }
 
+// MARK: - AuthContextProvider
+extension StatusHistoryViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - StatusViewTableViewCellDelegate
 extension StatusHistoryViewController: StatusViewTableViewCellDelegate { }

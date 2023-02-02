@@ -27,6 +27,7 @@ final class SidebarViewModel: ObservableObject {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     @Published var activeTab: TabBarItem?
         
     // output
@@ -36,8 +37,12 @@ final class SidebarViewModel: ObservableObject {
     
     @Published var hasUnreadPushNotification = false
 
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
         self.context = context
+        self.authContext = authContext
         
         Publishers.CombineLatest(
             context.authenticationService.$activeAuthenticationContext.removeDuplicates(),

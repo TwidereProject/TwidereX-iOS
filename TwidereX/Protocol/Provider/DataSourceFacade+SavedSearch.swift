@@ -14,13 +14,14 @@ extension DataSourceFacade {
     
     @MainActor
     static func coordinateToSearchResult(
-        dependency: NeedsDependency & UIViewController,
+        dependency: NeedsDependency & AuthContextProvider & UIViewController,
         savedSearch: SavedSearchRecord
     ) {
         guard let savedResult = savedSearch.object(in: dependency.context.managedObjectContext) else { return }
 
         let searchResultViewModel = SearchResultViewModel(
             context: dependency.context,
+            authContext: dependency.authContext,
             coordinator: dependency.coordinator
         )
         searchResultViewModel.searchText = savedResult.query
@@ -33,11 +34,12 @@ extension DataSourceFacade {
     
     @MainActor
     static func coordinateToSearchResult(
-        dependency: NeedsDependency & UIViewController,
+        dependency: NeedsDependency & AuthContextProvider & UIViewController,
         trend object: TrendObject
     ) {
         let searchResultViewModel = SearchResultViewModel(
             context: dependency.context,
+            authContext: dependency.authContext,
             coordinator: dependency.coordinator
         )
         searchResultViewModel.searchText = object.query

@@ -101,6 +101,11 @@ extension SearchUserViewController: DeselectRowTransitionCoordinator {
     }
 }
 
+// MARK: - AuthContextProvider
+extension SearchUserViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - UITableViewDelegate
 extension SearchUserViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
     // sourcery:inline:SearchUserViewController.AutoGenerateTableViewDelegate

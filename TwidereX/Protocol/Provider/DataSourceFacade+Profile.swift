@@ -13,7 +13,7 @@ import CoreDataStack
 extension DataSourceFacade {
     
     static func coordinateToProfileScene(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         target: StatusTarget,
         status: StatusRecord
     ) async {
@@ -34,11 +34,12 @@ extension DataSourceFacade {
     
     @MainActor
     static func coordinateToProfileScene(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         user: UserRecord
     ) async {
         let profileViewModel = LocalProfileViewModel(
             context: provider.context,
+            authContext: provider.authContext,
             userRecord: user
         )
         provider.coordinator.present(
@@ -61,7 +62,7 @@ extension DataSourceFacade {
 extension DataSourceFacade {
     
     static func coordinateToProfileScene(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         status: StatusRecord,
         mention: String,        // username,
         userInfo: [AnyHashable: Any]?
@@ -128,7 +129,7 @@ extension DataSourceFacade {
     }
 
     static func coordinateToProfileScene(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         user: UserRecord,
         mention: String,        // username,
         userInfo: [AnyHashable: Any]?
@@ -178,11 +179,12 @@ extension DataSourceFacade {
     
     @MainActor
     static func coordinateToProfileScene(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         profileContext: RemoteProfileViewModel.ProfileContext
     ) async {
         let profileViewModel = RemoteProfileViewModel(
             context: provider.context,
+            authContext: provider.authContext,
             profileContext: profileContext
         )
         provider.coordinator.present(

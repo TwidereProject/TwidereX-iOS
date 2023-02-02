@@ -61,6 +61,14 @@ extension StatusFetchViewModel.Timeline.Kind {
             }
         }
         
+        public init(
+            timelineKind: TimelineKind,
+            userIdentifier: UserIdentifier?
+        ) {
+            self.timelineKind = timelineKind
+            self.userIdentifier = userIdentifier
+        }
+        
         public enum TimelineKind {
             case status
             case media

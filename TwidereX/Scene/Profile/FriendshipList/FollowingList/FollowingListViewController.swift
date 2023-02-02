@@ -100,6 +100,11 @@ extension FollowingListViewController {
     
 }
 
+// MARK: - AuthContextProvider
+extension FollowingListViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - UITableViewDelegate
 extension FollowingListViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
     // sourcery:inline:FollowingListViewController.AutoGenerateTableViewDelegate

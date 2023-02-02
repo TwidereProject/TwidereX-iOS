@@ -22,6 +22,7 @@ final class MediaPreviewViewModel: NSObject {
 
     // input
     let context: AppContext
+    let authContext: AuthContext
     let item: Item
     let transitionItem: MediaPreviewTransitionItem
     
@@ -33,10 +34,12 @@ final class MediaPreviewViewModel: NSObject {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         item: Item,
         transitionItem: MediaPreviewTransitionItem
     ) {
         self.context = context
+        self.authContext = authContext
         self.item = item
         self.currentPage = {
             switch item {

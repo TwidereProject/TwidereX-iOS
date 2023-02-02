@@ -35,12 +35,15 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     @Published var viewSize: CGSize = .zero
 
     // input
+    let context: AppContext
     public let kind: Kind
     public let configurationContext: ConfigurationContext
     public let customEmojiPickerInputViewModel = CustomEmojiPickerInputView.ViewModel()
     public let platform: Platform
     
-    @Published var authContext: AuthContext?
+    // Author (Me)
+    @Published public private(set) var authContext: AuthContext?
+    @Published public private(set) var author: UserObject?
     
     // reply-to
     public private(set) var replyTo: StatusObject?
@@ -79,9 +82,6 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         }
     }
     @Published public var isContentWarningEditing = false
-
-    // avatar (me)
-    @Published public var author: UserObject?
         
     // mention (Twitter)
     @Published public private(set) var isMentionPickDisplay = false
@@ -153,10 +153,14 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     let viewLayoutMarginDidUpdate = CurrentValueSubject<Void, Never>(Void())
     
     public init(
+        context: AppContext,
+        authContext: AuthContext,
         kind: Kind,
         settings: Settings = Settings(),
         configurationContext: ConfigurationContext
     ) {
+        self.context = context
+        self.authContext = authContext
         self.kind = kind
         self.configurationContext = configurationContext
         self.platform = configurationContext.authenticationService.activeAuthenticationContext?.platform ?? .none
@@ -244,6 +248,13 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         }
         
         initialContent = content
+        
+        // bind author
+//        $authContext
+//            .receive(on: DispatchQueue.main)
+//            .map { authContext in
+//                authContext?.authenticationContext.user(in: configurationContext.apiService.)
+//            }
         
         // bind text
         $content

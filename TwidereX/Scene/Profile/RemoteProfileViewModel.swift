@@ -14,8 +14,12 @@ import MastodonSDK
 
 final class RemoteProfileViewModel: ProfileViewModel {
     
-    init(context: AppContext, profileContext: ProfileContext) {
-        super.init(context: context)
+    init(
+        context: AppContext,
+        authContext: AuthContext,
+        profileContext: ProfileContext
+    ) {
+        super.init(context: context, authContext: authContext)
         
         configure(profileContext: profileContext)
     }

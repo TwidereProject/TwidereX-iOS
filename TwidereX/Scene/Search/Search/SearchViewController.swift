@@ -23,7 +23,7 @@ final class SearchViewController: UIViewController, NeedsDependency, DrawerSideb
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchViewModel!
     
-    private(set) lazy var searchResultViewModel = SearchResultViewModel(context: context, coordinator: coordinator)
+    private(set) lazy var searchResultViewModel = SearchResultViewModel(context: context, authContext: authContext, coordinator: coordinator)
     private(set) lazy var searchResultViewController: SearchResultViewController = {
         let searchResultViewController = SearchResultViewController()
         searchResultViewController.context = context
@@ -235,7 +235,7 @@ extension SearchViewController: UITableViewDelegate {
                 case .twitter(let trend):
                     self.searchText(trend.name)
                 case .mastodon(let tag):
-                    let hashtagTimelineViewModel = HashtagTimelineViewModel(context: context, hashtag: tag.name)
+                    let hashtagTimelineViewModel = HashtagTimelineViewModel(context: context, authContext: authContext, hashtag: tag.name)
                     coordinator.present(
                         scene: .hashtagTimeline(viewModel: hashtagTimelineViewModel),
                         from: self,
@@ -312,4 +312,9 @@ extension SearchViewController {
         searchResultViewController.viewModel.selectedScope = searchResultViewController.viewModel.scopes.first
     }
 
+}
+
+// MARK: - AuthContextProvider
+extension SearchViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }

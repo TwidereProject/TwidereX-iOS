@@ -186,7 +186,7 @@ extension TimelineViewController {
 
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context)
+        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context, authContext: authContext)
         coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
     }
 
@@ -215,6 +215,8 @@ extension TimelineViewController {
         
         let composeViewModel = ComposeViewModel(context: context)
         let composeContentViewModel = ComposeContentViewModel(
+            context: context,
+            authContext: authContext,
             kind: {
                 switch _viewModel.kind {
                 case .home:
@@ -258,6 +260,11 @@ extension TimelineViewController {
         coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
 
+}
+
+// MARK: - AuthContextProvider
+extension TimelineViewController: AuthContextProvider {
+    var authContext: AuthContext { _viewModel.authContext }
 }
 
 // MARK: - AvatarBarButtonItemDelegate

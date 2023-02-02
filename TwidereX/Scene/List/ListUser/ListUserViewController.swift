@@ -115,7 +115,7 @@ extension ListUserViewController {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
                 
         let list = viewModel.kind.list
-        let addListMemberViewModel = AddListMemberViewModel(context: context, list: list)
+        let addListMemberViewModel = AddListMemberViewModel(context: context, authContext: authContext, list: list)
         addListMemberViewModel.listMembershipViewModelDelegate = self
         
         coordinator.present(
@@ -215,4 +215,9 @@ extension ListUserViewController: ListMembershipViewModelDelegate {
             await self.viewModel.update(user: user, action: .remove)
         }   // end Task
     }
+}
+
+// MARK: - AuthContextProvider
+extension ListUserViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }

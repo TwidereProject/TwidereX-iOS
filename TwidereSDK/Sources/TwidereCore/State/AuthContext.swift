@@ -10,6 +10,10 @@ import CoreData
 import CoreDataStack
 import TwidereCommon
 
+public protocol AuthContextProvider {
+    var authContext: AuthContext { get }
+}
+
 public class AuthContext {
     
     public let authenticationContext: AuthenticationContext
@@ -30,3 +34,14 @@ public class AuthContext {
     }
     
 }
+
+#if DEBUG
+extension AuthContext {
+    public static func mock(context: AppContext) -> AuthContext? {
+        let request = AuthenticationIndex.sortedFetchRequest
+        let _authenticationIndex = try? context.managedObjectContext.fetch(request).first
+        let _authContext = _authenticationIndex.flatMap { AuthContext(authenticationIndex: $0) }
+        return _authContext
+    }
+}
+#endif

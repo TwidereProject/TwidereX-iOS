@@ -15,7 +15,7 @@ import AppShared
 import MetaTextKit
 import MetaLabel
 
-extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
+extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider & AuthContextProvider {
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarButtonDidPressed button: UIButton) {
         Task {
             let source = DataSourceItem.Source(tableViewCell: nil, indexPath: nil)
@@ -45,7 +45,7 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
                 assertionFailure("only works for status data provider")
                 return
             }
-
+            
             await DataSourceFacade.coordinateToStatusThreadScene(
                 provider: self,
                 target: .repost,    // keep repost wrapper
@@ -64,7 +64,7 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
                 assertionFailure("only works for status data provider")
                 return
             }
-
+            
             await DataSourceFacade.coordinateToStatusThreadScene(
                 provider: self,
                 target: .repost,    // keep repost wrapper

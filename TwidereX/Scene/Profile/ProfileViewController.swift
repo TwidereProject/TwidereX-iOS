@@ -57,6 +57,7 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
         
         let userTimelineViewModel = UserTimelineViewModel(
             context: context,
+            authContext: authContext,
             timelineContext: .init(
                 timelineKind: .status,
                 userIdentifier: viewModel.$userIdentifier
@@ -66,6 +67,7 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
         
         let userMediaTimelineViewModel = UserMediaTimelineViewModel(
             context: context,
+            authContext: authContext,
             timelineContext: .init(
                 timelineKind: .media,
                 userIdentifier: viewModel.$userIdentifier
@@ -75,6 +77,7 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
         
         let userLikeTimelineViewModel = UserTimelineViewModel(
             context: context,
+            authContext: authContext,
             timelineContext: .init(
                 timelineKind: .like,
                 userIdentifier: viewModel.$userIdentifier
@@ -276,7 +279,7 @@ extension ProfileViewController {
     
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context)
+        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context, authContext: authContext)
         coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
     }
     
@@ -301,6 +304,8 @@ extension ProfileViewController {
         
         let composeViewModel = ComposeViewModel(context: context)
         let composeContentViewModel = ComposeContentViewModel(
+            context: context,
+            authContext: authContext,
             kind: {
                 if user == viewModel.me {
                     return .post
@@ -384,7 +389,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
             assertionFailure()
             return
         }
-        let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .following, userIdentifier: userIdentifier)
+        let friendshipListViewModel = FriendshipListViewModel(context: context, authContext: authContext, kind: .following, userIdentifier: userIdentifier)
         coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: self, transition: .show)
     }
     
@@ -393,7 +398,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
             assertionFailure()
             return
         }
-        let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .follower, userIdentifier: userIdentifier)
+        let friendshipListViewModel = FriendshipListViewModel(context: context, authContext: authContext, kind: .follower, userIdentifier: userIdentifier)
         coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: self, transition: .show)
     }
     
@@ -406,6 +411,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
         
         let compositeListViewModel = CompositeListViewModel(
             context: context,
+            authContext: authContext,
             kind: .listed(user)
         )
         coordinator.present(
@@ -488,4 +494,9 @@ extension ProfileViewController: ScrollViewContainer {
     var scrollView: UIScrollView {
         return tabBarPagerController.relayScrollView
     }
+}
+
+// MARK: - AuthContextProvider
+extension ProfileViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }

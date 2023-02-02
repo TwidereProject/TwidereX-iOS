@@ -14,8 +14,16 @@ class UserTimelineViewModel: ListTimelineViewModel {
     
     @Published var userIdentifier: UserIdentifier?
 
-    init(context: AppContext, timelineContext: StatusFetchViewModel.Timeline.Kind.UserTimelineContext) {
-        super.init(context: context, kind: .user(userTimelineContext: timelineContext))
+    init(
+        context: AppContext,
+        authContext: AuthContext,
+        timelineContext: StatusFetchViewModel.Timeline.Kind.UserTimelineContext
+    ) {
+        super.init(
+            context: context,
+            authContext: authContext,
+            kind: .user(userTimelineContext: timelineContext)
+        )
         
         timelineContext.$userIdentifier
             .assign(to: &$userIdentifier)

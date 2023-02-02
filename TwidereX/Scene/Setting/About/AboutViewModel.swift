@@ -18,12 +18,13 @@ final class AboutViewModel: ObservableObject {
     var disposeBag = Set<AnyCancellable>()
 
     // input
+    let authContext: AuthContext
     
     // output
     let entryPublisher = PassthroughSubject<Entry, Never>()
     
-    init() {
-        
+    init(authContext: AuthContext) {
+        self.authContext = authContext
     }
 
 }

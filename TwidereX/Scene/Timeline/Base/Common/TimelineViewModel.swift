@@ -25,6 +25,7 @@ class TimelineViewModel: TimelineViewModelDriver {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let kind: StatusFetchViewModel.Timeline.Kind
     let feedFetchedResultsController: FeedFetchedResultsController
     let statusRecordFetchedResultController: StatusRecordFetchedResultController
@@ -68,9 +69,11 @@ class TimelineViewModel: TimelineViewModelDriver {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         kind: StatusFetchViewModel.Timeline.Kind
     ) {
         self.context  = context
+        self.authContext = authContext
         self.kind = kind
         self.feedFetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
         self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)

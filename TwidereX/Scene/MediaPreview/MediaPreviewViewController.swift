@@ -335,6 +335,11 @@ extension MediaPreviewViewController: MediaPreviewImageViewControllerDelegate {
 
 }
 
+// MARK: - AuthContextProvider
+extension MediaPreviewViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - MediaInfoDescriptionViewDelegate
 extension MediaPreviewViewController: MediaInfoDescriptionViewDelegate { }
 

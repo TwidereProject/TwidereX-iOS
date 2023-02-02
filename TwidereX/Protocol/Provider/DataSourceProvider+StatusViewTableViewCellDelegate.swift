@@ -13,7 +13,7 @@ import MetaTextArea
 import Meta
 
 // MARK: - header
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
     func tableViewCell(
         _ cell: UITableViewCell,
         statusView: StatusView,
@@ -39,7 +39,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 }
 
 // MARK: - avatar button
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
     
     func tableViewCell(
         _ cell: UITableViewCell,
@@ -111,7 +111,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 }
 
 // MARK: - content
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
         Task {
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
@@ -157,7 +157,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 
 
 // MARK: - media
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & MediaPreviewableViewController {
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController {
     func tableViewCell(
         _ cell: UITableViewCell,
         statusView: StatusView,
@@ -279,7 +279,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 }
 
 // MARK: - quote
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView) {
         Task {
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
@@ -301,7 +301,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 
 
 // MARK: - toolbar
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
     func tableViewCell(
         _ cell: UITableViewCell,
         statusView: StatusView,
@@ -438,7 +438,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 }
 
 // MARK: - a11y
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
 
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, accessibilityActivate: Void) {
         Task {

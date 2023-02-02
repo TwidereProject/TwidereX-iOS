@@ -66,6 +66,11 @@ extension UserHistoryViewController {
     
 }
 
+// MARK: - AuthContextProvider
+extension UserHistoryViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - UITableViewDelegate
 extension UserHistoryViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
     // sourcery:inline:UserHistoryViewController.AutoGenerateTableViewDelegate

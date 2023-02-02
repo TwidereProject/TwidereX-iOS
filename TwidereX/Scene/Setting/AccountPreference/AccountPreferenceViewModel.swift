@@ -17,7 +17,7 @@ final class AccountPreferenceViewModel: ObservableObject {
 
     // input
     let context: AppContext
-    let auth: AuthContext
+    let authContext: AuthContext
     let user: UserObject
     
     // notification
@@ -33,11 +33,11 @@ final class AccountPreferenceViewModel: ObservableObject {
     
     init(
         context: AppContext,
-        auth: AuthContext,
+        authContext: AuthContext,
         user: UserObject
     ) {
         self.context = context
-        self.auth = auth
+        self.authContext = authContext
         self.user = user
         // end init
         
@@ -60,7 +60,7 @@ extension AccountPreferenceViewModel {
             mastodonNotificationSectionViewModel = user.mastodonAuthentication?.notificationSubscription.flatMap {
                 return .init(
                     context: context,
-                    auth: auth,
+                    authContext: authContext,
                     notificationSubscription: $0
                 )
             }

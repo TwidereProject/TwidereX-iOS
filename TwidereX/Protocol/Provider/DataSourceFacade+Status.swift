@@ -16,7 +16,7 @@ import SwiftMessages
 extension DataSourceFacade {
     @MainActor
     static func responseToStatusToolbar(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         status: StatusRecord,
         action: StatusToolbar.Action,
         sender: UIButton,
@@ -43,6 +43,8 @@ extension DataSourceFacade {
             
             let composeViewModel = ComposeViewModel(context: provider.context)
             let composeContentViewModel = ComposeContentViewModel(
+                context: provider.context,
+                authContext: provider.authContext,
                 kind: .reply(status: status),
                 configurationContext: ComposeContentViewModel.ConfigurationContext(
                     apiService: provider.context.apiService,

@@ -20,6 +20,7 @@ final class TrendViewModel: ObservableObject {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let trendService: TrendService
     @Published var trendGroupIndex: TrendService.TrendGroupIndex = .none
     @Published var searchText = ""
@@ -32,8 +33,12 @@ final class TrendViewModel: ObservableObject {
 
     let activeTwitterTrendPlacePublisher = PassthroughSubject<Twitter.Entity.Trend.Place, Never>()
     
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
         self.context = context
+        self.authContext = authContext
         self.trendService = TrendService(apiService: context.apiService)
         // end init
         

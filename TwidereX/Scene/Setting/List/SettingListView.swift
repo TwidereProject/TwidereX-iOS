@@ -214,15 +214,17 @@ struct SettingListView: View {
 struct SettingListView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            SettingListView(viewModel: SettingListViewModel(
-                context: .shared,
-                auth: nil
-            ))
-            SettingListView(viewModel: SettingListViewModel(
-                context: .shared,
-                auth: nil
-            ))
-            .preferredColorScheme(.dark)
+            if let authContext = AuthContext.mock(context: .shared) {
+                SettingListView(viewModel: SettingListViewModel(
+                    context: .shared,
+                    authContext: authContext
+                ))
+                SettingListView(viewModel: SettingListViewModel(
+                    context: .shared,
+                    authContext: authContext
+                ))
+                .preferredColorScheme(.dark)                
+            }
         }
     }
 }

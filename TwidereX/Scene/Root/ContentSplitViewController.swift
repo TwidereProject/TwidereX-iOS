@@ -27,7 +27,7 @@ final class ContentSplitViewController: UIViewController, NeedsDependency {
         let sidebarViewController = SidebarViewController()
         sidebarViewController.context = context
         sidebarViewController.coordinator = coordinator
-        sidebarViewController.viewModel = SidebarViewModel(context: context)
+        sidebarViewController.viewModel = SidebarViewModel(context: context, authContext: authContext)
         sidebarViewController.viewModel.delegate = self
         return sidebarViewController
     }()
@@ -248,7 +248,7 @@ extension ContentSplitViewController: SidebarViewModelDelegate {
             guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else { return }
             let settingListViewModel = SettingListViewModel(
                 context: context,
-                auth: .init(authenticationContext: authenticationContext)
+                authContext: .init(authenticationContext: authenticationContext)
             )
             coordinator.present(
                 scene: .setting(viewModel: settingListViewModel),

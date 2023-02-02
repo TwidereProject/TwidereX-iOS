@@ -9,7 +9,7 @@
 import UIKit
 import TwidereUI
 
-extension UITableViewDelegate where Self: DataSourceProvider {
+extension UITableViewDelegate where Self: DataSourceProvider & AuthContextProvider {
 
     func aspectTableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): indexPath: \(indexPath.debugDescription)")
@@ -57,7 +57,7 @@ extension UITableViewDelegate where Self: DataSourceProvider {
     
 }
 
-extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewableViewController {
+extension UITableViewDelegate where Self: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController {
 
     func aspectTableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")

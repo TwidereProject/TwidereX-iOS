@@ -12,7 +12,7 @@ import CoreDataStack
 
 extension DataSourceFacade {
     static func coordinateToStatusThreadScene(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         target: StatusTarget,
         status: StatusRecord
     ) async {
@@ -60,11 +60,12 @@ extension DataSourceFacade {
     
     @MainActor
     static func coordinateToStatusThreadScene(
-        provider: DataSourceProvider,
+        provider: DataSourceProvider & AuthContextProvider,
         root: StatusItem.Thread
     ) async {
         let statusThreadViewModel = StatusThreadViewModel(
             context: provider.context,
+            authContext: provider.authContext,
             root: root
         )
         provider.coordinator.present(

@@ -14,10 +14,12 @@ final class FederatedTimelineViewModel: ListTimelineViewModel {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         isLocal: Bool
     ) {
         super.init(
             context: context,
+            authContext: authContext,
             kind: .public(isLocal: isLocal)
         )
         

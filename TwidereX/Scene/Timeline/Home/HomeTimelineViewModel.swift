@@ -20,9 +20,17 @@ final class HomeTimelineViewModel: ListTimelineViewModel {
     @Published var unreadItemCount = 0
     @Published var loadItemCount = 0
     
-    init(context: AppContext) {
-        super.init(context: context, kind: .home)
-        
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
+        super.init(
+            context: context,
+            authContext: authContext,
+            kind: .home
+        )
+        // end init
+
         enableAutoFetchLatest = true
         
         context.authenticationService.$activeAuthenticationContext

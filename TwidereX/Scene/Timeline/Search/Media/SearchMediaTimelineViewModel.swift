@@ -18,7 +18,8 @@ final class SearchMediaTimelineViewModel: GridTimelineViewModel {
     // output
     
     init(
-        context: AppContext
+        context: AppContext,
+        authContext: AuthContext
     ) {
         let searchTimelineContext = StatusFetchViewModel.Timeline.Kind.SearchTimelineContext(
             timelineKind: .media,
@@ -26,6 +27,7 @@ final class SearchMediaTimelineViewModel: GridTimelineViewModel {
         )
         super.init(
             context: context,
+            authContext: authContext,
             kind: .search(searchTimelineContext: searchTimelineContext)
         )
         

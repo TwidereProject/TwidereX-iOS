@@ -21,6 +21,7 @@ class ProfileViewModel: ObservableObject {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     @Published var me: UserObject?
     @Published var user: UserObject?
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
@@ -32,8 +33,12 @@ class ProfileViewModel: ObservableObject {
 
 //    let suspended = CurrentValueSubject<Bool, Never>(false)
     
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
         self.context = context
+        self.authContext = authContext
         // end init
         
         // bind data after publisher setup

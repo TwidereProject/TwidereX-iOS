@@ -134,7 +134,7 @@ extension NotificationTimelineViewModel {
     // load lastest
     func loadLatest() async {
         do {
-            switch (scope, authenticationContext) {
+            switch (scope, authContext.authenticationContext) {
             case (.twitter, .twitter(let authenticationContext)):
                 _ = try await context.apiService.twitterMentionTimeline(
                     query: Twitter.API.Statuses.Timeline.TimelineQuery(

@@ -17,7 +17,7 @@ final class AboutViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    let viewModel = AboutViewModel()
+    var viewModel: AboutViewModel!
     
 }
 
@@ -55,6 +55,7 @@ extension AboutViewController {
                     case .twitter:
                         let profileViewModel = RemoteProfileViewModel(
                             context: self.context,
+                            authContext: self.viewModel.authContext,
                             profileContext: .twitter(.username("TwidereProject"))
                         )
                         self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)

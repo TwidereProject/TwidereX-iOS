@@ -17,11 +17,12 @@ import SwiftMessages
 extension DataSourceFacade {
     
     static func coordinateToListMemberScene(
-        dependency: NeedsDependency & UIViewController,
+        dependency: NeedsDependency & AuthContextProvider & UIViewController,
         list: ListRecord
     ) async {
         let listUserViewModel = ListUserViewModel(
             context: dependency.context,
+            authContext: dependency.authContext,
             kind: .members(list: list)
         )
         await dependency.coordinator.present(
@@ -32,11 +33,12 @@ extension DataSourceFacade {
     }
     
     static func coordinateToListSubscriberScene(
-        dependency: NeedsDependency & UIViewController,
+        dependency: NeedsDependency & AuthContextProvider & UIViewController,
         list: ListRecord
     ) async {
         let listUserViewModel = ListUserViewModel(
             context: dependency.context,
+            authContext: dependency.authContext,
             kind: .subscribers(list: list)
         )
         await dependency.coordinator.present(
@@ -51,7 +53,7 @@ extension DataSourceFacade {
 extension DataSourceFacade {
     
     static func createMenuForList(
-        dependency: NeedsDependency & UIViewController,
+        dependency: NeedsDependency & AuthContextProvider & UIViewController,
         list: ListRecord,
         authenticationContext: AuthenticationContext
     ) async throws -> UIMenu {
@@ -218,7 +220,7 @@ extension DataSourceFacade {
             ) { _ in
                 Task { @MainActor [weak dependency] in
                     guard let dependency = dependency else { return }
-                    let profileViewModel = LocalProfileViewModel(context: dependency.context, userRecord: owner)
+                    let profileViewModel = LocalProfileViewModel(context: dependency.context, authContext: dependency.authContext, userRecord: owner)
                     dependency.coordinator.present(
                         scene: .profile(viewModel: profileViewModel),
                         from: dependency,
