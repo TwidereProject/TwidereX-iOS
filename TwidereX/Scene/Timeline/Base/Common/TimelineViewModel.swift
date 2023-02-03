@@ -32,6 +32,8 @@ class TimelineViewModel: TimelineViewModelDriver {
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
+    
     @Published var enableAutoFetchLatest = false
     @Published var didAutoFetchLatest = false
     @Published var isRefreshControlEnabled = true

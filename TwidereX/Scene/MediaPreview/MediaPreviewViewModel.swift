@@ -26,6 +26,8 @@ final class MediaPreviewViewModel: NSObject {
     let item: Item
     let transitionItem: MediaPreviewTransitionItem
     
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
+    
     @Published var currentPage: Int
     
     // output

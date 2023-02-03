@@ -250,7 +250,8 @@ extension TimelineViewController {
                 statusViewConfigureContext: .init(
                     authContext: authContext,
                     dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider()
+                    twitterTextProvider: OfficialTwitterTextProvider(),
+                    viewLayoutFramePublisher: _viewModel.$viewLayoutFrame
                 )
             )
         )

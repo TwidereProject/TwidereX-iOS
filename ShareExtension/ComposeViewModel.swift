@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import TwidereCore
+import TwidereUI
 
 final class ComposeViewModel {
     
@@ -18,6 +19,7 @@ final class ComposeViewModel {
 
     // input
     let context: AppContext
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
     
     @Published var authContext: AuthContext?
     @Published var isBusy = false

@@ -28,6 +28,8 @@ final class NotificationTimelineViewModel {
     let fetchedResultsController: FeedFetchedResultsController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
+    
     @Published var isLoadingLatest = false
     @Published var lastAutomaticFetchTimestamp: Date?
 

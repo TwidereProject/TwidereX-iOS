@@ -8,6 +8,7 @@
 
 import UIKit
 import TwidereCore
+import TwidereUI
 
 class ListTimelineViewModel: TimelineViewModel {
     

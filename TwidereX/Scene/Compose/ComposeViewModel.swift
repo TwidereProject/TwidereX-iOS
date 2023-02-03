@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import TwidereCore
+import TwidereUI
 
 final class ComposeViewModel {
     
@@ -16,6 +17,7 @@ final class ComposeViewModel {
     
     // input
     let context: AppContext
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
     
     // output
     @Published var title = L10n.Scene.Compose.Title.compose

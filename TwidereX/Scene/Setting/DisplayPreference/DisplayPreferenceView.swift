@@ -24,16 +24,16 @@ struct DisplayPreferenceView: View {
     var body: some View {
         List {
             Section {
-                PrototypeStatusViewRepresentable(
-                    style: .timeline,
-                    configurationContext: StatusView.ConfigurationContext(
-                        authContext: viewModel.authContext,
-                        dateTimeProvider: DateTimeSwiftProvider(),
-                        twitterTextProvider: OfficialTwitterTextProvider()
-                    ),
-                    height: $timelineStatusViewHeight
-                )
-                .frame(height: timelineStatusViewHeight)
+//                PrototypeStatusViewRepresentable(
+//                    style: .timeline,
+//                    configurationContext: StatusView.ConfigurationContext(
+//                        authContext: viewModel.authContext,
+//                        dateTimeProvider: DateTimeSwiftProvider(),
+//                        twitterTextProvider: OfficialTwitterTextProvider()
+//                    ),
+//                    height: $timelineStatusViewHeight
+//                )
+//                .frame(height: timelineStatusViewHeight)
             } header: {
                 Text(verbatim: L10n.Scene.Settings.Display.SectionHeader.preview)
                     .textCase(nil)

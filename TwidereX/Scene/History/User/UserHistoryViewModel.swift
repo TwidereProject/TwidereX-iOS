@@ -24,7 +24,9 @@ final class UserHistoryViewModel {
     let context: AppContext
     let authContext: AuthContext
     let historyFetchedResultsController: HistoryFetchedResultsController
-
+    
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
+    
     // output
     var diffableDataSource: UITableViewDiffableDataSource<HistorySection, HistoryItem>?
 

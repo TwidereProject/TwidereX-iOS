@@ -53,7 +53,8 @@ extension DataSourceFacade {
                     statusViewConfigureContext: .init(
                         authContext: provider.authContext,
                         dateTimeProvider: DateTimeSwiftProvider(),
-                        twitterTextProvider: OfficialTwitterTextProvider()
+                        twitterTextProvider: OfficialTwitterTextProvider(),
+                        viewLayoutFramePublisher: composeViewModel.$viewLayoutFrame
                     )
                 )
             )

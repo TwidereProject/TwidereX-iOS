@@ -19,17 +19,17 @@ final class StatusThreadRootTableViewCell: UITableViewCell {
     
     weak var delegate: StatusViewTableViewCellDelegate?
     
-    let conversationLinkLineView = SeparatorLineView()
-    let statusView = StatusView()
-    let toolbarSeparator = SeparatorLineView()
-    let separator = SeparatorLineView()
+//    let conversationLinkLineView = SeparatorLineView()
+//    let statusView = StatusView()
+//    let toolbarSeparator = SeparatorLineView()
+//    let separator = SeparatorLineView()
 
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        statusView.prepareForReuse()
-        disposeBag.removeAll()
-        conversationLinkLineView.isHidden = true
+//        statusView.prepareForReuse()
+//        disposeBag.removeAll()
+//        conversationLinkLineView.isHidden = true
     }
     
     
@@ -50,92 +50,92 @@ extension StatusThreadRootTableViewCell {
     private func _init() {
         selectionStyle = .none
         
-        statusView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(statusView)
-        NSLayoutConstraint.activate([
-            statusView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            statusView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
-            statusView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
-            statusView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-        ])
-        statusView.setup(style: .plain)
-        statusView.toolbar.setup(style: .plain)
-        
-        conversationLinkLineView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(conversationLinkLineView)
-        NSLayoutConstraint.activate([
-            conversationLinkLineView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            conversationLinkLineView.centerXAnchor.constraint(equalTo: statusView.authorAvatarButton.centerXAnchor),
-            conversationLinkLineView.widthAnchor.constraint(equalToConstant: 1),
-            statusView.authorAvatarButton.topAnchor.constraint(equalTo: conversationLinkLineView.bottomAnchor, constant: 2),
-        ])
-        conversationLinkLineView.isHidden = true
-        
-        toolbarSeparator.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(toolbarSeparator)
-        NSLayoutConstraint.activate([
-            toolbarSeparator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            toolbarSeparator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            toolbarSeparator.bottomAnchor.constraint(equalTo: statusView.toolbar.topAnchor),
-        ])
-        
-        separator.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(separator)
-        NSLayoutConstraint.activate([
-            separator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-        ])
-        
-        statusView.delegate = self
-        
-        isAccessibilityElement = false
+//        statusView.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(statusView)
+//        NSLayoutConstraint.activate([
+//            statusView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+//            statusView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
+//            statusView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
+//            statusView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+//        ])
+//        statusView.setup(style: .plain)
+//        statusView.toolbar.setup(style: .plain)
+//
+//        conversationLinkLineView.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(conversationLinkLineView)
+//        NSLayoutConstraint.activate([
+//            conversationLinkLineView.topAnchor.constraint(equalTo: contentView.topAnchor),
+//            conversationLinkLineView.centerXAnchor.constraint(equalTo: statusView.authorAvatarButton.centerXAnchor),
+//            conversationLinkLineView.widthAnchor.constraint(equalToConstant: 1),
+//            statusView.authorAvatarButton.topAnchor.constraint(equalTo: conversationLinkLineView.bottomAnchor, constant: 2),
+//        ])
+//        conversationLinkLineView.isHidden = true
+//
+//        toolbarSeparator.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(toolbarSeparator)
+//        NSLayoutConstraint.activate([
+//            toolbarSeparator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+//            toolbarSeparator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+//            toolbarSeparator.bottomAnchor.constraint(equalTo: statusView.toolbar.topAnchor),
+//        ])
+//
+//        separator.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(separator)
+//        NSLayoutConstraint.activate([
+//            separator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+//            separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+//            separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+//        ])
+//
+//        statusView.delegate = self
+//
+//        isAccessibilityElement = false
     }
     
 }
 
 extension StatusThreadRootTableViewCell {
     
-    override var accessibilityElements: [Any]? {
-        get {
-            let elements: [UIView?] = [
-                statusView.headerTextLabel,
-                statusView.authorAvatarButton,
-                statusView.authorNameLabel,
-                statusView.authorUsernameLabel,
-                statusView.visibilityImageView,
-                statusView.spoilerContentTextView,
-                statusView.expandContentButton,
-                statusView.contentTextView,
-                statusView.mediaGridContainerView,
-                statusView.pollTableView,
-                statusView.pollVoteDescriptionLabel,
-                statusView.pollVoteButton,
-                statusView.quoteStatusView,
-                statusView.locationLabel,
-                statusView.metricsDashboardView,
-                statusView.toolbar,
-            ]
-            
-            return elements
-                .compactMap { $0 }
-                .filter { !$0.isHidden }
-        }
-        set { }
-    }
+//    override var accessibilityElements: [Any]? {
+//        get {
+//            let elements: [UIView?] = [
+//                statusView.headerTextLabel,
+//                statusView.authorAvatarButton,
+//                statusView.authorNameLabel,
+//                statusView.authorUsernameLabel,
+//                statusView.visibilityImageView,
+//                statusView.spoilerContentTextView,
+//                statusView.expandContentButton,
+//                statusView.contentTextView,
+//                statusView.mediaGridContainerView,
+//                statusView.pollTableView,
+//                statusView.pollVoteDescriptionLabel,
+//                statusView.pollVoteButton,
+//                statusView.quoteStatusView,
+//                statusView.locationLabel,
+//                statusView.metricsDashboardView,
+//                statusView.toolbar,
+//            ]
+//
+//            return elements
+//                .compactMap { $0 }
+//                .filter { !$0.isHidden }
+//        }
+//        set { }
+//    }
     
 }
 
 extension StatusThreadRootTableViewCell {
 
-    func setConversationLinkLineViewDisplay() {
-        conversationLinkLineView.isHidden = false
-    }
+//    func setConversationLinkLineViewDisplay() {
+//        conversationLinkLineView.isHidden = false
+//    }
     
 }
 
 // MARK: - StatusViewContainerTableViewCell
-extension StatusThreadRootTableViewCell: StatusViewContainerTableViewCell { }
+//extension StatusThreadRootTableViewCell: StatusViewContainerTableViewCell { }
 
 // MARK: - StatusViewDelegate
-extension StatusThreadRootTableViewCell: StatusViewDelegate { }
+//extension StatusThreadRootTableViewCell: StatusViewDelegate { }

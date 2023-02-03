@@ -25,7 +25,8 @@ extension StatusThreadViewModel {
             statusViewConfigurationContext: .init(
                 authContext: authContext,
                 dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider()
+                twitterTextProvider: OfficialTwitterTextProvider(),
+                viewLayoutFramePublisher: $viewLayoutFrame
             )
         )
         

@@ -9,12 +9,13 @@
 import os.log
 import UIKit
 import TwidereCore
+import TwidereUI
 
 final class SearchTimelineViewModel: ListTimelineViewModel {
     
     // input
     @Published var searchText = ""
-    
+        
     // output
     
     init(

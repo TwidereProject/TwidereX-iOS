@@ -44,6 +44,7 @@ let package = Package(
         .package(url: "https://github.com/aheze/Popovers.git", from: "1.3.2"),
         .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "4.2.2"),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
+        .package(url: "https://github.com/TwidereProject/twitter-text.git", exact: "0.0.3"),
         .package(name: "ArkanaKeys", path: "../dependencies/ArkanaKeys"),
     ],
     targets: [
@@ -112,6 +113,7 @@ let package = Package(
                 .product(name: "AlamofireImage", package: "AlamofireImage"),
                 .product(name: "AlamofireNetworkActivityIndicator", package: "AlamofireNetworkActivityIndicator"),
                 .product(name: "MetaTextKit", package: "MetaTextKit"),
+                .product(name: "TwitterText", package: "twitter-text"),
             ]
         ),
         .target(

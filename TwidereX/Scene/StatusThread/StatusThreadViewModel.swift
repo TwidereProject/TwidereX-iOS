@@ -15,6 +15,7 @@ import MastodonSDK
 import CoreData
 import CoreDataStack
 import TwidereCore
+import TwidereUI
 
 final class StatusThreadViewModel {
     
@@ -32,6 +33,8 @@ final class StatusThreadViewModel {
     let bottomListBatchFetchViewModel = ListBatchFetchViewModel(direction: .bottom)
     let viewDidAppear = PassthroughSubject<Void, Never>()
 
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
+    
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
     var root: CurrentValueSubject<StatusItem.Thread?, Never>

@@ -36,14 +36,15 @@ public struct ComposeContentView: View {
                 // reply
                 switch viewModel.kind {
                 case .reply(let status):
-                    ReplyStatusViewRepresentable(
-                        statusObject: status,
-                        configurationContext: viewModel.configurationContext.statusViewConfigureContext,
-                        width: viewModel.viewSize.width - 2 * ComposeContentView.contentMargin
-                    )
-                    .padding(.top, 8)
-                    .padding(.horizontal, ComposeContentView.contentMargin)
-                    .frame(width: viewModel.viewSize.width)
+                    EmptyView()
+//                    ReplyStatusViewRepresentable(
+//                        statusObject: status,
+//                        configurationContext: viewModel.configurationContext.statusViewConfigureContext,
+//                        width: viewModel.viewSize.width - 2 * ComposeContentView.contentMargin
+//                    )
+//                    .padding(.top, 8)
+//                    .padding(.horizontal, ComposeContentView.contentMargin)
+//                    .frame(width: viewModel.viewSize.width)
                 default:
                     EmptyView()
                 }

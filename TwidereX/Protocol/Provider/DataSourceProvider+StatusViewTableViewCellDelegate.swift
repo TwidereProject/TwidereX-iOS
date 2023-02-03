@@ -349,83 +349,83 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         menuActionDidPressed action: StatusToolbar.MenuAction,
         menuButton button: UIButton
     ) {
-        Task {
-            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-            guard let item = await item(from: source) else {
-                assertionFailure()
-                return
-            }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {
-                assertionFailure("only works for status data provider")
-                return
-            }
-
-            switch action {
-            case .saveMedia:
-                let mediaViewConfigurations = await statusView.viewModel.mediaViewConfigurations
-                let impactFeedbackGenerator = await UIImpactFeedbackGenerator(style: .light)
-                let notificationFeedbackGenerator = await UINotificationFeedbackGenerator()
-
-                do {
-                    await impactFeedbackGenerator.impactOccurred()
-                    for configuration in mediaViewConfigurations {
-                        guard let url = configuration.downloadURL.flatMap({ URL(string: $0) }) else { continue }
-                        try await context.photoLibraryService.save(source: .remote(url: url), resourceType: configuration.resourceType)
-                    }
-                    await context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoSaved.title)
-                    await notificationFeedbackGenerator.notificationOccurred(.success)
-                } catch {
-                    await context.photoLibraryService.presentFailureNotification(
-                        error: error,
-                        title: L10n.Common.Alerts.PhotoSaveFail.title,
-                        message: L10n.Common.Alerts.PhotoSaveFail.message
-                    )
-                    await notificationFeedbackGenerator.notificationOccurred(.error)
-                }
-            case .translate:
-                try await DataSourceFacade.responseToStatusTranslate(
-                    provider: self,
-                    status: status
-                )
-            case .share:
-                await DataSourceFacade.responseToStatusShareAction(
-                    provider: self,
-                    status: status,
-                    button: button
-                )
-            case .remove:
-                try await DataSourceFacade.responseToRemoveStatusAction(
-                    provider: self,
-                    target: .status,
-                    status: status,
-                    authenticationContext: self.authContext.authenticationContext
-                )
-            #if DEBUG
-            case .copyID:
-                let _statusID: String? = await context.managedObjectContext.perform {
-                    guard let status = status.object(in: self.context.managedObjectContext) else { return nil }
-                    return status.id
-                }
-                if let statusID = _statusID {
-                    UIPasteboard.general.string = statusID
-                }
-            #endif
-            case .appearEvent:
-                let _record = await DataSourceFacade.status(
-                    managedObjectContext: context.managedObjectContext,
-                    status: status,
-                    target: .status
-                )
-                guard let record = _record else {
-                    return
-                }
-
-                await DataSourceFacade.recordStatusHistory(
-                    denpendency: self,
-                    status: record
-                )
-            }   // end switch
-        }   // end Task
+//        Task {
+//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+//            guard let item = await item(from: source) else {
+//                assertionFailure()
+//                return
+//            }
+//            guard let status = await item.status(in: self.context.managedObjectContext) else {
+//                assertionFailure("only works for status data provider")
+//                return
+//            }
+//
+//            switch action {
+//            case .saveMedia:
+//                let mediaViewConfigurations = await statusView.viewModel.mediaViewConfigurations
+//                let impactFeedbackGenerator = await UIImpactFeedbackGenerator(style: .light)
+//                let notificationFeedbackGenerator = await UINotificationFeedbackGenerator()
+//
+//                do {
+//                    await impactFeedbackGenerator.impactOccurred()
+//                    for configuration in mediaViewConfigurations {
+//                        guard let url = configuration.downloadURL.flatMap({ URL(string: $0) }) else { continue }
+//                        try await context.photoLibraryService.save(source: .remote(url: url), resourceType: configuration.resourceType)
+//                    }
+//                    await context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoSaved.title)
+//                    await notificationFeedbackGenerator.notificationOccurred(.success)
+//                } catch {
+//                    await context.photoLibraryService.presentFailureNotification(
+//                        error: error,
+//                        title: L10n.Common.Alerts.PhotoSaveFail.title,
+//                        message: L10n.Common.Alerts.PhotoSaveFail.message
+//                    )
+//                    await notificationFeedbackGenerator.notificationOccurred(.error)
+//                }
+//            case .translate:
+//                try await DataSourceFacade.responseToStatusTranslate(
+//                    provider: self,
+//                    status: status
+//                )
+//            case .share:
+//                await DataSourceFacade.responseToStatusShareAction(
+//                    provider: self,
+//                    status: status,
+//                    button: button
+//                )
+//            case .remove:
+//                try await DataSourceFacade.responseToRemoveStatusAction(
+//                    provider: self,
+//                    target: .status,
+//                    status: status,
+//                    authenticationContext: self.authContext.authenticationContext
+//                )
+//            #if DEBUG
+//            case .copyID:
+//                let _statusID: String? = await context.managedObjectContext.perform {
+//                    guard let status = status.object(in: self.context.managedObjectContext) else { return nil }
+//                    return status.id
+//                }
+//                if let statusID = _statusID {
+//                    UIPasteboard.general.string = statusID
+//                }
+//            #endif
+//            case .appearEvent:
+//                let _record = await DataSourceFacade.status(
+//                    managedObjectContext: context.managedObjectContext,
+//                    status: status,
+//                    target: .status
+//                )
+//                guard let record = _record else {
+//                    return
+//                }
+//
+//                await DataSourceFacade.recordStatusHistory(
+//                    denpendency: self,
+//                    status: record
+//                )
+//            }   // end switch
+//        }   // end Task
     }   // end func
 
 }

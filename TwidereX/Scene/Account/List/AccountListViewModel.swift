@@ -46,7 +46,15 @@ final class AccountListViewModel: NSObject {
         super.init()
         
         authenticationIndexFetchedResultsController.delegate = self
-        try? authenticationIndexFetchedResultsController.performFetch()
+        do {
+            try authenticationIndexFetchedResultsController.performFetch()
+            let authenticationIndexes = authenticationIndexFetchedResultsController.fetchedObjects ?? []
+            items = authenticationIndexes.map { authenticationIndex in
+                UserItem.authenticationIndex(record: authenticationIndex.asRecrod)
+            }
+        } catch {
+            assertionFailure(error.localizedDescription)
+        }
     }
     
     deinit {

@@ -23,7 +23,8 @@ extension ListStatusTimelineViewModel {
             statusViewConfigurationContext: StatusView.ConfigurationContext(
                 authContext: authContext,
                 dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider()
+                twitterTextProvider: OfficialTwitterTextProvider(),
+                viewLayoutFramePublisher: $viewLayoutFrame
             )
         )
         diffableDataSource = StatusSection.diffableDataSource(

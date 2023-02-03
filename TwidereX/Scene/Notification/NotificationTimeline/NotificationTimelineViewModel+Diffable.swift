@@ -27,7 +27,8 @@ extension NotificationTimelineViewModel {
             statusViewConfigurationContext: .init(
                 authContext: authContext,
                 dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider()
+                twitterTextProvider: OfficialTwitterTextProvider(),
+                viewLayoutFramePublisher: $viewLayoutFrame
             ),
             userViewConfigurationContext: .init(
                 authContext: authContext,

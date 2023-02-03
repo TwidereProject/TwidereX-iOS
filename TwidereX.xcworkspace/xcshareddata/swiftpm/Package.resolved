@@ -218,12 +218,30 @@
         }
       },
       {
+        "package": "twitter-text",
+        "repositoryURL": "https://github.com/TwidereProject/twitter-text.git",
+        "state": {
+          "branch": null,
+          "revision": "c88fa4ed8dd7441f827942b83d0564101bbdc508",
+          "version": "0.0.3"
+        }
+      },
+      {
         "package": "UITextView+Placeholder",
         "repositoryURL": "https://github.com/MainasuK/UITextView-Placeholder.git",
         "state": {
           "branch": null,
           "revision": "20f513ded04a040cdf5467f0891849b1763ede3b",
           "version": "1.4.1"
+        }
+      },
+      {
+        "package": "UnicodeURL",
+        "repositoryURL": "https://github.com/nysander/UnicodeURL.git",
+        "state": {
+          "branch": null,
+          "revision": "fe15c8b585c2e6d22dfe81da899183e6aa376a93",
+          "version": "0.1.0"
         }
       }
     ]

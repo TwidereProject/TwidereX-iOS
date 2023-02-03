@@ -316,7 +316,8 @@ extension ProfileViewController {
                 statusViewConfigureContext: .init(
                     authContext: authContext,
                     dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider()
+                    twitterTextProvider: OfficialTwitterTextProvider(),
+                    viewLayoutFramePublisher: composeViewModel.$viewLayoutFrame
                 )
             )
         )

@@ -98,64 +98,64 @@ extension MediaInfoDescriptionView {
 
 extension MediaInfoDescriptionView.ViewModel {
     func bind(view: MediaInfoDescriptionView) {
-        // avatar
-        $authorAvatarImageURL
-            .sink { url in
-                let configuration = AvatarImageView.Configuration(url: url)
-                view.avatarView.avatarButton.avatarImageView.configure(configuration: configuration)
-            }
-            .store(in: &disposeBag)
-        UserDefaults.shared
-            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                let avatarStyle = defaults.avatarStyle
-                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
-                animator.addAnimations { [weak view] in
-                    guard let view = view else { return }
-                    switch avatarStyle {
-                    case .circle:
-                        view.avatarView.avatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .circle))
-                    case .roundedSquare:
-                        view.avatarView.avatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .scale(ratio: 4)))
-                    }
-                }
-                animator.startAnimation()
-            }
-            .store(in: &observations)
-        // name
-        $authorName
-            .sink { metaContent in
-                let metaContent = metaContent ?? PlaintextMetaContent(string: "")
-                view.nameMetaLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
-                view.nameMetaLabel.configure(content: metaContent)
-            }
-            .store(in: &disposeBag)
-        // content
-        $content
-            .sink { metaContent in
-                guard let content = metaContent else {
-                    view.contentTextView.reset()
-                    return
-                }
-                view.contentTextView.configure(content: content)
-            }
-            .store(in: &disposeBag)
-        // toolbar
-        $platform
-            .assign(to: \.platform, on: view.toolbar.viewModel)
-            .store(in: &disposeBag)
-        Publishers.CombineLatest(
-            $isRepost,
-            $isRepostEnabled
-        )
-        .sink { isRepost, isEnabled in
-            view.toolbar.setupRepost(count: 0, isEnabled: isEnabled, isHighlighted: isRepost)
-        }
-        .store(in: &disposeBag)
-        $isLike
-            .sink { isLike in
-                 view.toolbar.setupLike(count: 0, isHighlighted: isLike)
-            }
-            .store(in: &disposeBag)
+//        // avatar
+//        $authorAvatarImageURL
+//            .sink { url in
+//                let configuration = AvatarImageView.Configuration(url: url)
+//                view.avatarView.avatarButton.avatarImageView.configure(configuration: configuration)
+//            }
+//            .store(in: &disposeBag)
+//        UserDefaults.shared
+//            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+//                let avatarStyle = defaults.avatarStyle
+//                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
+//                animator.addAnimations { [weak view] in
+//                    guard let view = view else { return }
+//                    switch avatarStyle {
+//                    case .circle:
+//                        view.avatarView.avatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .circle))
+//                    case .roundedSquare:
+//                        view.avatarView.avatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .scale(ratio: 4)))
+//                    }
+//                }
+//                animator.startAnimation()
+//            }
+//            .store(in: &observations)
+//        // name
+//        $authorName
+//            .sink { metaContent in
+//                let metaContent = metaContent ?? PlaintextMetaContent(string: "")
+//                view.nameMetaLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
+//                view.nameMetaLabel.configure(content: metaContent)
+//            }
+//            .store(in: &disposeBag)
+//        // content
+//        $content
+//            .sink { metaContent in
+//                guard let content = metaContent else {
+//                    view.contentTextView.reset()
+//                    return
+//                }
+//                view.contentTextView.configure(content: content)
+//            }
+//            .store(in: &disposeBag)
+//        // toolbar
+//        $platform
+//            .assign(to: \.platform, on: view.toolbar.viewModel)
+//            .store(in: &disposeBag)
+//        Publishers.CombineLatest(
+//            $isRepost,
+//            $isRepostEnabled
+//        )
+//        .sink { isRepost, isEnabled in
+//            view.toolbar.setupRepost(count: 0, isEnabled: isEnabled, isHighlighted: isRepost)
+//        }
+//        .store(in: &disposeBag)
+//        $isLike
+//            .sink { isLike in
+//                 view.toolbar.setupLike(count: 0, isHighlighted: isLike)
+//            }
+//            .store(in: &disposeBag)
     }
 }
 

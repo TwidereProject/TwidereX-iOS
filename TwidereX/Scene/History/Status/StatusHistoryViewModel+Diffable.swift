@@ -24,7 +24,8 @@ extension StatusHistoryViewModel {
                 statusViewConfigurationContext: .init(
                     authContext: authContext,
                     dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider()
+                    twitterTextProvider: OfficialTwitterTextProvider(),
+                    viewLayoutFramePublisher: $viewLayoutFrame
                 ),
                 userViewTableViewCellDelegate: nil,
                 userViewConfigurationContext: .init(
