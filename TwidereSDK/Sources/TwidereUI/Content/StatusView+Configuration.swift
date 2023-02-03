@@ -97,6 +97,7 @@ extension StatusView {
     ) {
         viewModel.prepareForReuse()
         
+        viewModel.authenticationContext = configurationContext.authContext.authenticationContext
         viewModel.managedObjectContext = status.managedObjectContext
         viewModel.objects.insert(status)
         
@@ -334,6 +335,7 @@ extension StatusView {
     ) {
         viewModel.prepareForReuse()
         
+        viewModel.authenticationContext = configurationContext.authContext.authenticationContext
         viewModel.managedObjectContext = status.managedObjectContext
         viewModel.objects.insert(status)
         
