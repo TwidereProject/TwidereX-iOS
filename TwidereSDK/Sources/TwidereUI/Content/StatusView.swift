@@ -26,6 +26,8 @@ public struct StatusView: View {
     
     @ObservedObject public private(set) var viewModel: ViewModel
     
+    @State private var authorAvatarDimension = CGFloat.zero
+    
     public init(viewModel: StatusView.ViewModel) {
         self.viewModel = viewModel
     }
@@ -67,10 +69,30 @@ extension StatusView {
     }
     
     public var authorView: some View {
-        HStack {
+        HStack(alignment: .center) {
             KFImage(viewModel.avatarURL)
                 .resizable()
-                .frame(width: avatarViewDimension, height: avatarViewDimension)
+                .aspectRatio(contentMode: .fill)
+                .frame(width: authorAvatarDimension, height: authorAvatarDimension)
+            VStack(spacing: .zero) {
+                LabelRepresentable(
+                    metaContent: viewModel.authorName,
+                    textStyle: .statusAuthorName
+                )
+                LabelRepresentable(
+                    metaContent: PlaintextMetaContent(string: "@" + viewModel.authorUsernme),
+                    textStyle: .statusAuthorUsername
+                )
+            }
+            .background(GeometryReader { proxy in
+                Color.clear.preference(
+                    key: ViewHeightKey.self,
+                    value: proxy.frame(in: .local).size.height
+                )
+            })
+            .onPreferenceChange(ViewHeightKey.self) { height in
+                self.authorAvatarDimension = height
+            }
             Spacer()
         }
     }
@@ -79,11 +101,19 @@ extension StatusView {
         HStack {
             TextViewRepresentable(
                 metaContent: viewModel.content,
+                textStyle: .statusContent,
                 width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width
             )
             .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
             Spacer()
         }
+    }
+}
+
+struct ViewHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat { 0 }
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value = value + nextValue()
     }
 }
 

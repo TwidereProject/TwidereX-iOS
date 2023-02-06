@@ -1,8 +1,8 @@
 //
-//  TextViewRepresentable.swift
+//  LabelRepresentable.swift
 //  
 //
-//  Created by MainasuK on 2023/2/3.
+//  Created by MainasuK on 2023/2/6.
 //
 
 import UIKit
@@ -10,36 +10,31 @@ import SwiftUI
 import TwidereCore
 import MetaTextKit
 
-public struct TextViewRepresentable: UIViewRepresentable {
+public struct LabelRepresentable: UIViewRepresentable {
     
-    let textView: UITextView = {
-        let textView = UITextView()
-        textView.backgroundColor = .clear
-        textView.isScrollEnabled = false
-        textView.textContainerInset = .zero
-        textView.textContainer.lineFragmentPadding = 0
-        textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        textView.setContentHuggingPriority(.defaultHigh, for: .vertical)
-        return textView
+    let label: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 1
+        label.backgroundColor = .clear
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        label.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        return label
     }()
     
     // input
     public let metaContent: MetaContent
     public let textStyle: TextStyle
-    let width: CGFloat
     
     public init(
         metaContent: MetaContent,
-        textStyle: TextStyle,
-        width: CGFloat
+        textStyle: TextStyle
     ) {
         self.metaContent = metaContent
         self.textStyle = textStyle
-        self.width = width
     }
     
-    public func makeUIView(context: Context) -> UITextView {
-        let textView = self.textView
+    public func makeUIView(context: Context) -> UILabel {
+        let label = self.label
         
         let attributedString = NSMutableAttributedString(string: metaContent.string)
         let textAttributes: [NSAttributedString.Key: Any] = [
@@ -65,14 +60,13 @@ public struct TextViewRepresentable: UIViewRepresentable {
             content: metaContent
         )
         
-        textView.frame.size.width = width
-        textView.textStorage.setAttributedString(attributedString)
-        textView.invalidateIntrinsicContentSize()
+        label.attributedText = attributedString
+        label.invalidateIntrinsicContentSize()
         
-        return textView
+        return label
     }
     
-    public func updateUIView(_ view: UITextView, context: Context) {
+    public func updateUIView(_ view: UILabel, context: Context) {
         
     }
     
@@ -81,9 +75,9 @@ public struct TextViewRepresentable: UIViewRepresentable {
     }
 
     public class Coordinator: NSObject, UITextViewDelegate {
-        let view: TextViewRepresentable
+        let view: LabelRepresentable
 
-        init(_ view: TextViewRepresentable) {
+        init(_ view: LabelRepresentable) {
             self.view = view
             super.init()
         }
