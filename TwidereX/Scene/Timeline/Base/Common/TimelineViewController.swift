@@ -167,14 +167,28 @@ extension TimelineViewController {
         
         _viewModel.viewDidAppear.send()
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        _viewModel.viewLayoutFrame.update(view: view)
+    }
 
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
+        
+        _viewModel.viewLayoutFrame.update(view: view)
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.floatyButton.paddingY = self.view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
         }
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        _viewModel.viewLayoutFrame.update(view: view)
     }
 
 }

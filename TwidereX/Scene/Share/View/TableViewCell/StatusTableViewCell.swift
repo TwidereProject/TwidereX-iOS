@@ -28,7 +28,7 @@ class StatusTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-//        statusView.prepareForReuse()
+        contentConfiguration = nil
         disposeBag.removeAll()
 //        topConversationLinkLineView.isHidden = true
 //        bottomConversationLinkLineView.isHidden = true

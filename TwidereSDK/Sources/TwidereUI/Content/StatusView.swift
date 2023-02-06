@@ -10,6 +10,7 @@ import os.log
 import Combine
 import UIKit
 import SwiftUI
+import Kingfisher
 import MetaTextKit
 import MetaTextArea
 import MetaLabel
@@ -18,6 +19,10 @@ import TwidereCore
 import NIOPosix
 
 public struct StatusView: View {
+    
+    var avatarViewDimension: CGFloat {
+        return 44
+    }
     
     @ObservedObject public private(set) var viewModel: ViewModel
     
@@ -33,14 +38,18 @@ public struct StatusView: View {
                 // post
                 StatusView(viewModel: repostViewModel)
             } else {
+                // authorView
+                authorView
                 // content
                 contentView
                 // quote
                 if let quoteViewModel = viewModel.quoteViewModel {
                     StatusView(viewModel: quoteViewModel)
+                        .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
                 }
             }
-        }
+        }   // end VStack
+        .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
     }
 
 }
@@ -57,11 +66,22 @@ extension StatusView {
         }
     }
     
+    public var authorView: some View {
+        HStack {
+            KFImage(viewModel.avatarURL)
+                .resizable()
+                .frame(width: avatarViewDimension, height: avatarViewDimension)
+            Spacer()
+        }
+    }
+    
     public var contentView: some View {
         HStack {
-            Text(viewModel.content.attributedString)
-                .lineLimit(nil)
-                .multilineTextAlignment(.leading)
+            TextViewRepresentable(
+                metaContent: viewModel.content,
+                width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width
+            )
+            .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
             Spacer()
         }
     }
