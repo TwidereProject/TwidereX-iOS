@@ -70,15 +70,25 @@ extension StatusView {
     
     public var authorView: some View {
         HStack(alignment: .center) {
-            KFImage(viewModel.avatarURL)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: authorAvatarDimension, height: authorAvatarDimension)
+            // avatar
+            Button {
+                
+            } label: {
+                KFImage(viewModel.avatarURL)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: authorAvatarDimension, height: authorAvatarDimension)
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.borderless)
+            // info
             VStack(spacing: .zero) {
+                // name
                 LabelRepresentable(
                     metaContent: viewModel.authorName,
                     textStyle: .statusAuthorName
                 )
+                // username
                 LabelRepresentable(
                     metaContent: PlaintextMetaContent(string: "@" + viewModel.authorUsernme),
                     textStyle: .statusAuthorUsername
