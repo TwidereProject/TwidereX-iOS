@@ -20,67 +20,62 @@ import NIOPosix
 
 public struct StatusView: View {
     
-    var avatarViewDimension: CGFloat {
-        return 44
-    }
+    static var hangingAvatarButtonDimension: CGFloat { 44.0 }
+    static var hangingAvatarButtonTrailingSapcing: CGFloat { 10.0 }
     
     @ObservedObject public private(set) var viewModel: ViewModel
-    
-    @State private var authorAvatarDimension = CGFloat.zero
     
     public init(viewModel: StatusView.ViewModel) {
         self.viewModel = viewModel
     }
     
     public var body: some View {
-        VStack(spacing: .zero) {
+        VStack {
             if let repostViewModel = viewModel.repostViewModel {
                 // header
-                statusHeaderView
+                if let statusHeaderViewModel = repostViewModel.statusHeaderViewModel {
+                    StatusHeaderView(viewModel: statusHeaderViewModel)
+                }
                 // post
                 StatusView(viewModel: repostViewModel)
             } else {
-                // authorView
-                authorView
-                // content
-                contentView
-                // quote
-                if let quoteViewModel = viewModel.quoteViewModel {
-                    StatusView(viewModel: quoteViewModel)
-                        .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
-                }
+                HStack(alignment: .top, spacing: .zero) {
+                    if viewModel.hasHangingAvatar {
+                        avatarButton
+                            .padding(.trailing, StatusView.hangingAvatarButtonTrailingSapcing)
+                    }
+                    VStack {
+                        // authorView
+                        authorView
+                            .padding(.horizontal, viewModel.margin)
+                        // content
+                        contentView
+                            .padding(.horizontal, viewModel.margin)
+                        // quote
+                        if let quoteViewModel = viewModel.quoteViewModel {
+                            StatusView(viewModel: quoteViewModel)
+                                .background {
+                                    Color(uiColor: .label.withAlphaComponent(0.04))
+                                }
+                                .cornerRadius(12)
+                        }
+                    }   // end VStack
+                }   // end HStack
+                .padding(.top, viewModel.margin)
+                .padding(.bottom, viewModel.hasToolbar ? .zero : viewModel.margin)
             }
         }   // end VStack
-        .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
     }
 
 }
 
 extension StatusView {
-    public var statusHeaderView: some View {
-        Button {
-            
-        } label: {
-            HStack {
-                Text("Header")
-                Spacer()
-            }
-        }
-    }
-    
     public var authorView: some View {
         HStack(alignment: .center) {
-            // avatar
-            Button {
-                
-            } label: {
-                KFImage(viewModel.avatarURL)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: authorAvatarDimension, height: authorAvatarDimension)
-                    .clipShape(Circle())
+            if !viewModel.hasHangingAvatar {
+                // avatar
+                avatarButton
             }
-            .buttonStyle(.borderless)
             // info
             VStack(spacing: .zero) {
                 // name
@@ -88,11 +83,13 @@ extension StatusView {
                     metaContent: viewModel.authorName,
                     textStyle: .statusAuthorName
                 )
+                .border(.red, width: 1)
                 // username
                 LabelRepresentable(
                     metaContent: PlaintextMetaContent(string: "@" + viewModel.authorUsernme),
                     textStyle: .statusAuthorUsername
                 )
+                .border(.red, width: 1)
             }
             .background(GeometryReader { proxy in
                 Color.clear.preference(
@@ -101,29 +98,47 @@ extension StatusView {
                 )
             })
             .onPreferenceChange(ViewHeightKey.self) { height in
-                self.authorAvatarDimension = height
+                // self.viewModel.authorAvatarDimension = height
             }
-            Spacer()
         }
     }
     
+    public var avatarButton: some View {
+        Button {
+            
+        } label: {
+            KFImage(viewModel.avatarURL)
+                .placeholder { progress in
+                    Color(uiColor: .placeholderText)
+                }
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: StatusView.hangingAvatarButtonDimension, height: StatusView.hangingAvatarButtonDimension)
+                .clipShape(Circle())
+        }
+        .buttonStyle(.borderless)
+        
+    }
+    
     public var contentView: some View {
-        HStack {
+        HStack(spacing: .zero) {
+            let width: CGFloat = {
+                switch viewModel.kind {
+                case .conversationRoot:
+                    return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin
+                default:
+                    return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin - StatusView.hangingAvatarButtonDimension - StatusView.hangingAvatarButtonTrailingSapcing
+                }
+            }()
             TextViewRepresentable(
                 metaContent: viewModel.content,
                 textStyle: .statusContent,
-                width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width
+                width: width
             )
-            .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
+            .frame(width: width)
             Spacer()
         }
-    }
-}
-
-struct ViewHeightKey: PreferenceKey {
-    static var defaultValue: CGFloat { 0 }
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value = value + nextValue()
+        .border(.red, width: 1)
     }
 }
 

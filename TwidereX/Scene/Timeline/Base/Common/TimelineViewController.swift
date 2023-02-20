@@ -187,8 +187,13 @@ extension TimelineViewController {
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        
-        _viewModel.viewLayoutFrame.update(view: view)
+
+        coordinator.animate {[weak self] _ in
+            guard let self = self else { return }
+            self._viewModel.viewLayoutFrame.update(view: self.view)
+        } completion: {  _ in
+            // do nothing
+        }
     }
 
 }

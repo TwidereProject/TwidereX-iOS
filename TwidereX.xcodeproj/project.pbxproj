@@ -836,6 +836,7 @@
 		DBBBBE8E2744FB42007ACB4B /* ComposeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewModel.swift; sourceTree = "<group>"; };
 		DBBF70F626D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DBC17A5B26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineMiddleLoaderTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
+		DBC36A982993A4F300C67212 /* MetaTextKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = MetaTextKit; path = ../MetaTextKit; sourceTree = "<group>"; };
 		DBC747E0259DBD5400787EEF /* AvatarBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarBarButtonItem.swift; sourceTree = "<group>"; };
 		DBC8E04A2576337F00401E20 /* DisposeBagCollectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisposeBagCollectable.swift; sourceTree = "<group>"; };
 		DBC8E04F257653E100401E20 /* SavePhotoActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavePhotoActivity.swift; sourceTree = "<group>"; };
@@ -2130,6 +2131,7 @@
 		DBDA8E1524FCF8A3006750DC = {
 			isa = PBXGroup;
 			children = (
+				DBC36A982993A4F300C67212 /* MetaTextKit */,
 				DB33E5B42719637400EC2225 /* CoverFlowStackCollectionViewLayout */,
 				DB51DC372716AEF000A0D8FB /* TabBarPager */,
 				DB43239D251491EB004FAAEC /* TwidereSDK */,

@@ -27,6 +27,8 @@ extension StatusView {
         
         let logger = Logger(subsystem: "StatusView", category: "ViewModel")
         
+        var disposeBag = Set<AnyCancellable>()
+        
         @Published public var viewLayoutFrame = ViewLayoutFrame()
                 
         @Published public var repostViewModel: StatusView.ViewModel?
@@ -36,7 +38,13 @@ extension StatusView {
         public let kind: Kind
         public weak var delegate: StatusViewDelegate?
         
+        weak var parentViewModel: StatusView.ViewModel?
+        // @Published public var authorAvatarDimension: CGFloat = .zero
+        
         // output
+        
+        // header
+        @Published public var statusHeaderViewModel: StatusHeaderView.ViewModel?
 
         // author
         @Published public var avatarURL: URL?
@@ -882,6 +890,35 @@ extension StatusView.ViewModel {
 }
 
 extension StatusView.ViewModel {
+    var hasHangingAvatar: Bool {
+        switch kind {
+        case .conversationRoot, .quote:
+            return false
+        default:
+            return true
+        }
+    }
+    
+    public var margin: CGFloat {
+        switch kind {
+        case .quote:
+            return 12
+        default:
+            return .zero
+        }
+    }
+    
+    public var hasToolbar: Bool {
+        switch kind {
+        case .timeline, .conversationRoot, .conversationThread:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+extension StatusView.ViewModel {
     public convenience init?(
         feed: Feed,
         delegate: StatusViewDelegate?,
@@ -893,6 +930,7 @@ extension StatusView.ViewModel {
                 status: status,
                 kind: .timeline,
                 delegate: delegate,
+                parentViewModel: nil,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
             )
         case .mastodon(let status):
@@ -900,6 +938,7 @@ extension StatusView.ViewModel {
                 status: status,
                 kind: .timeline,
                 delegate: delegate,
+                parentViewModel: nil,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
             )
         case .mastodonNotification(let notification):
@@ -915,6 +954,7 @@ extension StatusView.ViewModel {
         status: TwitterStatus,
         kind: Kind,
         delegate: StatusViewDelegate?,
+        parentViewModel: StatusView.ViewModel?,
         viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     ) {
         self.init(
@@ -922,24 +962,42 @@ extension StatusView.ViewModel {
             delegate: delegate,
             viewLayoutFramePublisher: viewLayoutFramePublisher
         )
+        self.parentViewModel = parentViewModel
         
         if let repost = status.repost {
-            repostViewModel = .init(
+            let _repostViewModel = StatusView.ViewModel(
                 status: repost,
                 kind: .repost,
                 delegate: delegate,
+                parentViewModel: self,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
             )
+            repostViewModel = _repostViewModel
+            
+            // header - repost
+            let _statusHeaderViewModel = StatusHeaderView.ViewModel(
+                image: Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate),
+                label: {
+                    let name = status.author.name
+                    let userRepostText = L10n.Common.Controls.Status.userRetweeted(name)
+                    let label = PlaintextMetaContent(string: userRepostText)
+                    return label
+                }()
+            )
+            _statusHeaderViewModel.hasHangingAvatar = _repostViewModel.hasHangingAvatar
+            _repostViewModel.statusHeaderViewModel = _statusHeaderViewModel
         }
         if let quote = status.quote {
             quoteViewModel = .init(
                 status: quote,
                 kind: .quote,
                 delegate: delegate,
+                parentViewModel: self,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
             )
         }
-        
+
+        // author
         status.author.publisher(for: \.profileImageURL)
             .map { _ in status.author.avatarImageURL() }
             .assign(to: &$avatarURL)
@@ -949,17 +1007,15 @@ extension StatusView.ViewModel {
         status.author.publisher(for: \.username)
             .assign(to: &$authorUsernme)
         
-        status.publisher(for: \.text)
-            .map { _ in
-                let content = TwitterContent(content: status.displayText)
-                let metaContent = TwitterMetaContent.convert(
-                    content: content,
-                    urlMaximumLength: 20,
-                    twitterTextProvider: SwiftTwitterTextProvider()
-                )
-                return metaContent
-            }
-            .assign(to: &$content)
+        // content
+        let content = TwitterContent(content: status.displayText)
+        let metaContent = TwitterMetaContent.convert(
+            content: content,
+            urlMaximumLength: 20,
+            twitterTextProvider: SwiftTwitterTextProvider(),
+            useParagraphMark: true
+        )
+        self.content = metaContent
     }
 }
 
@@ -968,6 +1024,7 @@ extension StatusView.ViewModel {
         status: MastodonStatus,
         kind: Kind,
         delegate: StatusViewDelegate?,
+        parentViewModel: StatusView.ViewModel?,
         viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     ) {
         self.init(
@@ -975,12 +1032,14 @@ extension StatusView.ViewModel {
             delegate: delegate,
             viewLayoutFramePublisher: viewLayoutFramePublisher
         )
+        self.parentViewModel = parentViewModel
         
         if let repost = status.repost {
             repostViewModel = .init(
                 status: repost,
                 kind: .repost,
                 delegate: delegate,
+                parentViewModel: self,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
             )
         }
@@ -996,7 +1055,7 @@ extension StatusView.ViewModel {
         
         do {
             let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
-            let metaContent = try MastodonMetaContent.convert(document: content)
+            let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
             self.content = metaContent
             // viewModel.sharePlaintextContent = metaContent.original
         } catch {

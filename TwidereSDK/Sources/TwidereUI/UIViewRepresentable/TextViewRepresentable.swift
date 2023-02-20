@@ -12,10 +12,11 @@ import MetaTextKit
 
 public struct TextViewRepresentable: UIViewRepresentable {
     
-    let textView: UITextView = {
-        let textView = UITextView()
+    let textView: WrappedTextView = {
+        let textView = WrappedTextView()
         textView.backgroundColor = .clear
         textView.isScrollEnabled = false
+        textView.isEditable = false
         textView.textContainerInset = .zero
         textView.textContainer.lineFragmentPadding = 0
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -52,8 +53,9 @@ public struct TextViewRepresentable: UIViewRepresentable {
         ]
         let paragraphStyle: NSMutableParagraphStyle = {
             let style = NSMutableParagraphStyle()
-            style.lineSpacing = 5
-            style.paragraphSpacing = 8
+            let fontMargin = textStyle.font.lineHeight - textStyle.font.pointSize
+            style.lineSpacing = 3 - fontMargin
+            style.paragraphSpacing = 8 - fontMargin
             return style
         }()
         
@@ -68,12 +70,17 @@ public struct TextViewRepresentable: UIViewRepresentable {
         textView.frame.size.width = width
         textView.textStorage.setAttributedString(attributedString)
         textView.invalidateIntrinsicContentSize()
+        textView.setNeedsLayout()
+        textView.layoutIfNeeded()
         
         return textView
     }
     
     public func updateUIView(_ view: UITextView, context: Context) {
-        
+        textView.frame.size.width = width
+        textView.invalidateIntrinsicContentSize()
+        textView.setNeedsLayout()
+        textView.layoutIfNeeded()
     }
     
     public func makeCoordinator() -> Coordinator {
@@ -88,4 +95,30 @@ public struct TextViewRepresentable: UIViewRepresentable {
             super.init()
         }
     }
+}
+
+class WrappedTextView: UITextView {
+    
+    private var lastWidth: CGFloat = 0
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if bounds.width != lastWidth {
+            lastWidth = bounds.width
+            invalidateIntrinsicContentSize()
+        }
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let size = sizeThatFits(CGSize(
+            width: lastWidth,
+            height: UIView.layoutFittingExpandedSize.height
+        ))
+        return CGSize(
+            width: lastWidth,
+            height: size.height.rounded(.up)
+        )
+    }
+
 }
