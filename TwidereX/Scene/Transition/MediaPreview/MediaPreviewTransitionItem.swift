@@ -57,23 +57,23 @@ extension MediaPreviewTransitionItem {
             position: UIViewAnimatingPosition,
             index: Int?
         ) {
-            let alpha: CGFloat = position == .end ? 1 : 0
-            switch self {
-            case .none:
-                break
-            case .attachment(let mediaView):
-                mediaView.alpha = alpha
-            case .attachments(let mediaGridContainerView):
-                if let index = index {
-                    mediaGridContainerView.setAlpha(0, index: index)
-                } else {
-                    mediaGridContainerView.setAlpha(alpha)
-                }
-            case .profileAvatar(let profileHeaderView):
-                profileHeaderView.avatarView.avatarButton.alpha = alpha
-            case .profileBanner:
-                break    // keep source
-            }
+//            let alpha: CGFloat = position == .end ? 1 : 0
+//            switch self {
+//            case .none:
+//                break
+//            case .attachment(let mediaView):
+//                mediaView.alpha = alpha
+//            case .attachments(let mediaGridContainerView):
+//                if let index = index {
+//                    mediaGridContainerView.setAlpha(0, index: index)
+//                } else {
+//                    mediaGridContainerView.setAlpha(alpha)
+//                }
+//            case .profileAvatar(let profileHeaderView):
+//                profileHeaderView.avatarView.avatarButton.alpha = alpha
+//            case .profileBanner:
+//                break    // keep source
+//            }
         }
     }
 }

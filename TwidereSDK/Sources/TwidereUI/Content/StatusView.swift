@@ -48,9 +48,19 @@ public struct StatusView: View {
                         // authorView
                         authorView
                             .padding(.horizontal, viewModel.margin)
+                            .border(Color.cyan, width: 1)
                         // content
                         contentView
                             .padding(.horizontal, viewModel.margin)
+                        // media
+                        if !viewModel.mediaViewModels.isEmpty {
+                            MediaGridContainerView(
+                                viewModels: viewModel.mediaViewModels,
+                                idealWidth: contentWidth,
+                                idealHeight: 280
+                            )
+                            .padding(.horizontal, viewModel.margin)
+                        }
                         // quote
                         if let quoteViewModel = viewModel.quoteViewModel {
                             StatusView(viewModel: quoteViewModel)
@@ -70,6 +80,15 @@ public struct StatusView: View {
 }
 
 extension StatusView {
+    var contentWidth: CGFloat {
+        switch viewModel.kind {
+        case .conversationRoot:
+            return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin
+        default:
+            return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin - StatusView.hangingAvatarButtonDimension - StatusView.hangingAvatarButtonTrailingSapcing
+        }
+    }
+    
     public var authorView: some View {
         HStack(alignment: .center) {
             if !viewModel.hasHangingAvatar {
@@ -77,19 +96,30 @@ extension StatusView {
                 avatarButton
             }
             // info
-            VStack(spacing: .zero) {
+            HStack(alignment: .firstTextBaseline, spacing: 5) {
                 // name
                 LabelRepresentable(
                     metaContent: viewModel.authorName,
-                    textStyle: .statusAuthorName
+                    textStyle: .statusAuthorName,
+                    setupLabel: { label in
+                        label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+                        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+                    }
                 )
-                .border(.red, width: 1)
                 // username
                 LabelRepresentable(
                     metaContent: PlaintextMetaContent(string: "@" + viewModel.authorUsernme),
-                    textStyle: .statusAuthorUsername
+                    textStyle: .statusAuthorUsername,
+                    setupLabel: { label in
+                        label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+                        label.setContentCompressionResistancePriority(.defaultLow - 100, for: .horizontal)
+                    }
                 )
-                .border(.red, width: 1)
+                Spacer()
+                // timestamp
+                if let timestampLabelViewModel = viewModel.timestampLabelViewModel {
+                    TimestampLabelView(viewModel: timestampLabelViewModel)
+                } 
             }
             .background(GeometryReader { proxy in
                 Color.clear.preference(
@@ -98,7 +128,7 @@ extension StatusView {
                 )
             })
             .onPreferenceChange(ViewHeightKey.self) { height in
-                // self.viewModel.authorAvatarDimension = height
+                self.viewModel.authorAvatarDimension = height
             }
         }
     }
@@ -107,36 +137,34 @@ extension StatusView {
         Button {
             
         } label: {
+            let dimension: CGFloat = {
+                switch viewModel.kind {
+                case .quote:
+                    return viewModel.authorAvatarDimension
+                default:
+                    return StatusView.hangingAvatarButtonDimension
+                }
+            }()
             KFImage(viewModel.avatarURL)
                 .placeholder { progress in
                     Color(uiColor: .placeholderText)
                 }
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: StatusView.hangingAvatarButtonDimension, height: StatusView.hangingAvatarButtonDimension)
+                .frame(width: dimension, height: dimension)
                 .clipShape(Circle())
         }
         .buttonStyle(.borderless)
-        
     }
     
     public var contentView: some View {
-        HStack(spacing: .zero) {
-            let width: CGFloat = {
-                switch viewModel.kind {
-                case .conversationRoot:
-                    return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin
-                default:
-                    return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin - StatusView.hangingAvatarButtonDimension - StatusView.hangingAvatarButtonTrailingSapcing
-                }
-            }()
+        VStack(alignment: .leading, spacing: .zero) {
             TextViewRepresentable(
                 metaContent: viewModel.content,
                 textStyle: .statusContent,
-                width: width
+                width: contentWidth
             )
-            .frame(width: width)
-            Spacer()
+            .frame(width: contentWidth)
         }
         .border(.red, width: 1)
     }

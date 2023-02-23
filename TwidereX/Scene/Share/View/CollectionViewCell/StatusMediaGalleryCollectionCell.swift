@@ -44,15 +44,15 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
         return button
     }()
     
-    public let contentWarningOverlayView: ContentWarningOverlayView = {
-        let overlay = ContentWarningOverlayView()
-        overlay.layer.masksToBounds = true
-        overlay.layer.cornerRadius = MediaView.cornerRadius
-        overlay.layer.cornerCurve = .continuous
-        return overlay
-    }()
+//    public let contentWarningOverlayView: ContentWarningOverlayView = {
+//        let overlay = ContentWarningOverlayView()
+//        overlay.layer.masksToBounds = true
+//        overlay.layer.cornerRadius = MediaView.cornerRadius
+//        overlay.layer.cornerCurve = .continuous
+//        return overlay
+//    }()
     
-    let mediaView = MediaView()
+//    let mediaView = MediaView()
     
     let collectionViewLayout: CoverFlowStackCollectionViewLayout = {
         let layout = CoverFlowStackCollectionViewLayout()
@@ -63,7 +63,7 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.backgroundColor = .clear
         collectionView.layer.masksToBounds = true
-        collectionView.layer.cornerRadius = MediaView.cornerRadius
+//        collectionView.layer.cornerRadius = MediaView.cornerRadius
         collectionView.layer.cornerCurve = .continuous
         return collectionView
     }()
@@ -73,7 +73,7 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
         super.prepareForReuse()
     
         disposeBag.removeAll()
-        mediaView.prepareForReuse()
+//        mediaView.prepareForReuse()
         diffableDataSource?.applySnapshotUsingReloadData(.init())
     }
 
@@ -92,72 +92,72 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
 extension StatusMediaGalleryCollectionCell {
     
     private func _init() {        
-        mediaView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(mediaView)
-        NSLayoutConstraint.activate([
-            mediaView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            mediaView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            mediaView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            mediaView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-        ])
-        
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(collectionView)
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-        ])
-        
-        // sensitiveToggleButton
-        sensitiveToggleButtonBlurVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(sensitiveToggleButtonBlurVisualEffectView)
-        NSLayoutConstraint.activate([
-            sensitiveToggleButtonBlurVisualEffectView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            sensitiveToggleButtonBlurVisualEffectView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-        ])
-        
-        sensitiveToggleButtonVibrancyVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
-        sensitiveToggleButtonBlurVisualEffectView.contentView.addSubview(sensitiveToggleButtonVibrancyVisualEffectView)
-        NSLayoutConstraint.activate([
-            sensitiveToggleButtonVibrancyVisualEffectView.topAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.topAnchor),
-            sensitiveToggleButtonVibrancyVisualEffectView.leadingAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.leadingAnchor),
-            sensitiveToggleButtonVibrancyVisualEffectView.trailingAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.trailingAnchor),
-            sensitiveToggleButtonVibrancyVisualEffectView.bottomAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.bottomAnchor),
-        ])
-        
-        sensitiveToggleButton.translatesAutoresizingMaskIntoConstraints = false
-        sensitiveToggleButtonVibrancyVisualEffectView.contentView.addSubview(sensitiveToggleButton)
-        NSLayoutConstraint.activate([
-            sensitiveToggleButton.topAnchor.constraint(equalTo: sensitiveToggleButtonVibrancyVisualEffectView.contentView.topAnchor, constant: 4),
-            sensitiveToggleButton.leadingAnchor.constraint(equalTo: sensitiveToggleButtonVibrancyVisualEffectView.contentView.leadingAnchor, constant: 4),
-            sensitiveToggleButtonVibrancyVisualEffectView.contentView.trailingAnchor.constraint(equalTo: sensitiveToggleButton.trailingAnchor, constant: 4),
-            sensitiveToggleButtonVibrancyVisualEffectView.contentView.bottomAnchor.constraint(equalTo: sensitiveToggleButton.bottomAnchor, constant: 4),
-        ])
-        
-        // contentWarningOverlayView
-        contentWarningOverlayView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(contentWarningOverlayView)       // should add to container
-        NSLayoutConstraint.activate([
-            contentWarningOverlayView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            contentWarningOverlayView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            contentWarningOverlayView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            contentWarningOverlayView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-        ])
-        
-        // delegate interaction to collection view
-        mediaView.isUserInteractionEnabled = false
-
-        collectionView.delegate = self
-        let configuration = CoverFlowStackSection.Configuration()
-        diffableDataSource = CoverFlowStackSection.diffableDataSource(
-            collectionView: collectionView,
-            configuration: configuration
-        )
-        
-        sensitiveToggleButton.addTarget(self, action: #selector(StatusMediaGalleryCollectionCell.sensitiveToggleButtonDidPressed(_:)), for: .touchUpInside)
-        contentWarningOverlayView.delegate = self
+//        mediaView.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(mediaView)
+//        NSLayoutConstraint.activate([
+//            mediaView.topAnchor.constraint(equalTo: contentView.topAnchor),
+//            mediaView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+//            mediaView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+//            mediaView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+//        ])
+//        
+//        collectionView.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(collectionView)
+//        NSLayoutConstraint.activate([
+//            collectionView.topAnchor.constraint(equalTo: contentView.topAnchor),
+//            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+//            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+//            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+//        ])
+//        
+//        // sensitiveToggleButton
+//        sensitiveToggleButtonBlurVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(sensitiveToggleButtonBlurVisualEffectView)
+//        NSLayoutConstraint.activate([
+//            sensitiveToggleButtonBlurVisualEffectView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+//            sensitiveToggleButtonBlurVisualEffectView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+//        ])
+//        
+//        sensitiveToggleButtonVibrancyVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
+//        sensitiveToggleButtonBlurVisualEffectView.contentView.addSubview(sensitiveToggleButtonVibrancyVisualEffectView)
+//        NSLayoutConstraint.activate([
+//            sensitiveToggleButtonVibrancyVisualEffectView.topAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.topAnchor),
+//            sensitiveToggleButtonVibrancyVisualEffectView.leadingAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.leadingAnchor),
+//            sensitiveToggleButtonVibrancyVisualEffectView.trailingAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.trailingAnchor),
+//            sensitiveToggleButtonVibrancyVisualEffectView.bottomAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.bottomAnchor),
+//        ])
+//        
+//        sensitiveToggleButton.translatesAutoresizingMaskIntoConstraints = false
+//        sensitiveToggleButtonVibrancyVisualEffectView.contentView.addSubview(sensitiveToggleButton)
+//        NSLayoutConstraint.activate([
+//            sensitiveToggleButton.topAnchor.constraint(equalTo: sensitiveToggleButtonVibrancyVisualEffectView.contentView.topAnchor, constant: 4),
+//            sensitiveToggleButton.leadingAnchor.constraint(equalTo: sensitiveToggleButtonVibrancyVisualEffectView.contentView.leadingAnchor, constant: 4),
+//            sensitiveToggleButtonVibrancyVisualEffectView.contentView.trailingAnchor.constraint(equalTo: sensitiveToggleButton.trailingAnchor, constant: 4),
+//            sensitiveToggleButtonVibrancyVisualEffectView.contentView.bottomAnchor.constraint(equalTo: sensitiveToggleButton.bottomAnchor, constant: 4),
+//        ])
+//        
+//        // contentWarningOverlayView
+//        contentWarningOverlayView.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(contentWarningOverlayView)       // should add to container
+//        NSLayoutConstraint.activate([
+//            contentWarningOverlayView.topAnchor.constraint(equalTo: contentView.topAnchor),
+//            contentWarningOverlayView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+//            contentWarningOverlayView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+//            contentWarningOverlayView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+//        ])
+//        
+//        // delegate interaction to collection view
+//        mediaView.isUserInteractionEnabled = false
+//
+//        collectionView.delegate = self
+//        let configuration = CoverFlowStackSection.Configuration()
+//        diffableDataSource = CoverFlowStackSection.diffableDataSource(
+//            collectionView: collectionView,
+//            configuration: configuration
+//        )
+//        
+//        sensitiveToggleButton.addTarget(self, action: #selector(StatusMediaGalleryCollectionCell.sensitiveToggleButtonDidPressed(_:)), for: .touchUpInside)
+//        contentWarningOverlayView.delegate = self
     }
     
 }
@@ -165,7 +165,7 @@ extension StatusMediaGalleryCollectionCell {
 extension StatusMediaGalleryCollectionCell {
     @objc private func sensitiveToggleButtonDidPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        delegate?.statusMediaGalleryCollectionCell(self, toggleContentWarningOverlayViewDisplay: contentWarningOverlayView)
+//        delegate?.statusMediaGalleryCollectionCell(self, toggleContentWarningOverlayViewDisplay: contentWarningOverlayView)
     }
 }
 

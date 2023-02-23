@@ -47,6 +47,15 @@
         }
       },
       {
+        "package": "DateToolsSwift",
+        "repositoryURL": "https://github.com/MainasuK/DateTools",
+        "state": {
+          "branch": "master",
+          "revision": "b7f0415ecb9a2b684fc53a2e4093fc09d368356a",
+          "version": null
+        }
+      },
+      {
         "package": "FLAnimatedImage",
         "repositoryURL": "https://github.com/Flipboard/FLAnimatedImage.git",
         "state": {

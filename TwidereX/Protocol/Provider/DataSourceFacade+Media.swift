@@ -25,16 +25,17 @@ extension DataSourceFacade {
         }
         
         func thumbnails() async -> [UIImage?] {
-            switch containerView {
-            case .mediaView(let mediaView):
-                let thumbnail = await mediaView.thumbnail()
-                return [thumbnail]
-            case .mediaGridContainerView(let mediaGridContainerView):
-                let thumbnails = await mediaGridContainerView.mediaViews.parallelMap { mediaView in
-                    return await mediaView.thumbnail()
-                }
-                return thumbnails
-            }
+            return []
+//            switch containerView {
+//            case .mediaView(let mediaView):
+//                let thumbnail = await mediaView.thumbnail()
+//                return [thumbnail]
+//            case .mediaGridContainerView(let mediaGridContainerView):
+//                let thumbnails = await mediaGridContainerView.mediaViews.parallelMap { mediaView in
+//                    return await mediaView.thumbnail()
+//                }
+//                return thumbnails
+//            }
         }
     }
     
@@ -125,48 +126,48 @@ extension DataSourceFacade {
             }
         }()
         
-        await coordinateToMediaPreviewScene(
-            provider: provider,
-            status: status,
-            mediaPreviewItem: .statusAttachment(.init(
-                status: status,
-                attachments: attachments,
-                initialIndex: mediaPreviewContext.index,
-                preloadThumbnails: thumbnails
-            )),
-            mediaPreviewTransitionItem: {
-                // FIXME: allow other source
-                let item = MediaPreviewTransitionItem(
-                    source: source,
-                    previewableViewController: provider
-                )
-                let mediaView = mediaPreviewContext.mediaView
-                
-                item.initialFrame = {
-                    let initialFrame = mediaView.superview!.convert(mediaView.frame, to: nil)
-                    assert(initialFrame != .zero)
-                    return initialFrame
-                }()
-                
-                let thumbnail = mediaView.thumbnail()
-                item.image = thumbnail
-                
-                item.aspectRatio = {
-                    if let thumbnail = thumbnail {
-                        return thumbnail.size
-                    }
-                    let index = mediaPreviewContext.index
-                    guard index < attachments.count else { return nil }
-                    let size = attachments[index].size
-                    return size
-                }()
-                
-                item.sourceImageViewCornerRadius = MediaView.cornerRadius
-                
-                return item
-            }(),
-            mediaPreviewContext: mediaPreviewContext
-        )
+//        await coordinateToMediaPreviewScene(
+//            provider: provider,
+//            status: status,
+//            mediaPreviewItem: .statusAttachment(.init(
+//                status: status,
+//                attachments: attachments,
+//                initialIndex: mediaPreviewContext.index,
+//                preloadThumbnails: thumbnails
+//            )),
+//            mediaPreviewTransitionItem: {
+//                // FIXME: allow other source
+//                let item = MediaPreviewTransitionItem(
+//                    source: source,
+//                    previewableViewController: provider
+//                )
+//                let mediaView = mediaPreviewContext.mediaView
+//                
+//                item.initialFrame = {
+//                    let initialFrame = mediaView.superview!.convert(mediaView.frame, to: nil)
+//                    assert(initialFrame != .zero)
+//                    return initialFrame
+//                }()
+//                
+//                let thumbnail = mediaView.thumbnail()
+//                item.image = thumbnail
+//                
+//                item.aspectRatio = {
+//                    if let thumbnail = thumbnail {
+//                        return thumbnail.size
+//                    }
+//                    let index = mediaPreviewContext.index
+//                    guard index < attachments.count else { return nil }
+//                    let size = attachments[index].size
+//                    return size
+//                }()
+//                
+//                item.sourceImageViewCornerRadius = MediaView.cornerRadius
+//                
+//                return item
+//            }(),
+//            mediaPreviewContext: mediaPreviewContext
+//        )
     }
     
     @MainActor

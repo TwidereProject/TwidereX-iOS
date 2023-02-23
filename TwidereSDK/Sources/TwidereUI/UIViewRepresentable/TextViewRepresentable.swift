@@ -53,9 +53,8 @@ public struct TextViewRepresentable: UIViewRepresentable {
         ]
         let paragraphStyle: NSMutableParagraphStyle = {
             let style = NSMutableParagraphStyle()
-            let fontMargin = textStyle.font.lineHeight - textStyle.font.pointSize
-            style.lineSpacing = 3 - fontMargin
-            style.paragraphSpacing = 8 - fontMargin
+            style.lineSpacing = 3
+            style.paragraphSpacing = 8
             return style
         }()
         

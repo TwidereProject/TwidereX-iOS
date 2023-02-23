@@ -39,7 +39,7 @@ extension StatusView {
         public weak var delegate: StatusViewDelegate?
         
         weak var parentViewModel: StatusView.ViewModel?
-        // @Published public var authorAvatarDimension: CGFloat = .zero
+        @Published public var authorAvatarDimension: CGFloat = .zero
         
         // output
         
@@ -83,7 +83,8 @@ extension StatusView {
 //        
 //        @Published public var language: String?
 //        @Published public var isTranslateButtonDisplay = false
-//        
+//
+        @Published public var mediaViewModels: [MediaView.ViewModel] = []
 //        @Published public var mediaViewConfigurations: [MediaView.Configuration] = []
 //        
 //        @Published public var isContentSensitive: Bool = false
@@ -138,11 +139,9 @@ extension StatusView {
 //        @Published public var isDeletable = false
 //        
 //        @Published public var groupedAccessibilityLabel = ""
-//        
-//        let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
-//            .autoconnect()
-//            .share()
-//            .eraseToAnyPublisher()
+//
+        @Published public var timestampLabelViewModel: TimestampLabelView.ViewModel?
+        
 //        
 //        // public let contentRevealChangePublisher = PassthroughSubject<Void, Never>()
 //        
@@ -1007,6 +1006,14 @@ extension StatusView.ViewModel {
         status.author.publisher(for: \.username)
             .assign(to: &$authorUsernme)
         
+        // timestamp
+        switch kind {
+        case .timeline, .repost:
+            timestampLabelViewModel = TimestampLabelView.ViewModel(timestamp: status.createdAt)
+        default:
+            break
+        }
+        
         // content
         let content = TwitterContent(content: status.displayText)
         let metaContent = TwitterMetaContent.convert(
@@ -1016,7 +1023,10 @@ extension StatusView.ViewModel {
             useParagraphMark: true
         )
         self.content = metaContent
-    }
+        
+        // media
+        mediaViewModels = MediaView.ViewModel.viewModels(from: status)
+    }   // end init
 }
 
 extension StatusView.ViewModel {

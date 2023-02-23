@@ -16,25 +16,31 @@ public struct LabelRepresentable: UIViewRepresentable {
         let label = UILabel()
         label.numberOfLines = 1
         label.backgroundColor = .clear
+        label.adjustsFontSizeToFitWidth = false
+        label.lineBreakMode = .byTruncatingTail
+        label.setContentHuggingPriority(.defaultHigh, for: .horizontal)     // always try grow vertical
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        label.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return label
     }()
     
     // input
     public let metaContent: MetaContent
     public let textStyle: TextStyle
+    let setupLabel: (UILabel) -> Void
     
     public init(
         metaContent: MetaContent,
-        textStyle: TextStyle
+        textStyle: TextStyle,
+        setupLabel: @escaping (UILabel) -> Void
     ) {
         self.metaContent = metaContent
         self.textStyle = textStyle
+        self.setupLabel = setupLabel
     }
     
     public func makeUIView(context: Context) -> UILabel {
         let label = self.label
+        setupLabel(label)
         
         let attributedString = NSMutableAttributedString(string: metaContent.string)
         let textAttributes: [NSAttributedString.Key: Any] = [
@@ -62,7 +68,7 @@ public struct LabelRepresentable: UIViewRepresentable {
         )
         
         label.attributedText = attributedString
-        label.invalidateIntrinsicContentSize()
+//        label.invalidateIntrinsicContentSize()
         
         return label
     }

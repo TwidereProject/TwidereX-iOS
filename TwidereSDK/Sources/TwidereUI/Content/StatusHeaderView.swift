@@ -44,7 +44,10 @@ public struct StatusHeaderView: View {
                         .clipShape(Circle())
                     LabelRepresentable(
                         metaContent: viewModel.label,
-                        textStyle: .statusHeader
+                        textStyle: .statusHeader,
+                        setupLabel: { label in
+                            // do nothing
+                        }
                     )
                     .background(GeometryReader { proxy in
                         Color.clear.preference(
@@ -55,7 +58,7 @@ public struct StatusHeaderView: View {
                     .onPreferenceChange(ViewHeightKey.self) { height in
                         self.iconImageDimension = height
                     }
-                    .border(.red, width: 1)
+                    Spacer()
                 }
             }   // end Button
         }
