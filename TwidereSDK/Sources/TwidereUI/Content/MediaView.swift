@@ -31,20 +31,29 @@ public struct MediaView: View {
             .placeholder { progress in
                 Image(uiImage: Asset.Logo.mediaPlaceholder.image.withRenderingMode(.alwaysTemplate))
             }
-            .overlay(alignment: .bottomTrailing) {
-                if let durationText = viewModel.durationText {
-                    Label {
-                        Text(durationText)
-                    } icon: {
-                        Image(systemName: "play.fill")
+            .overlay(alignment: .bottom) {
+                HStack {
+                    Spacer()
+                    if let durationText = viewModel.durationText {
+                        Text("\(Image(systemName: "play.fill")) \(durationText)")
+                            .foregroundColor(Color(uiColor: .label))
+                            .font(.system(.footnote, design: .default, weight: .medium))
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 3)
+                            .background(.regularMaterial)
+                            .cornerRadius(4)
                     }
-                    .font(.footnote)
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 3)
-                    .background(.regularMaterial)
-                    .cornerRadius(4)
-                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 11))
+                    if viewModel.mediaKind == .animatedGIF {
+                        Text("GIF")
+                            .foregroundColor(Color(uiColor: .label))
+                            .font(.system(.footnote, design: .default, weight: .medium))
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 3)
+                            .background(.regularMaterial)
+                            .cornerRadius(4)
+                    }
                 }
+                .padding(EdgeInsets(top: 0, leading: 11, bottom: 8, trailing: 11))
             }
 
 //        Color.clear

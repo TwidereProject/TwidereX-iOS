@@ -1059,6 +1059,7 @@ extension StatusView.ViewModel {
             )
         }
         
+        // author
         status.author.publisher(for: \.avatar)
             .compactMap { $0.flatMap { URL(string: $0) } }
             .assign(to: &$avatarURL)
@@ -1068,6 +1069,15 @@ extension StatusView.ViewModel {
         status.author.publisher(for: \.username)
             .assign(to: &$authorUsernme)
         
+        // timestamp
+        switch kind {
+        case .timeline, .repost:
+            timestampLabelViewModel = TimestampLabelView.ViewModel(timestamp: status.createdAt)
+        default:
+            break
+        }
+        
+        // content
         do {
             let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
             let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
@@ -1077,5 +1087,8 @@ extension StatusView.ViewModel {
             assertionFailure(error.localizedDescription)
             self.content = PlaintextMetaContent(string: "")
         }
+        
+        // media
+        mediaViewModels = MediaView.ViewModel.viewModels(from: status)
     }
 }

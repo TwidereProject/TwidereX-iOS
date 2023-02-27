@@ -219,6 +219,27 @@ extension MediaView.ViewModel {
             )
         }
     }
+    
+    public static func viewModels(from status: MastodonStatus) -> [MediaView.ViewModel] {
+        return status.attachments.map { attachment -> MediaView.ViewModel in
+            MediaView.ViewModel(
+                mediaKind: {
+                    switch attachment.kind {
+                    case .image:        return .photo
+                    case .video:        return .video
+                    case .audio:        return .video
+                    case .gifv:         return .animatedGIF
+                    }
+                }(),
+                aspectRatio: attachment.size,
+                altText: attachment.altDescription,
+                previewURL: (attachment.previewURL ?? attachment.assetURL).flatMap { URL(string: $0) },
+                assetURL: attachment.assetURL.flatMap { URL(string: $0) },
+                downloadURL: attachment.downloadURL.flatMap { URL(string: $0) },
+                durationMS: attachment.durationMS
+            )
+        }
+    }
 
 //    public static func configuration(mastodonStatus status: MastodonStatus) -> [MediaView.Configuration] {
 //        func videoInfo(from attachment: MastodonAttachment) -> MediaView.Configuration.VideoInfo {
