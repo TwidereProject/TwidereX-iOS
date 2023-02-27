@@ -64,7 +64,6 @@ PODS:
     - FirebaseInstallations (~> 9.0)
     - GoogleUtilities/Environment (~> 7.7)
     - "GoogleUtilities/NSData+zlib (~> 7.7)"
-  - FLEX (4.7.0)
   - GoogleAppMeasurement/WithoutAdIdSupport (9.2.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
     - GoogleUtilities/MethodSwizzler (~> 7.7)
@@ -115,7 +114,6 @@ DEPENDENCIES:
   - FirebaseCrashlytics
   - FirebaseMessaging
   - FirebasePerformance
-  - FLEX (~> 4.7.0)
   - Sourcery (~> 1.8.1)
   - SwiftGen (~> 6.5.1)
   - twitter-text (~> 3.1.0)
@@ -136,7 +134,6 @@ SPEC REPOS:
     - FirebaseMessaging
     - FirebasePerformance
     - FirebaseRemoteConfig
-    - FLEX
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleUtilities
@@ -161,7 +158,6 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 4eaf1b8a7464b2c5e619ad66e9b20ee3e3206b24
   FirebasePerformance: 5a8d2a9e645a398dfcc02657853f4b946675d5d4
   FirebaseRemoteConfig: 16e29297f0dd0c7d2415c4506d614fe0b54875d1
-  FLEX: bdc9ac7d4a239e3d04c298c01221203257d63a80
   GoogleAppMeasurement: 7a33224321f975d58c166657260526775d9c6b1a
   GoogleDataTransport: 5fffe35792f8b96ec8d6775f5eccd83c998d5a3b
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
@@ -173,6 +169,6 @@ SPEC CHECKSUMS:
   XLPagerTabStrip: 61c57fd61f611ee5f01ff1495ad6fbee8bf496c5
   ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: 9a116be6704a7b6b4940f5dfb93bf4c4214dbc93
+PODFILE CHECKSUM: a6441556e77318b291664364cc5bfbdd86dbd781
 
 COCOAPODS: 1.11.3

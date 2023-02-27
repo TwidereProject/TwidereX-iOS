@@ -48,8 +48,7 @@ class MediaPreviewTransitionItem: Identifiable {
 extension MediaPreviewTransitionItem {
     enum Source {
         case none
-        case attachment(MediaView)
-        case attachments(MediaGridContainerView)
+        case mediaView(MediaView.ViewModel)
         case profileAvatar(ProfileHeaderView)
         case profileBanner(ProfileHeaderView)
         

@@ -18,13 +18,15 @@ public protocol MediaGridContainerViewDelegate: AnyObject {
 
 public struct MediaGridContainerView: View {
     
-    static var spacing: CGFloat { 8 }
-    static var cornerRadius: CGFloat { 8 }
+    static public var spacing: CGFloat { 8 }
+    static public var cornerRadius: CGFloat { 8 }
     
     public let viewModels: [MediaView.ViewModel]
     
     public let idealWidth: CGFloat?
     public let idealHeight: CGFloat     // ideal height for grid exclude single media
+    
+    public let previewAction: (MediaView.ViewModel) -> Void
 
     public var body: some View {
         VStack {
@@ -37,6 +39,48 @@ public struct MediaGridContainerView: View {
                         idealWidth: idealWidth,
                         idealHeight: viewModel.mediaKind == .video ? idealHeight : 2 * idealHeight)
                     )
+                    .cornerRadius(MediaGridContainerView.cornerRadius)
+                    .clipped()
+                    .background(GeometryReader { proxy in
+                        Color.clear.preference(
+                            key: ViewFrameKey.self,
+                            value: proxy.frame(in: .global)
+                        )
+                        .onPreferenceChange(ViewFrameKey.self) { frame in
+                            viewModel.frameInWindow = frame
+                        }
+                    })
+                    .overlay(
+                        RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius)
+                            .stroke(Color(uiColor: .placeholderText).opacity(0.5), lineWidth: 1)
+                    )
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+        //                let actionContext = ActionContext(index: index, viewModels: viewModels)
+        //                action(actionContext)
+                    }
+                    .contextMenu(contextMenuContentPreviewProvider: {
+                        guard let thumbnail = viewModel.thumbnail else { return nil }
+                        let contextMenuImagePreviewViewModel = ContextMenuImagePreviewViewModel(aspectRatio: thumbnail.size, thumbnail: thumbnail)
+                        let previewProvider = ContextMenuImagePreviewViewController()
+                        previewProvider.viewModel = contextMenuImagePreviewViewModel
+                        return previewProvider
+
+                    }, contextMenuActionProvider: { _ in
+                        let children: [UIAction] = [
+                            UIAction(
+                                title: L10n.Common.Controls.Actions.copy,
+                                image: UIImage(systemName: "doc.on.doc"),
+                                attributes: [],
+                                state: .off
+                            ) { _ in
+                                print("Hi copy")
+                            }
+                        ]
+                        return UIMenu(title: "", image: nil, identifier: nil, options: [], children: children)
+                    }, previewAction: {
+                        previewAction(viewModel)
+                    })
             case 2:
                 let height = height(for: 1)
                 HStack(spacing: MediaGridContainerView.spacing) {
@@ -77,7 +121,6 @@ public struct MediaGridContainerView: View {
                     }
                     VStack(spacing: MediaGridContainerView.spacing) {
                         mediaView(at: 2, width: nil, height: height)
-                        
                     }
                 }
             case 6:
@@ -165,9 +208,17 @@ public struct MediaGridContainerView: View {
                 EmptyView()
             }
         }   // end Group
-//        .frame(width: idealWidth)
-        .border(Color.blue, width: 1)
     }   // end body
+}
+
+extension MediaGridContainerView {
+    public func contextMenuItems(for viewModel: MediaView.ViewModel) -> some View {
+        Button {
+            
+        } label: {
+            Label(L10n.Common.Controls.Actions.save, systemImage: "square.and.arrow.down")
+        }
+    }
 }
 
 extension MediaGridContainerView {
@@ -182,6 +233,15 @@ extension MediaGridContainerView {
             )
             .cornerRadius(MediaGridContainerView.cornerRadius)
             .clipped()
+            .background(GeometryReader { proxy in
+                Color.clear.preference(
+                    key: ViewFrameKey.self,
+                    value: proxy.frame(in: .global)
+                )
+                .onPreferenceChange(ViewFrameKey.self) { frame in
+                    viewModels[index].frameInWindow = frame
+                }
+            })
             .overlay(
                 RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius)
                     .stroke(Color(uiColor: .placeholderText).opacity(0.5), lineWidth: 1)
@@ -191,6 +251,29 @@ extension MediaGridContainerView {
 //                let actionContext = ActionContext(index: index, viewModels: viewModels)
 //                action(actionContext)
             }
+            .contextMenu(contextMenuContentPreviewProvider: {
+                let viewModel = viewModels[index]
+                guard let thumbnail = viewModel.thumbnail else { return nil }
+                let contextMenuImagePreviewViewModel = ContextMenuImagePreviewViewModel(aspectRatio: thumbnail.size, thumbnail: thumbnail)
+                let previewProvider = ContextMenuImagePreviewViewController()
+                previewProvider.viewModel = contextMenuImagePreviewViewModel
+                return previewProvider
+
+            }, contextMenuActionProvider: { _ in
+                let children: [UIAction] = [
+                    UIAction(
+                        title: L10n.Common.Controls.Actions.copy,
+                        image: UIImage(systemName: "doc.on.doc"),
+                        attributes: [],
+                        state: .off
+                    ) { _ in
+                        print("Hi copy")
+                    }
+                ]
+                return UIMenu(title: "", image: nil, identifier: nil, options: [], children: children)
+            }, previewAction: {
+                previewAction(viewModels[index])
+            })
     }
     
     private func height(for rows: Int) -> CGFloat {
@@ -269,6 +352,15 @@ struct MediaGridContainerView_Previews: PreviewProvider {
                 durationMS: nil
             ),
             MediaView.ViewModel(
+                mediaKind: .video,
+                aspectRatio: CGSize(width: 1200, height: 675),
+                altText: nil,
+                previewURL: URL(string: "https://pbs.twimg.com/ext_tw_video_thumb/1629081362555899904/pu/img/em5qGBhoV0R1aGfv.jpg"),
+                assetURL: URL(string: "https://pbs.twimg.com/ext_tw_video_thumb/1629081362555899904/pu/img/em5qGBhoV0R1aGfv.jpg"),
+                downloadURL: URL(string: "https://video.twimg.com/ext_tw_video/1629081362555899904/pu/vid/1280x720/4OGsKDg67adqojtX.mp4?tag=12"),
+                durationMS: 105553160985088
+            ),
+            MediaView.ViewModel(
                 mediaKind: .photo,
                 aspectRatio: CGSize(width: 2016, height: 2016),
                 altText: nil,
@@ -284,15 +376,55 @@ struct MediaGridContainerView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ForEach(0..<viewModels.count, id: \.self) { i in
-                MediaGridContainerView(viewModels: Array(viewModels.prefix(i + 1)), idealWidth: 300, idealHeight: 280)
-                    .frame(width: 300)
-                    .previewLayout(.fixed(width: 300, height: 280))
-                    .previewDisplayName("\(i + 1)")
-                    .border(Color.red)
+                MediaGridContainerView(
+                    viewModels: Array(viewModels.prefix(i + 1)),
+                    idealWidth: 300,
+                    idealHeight: 280,
+                    previewAction: { _ in
+                        // do nothing
+                    }
+                )
+                .frame(width: 300)
+                .previewLayout(.fixed(width: 300, height: 280))
+                .previewDisplayName("\(i + 1)")
+                .border(Color.red)
             }
         }
     }
 }
+
+extension View {
+    func contextMenu(
+        contextMenuContentPreviewProvider: @escaping UIContextMenuContentPreviewProvider,
+        contextMenuActionProvider: @escaping UIContextMenuActionProvider,
+        previewAction: @escaping () -> Void
+    ) -> some View {
+        modifier(ContextMenuViewModifier(
+            contextMenuContentPreviewProvider: contextMenuContentPreviewProvider,
+            contextMenuActionProvider: contextMenuActionProvider,
+            previewAction: previewAction
+        ))
+    }
+}
+
+struct ContextMenuViewModifier: ViewModifier {
+    let contextMenuContentPreviewProvider: UIContextMenuContentPreviewProvider
+    let contextMenuActionProvider: UIContextMenuActionProvider
+    let previewAction: () -> Void
+    
+    func body(content: Content) -> some View {
+        ContextMenuInteractionRepresentable(
+            contextMenuContentPreviewProvider: contextMenuContentPreviewProvider,
+            contextMenuActionProvider: contextMenuActionProvider
+        ) {
+            content
+        } previewAction: {
+            previewAction()
+        }
+    }
+}
+
+
 
 //public final class MediaGridContainerView: UIView {
 //    

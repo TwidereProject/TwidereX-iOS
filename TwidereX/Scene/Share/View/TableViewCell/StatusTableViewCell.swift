@@ -18,20 +18,16 @@ class StatusTableViewCell: UITableViewCell {
     
     let logger = Logger(subsystem: "StatusTableViewCell", category: "View")
     
-//    weak var delegate: StatusViewTableViewCellDelegate?
-    
-//    let topConversationLinkLineView = SeparatorLineView()
-//    let statusView = StatusView()
-//    let bottomConversationLinkLineView = SeparatorLineView()
-//    let separator = SeparatorLineView()
+    weak var delegate: StatusViewTableViewCellDelegate?
+    var viewModel: StatusView.ViewModel?
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
         contentConfiguration = nil
+        delegate = nil
+        viewModel = nil
         disposeBag.removeAll()
-//        topConversationLinkLineView.isHidden = true
-//        bottomConversationLinkLineView.isHidden = true
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -113,7 +109,7 @@ extension StatusTableViewCell {
 }
 
 // MARK: - StatusViewContainerTableViewCell
-//extension StatusTableViewCell: StatusViewContainerTableViewCell { }
+extension StatusTableViewCell: StatusViewContainerTableViewCell { }
 
 // MARK: - StatusViewDelegate
 extension StatusTableViewCell: StatusViewDelegate { }

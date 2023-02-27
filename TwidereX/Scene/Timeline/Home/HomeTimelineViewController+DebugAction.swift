@@ -14,7 +14,6 @@ import CoreData
 import CoreDataStack
 import TwitterSDK
 import ZIPFoundation
-import FLEX
 import MetaTextKit
 import MetaTextArea
 import TwidereUI
@@ -243,10 +242,6 @@ extension HomeTimelineViewController {
             identifier: nil,
             options: [],
             children: [
-                UIAction(title: "Enable FLEX", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.showFLEXAction(action)
-                }),
                 UIAction(title: "Display TextView Frame", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.displayTextViewFrame(action)
@@ -266,11 +261,7 @@ extension HomeTimelineViewController {
 }
 
 extension HomeTimelineViewController {
-    
-    @objc private func showFLEXAction(_ sender: UIAction) {
-        FLEXManager.shared.showExplorer()
-    }
-    
+
     @objc private func showStatusByID(_ id: String) {
         Task { @MainActor in
             let authenticationContext = self.viewModel.authContext.authenticationContext

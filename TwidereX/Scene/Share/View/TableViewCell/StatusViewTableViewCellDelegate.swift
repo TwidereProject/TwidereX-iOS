@@ -12,11 +12,11 @@ import MetaTextArea
 import Meta
 
 // sourcery: protocolName = "StatusViewDelegate"
-// sourcery: replaceOf = "statusView(statusView"
-// sourcery: replaceWith = "delegate?.tableViewCell(self, statusView: statusView"
+// sourcery: replaceOf = "statusView(viewModel"
+// sourcery: replaceWith = "delegate?.tableViewCell(self, viewModel: viewModel"
 protocol StatusViewContainerTableViewCell: UITableViewCell, AutoGenerateProtocolRelayDelegate {
     var delegate: StatusViewTableViewCellDelegate? { get }
-    var statusView: StatusView { get }
+    var viewModel: StatusView.ViewModel? { get }
 }
 
 // MARK: - AutoGenerateProtocolDelegate
@@ -25,6 +25,7 @@ protocol StatusViewContainerTableViewCell: UITableViewCell, AutoGenerateProtocol
 // sourcery: replaceWith = "func tableViewCell(_ cell: UITableViewCell,"
 protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     // sourcery:inline:StatusViewTableViewCellDelegate.AutoGenerateProtocolDelegate
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
     // sourcery:end
 }
 
@@ -32,5 +33,8 @@ protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
 // Protocol Extension
 extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
     // sourcery:inline:StatusViewContainerTableViewCell.AutoGenerateProtocolRelayDelegate
+    func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel) {
+        delegate?.tableViewCell(self, viewModel: viewModel, previewActionForMediaViewModel: mediaViewModel)
+    }
     // sourcery:end
 }

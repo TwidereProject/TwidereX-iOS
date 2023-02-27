@@ -45,25 +45,25 @@ extension DataSourceFacade {
         status: StatusRecord,
         mediaPreviewContext: MediaPreviewContext
     ) async {
-        let _redirectRecord = await DataSourceFacade.status(
-            managedObjectContext: provider.context.managedObjectContext,
-            status: status,
-            target: target
-        )
-        guard let redirectRecord = _redirectRecord else { return }
-        
-        await coordinateToMediaPreviewScene(
-            provider: provider,
-            status: redirectRecord,
-            mediaPreviewContext: mediaPreviewContext
-        )
-        
-        Task {
-            await recordStatusHistory(
-                denpendency: provider,
-                status: status
-            )
-        }   // end Task
+//        let _redirectRecord = await DataSourceFacade.status(
+//            managedObjectContext: provider.context.managedObjectContext,
+//            status: status,
+//            target: target
+//        )
+//        guard let redirectRecord = _redirectRecord else { return }
+//
+//        await coordinateToMediaPreviewScene(
+//            provider: provider,
+//            status: redirectRecord,
+//            mediaPreviewContext: mediaPreviewContext
+//        )
+//
+//        Task {
+//            await recordStatusHistory(
+//                denpendency: provider,
+//                status: status
+//            )
+//        }   // end Task
     }
     
 }
@@ -74,100 +74,88 @@ extension DataSourceFacade {
     static func coordinateToMediaPreviewScene(
         provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
         status: StatusRecord,
-        mediaPreviewContext: MediaPreviewContext
+        statusViewModel: StatusView.ViewModel,
+        mediaViewModel: MediaView.ViewModel
     ) async {
-        let attachments: [AttachmentObject] = await provider.context.managedObjectContext.perform {
-            guard let status = status.object(in: provider.context.managedObjectContext) else { return [] }
-            return status.attachments
-        }
-        let thumbnails = await mediaPreviewContext.thumbnails()
-        
-        // use standard video player
-        if let first = attachments.first, first.kind == .video || first.kind == .audio {
-            Task { @MainActor [weak provider] in
-                guard let provider = provider else { return }
-                // workaround Twitter Video assertURL missing from V2 API issue
-                var assetURL: URL
-                if let url = first.assetURL {
-                    assetURL = url
-                } else if case let .twitter(record) = status {
-                    let _statusID: String? = await provider.context.managedObjectContext.perform {
-                        let status = record.object(in: provider.context.managedObjectContext)
-                        return status?.id
-                    }
-                    guard let statusID = _statusID,
-                          case let .twitter(authenticationContext) = provider.authContext.authenticationContext
-                    else { return }
-                    
-                    let _response = try? await provider.context.apiService.twitterStatusV1(statusIDs: [statusID], authenticationContext: authenticationContext)
-                    guard let status = _response?.value.first,
-                          let url = status.extendedEntities?.media?.first?.assetURL.flatMap({ URL(string: $0) })
-                    else { return }
-                    assetURL = url
-                } else {
-                    assertionFailure()
-                    return
-                }
-                let playerViewController = AVPlayerViewController()
-                playerViewController.player = AVPlayer(url: assetURL)
-                playerViewController.player?.play()
-                playerViewController.delegate = provider.context.playerService
-                provider.present(playerViewController, animated: true, completion: nil)
-            }   // end Task
+//        let attachments: [AttachmentObject] = await provider.context.managedObjectContext.perform {
+//            guard let status = status.object(in: provider.context.managedObjectContext) else { return [] }
+//            return status.attachments
+//        }
+        guard let index = statusViewModel.mediaViewModels.firstIndex(of: mediaViewModel) else {
+            assertionFailure("invalid callback")
             return
         }
+        let thumbnails = statusViewModel.mediaViewModels.map { $0.thumbnail }
         
-        let source: MediaPreviewTransitionItem.Source = {
-            switch mediaPreviewContext.containerView {
-            case .mediaView(let mediaView):
-                return .attachment(mediaView)
-            case .mediaGridContainerView(let mediaGridContainerView):
-                return .attachments(mediaGridContainerView)
-            }
-        }()
-        
-//        await coordinateToMediaPreviewScene(
-//            provider: provider,
-//            status: status,
-//            mediaPreviewItem: .statusAttachment(.init(
-//                status: status,
-//                attachments: attachments,
-//                initialIndex: mediaPreviewContext.index,
-//                preloadThumbnails: thumbnails
-//            )),
-//            mediaPreviewTransitionItem: {
-//                // FIXME: allow other source
-//                let item = MediaPreviewTransitionItem(
-//                    source: source,
-//                    previewableViewController: provider
-//                )
-//                let mediaView = mediaPreviewContext.mediaView
-//                
-//                item.initialFrame = {
-//                    let initialFrame = mediaView.superview!.convert(mediaView.frame, to: nil)
-//                    assert(initialFrame != .zero)
-//                    return initialFrame
-//                }()
-//                
-//                let thumbnail = mediaView.thumbnail()
-//                item.image = thumbnail
-//                
-//                item.aspectRatio = {
-//                    if let thumbnail = thumbnail {
-//                        return thumbnail.size
+        // use standard video player
+//        if let first = attachments.first, first.kind == .video || first.kind == .audio {
+//            Task { @MainActor [weak provider] in
+//                guard let provider = provider else { return }
+//                // workaround Twitter Video assertURL missing from V2 API issue
+//                var assetURL: URL
+//                if let url = first.assetURL {
+//                    assetURL = url
+//                } else if case let .twitter(record) = status {
+//                    let _statusID: String? = await provider.context.managedObjectContext.perform {
+//                        let status = record.object(in: provider.context.managedObjectContext)
+//                        return status?.id
 //                    }
-//                    let index = mediaPreviewContext.index
-//                    guard index < attachments.count else { return nil }
-//                    let size = attachments[index].size
-//                    return size
-//                }()
-//                
-//                item.sourceImageViewCornerRadius = MediaView.cornerRadius
-//                
-//                return item
-//            }(),
-//            mediaPreviewContext: mediaPreviewContext
-//        )
+//                    guard let statusID = _statusID,
+//                          case let .twitter(authenticationContext) = provider.authContext.authenticationContext
+//                    else { return }
+//
+//                    let _response = try? await provider.context.apiService.twitterStatusV1(statusIDs: [statusID], authenticationContext: authenticationContext)
+//                    guard let status = _response?.value.first,
+//                          let url = status.extendedEntities?.media?.first?.assetURL.flatMap({ URL(string: $0) })
+//                    else { return }
+//                    assetURL = url
+//                } else {
+//                    assertionFailure()
+//                    return
+//                }
+//                let playerViewController = AVPlayerViewController()
+//                playerViewController.player = AVPlayer(url: assetURL)
+//                playerViewController.player?.play()
+//                playerViewController.delegate = provider.context.playerService
+//                provider.present(playerViewController, animated: true, completion: nil)
+//            }   // end Task
+//            return
+//        }
+        
+        
+        await coordinateToMediaPreviewScene(
+            provider: provider,
+            status: status,
+            mediaPreviewItem: .statusMedia(.init(
+                status: status,
+                mediaViewModels: statusViewModel.mediaViewModels,
+                initialIndex: index,
+                preloadThumbnails: thumbnails
+            )),
+            mediaPreviewTransitionItem: {
+                let source = MediaPreviewTransitionItem.Source.mediaView(mediaViewModel)
+                let item = MediaPreviewTransitionItem(
+                    source: source,
+                    previewableViewController: provider
+                )
+                
+                item.initialFrame = mediaViewModel.frameInWindow
+                
+                let thumbnail = mediaViewModel.thumbnail
+                item.image = thumbnail
+                
+                item.aspectRatio = {
+                    if let thumbnail = thumbnail {
+                        return thumbnail.size
+                    }
+                    return mediaViewModel.aspectRatio
+                }()
+                
+                item.sourceImageViewCornerRadius = MediaGridContainerView.cornerRadius
+                
+                return item
+            }()
+        )   // end coordinateToMediaPreviewScene
     }
     
     @MainActor
@@ -175,8 +163,7 @@ extension DataSourceFacade {
         provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
         status: StatusRecord,
         mediaPreviewItem: MediaPreviewViewModel.Item,
-        mediaPreviewTransitionItem: MediaPreviewTransitionItem,
-        mediaPreviewContext: MediaPreviewContext
+        mediaPreviewTransitionItem: MediaPreviewTransitionItem
     ) async {
         let mediaPreviewViewModel = MediaPreviewViewModel(
             context: provider.context,
@@ -190,5 +177,5 @@ extension DataSourceFacade {
             transition: .custom(transitioningDelegate: provider.mediaPreviewTransitionController)
         )
     }
-    
+
 }

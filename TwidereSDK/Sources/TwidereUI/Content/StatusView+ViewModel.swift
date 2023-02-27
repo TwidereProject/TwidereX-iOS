@@ -35,6 +35,7 @@ extension StatusView {
         @Published public var quoteViewModel: StatusView.ViewModel?
         
         // input
+        public let status: StatusRecord?
         public let kind: Kind
         public weak var delegate: StatusViewDelegate?
         
@@ -161,10 +162,12 @@ extension StatusView {
 //        }
 //        
         init(
+            status: StatusRecord?,
             kind: Kind,
             delegate: StatusViewDelegate?,
             viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
         ) {
+            self.status = status
             self.kind = kind
             self.delegate = delegate
             // end init
@@ -957,6 +960,7 @@ extension StatusView.ViewModel {
         viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     ) {
         self.init(
+            status: .twitter(record: status.asRecrod),
             kind: kind,
             delegate: delegate,
             viewLayoutFramePublisher: viewLayoutFramePublisher
@@ -1038,6 +1042,7 @@ extension StatusView.ViewModel {
         viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     ) {
         self.init(
+            status: .mastodon(record: status.asRecrod),
             kind: kind,
             delegate: delegate,
             viewLayoutFramePublisher: viewLayoutFramePublisher

@@ -29,7 +29,7 @@ target 'TwidereX' do
   pod 'Sourcery', '~> 1.8.1'
 
   # Debug
-  pod 'FLEX', '~> 4.7.0', :configurations => ['Debug']
+  # pod 'FLEX', '~> 4.7.0', :configurations => ['Debug']
   pod 'ZIPFoundation', '~> 0.9.11', :configurations => ['Debug']
   
   target 'TwidereXTests' do

@@ -92,6 +92,13 @@ extension MediaPreviewVideoViewController {
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        // fix player not respect safe area issue
+        playerViewController.didMove(toParent: self)
+    }
+    
 }
 
 // MARK: - ShareActivityProvider

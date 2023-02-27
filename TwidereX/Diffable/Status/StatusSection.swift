@@ -49,11 +49,7 @@ extension StatusSection {
             switch item {
             case .feed(let record):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
-//                setupStatusPollDataSource(
-//                    context: context,
-//                    statusView: cell.statusView,
-//                    configurationContext: configuration.statusViewConfigurationContext
-//                )
+                cell.delegate = configuration.statusViewTableViewCellDelegate
                 context.managedObjectContext.performAndWait {
                     guard let feed = record.object(in: context.managedObjectContext) else { return }
                     let _viewModel = StatusView.ViewModel(

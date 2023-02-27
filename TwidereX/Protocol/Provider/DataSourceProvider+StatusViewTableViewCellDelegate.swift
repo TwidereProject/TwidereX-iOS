@@ -166,33 +166,32 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController {
     func tableViewCell(
         _ cell: UITableViewCell,
+        viewModel: StatusView.ViewModel,
+        previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel
+    ) {
+        Task {
+            guard let status = viewModel.status else {
+                assertionFailure()
+                return
+            }
+            
+            await DataSourceFacade.coordinateToMediaPreviewScene(
+                provider: self,
+                status: status,
+                statusViewModel: viewModel,
+                mediaViewModel: mediaViewModel
+            )
+        }   // end Task
+    }
+
+    func tableViewCell(
+        _ cell: UITableViewCell,
         statusView: StatusView,
         mediaGridContainerView containerView: MediaGridContainerView,
         didTapMediaView mediaView: MediaView,
         at index: Int
     ) {
-        Task {
-            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-            guard let item = await item(from: source) else {
-                assertionFailure()
-                return
-            }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {
-                assertionFailure("only works for status data provider")
-                return
-            }   // end switch
-            
-            await DataSourceFacade.coordinateToMediaPreviewScene(
-                provider: self,
-                target: .status,
-                status: status,
-                mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
-                    containerView: .mediaGridContainerView(containerView),
-                    mediaView: mediaView,
-                    index: index
-                )
-            )
-        }   // end Task
+
     }
     
     func tableViewCell(

@@ -48,7 +48,6 @@ public struct StatusView: View {
                         // authorView
                         authorView
                             .padding(.horizontal, viewModel.margin)
-                            .border(Color.cyan, width: 1)
                         // content
                         contentView
                             .padding(.horizontal, viewModel.margin)
@@ -57,7 +56,10 @@ public struct StatusView: View {
                             MediaGridContainerView(
                                 viewModels: viewModel.mediaViewModels,
                                 idealWidth: contentWidth,
-                                idealHeight: 280
+                                idealHeight: 280,
+                                previewAction: { mediaViewModel in
+                                    viewModel.delegate?.statusView(viewModel, previewActionForMediaViewModel: mediaViewModel)
+                                }
                             )
                             .padding(.horizontal, viewModel.margin)
                         }
@@ -166,7 +168,6 @@ extension StatusView {
             )
             .frame(width: contentWidth)
         }
-        .border(.red, width: 1)
     }
 }
 
@@ -180,8 +181,9 @@ public protocol StatusViewDelegate: AnyObject {
 //
 //    func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
 //    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
-//
-//    func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+
+    // media
+    func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
 //    func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView)
 //    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
 //

@@ -16,6 +16,13 @@ import Photos
 extension MediaView {
     public class ViewModel: ObservableObject, Hashable {
         
+        public static let durationFormatter: DateComponentsFormatter = {
+            let formatter = DateComponentsFormatter()
+            formatter.zeroFormattingBehavior = .pad
+            formatter.allowedUnits = [.minute, .second]
+            return formatter
+        }()
+        
         // input
         public let mediaKind: MediaKind
         public let aspectRatio: CGSize
@@ -27,6 +34,13 @@ extension MediaView {
         
         // video duration in MS
         public let durationMS: Int?
+        
+        @Published public var inContextMenuPreviewing = false
+        
+        // output
+        public var durationText: String?
+        public var thumbnail: UIImage? = nil
+        public var frameInWindow: CGRect = .zero
         
         public init(
             mediaKind: MediaKind,
@@ -44,6 +58,14 @@ extension MediaView {
             self.assetURL = assetURL
             self.downloadURL = downloadURL
             self.durationMS = durationMS
+            // end init
+    
+            self.durationText = durationMS.flatMap { durationMS -> String? in
+                let timeInterval = TimeInterval(durationMS / 1000)
+                guard timeInterval > 0 else { return nil }
+                guard let text = MediaView.ViewModel.durationFormatter.string(from: timeInterval) else { return nil }
+                return text
+            }
         }
         
         public static func == (lhs: MediaView.ViewModel, rhs: MediaView.ViewModel) -> Bool {
