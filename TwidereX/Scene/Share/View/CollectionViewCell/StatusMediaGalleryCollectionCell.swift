@@ -30,14 +30,14 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
         return viewModel
     }()
     
-    let sensitiveToggleButtonBlurVisualEffectView: UIVisualEffectView = {
-        let visualEffectView = UIVisualEffectView(effect: ContentWarningOverlayView.blurVisualEffect)
-        visualEffectView.layer.masksToBounds = true
-        visualEffectView.layer.cornerRadius = 6
-        visualEffectView.layer.cornerCurve = .continuous
-        return visualEffectView
-    }()
-    let sensitiveToggleButtonVibrancyVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: ContentWarningOverlayView.blurVisualEffect))
+//    let sensitiveToggleButtonBlurVisualEffectView: UIVisualEffectView = {
+//        let visualEffectView = UIVisualEffectView(effect: ContentWarningOverlayView.blurVisualEffect)
+//        visualEffectView.layer.masksToBounds = true
+//        visualEffectView.layer.cornerRadius = 6
+//        visualEffectView.layer.cornerCurve = .continuous
+//        return visualEffectView
+//    }()
+//    let sensitiveToggleButtonVibrancyVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: ContentWarningOverlayView.blurVisualEffect))
     let sensitiveToggleButton: HitTestExpandedButton = {
         let button = HitTestExpandedButton(type: .system)
         button.setImage(Asset.Human.eyeSlashMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -174,12 +174,5 @@ extension StatusMediaGalleryCollectionCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did select \(indexPath.debugDescription)")
         delegate?.statusMediaGalleryCollectionCell(self, coverFlowCollectionView: collectionView, didSelectItemAt: indexPath)
-    }
-}
-
-// MARK: - ContentWarningOverlayViewDelegate
-extension StatusMediaGalleryCollectionCell: ContentWarningOverlayViewDelegate {
-    func contentWarningOverlayViewDidPressed(_ contentWarningOverlayView: ContentWarningOverlayView) {
-        delegate?.statusMediaGalleryCollectionCell(self, toggleContentWarningOverlayViewDisplay: contentWarningOverlayView)
     }
 }

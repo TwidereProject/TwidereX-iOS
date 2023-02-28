@@ -26,6 +26,7 @@ protocol StatusViewContainerTableViewCell: UITableViewCell, AutoGenerateProtocol
 protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     // sourcery:inline:StatusViewTableViewCellDelegate.AutoGenerateProtocolDelegate
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
     // sourcery:end
 }
 
@@ -35,6 +36,10 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
     // sourcery:inline:StatusViewContainerTableViewCell.AutoGenerateProtocolRelayDelegate
     func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel) {
         delegate?.tableViewCell(self, viewModel: viewModel, previewActionForMediaViewModel: mediaViewModel)
+    }
+
+    func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool) {
+        delegate?.tableViewCell(self, viewModel: viewModel, toggleContentWarningOverlayDisplay: isReveal)
     }
     // sourcery:end
 }

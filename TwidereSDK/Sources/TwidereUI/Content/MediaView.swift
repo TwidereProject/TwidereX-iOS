@@ -86,9 +86,9 @@ struct MediaView_Previews: PreviewProvider {
         Group {
             ForEach(viewModels, id: \.self) { viewModel in
                 MediaView(viewModel: viewModel)
-                .frame(width: 300, height: 168)
-                .previewLayout(.fixed(width: 300, height: 168))
-                .previewDisplayName(String(describing: viewModel.mediaKind))
+                    .frame(width: 300, height: 168)
+                    .previewLayout(.fixed(width: 300, height: 168))
+                    .previewDisplayName(String(describing: viewModel.mediaKind))
             }
         }
     }

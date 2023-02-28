@@ -184,7 +184,7 @@ extension DataSourceFacade {
         provider: DataSourceProvider,
         status: StatusRecord
     ) async throws {
-        let managedObjectContext = provider.context.backgroundManagedObjectContext
+        let managedObjectContext = provider.context.managedObjectContext
         try await managedObjectContext.performChanges {
             guard let object = status.object(in: managedObjectContext) else { return }
             switch object {

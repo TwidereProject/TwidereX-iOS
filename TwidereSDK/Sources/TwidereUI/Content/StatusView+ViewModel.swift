@@ -86,11 +86,12 @@ extension StatusView {
 //        @Published public var isTranslateButtonDisplay = false
 //
         @Published public var mediaViewModels: [MediaView.ViewModel] = []
-//        @Published public var mediaViewConfigurations: [MediaView.Configuration] = []
-//        
-//        @Published public var isContentSensitive: Bool = false
-//        @Published public var isContentSensitiveToggled: Bool = false
-//        
+        @Published public var isMediaSensitive: Bool = false
+        @Published public var isMediaSensitiveToggled: Bool = false
+        public var isMediaContentWarningOverlayReveal: Bool {
+            return isMediaSensitiveToggled ? isMediaSensitive : !isMediaSensitive
+        }
+
 //        @Published public var isContentReveal: Bool = false
 //        
 //        @Published public var isMediaSensitive: Bool = false
@@ -1050,13 +1051,28 @@ extension StatusView.ViewModel {
         self.parentViewModel = parentViewModel
         
         if let repost = status.repost {
-            repostViewModel = .init(
+            let _repostViewModel = StatusView.ViewModel(
                 status: repost,
                 kind: .repost,
                 delegate: delegate,
                 parentViewModel: self,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
             )
+            repostViewModel = _repostViewModel
+            
+            // header - repost
+            let _statusHeaderViewModel = StatusHeaderView.ViewModel(
+                image: Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate),
+                label: {
+                    let name = status.author.name
+                    let userRepostText = L10n.Common.Controls.Status.userBoosted(name)
+                    let text = MastodonContent(content: userRepostText, emojis: status.author.emojis.asDictionary)
+                    let label = MastodonMetaContent.convert(text: text)
+                    return label
+                }()
+            )
+            _statusHeaderViewModel.hasHangingAvatar = _repostViewModel.hasHangingAvatar
+            _repostViewModel.statusHeaderViewModel = _statusHeaderViewModel
         }
         
         // author
@@ -1090,5 +1106,14 @@ extension StatusView.ViewModel {
         
         // media
         mediaViewModels = MediaView.ViewModel.viewModels(from: status)
+        
+        // content warning
+        isMediaSensitive = status.isMediaSensitive
+        isMediaSensitiveToggled = status.isMediaSensitiveToggled
+        status.publisher(for: \.isMediaSensitiveToggled)
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isMediaSensitiveToggled, on: self)
+            .store(in: &disposeBag)
+            
     }
 }

@@ -16,7 +16,36 @@ import MetaTextArea
 import MetaLabel
 import TwidereCommon
 import TwidereCore
-import NIOPosix
+
+public protocol StatusViewDelegate: AnyObject {
+//    func statusView(_ statusView: StatusView, headerDidPressed header: UIView)
+//
+//    func statusView(_ statusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
+//    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
+//
+//    func statusView(_ statusView: StatusView, expandContentButtonDidPressed button: UIButton)
+//
+//    func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
+//    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
+
+    // media
+    func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
+    func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
+//    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+//
+//    func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+//    func statusView(_ statusView: StatusView, pollVoteButtonDidPressed button: UIButton)
+//
+//    func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
+//
+//    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
+//    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
+//
+//    func statusView(_ statusView: StatusView, translateButtonDidPressed button: UIButton)
+//
+//    // a11y
+//    func statusView(_ statusView: StatusView, accessibilityActivate: Void)
+}
 
 public struct StatusView: View {
     
@@ -49,8 +78,10 @@ public struct StatusView: View {
                         authorView
                             .padding(.horizontal, viewModel.margin)
                         // content
-                        contentView
-                            .padding(.horizontal, viewModel.margin)
+                        if !viewModel.content.string.isEmpty {
+                            contentView
+                                .padding(.horizontal, viewModel.margin)                            
+                        }
                         // media
                         if !viewModel.mediaViewModels.isEmpty {
                             MediaGridContainerView(
@@ -61,6 +92,12 @@ public struct StatusView: View {
                                     viewModel.delegate?.statusView(viewModel, previewActionForMediaViewModel: mediaViewModel)
                                 }
                             )
+                            .overlay {
+                                ContentWarningOverlayView(isReveal: viewModel.isMediaContentWarningOverlayReveal) {
+                                    viewModel.delegate?.statusView(viewModel, toggleContentWarningOverlayDisplay: !viewModel.isMediaContentWarningOverlayReveal)
+                                }
+                                .cornerRadius(MediaGridContainerView.cornerRadius)
+                            }
                             .padding(.horizontal, viewModel.margin)
                         }
                         // quote
@@ -169,36 +206,6 @@ extension StatusView {
             .frame(width: contentWidth)
         }
     }
-}
-
-public protocol StatusViewDelegate: AnyObject {
-//    func statusView(_ statusView: StatusView, headerDidPressed header: UIView)
-//
-//    func statusView(_ statusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
-//    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
-//
-//    func statusView(_ statusView: StatusView, expandContentButtonDidPressed button: UIButton)
-//
-//    func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
-//    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
-
-    // media
-    func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
-//    func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView)
-//    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
-//
-//    func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath)
-//    func statusView(_ statusView: StatusView, pollVoteButtonDidPressed button: UIButton)
-//
-//    func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
-//
-//    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
-//    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
-//
-//    func statusView(_ statusView: StatusView, translateButtonDidPressed button: UIButton)
-//
-//    // a11y
-//    func statusView(_ statusView: StatusView, accessibilityActivate: Void)
 }
 
 //public final class StatusView: UIView {

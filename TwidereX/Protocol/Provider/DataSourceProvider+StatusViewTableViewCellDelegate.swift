@@ -225,15 +225,14 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         }
     }
     
-    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView) {
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        viewModel: StatusView.ViewModel,
+        toggleContentWarningOverlayDisplay isReveal: Bool
+    ) {
         Task {
-            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-            guard let item = await item(from: source) else {
+            guard let status = viewModel.status else {
                 assertionFailure()
-                return
-            }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {
-                assertionFailure("only works for status data provider")
                 return
             }
             try await DataSourceFacade.responseToToggleMediaSensitiveAction(
@@ -241,8 +240,28 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 target: .status,
                 status: status
             )
-        }
+        }   // end Task
     }
+
+    
+//    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView) {
+//        Task {
+//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+//            guard let item = await item(from: source) else {
+//                assertionFailure()
+//                return
+//            }
+//            guard let status = await item.status(in: self.context.managedObjectContext) else {
+//                assertionFailure("only works for status data provider")
+//                return
+//            }
+//            try await DataSourceFacade.responseToToggleMediaSensitiveAction(
+//                provider: self,
+//                target: .status,
+//                status: status
+//            )
+//        }
+//    }
 }
 
 // MARK: - poll
