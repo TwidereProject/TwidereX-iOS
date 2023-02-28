@@ -68,6 +68,7 @@ extension MediaPreviewVideoViewController {
         switch viewModel.item {
         case .gif:
             playerViewController.showsPlaybackControls = false
+            playerViewController.view.isUserInteractionEnabled = false      // disable pan to seek time
         default:
             break
         }

@@ -9,12 +9,6 @@
 import os.log
 import UIKit
 import SwiftUI
-import func AVFoundation.AVMakeRect
-
-public protocol MediaGridContainerViewDelegate: AnyObject {
-    func mediaGridContainerView(_ container: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
-    func mediaGridContainerView(_ container: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView)
-}
 
 public struct MediaGridContainerView: View {
     
@@ -32,55 +26,7 @@ public struct MediaGridContainerView: View {
         VStack {
             switch viewModels.count {
             case 1:
-                let viewModel = viewModels[0]
-                MediaView(viewModel: viewModel)
-                    .modifier(MediaViewFrameModifer(
-                        asepctRatio: viewModel.aspectRatio.width / viewModel.aspectRatio.height,
-                        idealWidth: idealWidth,
-                        idealHeight: viewModel.mediaKind == .video ? idealHeight : 2 * idealHeight)
-                    )
-                    .cornerRadius(MediaGridContainerView.cornerRadius)
-                    .clipped()
-                    .background(GeometryReader { proxy in
-                        Color.clear.preference(
-                            key: ViewFrameKey.self,
-                            value: proxy.frame(in: .global)
-                        )
-                        .onPreferenceChange(ViewFrameKey.self) { frame in
-                            viewModel.frameInWindow = frame
-                        }
-                    })
-                    .overlay(
-                        RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius)
-                            .stroke(Color(uiColor: .placeholderText).opacity(0.5), lineWidth: 1)
-                    )
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-        //                let actionContext = ActionContext(index: index, viewModels: viewModels)
-        //                action(actionContext)
-                    }
-                    .contextMenu(contextMenuContentPreviewProvider: {
-                        guard let thumbnail = viewModel.thumbnail else { return nil }
-                        let contextMenuImagePreviewViewModel = ContextMenuImagePreviewViewModel(aspectRatio: thumbnail.size, thumbnail: thumbnail)
-                        let previewProvider = ContextMenuImagePreviewViewController()
-                        previewProvider.viewModel = contextMenuImagePreviewViewModel
-                        return previewProvider
-
-                    }, contextMenuActionProvider: { _ in
-                        let children: [UIAction] = [
-                            UIAction(
-                                title: L10n.Common.Controls.Actions.copy,
-                                image: UIImage(systemName: "doc.on.doc"),
-                                attributes: [],
-                                state: .off
-                            ) { _ in
-                                print("Hi copy")
-                            }
-                        ]
-                        return UIMenu(title: "", image: nil, identifier: nil, options: [], children: children)
-                    }, previewAction: {
-                        previewAction(viewModel)
-                    })
+                mediaView(at: 0, width: idealWidth, height: idealHeight)
             case 2:
                 let height = height(for: 1)
                 HStack(spacing: MediaGridContainerView.spacing) {
@@ -224,57 +170,90 @@ extension MediaGridContainerView {
 extension MediaGridContainerView {
     
     private func mediaView(at index: Int, width: CGFloat?, height: CGFloat?) -> some View {
-        Rectangle()
-            .fill(Color(uiColor: .placeholderText))
-            .frame(width: width, height: height)
-            .overlay(
-                MediaView(viewModel: viewModels[index])
-                    .aspectRatio(contentMode: .fill)
-            )
-            .cornerRadius(MediaGridContainerView.cornerRadius)
-            .clipped()
-            .background(GeometryReader { proxy in
-                Color.clear.preference(
-                    key: ViewFrameKey.self,
-                    value: proxy.frame(in: .global)
-                )
-                .onPreferenceChange(ViewFrameKey.self) { frame in
-                    viewModels[index].frameInWindow = frame
-                }
-            })
-            .overlay(
-                RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius)
-                    .stroke(Color(uiColor: .placeholderText).opacity(0.5), lineWidth: 1)
-            )
-            .contentShape(Rectangle())
-            .onTapGesture {
-//                let actionContext = ActionContext(index: index, viewModels: viewModels)
-//                action(actionContext)
+        Group {
+            let viewModel = viewModels[index]
+            switch viewModels.count {
+            case 1:
+                MediaView(viewModel: viewModel)
+                    .modifier(MediaViewFrameModifer(
+                        asepctRatio: viewModel.aspectRatio.width / viewModel.aspectRatio.height,
+                        idealWidth: idealWidth,
+                        idealHeight: viewModel.mediaKind == .video ? idealHeight : 2 * idealHeight)
+                    )
+            default:
+                Rectangle()
+                    .fill(Color(uiColor: .placeholderText))
+                    .frame(width: width, height: height)
+                    .overlay(
+                        MediaView(viewModel: viewModel)
+                            .aspectRatio(contentMode: .fill)
+                    )
             }
-            .contextMenu(contextMenuContentPreviewProvider: {
+        }
+        .cornerRadius(MediaGridContainerView.cornerRadius)
+        .clipped()
+        .background(GeometryReader { proxy in
+            Color.clear.preference(
+                key: ViewFrameKey.self,
+                value: proxy.frame(in: .global)
+            )
+            .onPreferenceChange(ViewFrameKey.self) { frame in
+                viewModels[index].frameInWindow = frame
+            }
+        })
+        .overlay(alignment: .bottom) {
+            HStack {
                 let viewModel = viewModels[index]
-                guard let thumbnail = viewModel.thumbnail else { return nil }
-                let contextMenuImagePreviewViewModel = ContextMenuImagePreviewViewModel(aspectRatio: thumbnail.size, thumbnail: thumbnail)
-                let previewProvider = ContextMenuImagePreviewViewController()
-                previewProvider.viewModel = contextMenuImagePreviewViewModel
-                return previewProvider
-
-            }, contextMenuActionProvider: { _ in
-                let children: [UIAction] = [
-                    UIAction(
-                        title: L10n.Common.Controls.Actions.copy,
-                        image: UIImage(systemName: "doc.on.doc"),
-                        attributes: [],
-                        state: .off
-                    ) { _ in
-                        print("Hi copy")
+                Spacer()
+                Group {
+                    if viewModel.mediaKind == .animatedGIF {
+                        Text("GIF")
+                    } else if let durationText = viewModel.durationText {
+                        Text("\(Image(systemName: "play.fill")) \(durationText)")
                     }
-                ]
-                return UIMenu(title: "", image: nil, identifier: nil, options: [], children: children)
-            }, previewAction: {
-                previewAction(viewModels[index])
-            })
-    }
+                }
+                .foregroundColor(Color(uiColor: .label))
+                .font(.system(.footnote, design: .default, weight: .medium))
+                .padding(.horizontal, 5)
+                .padding(.vertical, 3)
+                .background(.thinMaterial)
+                .cornerRadius(4)
+            }
+            .padding(EdgeInsets(top: 0, leading: 11, bottom: 8, trailing: 11))
+            .allowsHitTesting(false)
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius)
+                .stroke(Color(uiColor: .placeholderText).opacity(0.5), lineWidth: 1)
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            previewAction(viewModels[index])
+        }
+        .contextMenu(contextMenuContentPreviewProvider: {
+            let viewModel = viewModels[index]
+            guard let thumbnail = viewModel.thumbnail else { return nil }
+            let contextMenuImagePreviewViewModel = ContextMenuImagePreviewViewModel(aspectRatio: thumbnail.size, thumbnail: thumbnail)
+            let previewProvider = ContextMenuImagePreviewViewController()
+            previewProvider.viewModel = contextMenuImagePreviewViewModel
+            return previewProvider
+            
+        }, contextMenuActionProvider: { _ in
+            let children: [UIAction] = [
+                UIAction(
+                    title: L10n.Common.Controls.Actions.copy,
+                    image: UIImage(systemName: "doc.on.doc"),
+                    attributes: [],
+                    state: .off
+                ) { _ in
+                    print("Hi copy")
+                }
+            ]
+            return UIMenu(title: "", image: nil, identifier: nil, options: [], children: children)
+        }, previewAction: {
+            previewAction(viewModels[index])
+        })
+    }   // end func
     
     private func height(for rows: Int) -> CGFloat {
         guard let idealWidth = self.idealWidth else {
@@ -343,13 +322,13 @@ struct MediaGridContainerView_Previews: PreviewProvider {
                 durationMS: nil
             ),
             MediaView.ViewModel(
-                mediaKind: .photo,
-                aspectRatio: CGSize(width: 3482, height: 1959),
+                mediaKind: .animatedGIF,
+                aspectRatio: CGSize(width: 1200, height: 720),
                 altText: nil,
-                previewURL: URL(string: "https://www.nasa.gov/sites/default/files/thumbnails/image/pia20027_updated.jpg"),
-                assetURL: URL(string: "https://www.nasa.gov/sites/default/files/thumbnails/image/pia20027_updated.jpg"),
-                downloadURL: URL(string: "https://www.nasa.gov/sites/default/files/thumbnails/image/pia20027_updated.jpg"),
-                durationMS: nil
+                previewURL: URL(string: "https://media.mstdn.jp/cache/media_attachments/files/109/936/306/341/672/302/small/19d1c52c1a1713b2.png"),
+                assetURL: URL(string: "https://media.mstdn.jp/cache/media_attachments/files/109/936/306/341/672/302/small/19d1c52c1a1713b2.png"),
+                downloadURL: URL(string: "https://media.mstdn.jp/cache/media_attachments/files/109/936/306/341/672/302/original/19d1c52c1a1713b2.mp4"),
+                durationMS: 11084
             ),
             MediaView.ViewModel(
                 mediaKind: .video,
@@ -358,7 +337,7 @@ struct MediaGridContainerView_Previews: PreviewProvider {
                 previewURL: URL(string: "https://pbs.twimg.com/ext_tw_video_thumb/1629081362555899904/pu/img/em5qGBhoV0R1aGfv.jpg"),
                 assetURL: URL(string: "https://pbs.twimg.com/ext_tw_video_thumb/1629081362555899904/pu/img/em5qGBhoV0R1aGfv.jpg"),
                 downloadURL: URL(string: "https://video.twimg.com/ext_tw_video/1629081362555899904/pu/vid/1280x720/4OGsKDg67adqojtX.mp4?tag=12"),
-                durationMS: 105553160985088
+                durationMS: 10555
             ),
             MediaView.ViewModel(
                 mediaKind: .photo,
@@ -367,6 +346,15 @@ struct MediaGridContainerView_Previews: PreviewProvider {
                 previewURL: URL(string: "https://www.nasa.gov/sites/default/files/images/671506main_PIA15628_full.jpg"),
                 assetURL: URL(string: "https://www.nasa.gov/sites/default/files/images/671506main_PIA15628_full.jpg"),
                 downloadURL: URL(string: "https://www.nasa.gov/sites/default/files/images/671506main_PIA15628_full.jpg"),
+                durationMS: nil
+            ),
+            MediaView.ViewModel(
+                mediaKind: .photo,
+                aspectRatio: CGSize(width: 3482, height: 1959),
+                altText: nil,
+                previewURL: URL(string: "https://www.nasa.gov/sites/default/files/thumbnails/image/pia20027_updated.jpg"),
+                assetURL: URL(string: "https://www.nasa.gov/sites/default/files/thumbnails/image/pia20027_updated.jpg"),
+                downloadURL: URL(string: "https://www.nasa.gov/sites/default/files/thumbnails/image/pia20027_updated.jpg"),
                 durationMS: nil
             ),
         ]
