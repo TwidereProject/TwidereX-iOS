@@ -77,9 +77,16 @@ extension StatusView {
 //
 //        @Published public var isMyself = false
 //
-        @Published public var spoilerContent: MetaContent = PlaintextMetaContent(string: "")
+        @Published public var spoilerContent: MetaContent?
         @Published public var content: MetaContent = PlaintextMetaContent(string: "")
         
+        var isContentEmpty: Bool { content.string.isEmpty }
+        var isContentSensitive: Bool { spoilerContent != nil }
+        @Published public var isContentSensitiveToggled: Bool = false
+        public var isContentReveal: Bool {
+            return isContentSensitive ? isContentSensitiveToggled : !isContentEmpty
+        }
+
 //        @Published public var twitterTextProvider: TwitterTextProvider?
 //        
 //        @Published public var language: String?
@@ -1083,6 +1090,7 @@ extension StatusView.ViewModel {
             .compactMap { _ in status.author.nameMetaContent }
             .assign(to: &$authorName)
         status.author.publisher(for: \.username)
+            .map { _ in status.author.acct }
             .assign(to: &$authorUsernme)
         
         // timestamp
@@ -1093,21 +1101,39 @@ extension StatusView.ViewModel {
             break
         }
         
+        // spoiler content
+        if let spoilerText = status.spoilerText, !spoilerText.isEmpty {
+            do {
+                let content = MastodonContent(content: spoilerText, emojis: status.emojis.asDictionary)
+                let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
+                self.spoilerContent = metaContent
+            } catch {
+                assertionFailure(error.localizedDescription)
+                self.spoilerContent = nil
+            }
+        }
+        
         // content
         do {
             let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
             let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
             self.content = metaContent
-            // viewModel.sharePlaintextContent = metaContent.original
         } catch {
             assertionFailure(error.localizedDescription)
             self.content = PlaintextMetaContent(string: "")
         }
         
+        // content warning
+        isContentSensitiveToggled = status.isContentSensitiveToggled
+        status.publisher(for: \.isContentSensitiveToggled)
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isContentSensitiveToggled, on: self)
+            .store(in: &disposeBag)
+        
         // media
         mediaViewModels = MediaView.ViewModel.viewModels(from: status)
         
-        // content warning
+        // media content warning
         isMediaSensitive = status.isMediaSensitive
         isMediaSensitiveToggled = status.isMediaSensitiveToggled
         status.publisher(for: \.isMediaSensitiveToggled)

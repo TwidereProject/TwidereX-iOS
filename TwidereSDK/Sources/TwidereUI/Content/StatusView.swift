@@ -24,6 +24,8 @@ public protocol StatusViewDelegate: AnyObject {
 //    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
 //
 //    func statusView(_ statusView: StatusView, expandContentButtonDidPressed button: UIButton)
+    func statusView(_ viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
+
 //
 //    func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
 //    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
@@ -42,6 +44,9 @@ public protocol StatusViewDelegate: AnyObject {
 //    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
 //
 //    func statusView(_ statusView: StatusView, translateButtonDidPressed button: UIButton)
+    
+    func statusView(_ viewModel: StatusView.ViewModel, viewHeightDidChange: Void)
+
 //
 //    // a11y
 //    func statusView(_ statusView: StatusView, accessibilityActivate: Void)
@@ -77,10 +82,31 @@ public struct StatusView: View {
                         // authorView
                         authorView
                             .padding(.horizontal, viewModel.margin)
+                        if viewModel.spoilerContent != nil {
+                            spoilerContentView
+                                .padding(.horizontal, viewModel.margin)
+                                .border(.red, width: 1)
+                            if !viewModel.isContentEmpty {
+                                Button {
+                                    viewModel.delegate?.statusView(viewModel, toggleContentDisplay: !viewModel.isContentReveal)
+                                } label: {
+                                    HStack {
+                                        Image(uiImage: Asset.Editing.ellipsisLarge.image.withRenderingMode(.alwaysTemplate))
+                                            .background(Color(uiColor: .tertiarySystemFill))
+                                            .clipShape(Capsule())
+                                        Spacer()
+                                    }
+                                }
+                                .buttonStyle(.borderless)
+                                .id(UUID())     // fix animation issue
+                                .padding(.horizontal, viewModel.margin)
+                                .border(.red, width: 1)
+                            }
+                        }
                         // content
-                        if !viewModel.content.string.isEmpty {
+                        if viewModel.isContentReveal {
                             contentView
-                                .padding(.horizontal, viewModel.margin)                            
+                                .padding(.horizontal, viewModel.margin)
                         }
                         // media
                         if !viewModel.mediaViewModels.isEmpty {
@@ -114,6 +140,10 @@ public struct StatusView: View {
                 .padding(.bottom, viewModel.hasToolbar ? .zero : viewModel.margin)
             }
         }   // end VStack
+        .frame(alignment: .top)
+        .onReceive(viewModel.$isContentSensitiveToggled) { _ in
+            viewModel.delegate?.statusView(viewModel, viewHeightDidChange: Void())
+        }
     }
 
 }
@@ -194,6 +224,17 @@ extension StatusView {
                 .clipShape(Circle())
         }
         .buttonStyle(.borderless)
+    }
+    
+    public var spoilerContentView: some View {
+        VStack(alignment: .leading, spacing: .zero) {
+            TextViewRepresentable(
+                metaContent: viewModel.spoilerContent ?? PlaintextMetaContent(string: ""),
+                textStyle: .statusContent,
+                width: contentWidth
+            )
+            .frame(width: contentWidth)
+        }
     }
     
     public var contentView: some View {

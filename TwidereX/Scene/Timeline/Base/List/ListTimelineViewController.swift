@@ -29,6 +29,7 @@ class ListTimelineViewController: TimelineViewController {
         tableView.backgroundColor = .systemBackground
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
+        tableView.selfSizingInvalidation = .enabled
         return tableView
     }()
     

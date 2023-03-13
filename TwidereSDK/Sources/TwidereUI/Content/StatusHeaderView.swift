@@ -37,11 +37,8 @@ public struct StatusHeaderView: View {
                 
             } label: {
                 HStack(spacing: StatusHeaderView.iconImageTrailingSpacing) {
-                    Image(uiImage: viewModel.image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: iconImageDimension, height: iconImageDimension)
-                        .clipShape(Circle())
+                    Color.clear
+                        .frame(width: iconImageDimension)
                     LabelRepresentable(
                         metaContent: viewModel.label,
                         textStyle: .statusHeader,
@@ -55,8 +52,16 @@ public struct StatusHeaderView: View {
                             value: proxy.frame(in: .local).size.height
                         )
                     })
+                    .border(.blue, width: 1)
                     .onPreferenceChange(ViewHeightKey.self) { height in
                         self.iconImageDimension = height
+                    }
+                    .overlay(alignment: .leading) {
+                        Image(uiImage: viewModel.image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: iconImageDimension, height: iconImageDimension)
+                            .offset(x: -(StatusHeaderView.iconImageTrailingSpacing + iconImageDimension), y: 0)
                     }
                     Spacer()
                 }

@@ -108,7 +108,7 @@ extension DataSourceFacade {
 
 extension DataSourceFacade {
 
-    static func responseToExpandContentAction(
+    static func responseToToggleContentSensitiveAction(
         provider: DataSourceProvider & AuthContextProvider,
         target: StatusTarget,
         status: StatusRecord
@@ -120,7 +120,7 @@ extension DataSourceFacade {
         )
         guard let redirectRecord = _redirectRecord else { return }
         
-        try await responseToExpandContentAction(
+        try await responseToToggleContentSensitiveAction(
             provider: provider,
             status: redirectRecord
         )
@@ -134,7 +134,7 @@ extension DataSourceFacade {
     }
     
     @MainActor
-    static func responseToExpandContentAction(
+    static func responseToToggleContentSensitiveAction(
         provider: DataSourceProvider,
         status: StatusRecord
     ) async throws {
