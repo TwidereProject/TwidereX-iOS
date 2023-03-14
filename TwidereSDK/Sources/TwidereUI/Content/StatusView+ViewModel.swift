@@ -134,21 +134,38 @@ extension StatusView {
 //        @Published public var quoteCount: Int = 0
 //        @Published public var likeCount: Int = 0
 //        
-//        @Published public var visibility: StatusVisibility?
+        @Published public var visibility: MastodonVisibility?
+        var visibilityIconImage: UIImage? {
+            switch visibility {
+            case .public:
+                return Asset.ObjectTools.globeMiniInline.image.withRenderingMode(.alwaysTemplate)
+            case .unlisted:
+                return Asset.ObjectTools.lockOpenMiniInline.image.withRenderingMode(.alwaysTemplate)
+            case .private:
+                return Asset.ObjectTools.lockMiniInline.image.withRenderingMode(.alwaysTemplate)
+            case .direct:
+                return Asset.Communication.mailMiniInline.image.withRenderingMode(.alwaysTemplate)
+            case ._other:
+                assertionFailure()
+                return nil
+            case nil:
+                return nil
+            }
+        }
 //        @Published public var replySettings: Twitter.Entity.V2.Tweet.ReplySettings?
-//        
+//
 //        @Published public var dateTimeProvider: DateTimeProvider?
 //        @Published public var timestamp: Date?
 //        @Published public var timeAgoStyleTimestamp: String?
 //        @Published public var formattedStyleTimestamp: String?
-//        
+//
 //        @Published public var sharePlaintextContent: String?
 //        @Published public var shareStatusURL: String?
-//        
-//        @Published public var isDeletable = false
-//        
-//        @Published public var groupedAccessibilityLabel = ""
 //
+//        @Published public var isDeletable = false
+//
+//        @Published public var groupedAccessibilityLabel = ""
+
         @Published public var timestampLabelViewModel: TimestampLabelView.ViewModel?
         
 //        
@@ -920,7 +937,7 @@ extension StatusView.ViewModel {
     
     public var hasToolbar: Bool {
         switch kind {
-        case .timeline, .conversationRoot, .conversationThread:
+        case .timeline, .repost, .conversationRoot, .conversationThread:
             return true
         default:
             return false
@@ -1092,6 +1109,9 @@ extension StatusView.ViewModel {
         status.author.publisher(for: \.username)
             .map { _ in status.author.acct }
             .assign(to: &$authorUsernme)
+        
+        // visibility
+        visibility = status.visibility
         
         // timestamp
         switch kind {

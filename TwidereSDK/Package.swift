@@ -30,7 +30,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.34.0"),
         .package(url: "https://github.com/Flipboard/FLAnimatedImage.git", from: "1.0.0"),
         .package(url: "https://github.com/MainasuK/CommonOSLog", from: "0.1.1"),
-        .package(url: "https://github.com/TwidereProject/MetaTextKit.git", exact: "4.1.2"),
+        .package(url: "https://github.com/TwidereProject/MetaTextKit.git", exact: "4.4.0"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.5.0"),
         .package(url: "https://github.com/Alamofire/AlamofireImage.git", from: "4.1.0"),
         .package(url: "https://github.com/Alamofire/AlamofireNetworkActivityIndicator.git", from: "3.1.0"),

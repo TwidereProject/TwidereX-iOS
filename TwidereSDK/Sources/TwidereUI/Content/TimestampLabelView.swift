@@ -15,8 +15,6 @@ public struct TimestampLabelView: View {
     
     @ObservedObject public var viewModel: ViewModel
     
-    @State var int = 0
-    
     public init(viewModel: TimestampLabelView.ViewModel) {
         self.viewModel = viewModel
     }

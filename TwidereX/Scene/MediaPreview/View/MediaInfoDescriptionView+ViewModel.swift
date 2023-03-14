@@ -35,7 +35,7 @@ extension MediaInfoDescriptionView {
         
         @Published public var content: MetaContent?
 
-        @Published public var visibility: StatusVisibility?
+        @Published public var visibility: MastodonVisibility?
      
         @Published public var isRepost = false
         @Published public var isRepostEnabled = true
@@ -80,7 +80,7 @@ extension MediaInfoDescriptionView {
                     return !protected
                 case .mastodon:
                     guard !isMyself else { return true }
-                    guard case let .mastodon(visibility) = visibility else {
+                    guard let visibility = visibility else {
                         return true
                     }
                     switch visibility {
@@ -328,7 +328,7 @@ extension MediaInfoDescriptionView {
             viewModel.content = PlaintextMetaContent(string: "")
         }
         
-        viewModel.visibility = status.visibility.asStatusVisibility
+        viewModel.visibility = status.visibility
     }
     
     private func configureToolbar(mastodonStatus status: MastodonStatus) {

@@ -54,10 +54,16 @@ public protocol StatusViewDelegate: AnyObject {
 
 public struct StatusView: View {
     
+    static let logger = Logger(subsystem: "StatusView", category: "View")
+    var logger: Logger { StatusView.logger }
+    
     static var hangingAvatarButtonDimension: CGFloat { 44.0 }
     static var hangingAvatarButtonTrailingSapcing: CGFloat { 10.0 }
     
     @ObservedObject public private(set) var viewModel: ViewModel
+    
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @State private var visibilityIconImageDimension = CGFloat.zero
     
     public init(viewModel: StatusView.ViewModel) {
         self.viewModel = viewModel
@@ -134,6 +140,9 @@ public struct StatusView: View {
                                 }
                                 .cornerRadius(12)
                         }
+                        if viewModel.hasToolbar {
+                            toolbarView
+                        }
                     }   // end VStack
                 }   // end HStack
                 .padding(.top, viewModel.margin)
@@ -165,30 +174,59 @@ extension StatusView {
                 avatarButton
             }
             // info
-            HStack(alignment: .firstTextBaseline, spacing: 5) {
-                // name
-                LabelRepresentable(
-                    metaContent: viewModel.authorName,
-                    textStyle: .statusAuthorName,
-                    setupLabel: { label in
-                        label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-                        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-                    }
-                )
-                // username
-                LabelRepresentable(
-                    metaContent: PlaintextMetaContent(string: "@" + viewModel.authorUsernme),
-                    textStyle: .statusAuthorUsername,
-                    setupLabel: { label in
-                        label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-                        label.setContentCompressionResistancePriority(.defaultLow - 100, for: .horizontal)
-                    }
-                )
+            let infoLayout = dynamicTypeSize < .accessibility1 ?
+                AnyLayout(HStackLayout(alignment: .center, spacing: 6)) :
+                AnyLayout(VStackLayout(alignment: .leading, spacing: .zero))
+            infoLayout {
+                let nameLayout = dynamicTypeSize < .accessibility1 ?
+                    AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 6)) :
+                    AnyLayout(VStackLayout(alignment: .leading, spacing: .zero))
+                nameLayout {
+                    // name
+                    LabelRepresentable(
+                        metaContent: viewModel.authorName,
+                        textStyle: .statusAuthorName,
+                        setupLabel: { label in
+                            label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+                            label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+                        }
+                    )
+                    // username
+                    LabelRepresentable(
+                        metaContent: PlaintextMetaContent(string: "@" + viewModel.authorUsernme),
+                        textStyle: .statusAuthorUsername,
+                        setupLabel: { label in
+                            label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+                            label.setContentCompressionResistancePriority(.defaultLow - 100, for: .horizontal)
+                        }
+                    )
+                }
                 Spacer()
-                // timestamp
-                if let timestampLabelViewModel = viewModel.timestampLabelViewModel {
-                    TimestampLabelView(viewModel: timestampLabelViewModel)
-                } 
+                HStack(spacing: 6) {
+                    // mastodon visibility
+                    if let visibilityIconImage = viewModel.visibilityIconImage, visibilityIconImageDimension > 0 {
+                        let dimension = ceil(visibilityIconImageDimension * 0.8)
+                        Color.clear
+                            .frame(width: dimension)
+                            .overlay {
+                                VectorImageView(image: visibilityIconImage, tintColor: TextStyle.statusTimestamp.textColor)
+                                    .frame(width: dimension, height: dimension)
+                            }
+                    }
+                    // timestamp
+                    if let timestampLabelViewModel = viewModel.timestampLabelViewModel {
+                        TimestampLabelView(viewModel: timestampLabelViewModel)
+                            .background(GeometryReader { proxy in
+                                Color.clear.preference(
+                                    key: ViewHeightKey.self,
+                                    value: proxy.frame(in: .local).size.height
+                                )
+                            })
+                            .onPreferenceChange(ViewHeightKey.self) { height in
+                                self.visibilityIconImageDimension = height
+                            }
+                    }
+                }
             }
             .background(GeometryReader { proxy in
                 Color.clear.preference(
@@ -245,6 +283,134 @@ extension StatusView {
                 width: contentWidth
             )
             .frame(width: contentWidth)
+        }
+    }
+    
+    var toolbarView: some View {
+        HStack {
+            ToolbarButton(
+                action: { kind in
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): reply")
+                },
+                kind: .reply,
+                image: Asset.Arrows.arrowTurnUpLeftMini.image.withRenderingMode(.alwaysTemplate),
+                text: "",
+                tintColor: nil
+            )
+            ToolbarButton(
+                action: { kind in
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): repost")
+                },
+                kind: .repost,
+                image: Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate),
+                text: "",
+                tintColor: nil
+            )
+            ToolbarButton(
+                action: { kind in
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): like")
+                },
+                kind: .like,
+                image: Asset.Health.heartMini.image.withRenderingMode(.alwaysTemplate),
+                text: "",
+                tintColor: nil
+            )
+            // share
+            Button {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): share")
+            } label: {
+                HStack {
+                    let image: UIImage = {
+                        switch viewModel.kind {
+                        case .conversationRoot:
+                            return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
+                        default:
+                            return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
+                        }
+                    }()
+                    Image(uiImage: image)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .buttonStyle(.borderless)
+            .modifier(MaxWidthModifier(max: nil))
+        }   // end HStack
+        .frame(height: 48)
+    }
+}
+
+extension StatusView {
+    public struct ToolbarButton: View {
+        static let numberMetricFormatter = NumberMetricFormatter()
+
+        let action: (Kind) -> Void
+        let kind: Kind
+        let image: UIImage
+        let text: String
+        let tintColor: UIColor?
+
+        public init(
+            action: @escaping (Kind) -> Void,
+            kind: Kind,
+            image: UIImage,
+            text: String,
+            tintColor: UIColor?
+        ) {
+            self.action = action
+            self.kind = kind
+            self.image = image
+            self.text = text
+            self.tintColor = tintColor
+        }
+
+        public var body: some View {
+            Button {
+                action(kind)
+            } label: {
+                HStack {
+                    Image(uiImage: image)
+                    Text(text)
+                        .font(.system(size: 12, weight: .medium))
+                        .lineLimit(1)
+                    Spacer()
+                }
+            }
+            .buttonStyle(.borderless)
+            .tint(Color(uiColor: tintColor ?? .secondaryLabel))
+            .foregroundColor(Color(uiColor: tintColor ?? .secondaryLabel))
+        }
+
+        static func metric(count: Int?) -> String {
+            guard let count = count, count > 0 else {
+                return ""
+            }
+            return ToolbarButton.numberMetricFormatter.string(from: count) ?? ""
+        }
+
+        public enum Kind: Hashable {
+            case reply
+            case repost
+            case quote
+            case like
+            case share
+        }
+    }
+    
+    public struct MaxWidthModifier: ViewModifier {
+        let max: CGFloat?
+        
+        public init(max: CGFloat?) {
+            self.max = max
+        }
+        
+        @ViewBuilder
+        public func body(content: Content) -> some View {
+            if let max = max {
+                content
+                    .frame(maxWidth: max)
+            } else {
+                content
+            }
         }
     }
 }

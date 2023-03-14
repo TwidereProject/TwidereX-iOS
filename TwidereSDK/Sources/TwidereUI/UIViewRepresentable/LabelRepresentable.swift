@@ -17,6 +17,7 @@ public struct LabelRepresentable: UIViewRepresentable {
         label.numberOfLines = 1
         label.backgroundColor = .clear
         label.adjustsFontSizeToFitWidth = false
+        label.allowsDefaultTighteningForTruncation = false
         label.lineBreakMode = .byTruncatingTail
         label.setContentHuggingPriority(.defaultHigh, for: .horizontal)     // always try grow vertical
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -68,7 +69,6 @@ public struct LabelRepresentable: UIViewRepresentable {
         )
         
         label.attributedText = attributedString
-//        label.invalidateIntrinsicContentSize()
         
         return label
     }
