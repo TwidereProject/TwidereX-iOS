@@ -30,12 +30,12 @@ extension StatusTableViewCell {
         }
     }
     
-    func configure(
-        tableView: UITableView,
-        viewModel: ViewModel,
-        configurationContext: StatusView.ConfigurationContext,
-        delegate: StatusViewTableViewCellDelegate?
-    ) {
+//    func configure(
+//        tableView: UITableView,
+//        viewModel: ViewModel,
+//        configurationContext: StatusView.ConfigurationContext,
+//        delegate: StatusViewTableViewCellDelegate?
+//    ) {
 //        if statusView.frame == .zero {
 //            // set status view width
 //            statusView.frame.size.width = tableView.readableContentGuide.layoutFrame.width
@@ -91,7 +91,7 @@ extension StatusTableViewCell {
 //                UIView.setAnimationsEnabled(true)
 //            }
 //            .store(in: &disposeBag)
-    }
+//    }
 
 }
 

@@ -159,210 +159,205 @@ extension MediaInfoDescriptionView.ViewModel {
     }
 }
 
-
-extension MediaInfoDescriptionView {
-    public typealias ConfigurationContext = StatusView.ConfigurationContext
-}
-
 extension MediaInfoDescriptionView {
     public func configure(
-        statusObject object: StatusObject,
-        configurationContext: ConfigurationContext
+        statusObject object: StatusObject
+        // configurationContext: ConfigurationContext
     ) {
-        switch object {
-        case .twitter(let status):
-            configure(
-                twitterStatus: status,
-                configurationContext: configurationContext
-            )
-        case .mastodon(let status):
-            configure(
-                mastodonStatus: status,
-                configurationContext: configurationContext
-            )
-        }
+//        switch object {
+//        case .twitter(let status):
+//            configure(
+//                twitterStatus: status,
+//                configurationContext: configurationContext
+//            )
+//        case .mastodon(let status):
+//            configure(
+//                mastodonStatus: status,
+//                configurationContext: configurationContext
+//            )
+//        }
     }
 }
 
 extension MediaInfoDescriptionView {
-    public func configure(
-        twitterStatus status: TwitterStatus,
-        configurationContext: ConfigurationContext
-    ) {
-        viewModel.platform = .twitter
-        viewModel.dateTimeProvider = configurationContext.dateTimeProvider
-        viewModel.twitterTextProvider = configurationContext.twitterTextProvider
-
-        configureAuthor(twitterStatus: status)
-        configureContent(twitterStatus: status)
-        configureToolbar(twitterStatus: status)
-    }
-    
-    private func configureAuthor(twitterStatus status: TwitterStatus) {
-        let author = (status.repost ?? status).author
-        
-        // author avatar
-        author.publisher(for: \.profileImageURL)
-            .map { _ in author.avatarImageURL() }
-            .assign(to: \.authorAvatarImageURL, on: viewModel)
-            .store(in: &disposeBag)
-        // lock
-        author.publisher(for: \.protected)
-            .assign(to: \.protected, on: viewModel)
-            .store(in: &disposeBag)
-        // author name
-        author.publisher(for: \.name)
-            .map { PlaintextMetaContent(string: $0) }
-            .assign(to: \.authorName, on: viewModel)
-            .store(in: &disposeBag)
-    }
-    
-    private func configureContent(twitterStatus status: TwitterStatus) {
-        guard let twitterTextProvider = viewModel.twitterTextProvider else {
-            assertionFailure()
-            return
-        }
-        
-        let status = status.repost ?? status
-        let content = TwitterContent(content: status.text)
-        let metaContent = TwitterMetaContent.convert(
-            content: content,
-            urlMaximumLength: 20,
-            twitterTextProvider: twitterTextProvider
-        )
-        viewModel.content = metaContent
-        viewModel.visibility = nil
-    }
-    
-    private func configureToolbar(twitterStatus status: TwitterStatus) {
-        let status = status.repost ?? status
-        
-        // relationship
-        Publishers.CombineLatest(
-            viewModel.$authenticationContext,
-            status.publisher(for: \.repostBy)
-        )
-        .map { authenticationContext, repostBy in
-            guard let authenticationContext = authenticationContext?.twitterAuthenticationContext else {
-                return false
-            }
-            let userID = authenticationContext.userID
-            return repostBy.contains(where: { $0.id == userID })
-        }
-        .assign(to: \.isRepost, on: viewModel)
-        .store(in: &disposeBag)
-        
-        Publishers.CombineLatest(
-            viewModel.$authenticationContext,
-            status.publisher(for: \.likeBy)
-        )
-        .map { authenticationContext, likeBy in
-            guard let authenticationContext = authenticationContext?.twitterAuthenticationContext else {
-                return false
-            }
-            let userID = authenticationContext.userID
-            return likeBy.contains(where: { $0.id == userID })
-        }
-        .assign(to: \.isLike, on: viewModel)
-        .store(in: &disposeBag)
-    }
+//    public func configure(
+//        twitterStatus status: TwitterStatus,
+//        configurationContext: ConfigurationContext
+//    ) {
+//        viewModel.platform = .twitter
+//        viewModel.dateTimeProvider = configurationContext.dateTimeProvider
+//        viewModel.twitterTextProvider = configurationContext.twitterTextProvider
+//
+//        configureAuthor(twitterStatus: status)
+//        configureContent(twitterStatus: status)
+//        configureToolbar(twitterStatus: status)
+//    }
+//
+//    private func configureAuthor(twitterStatus status: TwitterStatus) {
+//        let author = (status.repost ?? status).author
+//
+//        // author avatar
+//        author.publisher(for: \.profileImageURL)
+//            .map { _ in author.avatarImageURL() }
+//            .assign(to: \.authorAvatarImageURL, on: viewModel)
+//            .store(in: &disposeBag)
+//        // lock
+//        author.publisher(for: \.protected)
+//            .assign(to: \.protected, on: viewModel)
+//            .store(in: &disposeBag)
+//        // author name
+//        author.publisher(for: \.name)
+//            .map { PlaintextMetaContent(string: $0) }
+//            .assign(to: \.authorName, on: viewModel)
+//            .store(in: &disposeBag)
+//    }
+//
+//    private func configureContent(twitterStatus status: TwitterStatus) {
+//        guard let twitterTextProvider = viewModel.twitterTextProvider else {
+//            assertionFailure()
+//            return
+//        }
+//
+//        let status = status.repost ?? status
+//        let content = TwitterContent(content: status.text)
+//        let metaContent = TwitterMetaContent.convert(
+//            content: content,
+//            urlMaximumLength: 20,
+//            twitterTextProvider: twitterTextProvider
+//        )
+//        viewModel.content = metaContent
+//        viewModel.visibility = nil
+//    }
+//
+//    private func configureToolbar(twitterStatus status: TwitterStatus) {
+//        let status = status.repost ?? status
+//
+//        // relationship
+//        Publishers.CombineLatest(
+//            viewModel.$authenticationContext,
+//            status.publisher(for: \.repostBy)
+//        )
+//        .map { authenticationContext, repostBy in
+//            guard let authenticationContext = authenticationContext?.twitterAuthenticationContext else {
+//                return false
+//            }
+//            let userID = authenticationContext.userID
+//            return repostBy.contains(where: { $0.id == userID })
+//        }
+//        .assign(to: \.isRepost, on: viewModel)
+//        .store(in: &disposeBag)
+//
+//        Publishers.CombineLatest(
+//            viewModel.$authenticationContext,
+//            status.publisher(for: \.likeBy)
+//        )
+//        .map { authenticationContext, likeBy in
+//            guard let authenticationContext = authenticationContext?.twitterAuthenticationContext else {
+//                return false
+//            }
+//            let userID = authenticationContext.userID
+//            return likeBy.contains(where: { $0.id == userID })
+//        }
+//        .assign(to: \.isLike, on: viewModel)
+//        .store(in: &disposeBag)
+//    }
 }
 
 // MARK: - Mastodon
 extension MediaInfoDescriptionView {
-    public func configure(
-        mastodonStatus status: MastodonStatus,
-        configurationContext: ConfigurationContext
-    ) {
-        viewModel.platform = .mastodon
-        viewModel.dateTimeProvider = configurationContext.dateTimeProvider
-        viewModel.twitterTextProvider = configurationContext.twitterTextProvider
-        
-//        configureHeader(mastodonStatus: status, mastodonNotification: notification)
-        configureAuthor(mastodonStatus: status)
-        configureContent(mastodonStatus: status)
-//        configureMedia(mastodonStatus: status)
-        configureToolbar(mastodonStatus: status)
-    }
+//    public func configure(
+//        mastodonStatus status: MastodonStatus,
+//        configurationContext: ConfigurationContext
+//    ) {
+//        viewModel.platform = .mastodon
+//        viewModel.dateTimeProvider = configurationContext.dateTimeProvider
+//        viewModel.twitterTextProvider = configurationContext.twitterTextProvider
+//
+////        configureHeader(mastodonStatus: status, mastodonNotification: notification)
+//        configureAuthor(mastodonStatus: status)
+//        configureContent(mastodonStatus: status)
+////        configureMedia(mastodonStatus: status)
+//        configureToolbar(mastodonStatus: status)
+//    }
     
-    private func configureAuthor(mastodonStatus status: MastodonStatus) {
-        let author = (status.repost ?? status).author
-        
-        // author avatar
-        author.publisher(for: \.avatar)
-            .map { url in url.flatMap { URL(string: $0) } }
-            .assign(to: \.authorAvatarImageURL, on: viewModel)
-            .store(in: &disposeBag)
-        // author name
-        Publishers.CombineLatest(
-            author.publisher(for: \.displayName),
-            author.publisher(for: \.emojis)
-        )
-        .map { _, emojis in
-            let content = MastodonContent(content: author.name, emojis: emojis.asDictionary)
-            do {
-                let metaContent = try MastodonMetaContent.convert(document: content)
-                return metaContent
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return PlaintextMetaContent(string: author.name)
-            }
-        }
-        .assign(to: \.authorName, on: viewModel)
-        .store(in: &disposeBag)
-        // protected
-        author.publisher(for: \.locked)
-            .assign(to: \.protected, on: viewModel)
-            .store(in: &disposeBag)
-
-    }
-    
-    private func configureContent(mastodonStatus status: MastodonStatus) {
-        let status = status.repost ?? status
-        let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
-        do {
-            let metaContent = try MastodonMetaContent.convert(document: content)
-            viewModel.content = metaContent
-        } catch {
-            assertionFailure(error.localizedDescription)
-            viewModel.content = PlaintextMetaContent(string: "")
-        }
-        
-        viewModel.visibility = status.visibility
-    }
-    
-    private func configureToolbar(mastodonStatus status: MastodonStatus) {
-        let status = status.repost ?? status
-        
-        // relationship
-        Publishers.CombineLatest(
-            viewModel.$authenticationContext,
-            status.publisher(for: \.repostBy)
-        )
-            .map { authenticationContext, repostBy in
-                guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
-                    return false
-                }
-                let domain = authenticationContext.domain
-                let userID = authenticationContext.userID
-                return repostBy.contains(where: { $0.id == userID && $0.domain == domain })
-            }
-            .assign(to: \.isRepost, on: viewModel)
-            .store(in: &disposeBag)
-        
-        Publishers.CombineLatest(
-            viewModel.$authenticationContext,
-            status.publisher(for: \.likeBy)
-        )
-            .map { authenticationContext, likeBy in
-                guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
-                    return false
-                }
-                let domain = authenticationContext.domain
-                let userID = authenticationContext.userID
-                return likeBy.contains(where: { $0.id == userID && $0.domain == domain })
-            }
-            .assign(to: \.isLike, on: viewModel)
-            .store(in: &disposeBag)
-    }
+//    private func configureAuthor(mastodonStatus status: MastodonStatus) {
+//        let author = (status.repost ?? status).author
+//        
+//        // author avatar
+//        author.publisher(for: \.avatar)
+//            .map { url in url.flatMap { URL(string: $0) } }
+//            .assign(to: \.authorAvatarImageURL, on: viewModel)
+//            .store(in: &disposeBag)
+//        // author name
+//        Publishers.CombineLatest(
+//            author.publisher(for: \.displayName),
+//            author.publisher(for: \.emojis)
+//        )
+//        .map { _, emojis in
+//            let content = MastodonContent(content: author.name, emojis: emojis.asDictionary)
+//            do {
+//                let metaContent = try MastodonMetaContent.convert(document: content)
+//                return metaContent
+//            } catch {
+//                assertionFailure(error.localizedDescription)
+//                return PlaintextMetaContent(string: author.name)
+//            }
+//        }
+//        .assign(to: \.authorName, on: viewModel)
+//        .store(in: &disposeBag)
+//        // protected
+//        author.publisher(for: \.locked)
+//            .assign(to: \.protected, on: viewModel)
+//            .store(in: &disposeBag)
+//
+//    }
+//    
+//    private func configureContent(mastodonStatus status: MastodonStatus) {
+//        let status = status.repost ?? status
+//        let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
+//        do {
+//            let metaContent = try MastodonMetaContent.convert(document: content)
+//            viewModel.content = metaContent
+//        } catch {
+//            assertionFailure(error.localizedDescription)
+//            viewModel.content = PlaintextMetaContent(string: "")
+//        }
+//        
+//        viewModel.visibility = status.visibility
+//    }
+//    
+//    private func configureToolbar(mastodonStatus status: MastodonStatus) {
+//        let status = status.repost ?? status
+//        
+//        // relationship
+//        Publishers.CombineLatest(
+//            viewModel.$authenticationContext,
+//            status.publisher(for: \.repostBy)
+//        )
+//            .map { authenticationContext, repostBy in
+//                guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
+//                    return false
+//                }
+//                let domain = authenticationContext.domain
+//                let userID = authenticationContext.userID
+//                return repostBy.contains(where: { $0.id == userID && $0.domain == domain })
+//            }
+//            .assign(to: \.isRepost, on: viewModel)
+//            .store(in: &disposeBag)
+//        
+//        Publishers.CombineLatest(
+//            viewModel.$authenticationContext,
+//            status.publisher(for: \.likeBy)
+//        )
+//            .map { authenticationContext, likeBy in
+//                guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
+//                    return false
+//                }
+//                let domain = authenticationContext.domain
+//                let userID = authenticationContext.userID
+//                return likeBy.contains(where: { $0.id == userID && $0.domain == domain })
+//            }
+//            .assign(to: \.isLike, on: viewModel)
+//            .store(in: &disposeBag)
+//    }
 }

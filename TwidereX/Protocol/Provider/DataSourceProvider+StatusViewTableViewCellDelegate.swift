@@ -323,6 +323,24 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
 
 // MARK: - toolbar
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        viewModel: StatusView.ViewModel,
+        statusToolbarButtonDidPressed action: StatusToolbarView.Action
+    ) {
+        Task {
+            guard let status = viewModel.status else {
+                assertionFailure()
+                return
+            }
+            await DataSourceFacade.responseToStatusToolbar(
+                provider: self,
+                status: status,
+                action: action
+            )
+        }   // end Task
+    }
+
 //    func tableViewCell(
 //        _ cell: UITableViewCell,
 //        statusView: StatusView,

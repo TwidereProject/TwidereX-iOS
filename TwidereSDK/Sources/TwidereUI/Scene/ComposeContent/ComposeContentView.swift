@@ -35,16 +35,12 @@ public struct ComposeContentView: View {
             VStack(spacing: .zero) {
                 // reply
                 switch viewModel.kind {
-                case .reply(let status):
-                    EmptyView()
-//                    ReplyStatusViewRepresentable(
-//                        statusObject: status,
-//                        configurationContext: viewModel.configurationContext.statusViewConfigureContext,
-//                        width: viewModel.viewSize.width - 2 * ComposeContentView.contentMargin
-//                    )
-//                    .padding(.top, 8)
-//                    .padding(.horizontal, ComposeContentView.contentMargin)
-//                    .frame(width: viewModel.viewSize.width)
+                case .reply:
+                    if let replyToStatusViewModel = viewModel.replyToStatusViewModel {
+                        StatusView(viewModel: replyToStatusViewModel)
+                            .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
+                            .padding(.top, 8)
+                    }
                 default:
                     EmptyView()
                 }

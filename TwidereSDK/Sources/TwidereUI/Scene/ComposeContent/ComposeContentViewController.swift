@@ -180,11 +180,19 @@ extension ComposeContentViewController {
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        viewModel.viewLayoutFrame.update(view: view)
+
         if viewModel.viewSize != view.frame.size {
             viewModel.viewSize = view.frame.size            
         }
     }
     
+    public override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        viewModel.viewLayoutFrame.update(view: view)
+    }
+
 }
 
 extension ComposeContentViewController {

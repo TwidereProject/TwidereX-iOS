@@ -17,26 +17,23 @@ import TwitterMeta
 import MastodonMeta
 import Meta
 
-extension StatusView {
-    public struct ConfigurationContext {
-        public let authContext: AuthContext
-        public let dateTimeProvider: DateTimeProvider
-        public let twitterTextProvider: TwitterTextProvider
-        public let viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
-        
-        public init(
-            authContext: AuthContext,
-            dateTimeProvider: DateTimeProvider,
-            twitterTextProvider: TwitterTextProvider,
-            viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
-        ) {
-            self.authContext = authContext
-            self.dateTimeProvider = dateTimeProvider
-            self.twitterTextProvider = twitterTextProvider
-            self.viewLayoutFramePublisher = viewLayoutFramePublisher
-        }
-    }
-}
+//extension StatusView {
+//    public struct ConfigurationContext {
+//        public let dateTimeProvider: DateTimeProvider
+//        public let twitterTextProvider: TwitterTextProvider
+//        public let viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
+//        
+//        public init(
+//            dateTimeProvider: DateTimeProvider,
+//            twitterTextProvider: TwitterTextProvider,
+//            viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
+//        ) {
+//            self.dateTimeProvider = dateTimeProvider
+//            self.twitterTextProvider = twitterTextProvider
+//            self.viewLayoutFramePublisher = viewLayoutFramePublisher
+//        }
+//    }
+//}
 
 //extension StatusView {
 //    public func configure(

@@ -261,18 +261,7 @@ extension TimelineViewController {
                     break
                 }
                 return settings
-            }(),
-            configurationContext: ComposeContentViewModel.ConfigurationContext(
-                apiService: context.apiService,
-                authenticationService: context.authenticationService,
-                mastodonEmojiService: context.mastodonEmojiService,
-                statusViewConfigureContext: .init(
-                    authContext: authContext,
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    viewLayoutFramePublisher: _viewModel.$viewLayoutFrame
-                )
-            )
+            }()
         )
         coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }

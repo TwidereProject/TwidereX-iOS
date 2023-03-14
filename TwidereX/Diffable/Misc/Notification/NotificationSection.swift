@@ -20,8 +20,8 @@ extension NotificationSection {
     struct Configuration {
         weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
         weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
-        let statusViewConfigurationContext: StatusView.ConfigurationContext
         let userViewConfigurationContext: UserView.ConfigurationContext
+        let viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     }
 
     static func diffableDataSource(
@@ -107,12 +107,12 @@ extension NotificationSection {
         viewModel: StatusTableViewCell.ViewModel,
         configuration: Configuration
     ) {
-        cell.configure(
-            tableView: tableView,
-            viewModel: viewModel,
-            configurationContext: configuration.statusViewConfigurationContext,
-            delegate: configuration.statusViewTableViewCellDelegate
-        )
+//        cell.configure(
+//            tableView: tableView,
+//            viewModel: viewModel,
+//            configurationContext: configuration.statusViewConfigurationContext,
+//            delegate: configuration.statusViewTableViewCellDelegate
+//        )
     }
     
     static func configure(

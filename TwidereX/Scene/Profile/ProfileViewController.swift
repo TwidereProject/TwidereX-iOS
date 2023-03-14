@@ -308,18 +308,7 @@ extension ProfileViewController {
                 } else {
                     return .mention(user: user)
                 }
-            }(),
-            configurationContext: ComposeContentViewModel.ConfigurationContext(
-                apiService: context.apiService,
-                authenticationService: context.authenticationService,
-                mastodonEmojiService: context.mastodonEmojiService,
-                statusViewConfigureContext: .init(
-                    authContext: authContext,
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    viewLayoutFramePublisher: composeViewModel.$viewLayoutFrame
-                )
-            )
+            }()
         )
         coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }

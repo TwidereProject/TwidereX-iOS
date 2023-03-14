@@ -26,10 +26,9 @@ extension HistorySection {
     
     struct Configuration {
         weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
-        let statusViewConfigurationContext: StatusView.ConfigurationContext
-        
         weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
         let userViewConfigurationContext: UserView.ConfigurationContext
+        let viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     }
     
     static func diffableDataSource(

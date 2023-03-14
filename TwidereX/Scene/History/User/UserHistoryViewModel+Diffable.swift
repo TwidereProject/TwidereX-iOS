@@ -21,17 +21,12 @@ extension UserHistoryViewModel {
             context: context,
             configuration: .init(
                 statusViewTableViewCellDelegate: nil,
-                statusViewConfigurationContext: .init(
-                    authContext: authContext,
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    viewLayoutFramePublisher: $viewLayoutFrame
-                ),
                 userViewTableViewCellDelegate: userViewTableViewCellDelegate,
                 userViewConfigurationContext: .init(
                     authContext: authContext,
                     listMembershipViewModel: nil
-                )
+                ),
+                viewLayoutFramePublisher: $viewLayoutFrame
             )
         )
         

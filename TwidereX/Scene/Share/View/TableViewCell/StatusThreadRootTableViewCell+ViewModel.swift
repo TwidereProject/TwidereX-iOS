@@ -32,12 +32,12 @@ extension StatusThreadRootTableViewCell {
         }
     }
     
-    func configure(
-        tableView: UITableView,
-        viewModel: StatusThreadRootTableViewCell.ViewModel,
-        configurationContext: StatusView.ConfigurationContext,
-        delegate: StatusViewTableViewCellDelegate?
-    ) {
+//    func configure(
+//        tableView: UITableView,
+//        viewModel: StatusThreadRootTableViewCell.ViewModel,
+//        configurationContext: StatusView.ConfigurationContext,
+//        delegate: StatusViewTableViewCellDelegate?
+//    ) {
 //        if statusView.frame == .zero {
 //            // set status view width
 //            statusView.frame.size.width = tableView.readableContentGuide.layoutFrame.width
@@ -85,6 +85,6 @@ extension StatusThreadRootTableViewCell {
 //            UIView.setAnimationsEnabled(true)
 //        }
 //        .store(in: &disposeBag)
-    }
+//    }
     
 }

@@ -74,30 +74,30 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider & Auth
     }
 
     
-    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
-        Task {
-            let source = DataSourceItem.Source(tableViewCell: nil, indexPath: nil)
-            guard let item = await item(from: source) else {
-                assertionFailure()
-                return
-            }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {
-                assertionFailure("only works for status data provider")
-                return
-            }
-            
-            await DataSourceFacade.responseToStatusToolbar(
-                provider: self,
-                status: status,
-                action: action,
-                sender: button,
-                authenticationContext: authContext.authenticationContext
-            )
-        }   // end Task
-    }   // end func
+//    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
+//        Task {
+//            let source = DataSourceItem.Source(tableViewCell: nil, indexPath: nil)
+//            guard let item = await item(from: source) else {
+//                assertionFailure()
+//                return
+//            }
+//            guard let status = await item.status(in: self.context.managedObjectContext) else {
+//                assertionFailure("only works for status data provider")
+//                return
+//            }
+//
+//            await DataSourceFacade.responseToStatusToolbar(
+//                provider: self,
+//                status: status,
+//                action: action,
+//                sender: button,
+//                authenticationContext: authContext.authenticationContext
+//            )
+//        }   // end Task
+//    }   // end func
     
-    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
-        assertionFailure("present UIAcitivityController directly")
-    }
+//    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
+//        assertionFailure("present UIAcitivityController directly")
+//    }
 
 }

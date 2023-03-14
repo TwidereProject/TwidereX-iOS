@@ -33,11 +33,11 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     
     // MARK: - layout
     @Published var viewSize: CGSize = .zero
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
 
     // input
     let context: AppContext
     public let kind: Kind
-    public let configurationContext: ConfigurationContext
     public let customEmojiPickerInputViewModel = CustomEmojiPickerInputView.ViewModel()
     public let platform: Platform
     
@@ -47,6 +47,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     
     // reply-to
     public private(set) var replyTo: StatusObject?
+    @Published public private(set) var replyToStatusViewModel: StatusView.ViewModel?
 
     // limit
     @Published public var maxTextInputLimit = 500
@@ -143,7 +144,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     @Published public private(set) var availableActions: Set<ComposeContentToolbarView.Action> = Set()
     @Published public private(set) var isMediaToolBarButtonEnabled = true
     @Published public private(set) var isPollToolBarButtonEnabled = true
-    @Published public private(set) var isLocationToolBarButtonEnabled = CLLocationManager.locationServicesEnabled()
+    @Published public private(set) var isLocationToolBarButtonEnabled = false
     
     // UI state
     @Published public private(set) var isComposeBarButtonEnabled = true
@@ -156,16 +157,18 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         context: AppContext,
         authContext: AuthContext,
         kind: Kind,
-        settings: Settings = Settings(),
-        configurationContext: ConfigurationContext
+        settings: Settings = Settings()
     ) {
         self.context = context
         self.authContext = authContext
         self.kind = kind
-        self.configurationContext = configurationContext
         self.platform = authContext.authenticationContext.platform
         super.init()
         // end init
+        
+        Task {
+            isLocationToolBarButtonEnabled = CLLocationManager.locationServicesEnabled()
+        }
 
         switch kind {
         case .post:
@@ -182,6 +185,12 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             }
         case .reply(let status):
             replyTo = status
+            replyToStatusViewModel = StatusView.ViewModel(
+                status: status,
+                authContext: nil,
+                delegate: nil,
+                viewLayoutFramePublisher: $viewLayoutFrame
+            )
             
             switch status {
             case .twitter(let status):
@@ -270,7 +279,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             guard let author = author else { return }
             switch author {
             case .twitter:
-                let twitterTextProvider = configurationContext.statusViewConfigureContext.twitterTextProvider
+                let twitterTextProvider = SwiftTwitterTextProvider()
                 let parseResult = twitterTextProvider.parse(text: content)
                 self.contentWeightedLength = parseResult.weightedLength
                 self.maxTextInputLimit = parseResult.maxWeightedLength
@@ -448,7 +457,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 guard let self = self else { return nil }
                 guard case let .mastodon(user) = author else { return nil }
                 let domain = user.domain
-                guard let emojiViewModel = self.configurationContext.mastodonEmojiService.dequeueEmojiViewModel(for: domain) else { return nil }
+                guard let emojiViewModel = self.context.mastodonEmojiService.dequeueEmojiViewModel(for: domain) else { return nil }
                 return emojiViewModel
             }
             .assign(to: &$emojiViewModel)
@@ -478,7 +487,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             guard case let .twitter(twitterAuthenticationContext) = authContext?.authenticationContext else { return nil }
             
             do {
-                let response = try await self.configurationContext.apiService.geoSearch(
+                let response = try await self.context.apiService.geoSearch(
                     latitude: currentLocation.coordinate.latitude,
                     longitude: currentLocation.coordinate.longitude,
                     granularity: "city",
@@ -602,25 +611,7 @@ extension ComposeContentViewModel {
             self.mastodonVisibility = mastodonVisibility
         }
     }
-    
-    public struct ConfigurationContext {
-        public let apiService: APIService
-        public let authenticationService: AuthenticationService
-        public let mastodonEmojiService: MastodonEmojiService
-        public let statusViewConfigureContext: StatusView.ConfigurationContext
 
-        public init(
-            apiService: APIService,
-            authenticationService: AuthenticationService,
-            mastodonEmojiService: MastodonEmojiService,
-            statusViewConfigureContext: StatusView.ConfigurationContext
-        ) {
-            self.apiService = apiService
-            self.authenticationService = authenticationService
-            self.mastodonEmojiService = mastodonEmojiService
-            self.statusViewConfigureContext = statusViewConfigureContext
-        }
-    }
 }
 
 extension ComposeContentViewModel {
@@ -753,7 +744,7 @@ extension ComposeContentViewModel {
         switch author {
         case .twitter(let author):
             return TwitterStatusPublisher(
-                apiService: configurationContext.apiService,
+                apiService: context.apiService,
                 author: author,
                 replyTo: {
                     guard case let .twitter(status) = replyTo else { return nil }

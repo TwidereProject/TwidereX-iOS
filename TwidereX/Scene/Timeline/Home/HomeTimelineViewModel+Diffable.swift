@@ -24,16 +24,12 @@ extension HomeTimelineViewModel {
         let configuration = StatusSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
             timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate,
-            statusViewConfigurationContext: .init(
-                authContext: authContext,
-                dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider(),
-                viewLayoutFramePublisher: $viewLayoutFrame
-            )
+            viewLayoutFramePublisher: $viewLayoutFrame
         )
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: configuration
         )
         

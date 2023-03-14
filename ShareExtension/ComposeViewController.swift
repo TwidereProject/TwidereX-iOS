@@ -103,18 +103,7 @@ extension ComposeViewController {
             let composeContentViewModel = ComposeContentViewModel(
                 context: context,
                 authContext: authContext,
-                kind: .post,
-                configurationContext: ComposeContentViewModel.ConfigurationContext(
-                    apiService: context.apiService,
-                    authenticationService: context.authenticationService,
-                    mastodonEmojiService: context.mastodonEmojiService,
-                    statusViewConfigureContext: .init(
-                        authContext: authContext,
-                        dateTimeProvider: DateTimeSwiftProvider(),
-                        twitterTextProvider: OfficialTwitterTextProvider(),
-                        viewLayoutFramePublisher: viewModel.$viewLayoutFrame
-                    )
-                )
+                kind: .post
             )
             let composeContentViewController = ComposeContentViewController()
             composeContentViewController.viewModel = composeContentViewModel

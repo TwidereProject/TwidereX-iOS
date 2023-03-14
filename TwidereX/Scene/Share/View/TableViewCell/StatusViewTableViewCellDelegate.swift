@@ -28,6 +28,7 @@ protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, viewHeightDidChange: Void)
     // sourcery:end
 }
@@ -46,6 +47,10 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
 
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool) {
         delegate?.tableViewCell(self, viewModel: viewModel, toggleContentWarningOverlayDisplay: isReveal)
+    }
+
+    func statusView(_ viewModel: StatusView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action) {
+        delegate?.tableViewCell(self, viewModel: viewModel, statusToolbarButtonDidPressed: action)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, viewHeightDidChange: Void) {

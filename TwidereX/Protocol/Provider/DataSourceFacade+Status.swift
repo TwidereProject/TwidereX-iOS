@@ -18,9 +18,7 @@ extension DataSourceFacade {
     static func responseToStatusToolbar(
         provider: DataSourceProvider & AuthContextProvider,
         status: StatusRecord,
-        action: StatusToolbar.Action,
-        sender: UIButton,
-        authenticationContext: AuthenticationContext
+        action: StatusToolbarView.Action
     ) async {
         defer {
             Task {
@@ -45,18 +43,7 @@ extension DataSourceFacade {
             let composeContentViewModel = ComposeContentViewModel(
                 context: provider.context,
                 authContext: provider.authContext,
-                kind: .reply(status: status),
-                configurationContext: ComposeContentViewModel.ConfigurationContext(
-                    apiService: provider.context.apiService,
-                    authenticationService: provider.context.authenticationService,
-                    mastodonEmojiService: provider.context.mastodonEmojiService,
-                    statusViewConfigureContext: .init(
-                        authContext: provider.authContext,
-                        dateTimeProvider: DateTimeSwiftProvider(),
-                        twitterTextProvider: OfficialTwitterTextProvider(),
-                        viewLayoutFramePublisher: composeViewModel.$viewLayoutFrame
-                    )
-                )
+                kind: .reply(status: status)
             )
             provider.coordinator.present(
                 scene: .compose(
@@ -71,7 +58,7 @@ extension DataSourceFacade {
                 try await DataSourceFacade.responseToStatusRepostAction(
                     provider: provider,
                     status: status,
-                    authenticationContext: authenticationContext
+                    authenticationContext: provider.authContext.authenticationContext
                 )
                 
                 // update store review count trigger
@@ -79,12 +66,15 @@ extension DataSourceFacade {
             } catch {
                 provider.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update repost failure: \(error.localizedDescription)")
             }
+            
+        case .quote:
+            assertionFailure()
         case .like:
             do {
                 try await DataSourceFacade.responseToStatusLikeAction(
                     provider: provider,
                     status: status,
-                    authenticationContext: authenticationContext
+                    authenticationContext: provider.authContext.authenticationContext
                 )
                 
                 // update store review count trigger
@@ -92,16 +82,16 @@ extension DataSourceFacade {
             } catch {
                 provider.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update like failure: \(error.localizedDescription)")
             }
-        case .menu:
+        case .share:
             // media menu button trigger this
             let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
             impactFeedbackGenerator.impactOccurred()
             
-            await DataSourceFacade.responseToStatusShareAction(
-                provider: provider,
-                status: status,
-                button: sender
-            )
+//            await DataSourceFacade.responseToStatusShareAction(
+//                provider: provider,
+//                status: status,
+//                button: sender
+//            )
         }   // end switch action
     }
 }

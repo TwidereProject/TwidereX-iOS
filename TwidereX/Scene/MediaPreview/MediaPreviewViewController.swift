@@ -136,15 +136,14 @@ extension MediaPreviewViewController {
         ])
         
         if let status = viewModel.status {
-            mediaInfoDescriptionView.configure(
-                statusObject: status,
-                configurationContext: .init(
-                    authContext: authContext,
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    viewLayoutFramePublisher: viewModel.$viewLayoutFrame
-                )
-            )
+//            mediaInfoDescriptionView.configure(
+//                statusObject: status,
+//                configurationContext: .init(
+//                    dateTimeProvider: DateTimeSwiftProvider(),
+//                    twitterTextProvider: OfficialTwitterTextProvider(),
+//                    viewLayoutFramePublisher: viewModel.$viewLayoutFrame
+//                )
+//            )
         } else {
             mediaInfoDescriptionView.isHidden = true
         }
@@ -327,11 +326,11 @@ extension MediaPreviewViewController: MediaPreviewImageViewControllerDelegate {
         impactFeedbackGenerator.impactOccurred()
         
         // trigger menu button action
-        mediaInfoDescriptionView.toolbar.delegate?.statusToolbar(
-            mediaInfoDescriptionView.toolbar,
-            actionDidPressed: .menu,
-            button: mediaInfoDescriptionView.toolbar.menuButton
-        )
+//        mediaInfoDescriptionView.toolbar.delegate?.statusToolbar(
+//            mediaInfoDescriptionView.toolbar,
+//            actionDidPressed: .menu,
+//            button: mediaInfoDescriptionView.toolbar.menuButton
+//        )
     }
 
 }

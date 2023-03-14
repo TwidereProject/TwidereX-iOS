@@ -41,7 +41,7 @@ extension ComposeContentViewModel: MetaTextDelegate {
                 let metaContent = TwitterMetaContent.convert(
                     content: content,
                     urlMaximumLength: .max,
-                    twitterTextProvider: configurationContext.statusViewConfigureContext.twitterTextProvider
+                    twitterTextProvider: SwiftTwitterTextProvider()
                 )
                 return metaContent
                 

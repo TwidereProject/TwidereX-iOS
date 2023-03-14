@@ -36,6 +36,7 @@ extension StatusView {
         
         // input
         public let status: StatusRecord?
+        public let authContext: AuthContext?
         public let kind: Kind
         public weak var delegate: StatusViewDelegate?
         
@@ -128,12 +129,8 @@ extension StatusView {
 //        @Published public var isRepostEnabled = true
 //        
 //        @Published public var isLike = false
-//        
-//        @Published public var replyCount: Int = 0
-//        @Published public var repostCount: Int = 0
-//        @Published public var quoteCount: Int = 0
-//        @Published public var likeCount: Int = 0
-//        
+
+
         @Published public var visibility: MastodonVisibility?
         var visibilityIconImage: UIImage? {
             switch visibility {
@@ -168,31 +165,18 @@ extension StatusView {
 
         @Published public var timestampLabelViewModel: TimestampLabelView.ViewModel?
         
-//        
-//        // public let contentRevealChangePublisher = PassthroughSubject<Void, Never>()
-//        
-        public enum Header {
-            case none
-            case repost(info: RepostInfo)
-            case notification(info: NotificationHeaderInfo)
-            // TODO: replyTo
-            
-            public struct RepostInfo {
-                public let authorNameMetaContent: MetaContent
-            }
-        }
+        // toolbar
+        public let toolbarViewModel = StatusToolbarView.ViewModel()
         
-//        public func prepareForReuse() {
-//            replySettings = nil
-//        }
-//        
-        init(
+        private init(
             status: StatusRecord?,
+            authContext: AuthContext?,
             kind: Kind,
             delegate: StatusViewDelegate?,
             viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
         ) {
             self.status = status
+            self.authContext = authContext
             self.kind = kind
             self.delegate = delegate
             // end init
@@ -948,6 +932,7 @@ extension StatusView.ViewModel {
 extension StatusView.ViewModel {
     public convenience init?(
         feed: Feed,
+        authContext: AuthContext?,
         delegate: StatusViewDelegate?,
         viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     ) {
@@ -955,6 +940,7 @@ extension StatusView.ViewModel {
         case .twitter(let status):
             self.init(
                 status: status,
+                authContext: authContext,
                 kind: .timeline,
                 delegate: delegate,
                 parentViewModel: nil,
@@ -963,6 +949,7 @@ extension StatusView.ViewModel {
         case .mastodon(let status):
             self.init(
                 status: status,
+                authContext: authContext,
                 kind: .timeline,
                 delegate: delegate,
                 parentViewModel: nil,
@@ -973,12 +960,41 @@ extension StatusView.ViewModel {
         case .none:
             return nil
         }
-    }
+    }   // end init
+    
+    public convenience init(
+        status: StatusObject,
+        authContext: AuthContext?,
+        delegate: StatusViewDelegate?,
+        viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
+    ) {
+        switch status {
+        case .twitter(let status):
+            self.init(
+                status: status,
+                authContext: authContext,
+                kind: .timeline,
+                delegate: delegate,
+                parentViewModel: nil,
+                viewLayoutFramePublisher: viewLayoutFramePublisher
+            )
+        case .mastodon(let status):
+            self.init(
+                status: status,
+                authContext: authContext,
+                kind: .timeline,
+                delegate: delegate,
+                parentViewModel: nil,
+                viewLayoutFramePublisher: viewLayoutFramePublisher
+            )
+        }
+    }   // end init
 }
  
 extension StatusView.ViewModel {
     public convenience init(
         status: TwitterStatus,
+        authContext: AuthContext?,
         kind: Kind,
         delegate: StatusViewDelegate?,
         parentViewModel: StatusView.ViewModel?,
@@ -986,6 +1002,7 @@ extension StatusView.ViewModel {
     ) {
         self.init(
             status: .twitter(record: status.asRecrod),
+            authContext: authContext,
             kind: kind,
             delegate: delegate,
             viewLayoutFramePublisher: viewLayoutFramePublisher
@@ -995,6 +1012,7 @@ extension StatusView.ViewModel {
         if let repost = status.repost {
             let _repostViewModel = StatusView.ViewModel(
                 status: repost,
+                authContext: authContext,
                 kind: .repost,
                 delegate: delegate,
                 parentViewModel: self,
@@ -1018,6 +1036,7 @@ extension StatusView.ViewModel {
         if let quote = status.quote {
             quoteViewModel = .init(
                 status: quote,
+                authContext: authContext,
                 kind: .quote,
                 delegate: delegate,
                 parentViewModel: self,
@@ -1055,12 +1074,40 @@ extension StatusView.ViewModel {
         
         // media
         mediaViewModels = MediaView.ViewModel.viewModels(from: status)
+        
+        // toolbar
+        status.publisher(for: \.replyCount)
+            .map { Int($0) }
+            .assign(to: &toolbarViewModel.$replyCount)
+        status.publisher(for: \.repostCount)
+            .map { Int($0) }
+            .assign(to: &toolbarViewModel.$repostCount)
+        status.publisher(for: \.likeCount)
+            .map { Int($0) }
+            .assign(to: &toolbarViewModel.$likeCount)
+        if case let .twitter(authenticationContext) = authContext?.authenticationContext {
+            status.publisher(for: \.likeBy)
+                .map { users -> Bool in
+                    let ids = users.map { $0.id }
+                    return ids.contains(authenticationContext.userID)
+                }
+                .assign(to: &toolbarViewModel.$isLiked)
+            status.publisher(for: \.repostBy)
+                .map { users -> Bool in
+                    let ids = users.map { $0.id }
+                    return ids.contains(authenticationContext.userID)
+                }
+                .assign(to: &toolbarViewModel.$isReposted)
+        } else {
+            // do nothing
+        }
     }   // end init
 }
 
 extension StatusView.ViewModel {
     public convenience init(
         status: MastodonStatus,
+        authContext: AuthContext?,
         kind: Kind,
         delegate: StatusViewDelegate?,
         parentViewModel: StatusView.ViewModel?,
@@ -1068,6 +1115,7 @@ extension StatusView.ViewModel {
     ) {
         self.init(
             status: .mastodon(record: status.asRecrod),
+            authContext: authContext,
             kind: kind,
             delegate: delegate,
             viewLayoutFramePublisher: viewLayoutFramePublisher
@@ -1077,6 +1125,7 @@ extension StatusView.ViewModel {
         if let repost = status.repost {
             let _repostViewModel = StatusView.ViewModel(
                 status: repost,
+                authContext: authContext,
                 kind: .repost,
                 delegate: delegate,
                 parentViewModel: self,
@@ -1161,5 +1210,31 @@ extension StatusView.ViewModel {
             .assign(to: \.isMediaSensitiveToggled, on: self)
             .store(in: &disposeBag)
             
+        // toolbar
+        status.publisher(for: \.replyCount)
+            .map { Int($0) }
+            .assign(to: &toolbarViewModel.$replyCount)
+        status.publisher(for: \.repostCount)
+            .map { Int($0) }
+            .assign(to: &toolbarViewModel.$repostCount)
+        status.publisher(for: \.likeCount)
+            .map { Int($0) }
+            .assign(to: &toolbarViewModel.$likeCount)
+        if case let .mastodon(authenticationContext) = authContext?.authenticationContext {
+            status.publisher(for: \.likeBy)
+                .map { users -> Bool in
+                    let ids = users.map { $0.id }
+                    return ids.contains(authenticationContext.userID)
+                }
+                .assign(to: &toolbarViewModel.$isLiked)
+            status.publisher(for: \.repostBy)
+                .map { users -> Bool in
+                    let ids = users.map { $0.id }
+                    return ids.contains(authenticationContext.userID)
+                }
+                .assign(to: &toolbarViewModel.$isReposted)
+        } else {
+            // do nothing
+        }
     }
 }

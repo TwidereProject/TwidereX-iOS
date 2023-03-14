@@ -24,16 +24,11 @@ extension NotificationTimelineViewModel {
         let configuration = NotificationSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
             userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-            statusViewConfigurationContext: .init(
-                authContext: authContext,
-                dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider(),
-                viewLayoutFramePublisher: $viewLayoutFrame
-            ),
             userViewConfigurationContext: .init(
                 authContext: authContext,
                 listMembershipViewModel: nil
-            )
+            ),
+            viewLayoutFramePublisher: $viewLayoutFrame
         )
         diffableDataSource = NotificationSection.diffableDataSource(
             tableView: tableView,

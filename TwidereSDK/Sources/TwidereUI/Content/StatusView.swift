@@ -40,7 +40,7 @@ public protocol StatusViewDelegate: AnyObject {
 //
 //    func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
 //
-//    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
+    func statusView(_ viewModel: StatusView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action)
 //    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
 //
 //    func statusView(_ statusView: StatusView, translateButtonDidPressed button: UIButton)
@@ -91,7 +91,6 @@ public struct StatusView: View {
                         if viewModel.spoilerContent != nil {
                             spoilerContentView
                                 .padding(.horizontal, viewModel.margin)
-                                .border(.red, width: 1)
                             if !viewModel.isContentEmpty {
                                 Button {
                                     viewModel.delegate?.statusView(viewModel, toggleContentDisplay: !viewModel.isContentReveal)
@@ -106,7 +105,6 @@ public struct StatusView: View {
                                 .buttonStyle(.borderless)
                                 .id(UUID())     // fix animation issue
                                 .padding(.horizontal, viewModel.margin)
-                                .border(.red, width: 1)
                             }
                         }
                         // content
@@ -124,6 +122,7 @@ public struct StatusView: View {
                                     viewModel.delegate?.statusView(viewModel, previewActionForMediaViewModel: mediaViewModel)
                                 }
                             )
+                            .clipShape(RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius))
                             .overlay {
                                 ContentWarningOverlayView(isReveal: viewModel.isMediaContentWarningOverlayReveal) {
                                     viewModel.delegate?.statusView(viewModel, toggleContentWarningOverlayDisplay: !viewModel.isMediaContentWarningOverlayReveal)
@@ -149,7 +148,6 @@ public struct StatusView: View {
                 .padding(.bottom, viewModel.hasToolbar ? .zero : viewModel.margin)
             }
         }   // end VStack
-        .frame(alignment: .top)
         .onReceive(viewModel.$isContentSensitiveToggled) { _ in
             viewModel.delegate?.statusView(viewModel, viewHeightDidChange: Void())
         }
@@ -287,131 +285,13 @@ extension StatusView {
     }
     
     var toolbarView: some View {
-        HStack {
-            ToolbarButton(
-                action: { kind in
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): reply")
-                },
-                kind: .reply,
-                image: Asset.Arrows.arrowTurnUpLeftMini.image.withRenderingMode(.alwaysTemplate),
-                text: "",
-                tintColor: nil
-            )
-            ToolbarButton(
-                action: { kind in
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): repost")
-                },
-                kind: .repost,
-                image: Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate),
-                text: "",
-                tintColor: nil
-            )
-            ToolbarButton(
-                action: { kind in
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): like")
-                },
-                kind: .like,
-                image: Asset.Health.heartMini.image.withRenderingMode(.alwaysTemplate),
-                text: "",
-                tintColor: nil
-            )
-            // share
-            Button {
-                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): share")
-            } label: {
-                HStack {
-                    let image: UIImage = {
-                        switch viewModel.kind {
-                        case .conversationRoot:
-                            return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
-                        default:
-                            return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
-                        }
-                    }()
-                    Image(uiImage: image)
-                        .foregroundColor(.secondary)
-                }
+        StatusToolbarView(
+            viewModel: viewModel.toolbarViewModel,
+            handler: { action in
+                viewModel.delegate?.statusView(viewModel, statusToolbarButtonDidPressed: action)
             }
-            .buttonStyle(.borderless)
-            .modifier(MaxWidthModifier(max: nil))
-        }   // end HStack
+        )
         .frame(height: 48)
-    }
-}
-
-extension StatusView {
-    public struct ToolbarButton: View {
-        static let numberMetricFormatter = NumberMetricFormatter()
-
-        let action: (Kind) -> Void
-        let kind: Kind
-        let image: UIImage
-        let text: String
-        let tintColor: UIColor?
-
-        public init(
-            action: @escaping (Kind) -> Void,
-            kind: Kind,
-            image: UIImage,
-            text: String,
-            tintColor: UIColor?
-        ) {
-            self.action = action
-            self.kind = kind
-            self.image = image
-            self.text = text
-            self.tintColor = tintColor
-        }
-
-        public var body: some View {
-            Button {
-                action(kind)
-            } label: {
-                HStack {
-                    Image(uiImage: image)
-                    Text(text)
-                        .font(.system(size: 12, weight: .medium))
-                        .lineLimit(1)
-                    Spacer()
-                }
-            }
-            .buttonStyle(.borderless)
-            .tint(Color(uiColor: tintColor ?? .secondaryLabel))
-            .foregroundColor(Color(uiColor: tintColor ?? .secondaryLabel))
-        }
-
-        static func metric(count: Int?) -> String {
-            guard let count = count, count > 0 else {
-                return ""
-            }
-            return ToolbarButton.numberMetricFormatter.string(from: count) ?? ""
-        }
-
-        public enum Kind: Hashable {
-            case reply
-            case repost
-            case quote
-            case like
-            case share
-        }
-    }
-    
-    public struct MaxWidthModifier: ViewModifier {
-        let max: CGFloat?
-        
-        public init(max: CGFloat?) {
-            self.max = max
-        }
-        
-        @ViewBuilder
-        public func body(content: Content) -> some View {
-            if let max = max {
-                content
-                    .frame(maxWidth: max)
-            } else {
-                content
-            }
-        }
     }
 }
 

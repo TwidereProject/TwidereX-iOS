@@ -29,12 +29,13 @@ extension StatusSection {
     struct Configuration {
         weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
         weak var timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
-        let statusViewConfigurationContext: StatusView.ConfigurationContext
+        let viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     }
 
     static func diffableDataSource(
         tableView: UITableView,
         context: AppContext,
+        authContext: AuthContext,
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<StatusSection, StatusItem> {
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
@@ -54,9 +55,11 @@ extension StatusSection {
                     guard let feed = record.object(in: context.managedObjectContext) else { return }
                     let _viewModel = StatusView.ViewModel(
                         feed: feed,
+                        authContext: authContext,
                         delegate: cell,
-                        viewLayoutFramePublisher: configuration.statusViewConfigurationContext.viewLayoutFramePublisher
+                        viewLayoutFramePublisher: configuration.viewLayoutFramePublisher
                     )
+                    
                     guard let viewModel = _viewModel else { return }
                     cell.contentConfiguration = UIHostingConfiguration {
                         StatusView(viewModel: viewModel)
