@@ -211,6 +211,7 @@ public enum Asset {
     public static let capitalFloatLeftLarge = ImageAsset(name: "TextFormatting/capital.float.left.large")
     public static let listBullet = ImageAsset(name: "TextFormatting/list.bullet")
     public static let textHeaderRedaction = ImageAsset(name: "TextFormatting/text.header.redaction")
+    public static let textQuote = ImageAsset(name: "TextFormatting/text.quote")
     public static let textQuoteMini = ImageAsset(name: "TextFormatting/text.quote.mini")
   }
   public enum Transportation {

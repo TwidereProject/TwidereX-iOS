@@ -32,7 +32,6 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     }()
     
     // MARK: - layout
-    @Published var viewSize: CGSize = .zero
     @Published public var viewLayoutFrame = ViewLayoutFrame()
 
     // input
@@ -48,6 +47,10 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     // reply-to
     public private(set) var replyTo: StatusObject?
     @Published public private(set) var replyToStatusViewModel: StatusView.ViewModel?
+    
+    // quote
+    public private(set) var quote: StatusObject?
+    @Published private(set) public var quoteStatusViewModel: StatusView.ViewModel?
 
     // limit
     @Published public var maxTextInputLimit = 500
@@ -188,9 +191,11 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             replyToStatusViewModel = StatusView.ViewModel(
                 status: status,
                 authContext: nil,
+                kind: .referenceReplyTo,
                 delegate: nil,
                 viewLayoutFramePublisher: $viewLayoutFrame
             )
+            replyToStatusViewModel?.isBottomConversationLinkLineViewDisplay = true
             
             switch status {
             case .twitter(let status):
@@ -254,16 +259,22 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 }
                 content = mentionAccts.joined(separator: " ") + " "
             }
+            
+        case .quote(let status):
+            quote = status
+            quoteStatusViewModel = StatusView.ViewModel(
+                status: status,
+                authContext: nil,
+                kind: .referenceQuote,
+                delegate: nil,
+                viewLayoutFramePublisher: $viewLayoutFrame
+            )
         }
         
         initialContent = content
         
         // bind author
-//        $authContext
-//            .receive(on: DispatchQueue.main)
-//            .map { authContext in
-//                authContext?.authenticationContext.user(in: configurationContext.apiService.)
-//            }
+        author = authContext.authenticationContext.user(in: context.managedObjectContext)
         
         // bind text
         $content
@@ -597,6 +608,7 @@ extension ComposeContentViewModel {
         case hashtag(hashtag: String)
         case mention(user: UserObject)
         case reply(status: StatusObject)
+        case quote(status: StatusObject)
     }
     
     public struct Settings {
@@ -748,9 +760,13 @@ extension ComposeContentViewModel {
                 author: author,
                 replyTo: {
                     guard case let .twitter(status) = replyTo else { return nil }
-                    return .init(objectID: status.objectID)
+                    return status.asRecrod
                 }(),
                 excludeReplyUserIDs: Array(excludeReplyTwitterUserIDs),
+                quote: {
+                    guard case let .twitter(status) = quote else { return nil }
+                    return status.asRecrod
+                }(),
                 content: content,
                 place: isRequestLocation ? currentPlace : nil,
                 poll: {

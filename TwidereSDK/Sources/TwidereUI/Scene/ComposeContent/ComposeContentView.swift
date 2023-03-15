@@ -14,10 +14,11 @@ import TwidereCore
 
 public struct ComposeContentView: View {
     
-    static let contentMargin: CGFloat = 16
+    static let contentVerticalMargin: CGFloat = 6
     static let contentRowTopPadding: CGFloat = 8
     static let contentMetaTextViewHStackSpacing: CGFloat = 10
     static let avatarSize = CGSize(width: 44, height: 44)
+    
     
     @ObservedObject var viewModel: ComposeContentViewModel
     
@@ -29,6 +30,10 @@ public struct ComposeContentView: View {
         let index: Int
     }
     @FocusState var pollField: PollField?
+    
+    var readableContentLayoutMargin: CGFloat {
+        abs(viewModel.viewLayoutFrame.readableContentLayoutFrame.origin.x)
+    }
             
     public var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -39,7 +44,7 @@ public struct ComposeContentView: View {
                     if let replyToStatusViewModel = viewModel.replyToStatusViewModel {
                         StatusView(viewModel: replyToStatusViewModel)
                             .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
-                            .padding(.top, 8)
+                            .padding(.top, ComposeContentView.contentRowTopPadding)
                     }
                 default:
                     EmptyView()
@@ -47,135 +52,40 @@ public struct ComposeContentView: View {
                 // content
                 HStack(alignment: .top, spacing: ComposeContentView.contentMetaTextViewHStackSpacing) {
                     // avatar
-                    AvatarButtonRepresentable(configuration: .init(url: viewModel.author?.avatarURL))
-                        .frame(width: ComposeContentView.avatarSize.width, height: ComposeContentView.avatarSize.height)
-                        .overlay(alignment: .top) {
-                            // draw conversation link line
-                            switch viewModel.kind {
-                            case .reply:
-                                Rectangle()
-                                    .foregroundColor(Color(uiColor: .separator))
-                                    .background(.clear)
-                                    .frame(width: 1, height: ComposeContentView.contentRowTopPadding)
-                                    .offset(x: 0, y: -ComposeContentView.contentRowTopPadding)
-                            default:
-                                EmptyView()
-                            }
-                        }
+                    authorButtonView
                     VStack {
                         // mention
                         if viewModel.isMentionPickDisplay {
-                            Button {
-                                viewModel.mentionPickPublisher.send()
-                            } label: {
-                                HStack(spacing: .zero) {
-                                    VectorImageView(
-                                        image: Asset.Communication.textBubbleSmall.image.withRenderingMode(.alwaysTemplate),
-                                        tintColor: .tintColor
-                                    )
-                                    .frame(width: mentionTextHeight, height: mentionTextHeight, alignment: .center)
-                                    Text(viewModel.mentionPickButtonTitle)
-                                        .font(.footnote)
-                                        .background(GeometryReader { geometry in
-                                            Color.clear.preference(
-                                                key: SizeDimensionPreferenceKey.self,
-                                                value: geometry.size.height
-                                            )
-                                        })
-                                        .onPreferenceChange(SizeDimensionPreferenceKey.self) {
-                                            mentionTextHeight = $0
-                                        }
-                                    Spacer()
-                                }
-                            }
-                        }   // end if
+                            mentionPickerView
+                        }
                         // content warning
                         if viewModel.isContentWarningComposing {
-                            let contentWarningIconSize = CGSize(width: 24, height: 24)
-                            let contentWarningStackSpacing: CGFloat = 8
-                            VStack {
-                                HStack(spacing: contentWarningStackSpacing) {
-                                    VectorImageView(
-                                        image: Asset.Indices.exclamationmarkOctagon.image.withRenderingMode(.alwaysTemplate),
-                                        tintColor: viewModel.isContentWarningEditing ? .tintColor : .secondaryLabel
-                                    )
-                                    .frame(width: contentWarningIconSize.width, height: contentWarningIconSize.height)
-                                    MetaTextViewRepresentable(
-                                        string: $viewModel.contentWarning,
-                                        width: {
-                                            var textViewWidth = viewModel.viewSize.width
-                                            textViewWidth -= ComposeContentView.contentMargin * 2
-                                            textViewWidth -= ComposeContentView.contentMetaTextViewHStackSpacing
-                                            textViewWidth -= ComposeContentView.avatarSize.width
-                                            textViewWidth -= contentWarningIconSize.width
-                                            textViewWidth -= contentWarningStackSpacing
-                                            return textViewWidth
-                                        }(),
-                                        configurationHandler: { metaText in
-                                            viewModel.contentWarningMetaText = metaText
-                                            metaText.textView.attributedPlaceholder = {
-                                                var attributes = metaText.textAttributes
-                                                attributes[.foregroundColor] = UIColor.secondaryLabel
-                                                return NSAttributedString(
-                                                    string: L10n.Scene.Compose.cwPlaceholder,
-                                                    attributes: attributes
-                                                )
-                                            }()
-                                            metaText.textView.tag = ComposeContentViewModel.MetaTextViewKind.contentWarning.rawValue
-                                            metaText.textView.returnKeyType = .next
-                                            metaText.textView.delegate = viewModel
-                                            metaText.textView.setContentHuggingPriority(.required - 1, for: .vertical)
-                                            metaText.delegate = viewModel
-                                        }
-                                    )
-                                }
-                                Divider()
-                                    .background(viewModel.isContentWarningEditing ? .accentColor : Color(uiColor: .separator))
-                            }   // end VStack
-                        } // end if viewModel.isContentWarningComposing
-                        // contentTextEditor
-                        MetaTextViewRepresentable(
-                            string: $viewModel.content,
-                            width: {
-                                var textViewWidth = viewModel.viewSize.width
-                                textViewWidth -= ComposeContentView.contentMargin * 2
-                                textViewWidth -= ComposeContentView.contentMetaTextViewHStackSpacing
-                                textViewWidth -= ComposeContentView.avatarSize.width
-                                return textViewWidth
-                            }(),
-                            configurationHandler: { metaText in
-                                viewModel.contentMetaText = metaText
-                                metaText.textView.attributedPlaceholder = {
-                                    var attributes = metaText.textAttributes
-                                    attributes[.foregroundColor] = UIColor.secondaryLabel
-                                    return NSAttributedString(
-                                        string: L10n.Scene.Compose.placeholder,
-                                        attributes: attributes
-                                    )
-                                }()
-                                metaText.textView.tag = ComposeContentViewModel.MetaTextViewKind.content.rawValue
-                                metaText.textView.keyboardType = .twitter
-                                metaText.textView.delegate = viewModel
-                                metaText.delegate = viewModel
-                                metaText.textView.becomeFirstResponder()
-                            }
-                        )
-                        .frame(minHeight: ComposeContentView.avatarSize.height)
+                            contentWarningView
+                        }
+                        // content editor
+                        contentEditorView
                         // poll
                         pollView
-                    }
-                }   // end content
+                    }   // end VStack
+                }   // end HStack (content)
+                .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
                 .padding(.top, ComposeContentView.contentRowTopPadding)
-                .padding(.horizontal, ComposeContentView.contentMargin)
-                
                 // mediaAttachment
                 mediaAttachmentView
-                    .padding(ComposeContentView.contentMargin)
-
+                    .padding(.horizontal, readableContentLayoutMargin)
+                    .padding(.vertical, ComposeContentView.contentVerticalMargin)
+                // quote
+                if let quoteStatusViewModel = viewModel.quoteStatusViewModel {
+                    StatusView(viewModel: quoteStatusViewModel)
+                        .padding(.horizontal, readableContentLayoutMargin)
+                        .padding(.vertical, 8)
+                        .background(Color.primary.opacity(0.04))
+                        .padding(.vertical, ComposeContentView.contentVerticalMargin)
+                }
                 Spacer()
             }   // end VStack
         }   // end ScrollView
-        .frame(width: viewModel.viewSize.width)
+        .frame(width: viewModel.viewLayoutFrame.layoutFrame.width)
         .frame(maxHeight: .infinity)
         .padding(.bottom, toolbarHeight)
         .contentShape(Rectangle())
@@ -209,6 +119,126 @@ public struct ComposeContentView: View {
 }
 
 extension ComposeContentView {
+    // MARK: - author button
+    var authorButtonView: some View {
+        AvatarButtonRepresentable(configuration: .init(url: viewModel.author?.avatarURL))
+            .frame(width: ComposeContentView.avatarSize.width, height: ComposeContentView.avatarSize.height)
+            .overlay(alignment: .top) {
+                // draw conversation link line
+                switch viewModel.kind {
+                case .reply:
+                    Rectangle()
+                        .foregroundColor(Color(uiColor: .separator))
+                        .background(.clear)
+                        .frame(width: 1, height: ComposeContentView.contentRowTopPadding)
+                        .offset(x: 0, y: -ComposeContentView.contentRowTopPadding)
+                default:
+                    EmptyView()
+                }
+            }
+    }   // end var
+    
+    // MARK: - mention picker
+    var mentionPickerView: some View {
+        Button {
+            viewModel.mentionPickPublisher.send()
+        } label: {
+            HStack(spacing: .zero) {
+                VectorImageView(
+                    image: Asset.Communication.textBubbleSmall.image.withRenderingMode(.alwaysTemplate),
+                    tintColor: .tintColor
+                )
+                .frame(width: mentionTextHeight, height: mentionTextHeight, alignment: .center)
+                Text(viewModel.mentionPickButtonTitle)
+                    .font(.footnote)
+                    .background(GeometryReader { geometry in
+                        Color.clear.preference(
+                            key: SizeDimensionPreferenceKey.self,
+                            value: geometry.size.height
+                        )
+                    })
+                    .onPreferenceChange(SizeDimensionPreferenceKey.self) {
+                        mentionTextHeight = $0
+                    }
+                Spacer()
+            }
+        }
+    }
+    
+    // MARK: - content warning
+    var contentWarningView: some View {
+        VStack {
+            let contentWarningIconSize = CGSize(width: 24, height: 24)
+            let contentWarningStackSpacing: CGFloat = 8
+            HStack(spacing: contentWarningStackSpacing) {
+                VectorImageView(
+                    image: Asset.Indices.exclamationmarkOctagon.image.withRenderingMode(.alwaysTemplate),
+                    tintColor: viewModel.isContentWarningEditing ? .tintColor : .secondaryLabel
+                )
+                .frame(width: contentWarningIconSize.width, height: contentWarningIconSize.height)
+                MetaTextViewRepresentable(
+                    string: $viewModel.contentWarning,
+                    width: {
+                        var textViewWidth = viewModel.viewLayoutFrame.readableContentLayoutFrame.width
+                        textViewWidth -= ComposeContentView.contentMetaTextViewHStackSpacing
+                        textViewWidth -= ComposeContentView.avatarSize.width
+                        textViewWidth -= contentWarningIconSize.width
+                        textViewWidth -= contentWarningStackSpacing
+                        return textViewWidth
+                    }(),
+                    configurationHandler: { metaText in
+                        viewModel.contentWarningMetaText = metaText
+                        metaText.textView.attributedPlaceholder = {
+                            var attributes = metaText.textAttributes
+                            attributes[.foregroundColor] = UIColor.secondaryLabel
+                            return NSAttributedString(
+                                string: L10n.Scene.Compose.cwPlaceholder,
+                                attributes: attributes
+                            )
+                        }()
+                        metaText.textView.tag = ComposeContentViewModel.MetaTextViewKind.contentWarning.rawValue
+                        metaText.textView.returnKeyType = .next
+                        metaText.textView.delegate = viewModel
+                        metaText.textView.setContentHuggingPriority(.required - 1, for: .vertical)
+                        metaText.delegate = viewModel
+                    }
+                )
+            }
+            Divider()
+                .background(viewModel.isContentWarningEditing ? .accentColor : Color(uiColor: .separator))
+        }   // end VStack
+    }
+    
+    // MARK: - content editor
+    var contentEditorView: some View {
+        MetaTextViewRepresentable(
+            string: $viewModel.content,
+            width: {
+                var textViewWidth = viewModel.viewLayoutFrame.readableContentLayoutFrame.width
+                textViewWidth -= ComposeContentView.contentMetaTextViewHStackSpacing
+                textViewWidth -= ComposeContentView.avatarSize.width
+                return textViewWidth
+            }(),
+            configurationHandler: { metaText in
+                viewModel.contentMetaText = metaText
+                metaText.textView.attributedPlaceholder = {
+                    var attributes = metaText.textAttributes
+                    attributes[.foregroundColor] = UIColor.secondaryLabel
+                    return NSAttributedString(
+                        string: L10n.Scene.Compose.placeholder,
+                        attributes: attributes
+                    )
+                }()
+                metaText.textView.tag = ComposeContentViewModel.MetaTextViewKind.content.rawValue
+                metaText.textView.keyboardType = .twitter
+                metaText.textView.delegate = viewModel
+                metaText.delegate = viewModel
+                metaText.textView.becomeFirstResponder()
+            }
+        )
+        .frame(minHeight: ComposeContentView.avatarSize.height)
+    }
+    
     // MARK: - attachment
     var mediaAttachmentView: some View {
         Group {

@@ -20,9 +20,11 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
     
     // author
     public let author: TwitterUser
-    // refer
+    // refer reply-to
     public let replyTo: ManagedObjectRecord<TwitterStatus>?
     public let excludeReplyUserIDs: [Twitter.Entity.V2.User.ID]
+    // refer quote
+    public let quote: ManagedObjectRecord<TwitterStatus>?
     // status content
     public let content: String
     // location
@@ -45,6 +47,7 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
         author: TwitterUser,
         replyTo: ManagedObjectRecord<TwitterStatus>?,
         excludeReplyUserIDs: [Twitter.Entity.V2.User.ID],
+        quote: ManagedObjectRecord<TwitterStatus>?,
         content: String,
         place: Twitter.Entity.Place?,
         poll: Twitter.API.V2.Status.Poll?,
@@ -54,6 +57,7 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
         self.author = author
         self.replyTo = replyTo
         self.excludeReplyUserIDs = excludeReplyUserIDs
+        self.quote = quote
         self.content = content
         self.place = place
         self.poll = poll
@@ -84,7 +88,7 @@ extension TwitterStatusPublisher: StatusPublisher {
         
         let managedObjectContext = api.backgroundManagedObjectContext
 
-        let _authenticationContext: TwitterAuthenticationContext? = await managedObjectContext.perform {
+        let _authenticationContext: TwitterAuthenticationContext? = await author.managedObjectContext?.perform {
             guard let authentication = self.author.twitterAuthentication else { return nil }
             return TwitterAuthenticationContext(authentication: authentication, secret: secret)
         }
@@ -120,6 +124,7 @@ extension TwitterStatusPublisher: StatusPublisher {
         // Task: status
         let publishResponse = try await api.publishTwitterStatus(
             query: Twitter.API.V2.Status.PublishQuery(
+                forSuperFollowersOnly: nil,
                 geo: {
                     guard let place = self.place else { return nil }
                     return .init(placeID: place.id)
@@ -141,7 +146,15 @@ extension TwitterStatusPublisher: StatusPublisher {
                         inReplyToTweetID: replyToID
                     )
                 }(),
-                forSuperFollowersOnly: nil,
+                quoteTweetID: {
+                    guard let quote = self.quote else { return nil }
+                    let _quoteID: Twitter.Entity.V2.Tweet.ID? = await managedObjectContext.perform {
+                        guard let quote = quote.object(in: managedObjectContext) else { return nil }
+                        return quote.id
+                    }
+                    guard let quoteID = _quoteID else { return nil }
+                    return quoteID
+                }(),
                 replySettings: replySettings,
                 text: content
             ),

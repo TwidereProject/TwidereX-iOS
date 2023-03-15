@@ -84,7 +84,7 @@ public struct StatusView: View {
                         avatarButton
                             .padding(.trailing, StatusView.hangingAvatarButtonTrailingSapcing)
                     }
-                    VStack {
+                    VStack(spacing: .zero) {
                         // authorView
                         authorView
                             .padding(.horizontal, viewModel.margin)
@@ -146,6 +146,21 @@ public struct StatusView: View {
                 }   // end HStack
                 .padding(.top, viewModel.margin)
                 .padding(.bottom, viewModel.hasToolbar ? .zero : viewModel.margin)
+                .overlay {
+                    if viewModel.isBottomConversationLinkLineViewDisplay {
+                        HStack(alignment: .top, spacing: .zero) {
+                            VStack(spacing: 0) {
+                                Color.clear
+                                    .frame(width: StatusView.hangingAvatarButtonDimension, height: StatusView.hangingAvatarButtonDimension)
+                                Rectangle()
+                                    .foregroundColor(Color(uiColor: .separator))
+                                    .background(.clear)
+                                    .frame(width: 1)
+                            }
+                            Spacer()
+                        }   // end HStack
+                    }   // end if
+                }   // end overlay
             }
         }   // end VStack
         .onReceive(viewModel.$isContentSensitiveToggled) { _ in
@@ -157,12 +172,15 @@ public struct StatusView: View {
 
 extension StatusView {
     var contentWidth: CGFloat {
-        switch viewModel.kind {
-        case .conversationRoot:
-            return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin
-        default:
-            return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin - StatusView.hangingAvatarButtonDimension - StatusView.hangingAvatarButtonTrailingSapcing
-        }
+        let width: CGFloat = {
+            switch viewModel.kind {
+            case .conversationRoot:
+                return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin
+            default:
+                return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin - StatusView.hangingAvatarButtonDimension - StatusView.hangingAvatarButtonTrailingSapcing
+            }
+        }()
+        return max(width, .leastNonzeroMagnitude)
     }
     
     public var authorView: some View {

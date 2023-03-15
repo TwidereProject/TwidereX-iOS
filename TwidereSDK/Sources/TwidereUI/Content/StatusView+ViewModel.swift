@@ -168,6 +168,8 @@ extension StatusView {
         // toolbar
         public let toolbarViewModel = StatusToolbarView.ViewModel()
         
+        @Published public var isBottomConversationLinkLineViewDisplay = false
+        
         private init(
             status: StatusRecord?,
             authContext: AuthContext?,
@@ -894,7 +896,8 @@ extension StatusView.ViewModel {
         case timeline
         case repost
         case quote
-        case reference
+        case referenceReplyTo
+        case referenceQuote
         case conversationRoot
         case conversationThread
     }
@@ -965,6 +968,7 @@ extension StatusView.ViewModel {
     public convenience init(
         status: StatusObject,
         authContext: AuthContext?,
+        kind: Kind = .timeline,
         delegate: StatusViewDelegate?,
         viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     ) {
@@ -973,7 +977,7 @@ extension StatusView.ViewModel {
             self.init(
                 status: status,
                 authContext: authContext,
-                kind: .timeline,
+                kind: kind,
                 delegate: delegate,
                 parentViewModel: nil,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
@@ -982,7 +986,7 @@ extension StatusView.ViewModel {
             self.init(
                 status: status,
                 authContext: authContext,
-                kind: .timeline,
+                kind: kind,
                 delegate: delegate,
                 parentViewModel: nil,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
@@ -1076,6 +1080,7 @@ extension StatusView.ViewModel {
         mediaViewModels = MediaView.ViewModel.viewModels(from: status)
         
         // toolbar
+        toolbarViewModel.platform = .twitter
         status.publisher(for: \.replyCount)
             .map { Int($0) }
             .assign(to: &toolbarViewModel.$replyCount)
@@ -1211,6 +1216,7 @@ extension StatusView.ViewModel {
             .store(in: &disposeBag)
             
         // toolbar
+        toolbarViewModel.platform = .mastodon
         status.publisher(for: \.replyCount)
             .map { Int($0) }
             .assign(to: &toolbarViewModel.$replyCount)

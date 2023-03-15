@@ -36,39 +36,42 @@ extension Twitter.API.V2.Status {
     }
     
     public struct PublishQuery: JSONEncodeQuery {
-
+        public let forSuperFollowersOnly: Bool?
         public let geo: Twitter.Entity.V2.Tweet.Geo?
         public let media: Media?
         public let poll: Poll?
+        public let quoteTweetID: Twitter.Entity.V2.Tweet.ID?
         public let reply: Reply?
-        public let forSuperFollowersOnly: Bool?
         public let replySettings: Twitter.Entity.V2.Tweet.ReplySettings?
         public let text: String?
         
         enum CodingKeys: String, CodingKey {
+            case forSuperFollowersOnly = "for_super_followers_only"
             case geo
             case media
             case poll
             case reply
-            case forSuperFollowersOnly = "for_super_followers_only"
+            case quoteTweetID = "quote_tweet_id"
             case replySettings = "reply_settings"
             case text
         }
         
         public init(
+            forSuperFollowersOnly: Bool?,
             geo: Twitter.Entity.V2.Tweet.Geo?,
             media: Media?,
             poll: Poll?,
             reply: Reply?,
-            forSuperFollowersOnly: Bool?,
+            quoteTweetID: Twitter.Entity.V2.Tweet.ID?,
             replySettings: Twitter.Entity.V2.Tweet.ReplySettings?,
             text: String?
         ) {
+            self.forSuperFollowersOnly = forSuperFollowersOnly
             self.geo = geo
             self.media = media
             self.poll = poll
             self.reply = reply
-            self.forSuperFollowersOnly = forSuperFollowersOnly
+            self.quoteTweetID = quoteTweetID
             self.text = text
             self.replySettings = {
                 switch replySettings {

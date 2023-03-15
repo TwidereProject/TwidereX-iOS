@@ -58,7 +58,7 @@ extension ComposeContentViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
-        viewModel.viewSize = view.frame.size
+        viewModel.viewLayoutFrame.update(view: view)
         
         customEmojiPickerInputView.delegate = self
         viewModel.setupDiffableDataSource(
@@ -181,10 +181,6 @@ extension ComposeContentViewController {
         super.viewDidLayoutSubviews()
         
         viewModel.viewLayoutFrame.update(view: view)
-
-        if viewModel.viewSize != view.frame.size {
-            viewModel.viewSize = view.frame.size            
-        }
     }
     
     public override func viewSafeAreaInsetsDidChange() {

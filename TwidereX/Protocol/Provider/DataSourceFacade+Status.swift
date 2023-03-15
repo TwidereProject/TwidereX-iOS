@@ -68,7 +68,28 @@ extension DataSourceFacade {
             }
             
         case .quote:
-            assertionFailure()
+            guard let status = status.object(in: provider.context.managedObjectContext) else {
+                assertionFailure()
+                return
+            }
+            
+            let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+            impactFeedbackGenerator.impactOccurred()
+            
+            let composeViewModel = ComposeViewModel(context: provider.context)
+            let composeContentViewModel = ComposeContentViewModel(
+                context: provider.context,
+                authContext: provider.authContext,
+                kind: .quote(status: status)
+            )
+            provider.coordinator.present(
+                scene: .compose(
+                    viewModel: composeViewModel,
+                    contentViewModel: composeContentViewModel
+                ),
+                from: provider,
+                transition: .modal(animated: true, completion: nil)
+            )
         case .like:
             do {
                 try await DataSourceFacade.responseToStatusLikeAction(
