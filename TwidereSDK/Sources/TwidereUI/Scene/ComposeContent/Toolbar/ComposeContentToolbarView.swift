@@ -130,16 +130,16 @@ public struct ComposeContentToolbarView: View {
     
     var twitterReplySettingsMenuButton: some View {
         Menu {
-            ForEach(Twitter.Entity.V2.Tweet.ReplySettings.allCases, id: \.self) { replySetting in
-                Button {
-                    viewModel.twitterReplySettings = replySetting
-                } label: {
+            Picker(selection: $viewModel.twitterReplySettings) {
+                ForEach(Twitter.Entity.V2.Tweet.ReplySettings.allCases, id: \.self) { replySetting in
                     Label {
                         Text(replySetting.title)
                     } icon: {
                         Image(uiImage: replySetting.image)
                     }
                 }
+            } label: {
+                Text(viewModel.twitterReplySettings.title)
             }
         } label: {
             HStack {
@@ -154,8 +154,7 @@ public struct ComposeContentToolbarView: View {
             }
             .padding(.horizontal, 12)
             .contentShape(Rectangle())
-            // do not padding vertical
-            // otherwise the poll, at, hashtag button tap area will be clipped
+            .ignoresSafeArea(.all, edges: .all) // fix label position jumping issue
         }
     }
     
@@ -167,16 +166,16 @@ public struct ComposeContentToolbarView: View {
                 .private,
                 .direct,
             ]
-            ForEach(visibilities, id: \.self) { visibility in
-                Button {
-                    viewModel.mastodonVisibility = visibility
-                } label: {
+            Picker(selection: $viewModel.mastodonVisibility) {
+                ForEach(visibilities, id: \.self) { visibility in
                     Label {
                         Text(visibility.title)
                     } icon: {
                         Image(uiImage: visibility.image)
                     }
                 }
+            } label: {
+                Text(viewModel.mastodonVisibility.title)
             }
         } label: {
             HStack {
@@ -191,8 +190,7 @@ public struct ComposeContentToolbarView: View {
             }
             .padding(.horizontal, 12)
             .contentShape(Rectangle())
-            // do not padding vertical
-            // otherwise the poll, at, hashtag button tap area will be clipped
+            .ignoresSafeArea(.all, edges: .all) // fix label position jumping issue
         }
     }
     
