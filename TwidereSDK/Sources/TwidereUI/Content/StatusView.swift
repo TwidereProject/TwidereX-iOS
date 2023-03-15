@@ -93,6 +93,10 @@ public struct StatusView: View {
                                 .padding(.horizontal, viewModel.margin)
                             if !viewModel.isContentEmpty {
                                 Button {
+                                    // force to trigger view update without animation
+                                    withAnimation(.none) {
+                                        viewModel.isContentSensitiveToggled.toggle()
+                                    }
                                     viewModel.delegate?.statusView(viewModel, toggleContentDisplay: !viewModel.isContentReveal)
                                 } label: {
                                     HStack {
@@ -164,6 +168,7 @@ public struct StatusView: View {
             }
         }   // end VStack
         .onReceive(viewModel.$isContentSensitiveToggled) { _ in
+            // trigger tableView reload to update the cell height
             viewModel.delegate?.statusView(viewModel, viewHeightDidChange: Void())
         }
     }
