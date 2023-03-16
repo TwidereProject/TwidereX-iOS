@@ -194,7 +194,7 @@
 "Common.Controls.Friendship.Actions.Unfollow" = "取消关注";
 "Common.Controls.Friendship.Actions.Unmute" = "解除静音";
 "Common.Controls.Friendship.BlockUser" = "屏蔽 %@";
-"Common.Controls.Friendship.DoYouWantToReportAnd BlockUser" = "是否要举报并屏蔽 %@";
+"Common.Controls.Friendship.DoYouWantToReportAndBlockUser" = "是否要举报并屏蔽 %@";
 "Common.Controls.Friendship.DoYouWantToReportUser" = "是否要举报 %@";
 "Common.Controls.Friendship.Follower" = "关注者";
 "Common.Controls.Friendship.Followers" = "关注者";
@@ -214,6 +214,7 @@
 "Common.Controls.Status.Actions.DeleteTweet" = "删除推文";
 "Common.Controls.Status.Actions.PinOnProfile" = "在个人资料页面置顶";
 "Common.Controls.Status.Actions.Quote" = "引用";
+"Common.Controls.Status.Actions.Reply" = "回复";
 "Common.Controls.Status.Actions.Retweet" = "转推";
 "Common.Controls.Status.Actions.SaveMedia" = "保存媒体";
 "Common.Controls.Status.Actions.Share" = "分享";
@@ -504,6 +505,10 @@
 "Scene.Settings.Notification.NotificationSwitch" = "显示通知";
 "Scene.Settings.Notification.PushNotification" = "推送通知";
 "Scene.Settings.Notification.Title" = "通知";
+"Scene.Settings.PrivacyAndSafety.AlwaysShowSensitiveMedia" = "始终显示敏感媒体内容";
+"Scene.Settings.PrivacyAndSafety.SectionHeader.MuteAndBlock" = "静音和屏蔽";
+"Scene.Settings.PrivacyAndSafety.SectionHeader.Sensitive" = "敏感内容";
+"Scene.Settings.PrivacyAndSafety.Title" = "隐私和安全";
 "Scene.Settings.SectionHeader.About" = "关于";
 "Scene.Settings.SectionHeader.Account" = "账号";
 "Scene.Settings.SectionHeader.General" = "通用";

@@ -194,7 +194,7 @@
 "Common.Controls.Friendship.Actions.Unfollow" = "Entfolgen";
 "Common.Controls.Friendship.Actions.Unmute" = "Stummschaltung aufheben";
 "Common.Controls.Friendship.BlockUser" = "%@ blockieren";
-"Common.Controls.Friendship.DoYouWantToReportAnd BlockUser" = "Do you want to report and block %@";
+"Common.Controls.Friendship.DoYouWantToReportAndBlockUser" = "Do you want to report and block %@";
 "Common.Controls.Friendship.DoYouWantToReportUser" = "Do you want to report %@";
 "Common.Controls.Friendship.Follower" = "folgender";
 "Common.Controls.Friendship.Followers" = "folgende";
@@ -214,6 +214,7 @@
 "Common.Controls.Status.Actions.DeleteTweet" = "Tweet löschen";
 "Common.Controls.Status.Actions.PinOnProfile" = "Profil anheften";
 "Common.Controls.Status.Actions.Quote" = "Zitieren";
+"Common.Controls.Status.Actions.Reply" = "Antworten";
 "Common.Controls.Status.Actions.Retweet" = "Retweet";
 "Common.Controls.Status.Actions.SaveMedia" = "Datei speichern";
 "Common.Controls.Status.Actions.Share" = "Teilen";
@@ -504,6 +505,10 @@ Still in early stage.";
 "Scene.Settings.Notification.NotificationSwitch" = "Benachrichtigung anzeigen";
 "Scene.Settings.Notification.PushNotification" = "Push Notification";
 "Scene.Settings.Notification.Title" = "Benachrichtigung";
+"Scene.Settings.PrivacyAndSafety.AlwaysShowSensitiveMedia" = "Always show sensitive media";
+"Scene.Settings.PrivacyAndSafety.SectionHeader.MuteAndBlock" = "Mute and Block";
+"Scene.Settings.PrivacyAndSafety.SectionHeader.Sensitive" = "Sensitive Info";
+"Scene.Settings.PrivacyAndSafety.Title" = "Privacy and safety";
 "Scene.Settings.SectionHeader.About" = "Über";
 "Scene.Settings.SectionHeader.Account" = "Konto";
 "Scene.Settings.SectionHeader.General" = "Allgemein";
