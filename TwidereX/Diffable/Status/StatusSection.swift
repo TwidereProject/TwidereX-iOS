@@ -64,6 +64,7 @@ extension StatusSection {
                     cell.contentConfiguration = UIHostingConfiguration {
                         StatusView(viewModel: viewModel)
                     }
+                    .margins(.vertical, 0)  // remove vertical margins
                 }
                 return cell
             case .feedLoader(let record):

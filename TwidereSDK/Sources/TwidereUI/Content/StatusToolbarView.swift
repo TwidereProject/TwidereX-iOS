@@ -15,7 +15,8 @@ public struct StatusToolbarView: View {
     var logger: Logger { StatusView.logger }
     
     @ObservedObject public var viewModel: ViewModel
-    let handler: (Action) -> Void
+    public var menuActions: [Action]
+    public let handler: (Action) -> Void
     
     public var body: some View {
         HStack {
@@ -109,6 +110,18 @@ extension StatusToolbarView {
     public var shareMenu: some View {
         Button {
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): share")
+            ForEach(menuActions, id: \.self) { action in
+                Button {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(String(describing: action))")
+                    handler(action)
+                } label: {
+                    Label {
+                        
+                    } icon: {
+                        
+                    }
+                }   // end Button
+            }   // end ForEach
         } label: {
             HStack {
                 let image: UIImage = {
@@ -151,7 +164,25 @@ extension StatusToolbarView {
         case repost
         case quote
         case like
-        case share
+        case copyText
+        case copyLink
+        case shareLink
+        case saveMedia
+        case translate
+        
+        public var text: String {
+            switch self {
+            case .reply:        return ""
+            case .repost:       return ""
+            case .quote:        return ""
+            case .like:         return ""
+            case .copyText:     return ""
+            case .copyLink:     return ""
+            case .shareLink:    return ""
+            case .saveMedia:    return ""
+            case .translate:    return ""
+            }
+        }
     }
 }
 

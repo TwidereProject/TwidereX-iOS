@@ -52,6 +52,7 @@ extension StatusView {
         @Published public var avatarURL: URL?
         @Published public var authorName: MetaContent = PlaintextMetaContent(string: "")
         @Published public var authorUsernme = ""
+        @Published public var authorUserIdentifier: UserIdentifier?
         
 //        static let pollOptionOrdinalNumberFormatter: NumberFormatter = {
 //            let formatter = NumberFormatter()
@@ -75,9 +76,7 @@ extension StatusView {
 //        @Published public var authorUsername: String?
 //        
 //        @Published public var protected: Bool = false
-//
-//        @Published public var isMyself = false
-//
+
         @Published public var spoilerContent: MetaContent?
         @Published public var content: MetaContent = PlaintextMetaContent(string: "")
         
@@ -88,11 +87,32 @@ extension StatusView {
             return isContentSensitive ? isContentSensitiveToggled : !isContentEmpty
         }
 
-//        @Published public var twitterTextProvider: TwitterTextProvider?
-//        
-//        @Published public var language: String?
-//        @Published public var isTranslateButtonDisplay = false
-//
+        @Published public var language: String?
+        @Published public private(set) var translateButtonPreference: UserDefaults.TranslateButtonPreference?
+        public var isTranslateButtonDisplay: Bool {
+            // only display for conversation root
+            switch kind {
+            case .conversationRoot:     break
+            default:                    return false
+            }
+            // check prefernece and compare device language
+            switch translateButtonPreference {
+            case .auto:
+                guard let language = language, !language.isEmpty else {
+                    // default hidden
+                    return false
+                }
+                let contentLocale = Locale(identifier: language)
+                guard let currentLanguageCode = Locale.current.language.languageCode?.identifier,
+                      let contentLanguageCode = contentLocale.language.languageCode?.identifier
+                else { return true }
+                return currentLanguageCode != contentLanguageCode
+            case .always:   return true
+            case .off:      return false
+            case nil:       return false
+            }
+        }
+
         @Published public var mediaViewModels: [MediaView.ViewModel] = []
         @Published public var isMediaSensitive: Bool = false
         @Published public var isMediaSensitiveToggled: Bool = false
@@ -127,9 +147,6 @@ extension StatusView {
 //        
 //        @Published public var isRepost = false
 //        @Published public var isRepostEnabled = true
-//        
-//        @Published public var isLike = false
-
 
         @Published public var visibility: MastodonVisibility?
         var visibilityIconImage: UIImage? {
@@ -150,23 +167,21 @@ extension StatusView {
             }
         }
 //        @Published public var replySettings: Twitter.Entity.V2.Tweet.ReplySettings?
-//
-//        @Published public var dateTimeProvider: DateTimeProvider?
-//        @Published public var timestamp: Date?
-//        @Published public var timeAgoStyleTimestamp: String?
-//        @Published public var formattedStyleTimestamp: String?
-//
-//        @Published public var sharePlaintextContent: String?
-//        @Published public var shareStatusURL: String?
-//
-//        @Published public var isDeletable = false
-//
+
+//////
 //        @Published public var groupedAccessibilityLabel = ""
 
         @Published public var timestampLabelViewModel: TimestampLabelView.ViewModel?
         
         // toolbar
         public let toolbarViewModel = StatusToolbarView.ViewModel()
+        // toolbar - share menu context
+        @Published public var statusLink: URL?
+        public var canDelete: Bool {
+            guard let authContext = self.authContext else { return false }
+            guard let authorUserIdentifier = self.authorUserIdentifier else { return false }
+            return authContext.authenticationContext.userIdentifier == authorUserIdentifier
+        }
         
         @Published public var isBottomConversationLinkLineViewDisplay = false
         
@@ -255,28 +270,10 @@ extension StatusView {
 //                }
 //            }
 //            .assign(to: &$isRepostEnabled)
-//            
-//            Publishers.CombineLatest(
-//                UserDefaults.shared.publisher(for: \.translateButtonPreference),
-//                $language
-//            )
-//            .map { preference, language -> Bool in
-//                switch preference {
-//                case .auto:
-//                    guard let language = language, !language.isEmpty else {
-//                        // default hidden
-//                        return false
-//                    }
-//                    let contentLocale = Locale(identifier: language)
-//                    guard let currentLanguageCode = Locale.current.languageCode,
-//                          let contentLanguageCode = contentLocale.languageCode
-//                    else { return true }
-//                    return currentLanguageCode != contentLanguageCode
-//                case .always:   return true
-//                case .off:      return false
-//                }
-//            }
-//            .assign(to: &$isTranslateButtonDisplay)
+            
+            UserDefaults.shared.publisher(for: \.translateButtonPreference)
+                .map { $0 }
+                .assign(to: &$translateButtonPreference)
         }
     }
 }
@@ -913,6 +910,15 @@ extension StatusView.ViewModel {
         }
     }
     
+    public var cellTopMargin: CGFloat {
+        switch kind {
+        case .timeline:
+            return repostViewModel == nil ? 12 : 8
+        default:
+            return .zero
+        }
+    }
+    
     public var margin: CGFloat {
         switch kind {
         case .quote:
@@ -1057,6 +1063,7 @@ extension StatusView.ViewModel {
             .assign(to: &$authorName)
         status.author.publisher(for: \.username)
             .assign(to: &$authorUsernme)
+        authorUserIdentifier = .twitter(.init(id: status.author.id))
         
         // timestamp
         switch kind {
@@ -1075,6 +1082,18 @@ extension StatusView.ViewModel {
             useParagraphMark: true
         )
         self.content = metaContent
+        
+        // language
+        status.publisher(for: \.language)
+            .map { language in
+                switch language {
+                case "qam", "qct", "qht", "qme", "qst", "zxx":
+                    return nil
+                default:
+                    return language
+                }
+            }
+            .assign(to: &$language)
         
         // media
         mediaViewModels = MediaView.ViewModel.viewModels(from: status)
@@ -1106,6 +1125,7 @@ extension StatusView.ViewModel {
         } else {
             // do nothing
         }
+        statusLink = status.statusURL
     }   // end init
 }
 
@@ -1163,6 +1183,7 @@ extension StatusView.ViewModel {
         status.author.publisher(for: \.username)
             .map { _ in status.author.acct }
             .assign(to: &$authorUsernme)
+        authorUserIdentifier = .mastodon(.init(domain: status.author.domain, id: status.author.id))
         
         // visibility
         visibility = status.visibility
@@ -1196,6 +1217,10 @@ extension StatusView.ViewModel {
             assertionFailure(error.localizedDescription)
             self.content = PlaintextMetaContent(string: "")
         }
+
+        // language
+        status.publisher(for: \.language)
+            .assign(to: &$language)
         
         // content warning
         isContentSensitiveToggled = status.isContentSensitiveToggled
@@ -1242,5 +1267,6 @@ extension StatusView.ViewModel {
         } else {
             // do nothing
         }
+        statusLink = URL(string: status.url ?? status.uri)
     }
 }

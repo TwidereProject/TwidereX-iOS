@@ -17,6 +17,7 @@ extension DataSourceFacade {
     @MainActor
     static func responseToStatusToolbar(
         provider: DataSourceProvider & AuthContextProvider,
+        viewModel: StatusView.ViewModel,
         status: StatusRecord,
         action: StatusToolbarView.Action
     ) async {
@@ -103,7 +104,29 @@ extension DataSourceFacade {
             } catch {
                 provider.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update like failure: \(error.localizedDescription)")
             }
-        case .share:
+        case .copyText:
+            let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+            impactFeedbackGenerator.impactOccurred()
+            
+            let plaintext = viewModel.content.string
+            UIPasteboard.general.string = plaintext
+        case .copyLink:
+            let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+            impactFeedbackGenerator.impactOccurred()
+            
+            guard let link = viewModel.statusLink?.absoluteString else { return }
+            UIPasteboard.general.string = link
+        case .shareLink:
+            let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+            impactFeedbackGenerator.impactOccurred()
+            
+            guard let link = viewModel.statusLink?.absoluteString else { return }
+            UIPasteboard.general.string = link
+        case .saveMedia:
+            break
+        case .translate:
+            break
+            
             // media menu button trigger this
             let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
             impactFeedbackGenerator.impactOccurred()

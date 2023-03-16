@@ -335,40 +335,13 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
             }
             await DataSourceFacade.responseToStatusToolbar(
                 provider: self,
+                viewModel: viewModel,
                 status: status,
                 action: action
             )
         }   // end Task
     }
 
-//    func tableViewCell(
-//        _ cell: UITableViewCell,
-//        statusView: StatusView,
-//        statusToolbar: StatusToolbar,
-//        actionDidPressed action: StatusToolbar.Action,
-//        button: UIButton
-//    ) {
-//        Task {
-//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-//            guard let item = await item(from: source) else {
-//                assertionFailure()
-//                return
-//            }
-//            guard let status = await item.status(in: self.context.managedObjectContext) else {
-//                assertionFailure("only works for status data provider")
-//                return
-//            }
-//
-//            await DataSourceFacade.responseToStatusToolbar(
-//                provider: self,
-//                status: status,
-//                action: action,
-//                sender: button,
-//                authenticationContext: self.authContext.authenticationContext
-//            )
-//        }   // end Task
-//    }   // end func
-    
 //    func tableViewCell(
 //        _ cell: UITableViewCell,
 //        statusView: StatusView,

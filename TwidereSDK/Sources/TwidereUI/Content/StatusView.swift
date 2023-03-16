@@ -84,7 +84,8 @@ public struct StatusView: View {
                         avatarButton
                             .padding(.trailing, StatusView.hangingAvatarButtonTrailingSapcing)
                     }
-                    VStack(spacing: .zero) {
+                    let contentSpacing: CGFloat = 0
+                    VStack(spacing: contentSpacing) {
                         // authorView
                         authorView
                             .padding(.horizontal, viewModel.margin)
@@ -145,11 +146,20 @@ public struct StatusView: View {
                         }
                         if viewModel.hasToolbar {
                             toolbarView
+                                .padding(.top, -contentSpacing)
                         }
                     }   // end VStack
+                    .overlay(alignment: .bottom) {
+                        VStack(spacing: .zero) {
+                            Spacer()
+                            Divider()
+                            Color.clear
+                                .frame(height: 1)
+                        }
+                    }
                 }   // end HStack
-                .padding(.top, viewModel.margin)
-                .padding(.bottom, viewModel.hasToolbar ? .zero : viewModel.margin)
+                .padding(.top, viewModel.margin)                                    // container margin
+                .padding(.bottom, viewModel.hasToolbar ? .zero : viewModel.margin)  // container margin
                 .overlay {
                     if viewModel.isBottomConversationLinkLineViewDisplay {
                         HStack(alignment: .top, spacing: .zero) {
@@ -165,8 +175,9 @@ public struct StatusView: View {
                         }   // end HStack
                     }   // end if
                 }   // end overlay
-            }
+            }   // end if … else …
         }   // end VStack
+        .padding(.top, viewModel.cellTopMargin)
         .onReceive(viewModel.$isContentSensitiveToggled) { _ in
             // trigger tableView reload to update the cell height
             viewModel.delegate?.statusView(viewModel, viewHeightDidChange: Void())
@@ -222,6 +233,7 @@ extension StatusView {
                         }
                     )
                 }
+                .frame(alignment: .leading)
                 Spacer()
                 HStack(spacing: 6) {
                     // mastodon visibility
@@ -310,6 +322,24 @@ extension StatusView {
     var toolbarView: some View {
         StatusToolbarView(
             viewModel: viewModel.toolbarViewModel,
+            menuActions: {
+                var actions: [StatusToolbarView.Action] = []
+                // copyText
+                actions.append(.copyText)
+                // copyLink, shareLink
+                if viewModel.statusLink != nil {
+                    actions.append(.copyLink)
+                    actions.append(.shareLink)
+                }
+                // save media
+                if !viewModel.mediaViewModels.isEmpty {
+                    actions.append(.copyText)
+                }
+                //
+                actions.append(.copyText)
+                actions.append(.copyText)
+                return actions
+            }(),
             handler: { action in
                 viewModel.delegate?.statusView(viewModel, statusToolbarButtonDidPressed: action)
             }
