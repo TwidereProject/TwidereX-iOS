@@ -12,8 +12,6 @@ import CoreDataStack
 import TwitterMeta
 import MastodonMeta
 import AlamofireImage
-import AppShared
-import TwidereCore
 
 extension ProfileHeaderView {
     class ViewModel: ObservableObject {
@@ -270,7 +268,7 @@ extension ProfileHeaderView {
             user.publisher(for: \.bioEntities),
             UIContentSizeCategory.publisher
         )
-        .map { _, _, _ in user.bioMetaContent(provider: OfficialTwitterTextProvider()) }
+        .map { _, _, _ in user.bioMetaContent(provider: SwiftTwitterTextProvider()) }
         .assign(to: \.bioMetaContent, on: viewModel)
         .store(in: &viewModel.configureDisposeBag)
     }
@@ -285,7 +283,7 @@ extension ProfileHeaderView {
             var fields: [ProfileFieldListView.Item] = []
             var index = 0
             let now = Date()
-            if let value = user.urlMetaContent(provider: OfficialTwitterTextProvider()) {
+            if let value = user.urlMetaContent(provider: SwiftTwitterTextProvider()) {
                 let item = ProfileFieldListView.Item(
                     index: index,
                     updateAt: now,
@@ -296,7 +294,7 @@ extension ProfileHeaderView {
                 fields.append(item)
                 index += 1
             }
-            if let value = user.locationMetaContent(provider: OfficialTwitterTextProvider()) {
+            if let value = user.locationMetaContent(provider: SwiftTwitterTextProvider()) {
                 let item = ProfileFieldListView.Item(
                     index: index,
                     updateAt: now,

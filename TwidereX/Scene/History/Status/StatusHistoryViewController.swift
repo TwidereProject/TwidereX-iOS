@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import Combine
 import CoreDataStack
-import TwidereUI
 
 final class StatusHistoryViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
 

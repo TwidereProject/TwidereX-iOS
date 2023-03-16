@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import SwiftUI
 import TwidereAsset
-import TwidereCommon
 
 public final class NotificationBannerView: UIView {
 

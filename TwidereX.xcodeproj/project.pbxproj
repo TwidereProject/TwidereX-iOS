@@ -25,6 +25,10 @@
 		DB02C77527351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77427351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift */; };
 		DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */; };
 		DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */; };
+		DB05E13729C318530055BF3F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB05E13629C318530055BF3F /* TwidereSDK */; };
+		DB05E13929C318590055BF3F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB05E13829C318590055BF3F /* TwidereSDK */; };
+		DB05E13B29C3185E0055BF3F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB05E13A29C3185E0055BF3F /* TwidereSDK */; };
+		DB05E13D29C321960055BF3F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB05E13C29C321960055BF3F /* TwidereSDK */; };
 		DB0618102786EC870030EE79 /* LineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB06180F2786EC870030EE79 /* LineChartView.swift */; };
 		DB0AD4DF285872BE0002ABDB /* UserMediaTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0AD4DE285872BE0002ABDB /* UserMediaTimelineViewController.swift */; };
 		DB0AD4E22858734A0002ABDB /* UserMediaTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0AD4E12858734A0002ABDB /* UserMediaTimelineViewModel.swift */; };
@@ -58,7 +62,6 @@
 		DB25C4CF2779A06D00EC1435 /* SavedSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4CE2779A06D00EC1435 /* SavedSearchViewModel.swift */; };
 		DB25C4D12779A37E00EC1435 /* SavedSearchViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4D02779A37E00EC1435 /* SavedSearchViewModel+Diffable.swift */; };
 		DB25C4D32779ADD800EC1435 /* SearchResultContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4D22779ADD800EC1435 /* SearchResultContainerViewController.swift */; };
-		DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DB2611B6251B2D42004BF309 /* CryptoSwift */; };
 		DB262A332721377800D18EF3 /* DataSourceFacade+Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A322721377800D18EF3 /* DataSourceFacade+Block.swift */; };
 		DB262A3727213FBE00D18EF3 /* UIAlertAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A3627213FBE00D18EF3 /* UIAlertAction.swift */; };
 		DB262A392721621900D18EF3 /* DataSourceFacade+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A382721621800D18EF3 /* DataSourceFacade+User.swift */; };
@@ -180,7 +183,6 @@
 		DB6BCD6E277ADC0900847054 /* TrendViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6BCD6D277ADC0900847054 /* TrendViewModel.swift */; };
 		DB6BCD70277AEAC700847054 /* TrendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6BCD6F277AEAC700847054 /* TrendTableViewCell.swift */; };
 		DB6BCD72277AEED600847054 /* TrendViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6BCD71277AEED600847054 /* TrendViewModel+Diffable.swift */; };
-		DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = DB6CF1C3269715CD001DE069 /* FPSIndicator */; };
 		DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */; };
 		DB71C7D1271EB09A00BE3819 /* DataSourceFacade+Friendship.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB71C7D0271EB09A00BE3819 /* DataSourceFacade+Friendship.swift */; };
 		DB71C7D3271EB71800BE3819 /* ProfileViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB71C7D2271EB71800BE3819 /* ProfileViewController+DataSourceProvider.swift */; };
@@ -215,13 +217,11 @@
 		DB76A66F276083CB00A50673 /* MediaPreviewTransitionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A66E276083CB00A50673 /* MediaPreviewTransitionViewController.swift */; };
 		DB76A67127609A8700A50673 /* RemoteProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A67027609A8700A50673 /* RemoteProfileViewModel.swift */; };
 		DB77FF7F2847808C00182A0B /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DBBBBE5E2744E8CC007ACB4B /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		DB7AB33E2744E3740035EB8A /* Floaty in Frameworks */ = {isa = PBXBuildFile; productRef = DB7AB33D2744E3740035EB8A /* Floaty */; };
 		DB7FF06128853A7F00BFD55E /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7FF06028853A7F00BFD55E /* NotificationService.swift */; };
 		DB7FF06528853A7F00BFD55E /* NotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DB7FF05E28853A7F00BFD55E /* NotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DB7FF06A28853AB000BFD55E /* String+Decode85.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7FF05928853A4F00BFD55E /* String+Decode85.swift */; };
 		DB7FF06B28853AB300BFD55E /* NotificationService+Decrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7FF05628853A4F00BFD55E /* NotificationService+Decrypt.swift */; };
 		DB7FF06C28853AB800BFD55E /* String+Escape.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7FF05528853A4F00BFD55E /* String+Escape.swift */; };
-		DB7FF06E28853B1F00BFD55E /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		DB8301F7273CED0400BF5224 /* NotificationTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301F6273CED0400BF5224 /* NotificationTimelineViewController.swift */; };
 		DB8301FA273CED2E00BF5224 /* NotificationTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301F9273CED2E00BF5224 /* NotificationTimelineViewModel.swift */; };
 		DB830200273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301FF273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift */; };
@@ -261,7 +261,6 @@
 		DB932E5227FEC7390036A824 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DB932E5527FEC7390036A824 /* Intents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
 		DB932E5327FEC7390036A824 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DB932E5527FEC7390036A824 /* Intents.intentdefinition */; };
 		DB94B6B426C65BE100A2E8A1 /* MastodonAuthenticationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */; };
-		DB94B6BE26C65CB000A2E8A1 /* AppShared.h in Headers */ = {isa = PBXBuildFile; fileRef = DB94B6BD26C65CB000A2E8A1 /* AppShared.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A65253064FE0053CB31 /* DispatchQueue.swift */; };
 		DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */; };
 		DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */; };
@@ -292,7 +291,6 @@
 		DBB04A322861AE24003799CA /* TrendPlaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB04A312861AE24003799CA /* TrendPlaceViewController.swift */; };
 		DBB04A352861AE4D003799CA /* TrendPlaceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB04A342861AE4D003799CA /* TrendPlaceViewModel.swift */; };
 		DBB04A372861AF2D003799CA /* TrendPlaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB04A362861AF2D003799CA /* TrendPlaceView.swift */; };
-		DBB0E3C32760FB1200F1D45F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DBB0E3C22760FB1200F1D45F /* TwidereSDK */; };
 		DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DA826EB3AA2001590F7 /* ProfileFieldListView.swift */; };
 		DBB47DAB26EB3BF8001590F7 /* ProfileFieldContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DAA26EB3BF8001590F7 /* ProfileFieldContentView.swift */; };
 		DBB47DAD26EB440C001590F7 /* ProfileFieldCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DAC26EB440C001590F7 /* ProfileFieldCollectionViewCell.swift */; };
@@ -313,8 +311,6 @@
 		DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */; };
 		DBCB4060255CAC0300DD8D8F /* TwitterAuthenticationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB405F255CAC0300DD8D8F /* TwitterAuthenticationController.swift */; };
 		DBCB408A255D8C2B00DD8D8F /* SafariActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4089255D8C2B00DD8D8F /* SafariActivity.swift */; };
-		DBCC7AE5274BA10100E0986D /* DateTimeSwiftProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCC7AE3274B95C900E0986D /* DateTimeSwiftProvider.swift */; };
-		DBCC7AE6274BA10100E0986D /* OfficialTwitterTextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091B26E606BB005F67D7 /* OfficialTwitterTextProvider.swift */; };
 		DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2E902591A06300926D09 /* UINavigationController.swift */; };
 		DBCE2E992591A44000926D09 /* UIViewAnimatingPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2E982591A44000926D09 /* UIViewAnimatingPosition.swift */; };
 		DBD0B4972758B57F0015A388 /* DrawerSidebarTransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFDC91255920060086F268 /* DrawerSidebarTransitionController.swift */; };
@@ -325,7 +321,6 @@
 		DBD0B49D2758B5F50015A388 /* SidebarSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD0B49C2758B5F50015A388 /* SidebarSection.swift */; };
 		DBD0B4A02758B6010015A388 /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD0B49F2758B6010015A388 /* SidebarItem.swift */; };
 		DBD40B852599B9C2006E4ABC /* CombineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD40B842599B9C2006E4ABC /* CombineTests.swift */; };
-		DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = DBD98488251CB88A00ED87A1 /* Tabman */; };
 		DBDA7F1A27D1CBCA00BA6BE1 /* TwidereXUITests+Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA7F1927D1CBCA00BA6BE1 /* TwidereXUITests+Onboarding.swift */; };
 		DBDA7F1E27D2256400BA6BE1 /* ListViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA7F1D27D2256400BA6BE1 /* ListViewModel+State.swift */; };
 		DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */; };
@@ -342,7 +337,6 @@
 		DBE6357D2885557C001C114B /* PushNotificationScratchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE6357C2885557C001C114B /* PushNotificationScratchViewModel.swift */; };
 		DBE6357F288555AE001C114B /* PushNotificationScratchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE6357E288555AE001C114B /* PushNotificationScratchView.swift */; };
 		DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */; };
-		DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = DBEA4F832511F7460007FEC5 /* Kanna */; };
 		DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D7253F5D7800C5383A /* NamingState.swift */; };
 		DBF167FD27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF167FC27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift */; };
 		DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF3309025B96E0B00A678FB /* WKNavigationDelegateShim.swift */; };
@@ -366,9 +360,6 @@
 		DBFA4A2025A5924C00D51703 /* ListTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1F25A5924C00D51703 /* ListTimelineViewModel+Diffable.swift */; };
 		DBFADA892872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */; };
 		DBFADA8B2872BEDE00B512D6 /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DBFADA8A2872BEDE00B512D6 /* TabBarPager */; };
-		DBFC0AE6276118080011E99B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
-		DBFC0AE9276118240011E99B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
-		DBFC0AEA276118240011E99B /* AppShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DBFCC44725667C620016698E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC44625667C620016698E /* UILabel.swift */; };
 		DBFCEF1228939C9600EEBFB1 /* UserHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCEF1128939C9600EEBFB1 /* UserHistoryViewController.swift */; };
 		DBFCEF1528939CAC00EEBFB1 /* UserHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCEF1428939CAC00EEBFB1 /* UserHistoryViewModel.swift */; };
@@ -381,8 +372,6 @@
 		DBFDCE4427F450FC00BE99E3 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4327F450FC00BE99E3 /* IntentHandler.swift */; };
 		DBFDCE4827F450FC00BE99E3 /* TwidereXIntent.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DBFDCE5027F4515E00BE99E3 /* SwitchAccountIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4F27F4515E00BE99E3 /* SwitchAccountIntentHandler.swift */; };
-		DBFDCE5427F451FC00BE99E3 /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
-		E5E65DC85CA480AE17571EFC /* Pods_AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -399,27 +388,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = DB7FF05D28853A7F00BFD55E;
 			remoteInfo = NotificationService;
-		};
-		DB7FF07028853B1F00BFD55E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DB94B6BA26C65CB000A2E8A1;
-			remoteInfo = AppShared;
-		};
-		DB94B6BF26C65CB000A2E8A1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DB94B6BA26C65CB000A2E8A1;
-			remoteInfo = AppShared;
-		};
-		DBBBBE732744EC27007ACB4B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DB94B6BA26C65CB000A2E8A1;
-			remoteInfo = AppShared;
 		};
 		DBBBBE812744F39C007ACB4B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -456,33 +424,15 @@
 			remoteGlobalIDString = DBFDCE3F27F450FC00BE99E3;
 			remoteInfo = TwidereXIntent;
 		};
-		DBFDCE5627F451FC00BE99E3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DB94B6BA26C65CB000A2E8A1;
-			remoteInfo = AppShared;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		DB0B3B8D26C6637500501BB7 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		DBFC0AEB276118240011E99B /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DBFC0AEA276118240011E99B /* AppShared.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -529,7 +479,6 @@
 		D286181E8236434CBB750613 /* Pods-TwidereXTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereXTests.profile.xcconfig"; path = "Target Support Files/Pods-TwidereXTests/Pods-TwidereXTests.profile.xcconfig"; sourceTree = "<group>"; };
 		DB004BF526CE4A7F00F5C574 /* StatusCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB01091426E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonStatusThreadViewModel.swift; sourceTree = "<group>"; };
-		DB01091B26E606BB005F67D7 /* OfficialTwitterTextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficialTwitterTextProvider.swift; sourceTree = "<group>"; };
 		DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+StatusThread.swift"; sourceTree = "<group>"; };
 		DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Repost.swift"; sourceTree = "<group>"; };
 		DB01092326E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceProvider+StatusViewTableViewCellDelegate.swift"; sourceTree = "<group>"; };
@@ -780,8 +729,6 @@
 		DB932E6B27FEC7490036A824 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Intents.strings"; sourceTree = "<group>"; };
 		DB932E6D27FEC7490036A824 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Intents.strings; sourceTree = "<group>"; };
 		DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAuthenticationController.swift; sourceTree = "<group>"; };
-		DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DB94B6BD26C65CB000A2E8A1 /* AppShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppShared.h; sourceTree = "<group>"; };
 		DB969A65253064FE0053CB31 /* DispatchQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
 		DB97D1F4256CF7710056F8C2 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMiddleLoaderTableViewCell.swift; sourceTree = "<group>"; };
@@ -846,8 +793,6 @@
 		DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewModel.swift; sourceTree = "<group>"; };
 		DBCB405F255CAC0300DD8D8F /* TwitterAuthenticationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationController.swift; sourceTree = "<group>"; };
 		DBCB4089255D8C2B00DD8D8F /* SafariActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariActivity.swift; sourceTree = "<group>"; };
-		DBCC7AE3274B95C900E0986D /* DateTimeSwiftProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeSwiftProvider.swift; sourceTree = "<group>"; };
-		DBCDCE602760B8B000F0B78C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DBCE2E902591A06300926D09 /* UINavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationController.swift; sourceTree = "<group>"; };
 		DBCE2E982591A44000926D09 /* UIViewAnimatingPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewAnimatingPosition.swift; sourceTree = "<group>"; };
 		DBCE2EA82591F23B00926D09 /* FollowingListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingListViewController.swift; sourceTree = "<group>"; };
@@ -948,16 +893,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB7FF06E28853B1F00BFD55E /* AppShared.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DB94B6B826C65CB000A2E8A1 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DBB0E3C32760FB1200F1D45F /* TwidereSDK in Frameworks */,
-				E5E65DC85CA480AE17571EFC /* Pods_AppShared.framework in Frameworks */,
+				DB05E13B29C3185E0055BF3F /* TwidereSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -965,7 +901,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBFC0AE6276118080011E99B /* AppShared.framework in Frameworks */,
+				DB05E13729C318530055BF3F /* TwidereSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -973,14 +909,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */,
-				DBFC0AE9276118240011E99B /* AppShared.framework in Frameworks */,
-				DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */,
-				DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */,
+				DB05E13D29C321960055BF3F /* TwidereSDK in Frameworks */,
 				DBFADA892872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout in Frameworks */,
 				DBFADA8B2872BEDE00B512D6 /* TabBarPager in Frameworks */,
-				DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */,
-				DB7AB33E2744E3740035EB8A /* Floaty in Frameworks */,
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1005,7 +936,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBFDCE5427F451FC00BE99E3 /* AppShared.framework in Frameworks */,
+				DB05E13929C318590055BF3F /* TwidereSDK in Frameworks */,
 				DBFDCE4127F450FC00BE99E3 /* Intents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1876,16 +1807,6 @@
 			path = Mastodon;
 			sourceTree = "<group>";
 		};
-		DB94B6BC26C65CB000A2E8A1 /* AppShared */ = {
-			isa = PBXGroup;
-			children = (
-				DBCDCE602760B8B000F0B78C /* Info.plist */,
-				DB94B6BD26C65CB000A2E8A1 /* AppShared.h */,
-				DBCC7AE7274BA10300E0986D /* Vender */,
-			);
-			path = AppShared;
-			sourceTree = "<group>";
-		};
 		DB97D1E7256CBA5D0056F8C2 /* TableViewCell */ = {
 			isa = PBXGroup;
 			children = (
@@ -2079,15 +2000,6 @@
 			path = Activity;
 			sourceTree = "<group>";
 		};
-		DBCC7AE7274BA10300E0986D /* Vender */ = {
-			isa = PBXGroup;
-			children = (
-				DB01091B26E606BB005F67D7 /* OfficialTwitterTextProvider.swift */,
-				DBCC7AE3274B95C900E0986D /* DateTimeSwiftProvider.swift */,
-			);
-			path = Vender;
-			sourceTree = "<group>";
-		};
 		DBCE2EAD2591F37400926D09 /* FollowingList */ = {
 			isa = PBXGroup;
 			children = (
@@ -2137,7 +2049,6 @@
 				DBDA8E3724FCF8A7006750DC /* TwidereXTests */,
 				DBDA8E4224FCF8A7006750DC /* TwidereXUITests */,
 				DBE76CE92500B29300DEB0FC /* StubMixer */,
-				DB94B6BC26C65CB000A2E8A1 /* AppShared */,
 				DBBBBE5F2744E8CC007ACB4B /* ShareExtension */,
 				DBFDCE4227F450FC00BE99E3 /* TwidereXIntent */,
 				DB7FF05F28853A7F00BFD55E /* NotificationService */,
@@ -2153,7 +2064,6 @@
 				DBDA8E1E24FCF8A3006750DC /* TwidereX.app */,
 				DBDA8E3424FCF8A7006750DC /* TwidereXTests.xctest */,
 				DBDA8E3F24FCF8A7006750DC /* TwidereXUITests.xctest */,
-				DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */,
 				DBBBBE5E2744E8CC007ACB4B /* ShareExtension.appex */,
 				DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */,
 				DB7FF05E28853A7F00BFD55E /* NotificationService.appex */,
@@ -2501,17 +2411,6 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		DB94B6B626C65CB000A2E8A1 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DB94B6BE26C65CB000A2E8A1 /* AppShared.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
 		DB7FF05D28853A7F00BFD55E /* NotificationService */ = {
 			isa = PBXNativeTarget;
@@ -2524,35 +2423,14 @@
 			buildRules = (
 			);
 			dependencies = (
-				DB7FF07128853B1F00BFD55E /* PBXTargetDependency */,
 			);
 			name = NotificationService;
+			packageProductDependencies = (
+				DB05E13A29C3185E0055BF3F /* TwidereSDK */,
+			);
 			productName = NotificationService;
 			productReference = DB7FF05E28853A7F00BFD55E /* NotificationService.appex */;
 			productType = "com.apple.product-type.app-extension";
-		};
-		DB94B6BA26C65CB000A2E8A1 /* AppShared */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DB94B6C326C65CB100A2E8A1 /* Build configuration list for PBXNativeTarget "AppShared" */;
-			buildPhases = (
-				51870AB6AC62D0F5C707B21E /* [CP] Check Pods Manifest.lock */,
-				DB94B6B626C65CB000A2E8A1 /* Headers */,
-				DB94B6B726C65CB000A2E8A1 /* Sources */,
-				DB94B6B826C65CB000A2E8A1 /* Frameworks */,
-				DB94B6B926C65CB000A2E8A1 /* Resources */,
-				DB0B3B8D26C6637500501BB7 /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = AppShared;
-			packageProductDependencies = (
-				DBB0E3C22760FB1200F1D45F /* TwidereSDK */,
-			);
-			productName = AppShared;
-			productReference = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */;
-			productType = "com.apple.product-type.framework";
 		};
 		DBBBBE5D2744E8CC007ACB4B /* ShareExtension */ = {
 			isa = PBXNativeTarget;
@@ -2565,11 +2443,13 @@
 			buildRules = (
 			);
 			dependencies = (
-				DBBBBE742744EC27007ACB4B /* PBXTargetDependency */,
 				DBBBBE822744F39C007ACB4B /* PBXTargetDependency */,
 				DBBBBE892744F535007ACB4B /* PBXTargetDependency */,
 			);
 			name = ShareExtension;
+			packageProductDependencies = (
+				DB05E13629C318530055BF3F /* TwidereSDK */,
+			);
 			productName = ShareExtension;
 			productReference = DBBBBE5E2744E8CC007ACB4B /* ShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -2593,20 +2473,15 @@
 			buildRules = (
 			);
 			dependencies = (
-				DB94B6C026C65CB000A2E8A1 /* PBXTargetDependency */,
 				DBFDCE4727F450FC00BE99E3 /* PBXTargetDependency */,
 				DB77FF812847808C00182A0B /* PBXTargetDependency */,
 				DB7FF06428853A7F00BFD55E /* PBXTargetDependency */,
 			);
 			name = TwidereX;
 			packageProductDependencies = (
-				DBEA4F832511F7460007FEC5 /* Kanna */,
-				DB2611B6251B2D42004BF309 /* CryptoSwift */,
-				DBD98488251CB88A00ED87A1 /* Tabman */,
-				DB6CF1C3269715CD001DE069 /* FPSIndicator */,
-				DB7AB33D2744E3740035EB8A /* Floaty */,
 				DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */,
 				DBFADA8A2872BEDE00B512D6 /* TabBarPager */,
+				DB05E13C29C321960055BF3F /* TwidereSDK */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -2662,9 +2537,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				DBFDCE5727F451FC00BE99E3 /* PBXTargetDependency */,
 			);
 			name = TwidereXIntent;
+			packageProductDependencies = (
+				DB05E13829C318590055BF3F /* TwidereSDK */,
+			);
 			productName = TwidereXIntent;
 			productReference = DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -2681,10 +2558,6 @@
 				TargetAttributes = {
 					DB7FF05D28853A7F00BFD55E = {
 						CreatedOnToolsVersion = 13.4.1;
-					};
-					DB94B6BA26C65CB000A2E8A1 = {
-						CreatedOnToolsVersion = 13.0;
-						LastSwiftMigration = 1300;
 					};
 					DBBBBE5D2744E8CC007ACB4B = {
 						CreatedOnToolsVersion = 13.1;
@@ -2727,11 +2600,6 @@
 			);
 			mainGroup = DBDA8E1524FCF8A3006750DC;
 			packageReferences = (
-				DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */,
-				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
-				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */,
-				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */,
-				DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -2740,7 +2608,6 @@
 				DBDA8E1D24FCF8A3006750DC /* TwidereX */,
 				DBDA8E3324FCF8A7006750DC /* TwidereXTests */,
 				DBDA8E3E24FCF8A7006750DC /* TwidereXUITests */,
-				DB94B6BA26C65CB000A2E8A1 /* AppShared */,
 				DBBBBE5D2744E8CC007ACB4B /* ShareExtension */,
 				DBFDCE3F27F450FC00BE99E3 /* TwidereXIntent */,
 				DB7FF05D28853A7F00BFD55E /* NotificationService */,
@@ -2750,13 +2617,6 @@
 
 /* Begin PBXResourcesBuildPhase section */
 		DB7FF05C28853A7F00BFD55E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DB94B6B926C65CB000A2E8A1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2849,28 +2709,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TwidereX-TwidereXUITests/Pods-TwidereX-TwidereXUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		51870AB6AC62D0F5C707B21E /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-AppShared-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		6B1901F5A04D5AA62D66599E /* [CP] Embed Pods Frameworks */ = {
@@ -3013,15 +2851,6 @@
 				DB7FF06C28853AB800BFD55E /* String+Escape.swift in Sources */,
 				DB7FF06B28853AB300BFD55E /* NotificationService+Decrypt.swift in Sources */,
 				DB7FF06A28853AB000BFD55E /* String+Decode85.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DB94B6B726C65CB000A2E8A1 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DBCC7AE5274BA10100E0986D /* DateTimeSwiftProvider.swift in Sources */,
-				DBCC7AE6274BA10100E0986D /* OfficialTwitterTextProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3410,29 +3239,12 @@
 			target = DB7FF05D28853A7F00BFD55E /* NotificationService */;
 			targetProxy = DB7FF06328853A7F00BFD55E /* PBXContainerItemProxy */;
 		};
-		DB7FF07128853B1F00BFD55E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
-			targetProxy = DB7FF07028853B1F00BFD55E /* PBXContainerItemProxy */;
-		};
-		DB94B6C026C65CB000A2E8A1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
-			targetProxy = DB94B6BF26C65CB000A2E8A1 /* PBXContainerItemProxy */;
-		};
-		DBBBBE742744EC27007ACB4B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
-			targetProxy = DBBBBE732744EC27007ACB4B /* PBXContainerItemProxy */;
-		};
 		DBBBBE822744F39C007ACB4B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
 			targetProxy = DBBBBE812744F39C007ACB4B /* PBXContainerItemProxy */;
 		};
 		DBBBBE892744F535007ACB4B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
 			targetProxy = DBBBBE882744F535007ACB4B /* PBXContainerItemProxy */;
 		};
 		DBDA8E3624FCF8A7006750DC /* PBXTargetDependency */ = {
@@ -3449,11 +3261,6 @@
 			isa = PBXTargetDependency;
 			target = DBFDCE3F27F450FC00BE99E3 /* TwidereXIntent */;
 			targetProxy = DBFDCE4627F450FC00BE99E3 /* PBXContainerItemProxy */;
-		};
-		DBFDCE5727F451FC00BE99E3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
-			targetProxy = DBFDCE5627F451FC00BE99E3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3682,41 +3489,6 @@
 			};
 			name = Profile;
 		};
-		DB2F180A282B54F30001C6A8 /* Profile */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8602431405CD5A4D45224B80 /* Pods-AppShared.profile.xcconfig */;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 7LFDZ96332;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 118;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = ShareExtension/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.AppShared;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Profile;
-		};
 		DB2F180B282B54F30001C6A8 /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3857,75 +3629,6 @@
 				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.NotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Release;
-		};
-		DB94B6C426C65CB100A2E8A1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5635061D4E24E9A2C69E90ED /* Pods-AppShared.debug.xcconfig */;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 7LFDZ96332;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 118;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = ShareExtension/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.AppShared;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Debug;
-		};
-		DB94B6C526C65CB100A2E8A1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 06C6C02930FE7CBB4E13D99E /* Pods-AppShared.release.xcconfig */;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 7LFDZ96332;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 118;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = ShareExtension/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.AppShared;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -4342,16 +4045,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DB94B6C326C65CB100A2E8A1 /* Build configuration list for PBXNativeTarget "AppShared" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DB94B6C426C65CB100A2E8A1 /* Debug */,
-				DB2F180A282B54F30001C6A8 /* Profile */,
-				DB94B6C526C65CB100A2E8A1 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		DBBBBE692744E8CC007ACB4B /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -4414,78 +4107,22 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.3.2;
-			};
-		};
-		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/MainasuK/FPSIndicator.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
-		DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kciter/Floaty.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-		DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/uias/Tabman.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.9.1;
-			};
-		};
-		DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tid-kijyun/Kanna.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.2.2;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		DB2611B6251B2D42004BF309 /* CryptoSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
-			productName = CryptoSwift;
-		};
-		DB6CF1C3269715CD001DE069 /* FPSIndicator */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */;
-			productName = FPSIndicator;
-		};
-		DB7AB33D2744E3740035EB8A /* Floaty */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */;
-			productName = Floaty;
-		};
-		DBB0E3C22760FB1200F1D45F /* TwidereSDK */ = {
+		DB05E13629C318530055BF3F /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TwidereSDK;
 		};
-		DBD98488251CB88A00ED87A1 /* Tabman */ = {
+		DB05E13829C318590055BF3F /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */;
-			productName = Tabman;
+			productName = TwidereSDK;
 		};
-		DBEA4F832511F7460007FEC5 /* Kanna */ = {
+		DB05E13A29C3185E0055BF3F /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */;
-			productName = Kanna;
+			productName = TwidereSDK;
+		};
+		DB05E13C29C321960055BF3F /* TwidereSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TwidereSDK;
 		};
 		DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */ = {
 			isa = XCSwiftPackageProductDependency;

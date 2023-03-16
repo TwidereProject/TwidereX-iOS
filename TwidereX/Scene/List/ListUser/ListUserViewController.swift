@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import Combine
 import CoreDataStack
-import TwidereUI
 import SwiftMessages
 
 final class ListUserViewController: UIViewController, NeedsDependency {

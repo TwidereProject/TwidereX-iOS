@@ -8,7 +8,6 @@
 
 import os.log
 import Foundation
-import TwidereCommon
 import TwidereCore
 import MastodonMeta
 

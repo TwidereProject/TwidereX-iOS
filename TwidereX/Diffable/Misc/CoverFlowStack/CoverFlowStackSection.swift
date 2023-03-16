@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import TwidereCore
 
 enum CoverFlowStackSection: Hashable {
     case main

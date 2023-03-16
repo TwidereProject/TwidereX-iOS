@@ -9,10 +9,6 @@
 import os.log
 import UIKit
 import Combine
-import AppShared
-import TwidereAsset
-import TwidereLocalization
-import TwidereUI
 import TwitterMeta
 
 final class DisplayPreferenceViewModel: ObservableObject {

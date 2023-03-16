@@ -15,7 +15,6 @@ import MastodonSDK
 import CoreData
 import CoreDataStack
 import TwidereCore
-import TwidereUI
 
 final class StatusThreadViewModel {
     

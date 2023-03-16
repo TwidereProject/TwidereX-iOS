@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import TwidereUI
 import Photos
 
 extension UITableViewDelegate where Self: DataSourceProvider & AuthContextProvider {

@@ -9,7 +9,6 @@
 import CoreData
 import CoreDataStack
 import SwiftUI
-import TwidereUI
 
 struct TextCaseEraseStyle: ViewModifier {
     func body(content: Content) -> some View {

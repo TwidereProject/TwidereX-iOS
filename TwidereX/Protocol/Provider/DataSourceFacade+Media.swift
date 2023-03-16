@@ -9,7 +9,6 @@
 import UIKit
 import AVKit
 import TwidereCore
-import TwidereUI
 
 extension DataSourceFacade {
     

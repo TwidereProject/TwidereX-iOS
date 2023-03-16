@@ -12,7 +12,6 @@ import Combine
 import SwiftUI
 import CoreData
 import CoreDataStack
-import TwidereCommon
 import TwidereAsset
 import TwidereLocalization
 import TwidereCore

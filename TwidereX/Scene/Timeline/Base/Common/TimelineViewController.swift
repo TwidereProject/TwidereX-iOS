@@ -10,9 +10,6 @@ import os.log
 import UIKit
 import Combine
 import Floaty
-import AppShared
-import TwidereCore
-import TwidereUI
 import TabBarPager
 
 class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewableViewController {

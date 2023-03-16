@@ -8,7 +8,6 @@
 
 import UIKit
 import Combine
-import TwidereUI
 
 extension ListUserViewModel {
     

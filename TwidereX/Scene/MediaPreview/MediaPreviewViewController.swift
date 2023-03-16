@@ -11,7 +11,6 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import AppShared
 import AlamofireImage
 import Kingfisher
 import Pageboy

@@ -8,9 +8,6 @@
 
 import os.log
 import UIKit
-import AppShared
-import TwidereCore
-import TwidereUI
 import SwiftMessages
 
 extension DataSourceFacade {

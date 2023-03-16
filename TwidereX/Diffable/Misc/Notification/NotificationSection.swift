@@ -8,8 +8,6 @@
 
 
 import UIKit
-import AppShared
-import TwidereUI
 
 enum NotificationSection: Hashable {
     case main

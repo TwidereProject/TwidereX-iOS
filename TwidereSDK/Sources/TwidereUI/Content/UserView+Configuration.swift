@@ -9,7 +9,6 @@ import Foundation
 import Combine
 import SwiftUI
 import CoreDataStack
-import TwidereCommon
 import TwidereCore
 import TwidereAsset
 import Meta

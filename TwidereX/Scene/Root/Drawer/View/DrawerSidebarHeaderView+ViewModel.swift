@@ -9,7 +9,6 @@
 import UIKit
 import Combine
 import MetaTextKit
-import TwidereCommon
 import CoreDataStack
 import TwidereCore
 

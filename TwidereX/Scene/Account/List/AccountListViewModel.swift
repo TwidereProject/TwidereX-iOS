@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
+import TwidereCore
 
 final class AccountListViewModel: NSObject {
     

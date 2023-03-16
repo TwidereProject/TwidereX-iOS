@@ -8,7 +8,6 @@
 
 import SwiftUI
 import TwidereLocalization
-import TwidereUI
 
 struct BehaviorsPreferenceView: View {
     

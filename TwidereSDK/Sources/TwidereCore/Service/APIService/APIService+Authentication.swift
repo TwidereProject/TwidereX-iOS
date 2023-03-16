@@ -9,7 +9,6 @@ import Foundation
 import Combine
 import TwitterSDK
 import MastodonSDK
-import TwidereCommon
 
 extension APIService {
     

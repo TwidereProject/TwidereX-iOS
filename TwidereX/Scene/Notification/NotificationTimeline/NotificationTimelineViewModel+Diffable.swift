@@ -12,7 +12,6 @@ import CoreData
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
-import AppShared
 
 extension NotificationTimelineViewModel {
     

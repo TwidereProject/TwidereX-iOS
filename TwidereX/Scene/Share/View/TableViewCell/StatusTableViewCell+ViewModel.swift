@@ -10,8 +10,6 @@ import UIKit
 import Combine
 import SwiftUI
 import CoreDataStack
-import AppShared
-import TwidereUI
 
 extension StatusTableViewCell {
     

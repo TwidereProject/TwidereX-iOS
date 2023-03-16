@@ -14,7 +14,6 @@ import Kingfisher
 import MetaTextKit
 import MetaTextArea
 import MetaLabel
-import TwidereCommon
 import TwidereCore
 
 public protocol StatusViewDelegate: AnyObject {

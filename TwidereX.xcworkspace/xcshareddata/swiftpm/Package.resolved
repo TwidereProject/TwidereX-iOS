@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
         "state": {
           "branch": null,
-          "revision": "039f56c5d7960f277087a0be51f5eb04ed0ec073",
-          "version": "1.5.1"
+          "revision": "19b3c3ceed117c5cc883517c4e658548315ba70b",
+          "version": "1.6.0"
         }
       },
       {
@@ -141,8 +141,8 @@
         "repositoryURL": "https://github.com/uias/Pageboy",
         "state": {
           "branch": null,
-          "revision": "34ecb6e7c4e0e07494960ab2f7cc9a02293915a6",
-          "version": "3.6.2"
+          "revision": "5522aa6ae88633f6c23cf504e9cd684e963822f1",
+          "version": "4.0.2"
         }
       },
       {
@@ -213,8 +213,8 @@
         "repositoryURL": "https://github.com/uias/Tabman.git",
         "state": {
           "branch": null,
-          "revision": "a9f10cb862a32e6a22549836af013abd6b0692d3",
-          "version": "2.12.0"
+          "revision": "6a87a2825939f5da06cf52a6582d67a646488cff",
+          "version": "3.0.1"
         }
       },
       {

@@ -8,7 +8,6 @@
 
 import UIKit
 import Combine
-import AppShared
 
 extension StatusHistoryViewModel {
     

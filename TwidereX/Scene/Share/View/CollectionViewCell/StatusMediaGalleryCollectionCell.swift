@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import Combine
 import CoverFlowStackCollectionViewLayout
-import TwidereUI
 
 protocol StatusMediaGalleryCollectionCellDelegate: AnyObject {
     func statusMediaGalleryCollectionCell(_ cell: StatusMediaGalleryCollectionCell, coverFlowCollectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)

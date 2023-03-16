@@ -9,7 +9,6 @@
 import os.log
 import UIKit
 import UserNotifications
-import AppShared
 import TwidereCommon
 import TwidereCore
 import AlamofireImage

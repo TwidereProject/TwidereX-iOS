@@ -14,7 +14,6 @@ import CoreDataStack
 import GameplayKit
 import TwitterSDK
 import TwidereCore
-import TwidereUI
 
 final class SearchUserViewModel {
     

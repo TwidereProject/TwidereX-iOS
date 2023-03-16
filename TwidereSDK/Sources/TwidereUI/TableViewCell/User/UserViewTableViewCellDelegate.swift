@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import TwidereCommon
 
 // sourcery: protocolName = "UserViewDelegate"
 // sourcery: replaceOf = "userView(userView"

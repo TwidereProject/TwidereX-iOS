@@ -8,7 +8,6 @@
 import os.log
 import Foundation
 import MastodonSDK
-import TwidereCommon
 
 extension APIService {
  

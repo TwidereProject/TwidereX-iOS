@@ -9,7 +9,6 @@
 import SwiftUI
 import TwidereAsset
 import TwidereLocalization
-import TwidereUI
 import func QuartzCore.CACurrentMediaTime
 
 struct SidebarView: View {

@@ -9,10 +9,10 @@
 import os.log
 import UIKit
 import Combine
-import AppShared
-import TwidereUI
 import CoreDataStack
 import UniformTypeIdentifiers
+
+@_exported import TwidereUI
 
 class ComposeViewController: UIViewController {
 

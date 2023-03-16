@@ -8,6 +8,7 @@
 
 import SwiftUI
 import TwidereLocalization
+import TwidereCore
 
 struct EditListView: View {
         

@@ -12,7 +12,6 @@ import CoreData
 import CoreDataStack
 import Pageboy
 import TwidereCore
-import TwidereUI
 
 final class MediaPreviewViewModel: NSObject {
     

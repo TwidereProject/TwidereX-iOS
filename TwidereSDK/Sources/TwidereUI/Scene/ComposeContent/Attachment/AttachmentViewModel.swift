@@ -9,7 +9,6 @@ import os.log
 import UIKit
 import Combine
 import PhotosUI
-import TwidereCommon
 import Kingfisher
 
 final public class AttachmentViewModel: NSObject, ObservableObject, Identifiable {

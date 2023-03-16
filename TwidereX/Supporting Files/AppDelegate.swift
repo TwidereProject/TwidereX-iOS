@@ -14,8 +14,6 @@ import Firebase
 import FirebaseMessaging
 import FirebaseCrashlytics
 import Kingfisher
-import AppShared
-import TwidereCommon
 
 @_exported import TwidereUI
 

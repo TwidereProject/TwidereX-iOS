@@ -13,8 +13,6 @@ import Combine
 import SafariServices
 import SwiftMessages
 import TwitterSDK
-import TwidereUI
-import TwidereCommon
 import func QuartzCore.CACurrentMediaTime
 
 final class MainTabBarController: UITabBarController, NeedsDependency {

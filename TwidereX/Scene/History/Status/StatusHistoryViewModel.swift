@@ -12,7 +12,6 @@ import Combine
 import CoreDataStack
 import MastodonSDK
 import TwidereCore
-import TwidereUI
 
 final class StatusHistoryViewModel {
     

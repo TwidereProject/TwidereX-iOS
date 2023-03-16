@@ -8,6 +8,7 @@
 
 import UIKit
 import Combine
+import TwidereCore
 
 class TimelineLoaderTableViewCell: UITableViewCell {
     

@@ -13,7 +13,6 @@ import CoreDataStack
 import GameplayKit
 import MastodonSDK
 import TwidereCore
-import TwidereUI
 
 final class NotificationTimelineViewModel {
     

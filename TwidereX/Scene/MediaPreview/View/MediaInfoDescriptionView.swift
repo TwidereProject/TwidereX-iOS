@@ -12,7 +12,6 @@ import Combine
 import MetaTextKit
 import MetaTextArea
 import MetaLabel
-import TwidereUI
 
 protocol MediaInfoDescriptionViewDelegate: AnyObject {
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarButtonDidPressed button: UIButton)

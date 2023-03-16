@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import TwidereUI
-import AppShared
 
 extension SearchTimelineViewModel {
     

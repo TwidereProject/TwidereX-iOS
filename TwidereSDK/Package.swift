@@ -46,6 +46,11 @@ let package = Package(
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
         .package(url: "https://github.com/TwidereProject/twitter-text.git", exact: "0.0.3"),
         .package(url: "https://github.com/MainasuK/DateTools", branch: "master"),
+        .package(url: "https://github.com/kciter/Floaty.git", branch: "master"),
+        .package(url: "https://github.com/MainasuK/FPSIndicator.git", from: "1.1.0"),
+        .package(url: "https://github.com/uias/Tabman.git", from: "3.0.1"),
+        .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.6.0"),
+        .package(url: "https://github.com/tid-kijyun/Kanna.git", from: "5.2.7"),
         .package(name: "ArkanaKeys", path: "../dependencies/ArkanaKeys"),
     ],
     targets: [
@@ -116,6 +121,8 @@ let package = Package(
                 .product(name: "MetaTextKit", package: "MetaTextKit"),
                 .product(name: "TwitterText", package: "twitter-text"),
                 .product(name: "DateToolsSwift", package: "DateTools"),
+                .product(name: "CryptoSwift", package: "CryptoSwift"),
+                .product(name: "Kanna", package: "Kanna"),
             ]
         ),
         .target(
@@ -135,6 +142,9 @@ let package = Package(
                 .product(name: "SDWebImage", package: "SDWebImage"),
                 .product(name: "SwiftMessages", package: "SwiftMessages"),
                 .product(name: "UITextView+Placeholder", package: "UITextView-Placeholder"),
+                .product(name: "FPSIndicator", package: "FPSIndicator"),
+                .product(name: "Floaty", package: "Floaty"),
+                .product(name: "Tabman", package: "Tabman"),
             ]
         ),
     ]

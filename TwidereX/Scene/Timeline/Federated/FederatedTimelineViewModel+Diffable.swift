@@ -11,8 +11,6 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import TwidereCore
-import AppShared
 
 extension FederatedTimelineViewModel {
     

@@ -9,7 +9,6 @@
 import Foundation
 import CoreData
 import CoreDataStack
-import TwidereCommon
 
 public enum StatusRecord: Hashable {
     case twitter(record: ManagedObjectRecord<TwitterStatus>)

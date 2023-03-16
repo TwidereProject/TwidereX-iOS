@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import TwidereUI
+import TwidereCore
 import MetaTextArea
 import Meta
 

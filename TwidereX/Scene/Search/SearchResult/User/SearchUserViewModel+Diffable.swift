@@ -12,7 +12,6 @@ import CoreData
 import CoreDataStack
 import AlamofireImage
 import Kingfisher
-import TwidereUI
 
 extension SearchUserViewModel {
     @MainActor func setupDiffableDataSource(

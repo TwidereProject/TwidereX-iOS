@@ -9,7 +9,6 @@
 import UIKit
 import TwidereAsset
 import TwidereLocalization
-import TwidereUI
 
 enum TabBarItem: Int, Hashable {
     case home

@@ -9,7 +9,6 @@
 import UIKit
 import Combine
 import CoreDataStack
-import TwidereUI
 
 enum UserSection {
     case main

@@ -9,10 +9,6 @@
 import Foundation
 import SwiftUI
 import Combine
-import TwidereCore
-import TwidereUI
-import TwidereLocalization
-import AppShared
 
 struct DisplayPreferenceView: View {
     

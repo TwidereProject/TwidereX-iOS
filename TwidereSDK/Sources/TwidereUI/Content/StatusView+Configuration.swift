@@ -11,7 +11,6 @@ import Combine
 import SwiftUI
 import CoreData
 import CoreDataStack
-import TwidereCommon
 import TwidereCore
 import TwitterMeta
 import MastodonMeta

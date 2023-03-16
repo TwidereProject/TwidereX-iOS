@@ -9,7 +9,6 @@
 import os.log
 import UIKit
 import Combine
-import TwidereUI
 
 final class NotificationTimelineViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
 

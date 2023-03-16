@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import Combine
 import AVKit
-import TwidereUI
 
 final class ComposeViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     

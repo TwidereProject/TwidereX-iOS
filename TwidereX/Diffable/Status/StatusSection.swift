@@ -13,8 +13,6 @@ import SwiftUI
 import CoreData
 import CoreDataStack
 import MetaTextKit
-import TwidereUI
-import AppShared
 import TwitterSDK
 
 enum StatusSection: Hashable {

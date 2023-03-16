@@ -10,8 +10,6 @@ import os.log
 import UIKit
 import Combine
 import Floaty
-import AppShared
-import TwidereCore
 import TabBarPager
 
 class ListTimelineViewController: TimelineViewController {

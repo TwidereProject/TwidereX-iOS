@@ -12,7 +12,6 @@ import CoreDataStack
 import TwidereCore
 import TwitterSDK
 import MastodonSDK
-import TwidereUI
 import SwiftMessages
 
 extension DataSourceFacade {

@@ -9,7 +9,6 @@
 import Foundation
 import Combine
 import TwidereCore
-import TwidereUI
 
 final class ComposeViewModel {
     

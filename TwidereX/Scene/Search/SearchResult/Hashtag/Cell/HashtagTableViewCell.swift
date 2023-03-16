@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import TwidereCore
 import MetaTextKit
 import MetaLabel
 

@@ -9,7 +9,6 @@ import os.log
 import UIKit
 import Combine
 import TwidereLocalization
-import TwidereUI
 
 protocol MentionPickViewControllerDelegate: AnyObject {
     func mentionPickViewController(_ controller: MentionPickViewController, itemPickDidChange items: [MentionPickViewModel.Item])

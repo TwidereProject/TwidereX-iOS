@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import SwiftUI
 import Combine
-import AppShared
 import TwitterSDK
 import MastodonSDK
 import AuthenticationServices

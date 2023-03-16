@@ -10,8 +10,6 @@ import os.log
 import UIKit
 import Combine
 import CoreDataStack
-import AppShared
-import TwidereCore
 import TwitterMeta
 import MastodonMeta
 import Meta

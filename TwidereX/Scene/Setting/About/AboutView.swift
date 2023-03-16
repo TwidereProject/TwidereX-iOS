@@ -8,7 +8,6 @@
 
 import SwiftUI
 import TwidereAsset
-import TwidereUI
 
 struct AboutView: View {
     

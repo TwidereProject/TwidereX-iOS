@@ -9,7 +9,7 @@
 import os.log
 import Foundation
 import SwiftUI
-import TwidereCommon
+import TwidereCore
 
 struct AppIconPreferenceView: View {
     

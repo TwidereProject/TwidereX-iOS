@@ -8,10 +8,6 @@
 
 import UIKit
 import MetaTextArea
-import TwidereCommon
-import TwidereCore
-import TwidereUI
-import AppShared
 import MetaTextKit
 import MetaLabel
 

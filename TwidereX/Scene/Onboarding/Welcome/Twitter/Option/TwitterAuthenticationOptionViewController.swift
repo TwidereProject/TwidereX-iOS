@@ -9,10 +9,8 @@
 import os.log
 import UIKit
 import Combine
-import AppShared
 import AuthenticationServices
 import TwitterSDK
-import TwidereUI
 
 final class TwitterAuthenticationOptionViewController: UIViewController, NeedsDependency {
     

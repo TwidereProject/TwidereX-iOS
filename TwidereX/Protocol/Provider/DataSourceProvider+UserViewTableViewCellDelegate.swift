@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import TwidereUI
 import SwiftMessages
 
 // MARK: - menu button

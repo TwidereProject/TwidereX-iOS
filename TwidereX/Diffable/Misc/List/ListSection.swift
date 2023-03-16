@@ -9,7 +9,6 @@
 import UIKit
 import Meta
 import TwidereCore
-import TwidereUI
 
 enum ListSection: Hashable {
     case twitter(kind: TwitterListKind)

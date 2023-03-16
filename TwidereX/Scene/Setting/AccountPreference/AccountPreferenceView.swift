@@ -8,7 +8,6 @@
 
 import Foundation
 import SwiftUI
-import TwidereUI
 
 enum AccountPreferenceListEntry: Hashable {
     case muted

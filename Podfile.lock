@@ -1,5 +1,4 @@
 PODS:
-  - DateToolsSwift (5.0.0)
   - Firebase/AnalyticsWithoutAdIdSupport (9.2.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics/WithoutAdIdSupport (~> 9.2.0)
@@ -103,26 +102,20 @@ PODS:
   - Sourcery (1.8.1):
     - Sourcery/CLI-Only (= 1.8.1)
   - Sourcery/CLI-Only (1.8.1)
-  - SwiftGen (6.5.1)
-  - twitter-text (3.1.0)
+  - SwiftGen (6.6.2)
   - XLPagerTabStrip (9.0.0)
-  - ZIPFoundation (0.9.13)
 
 DEPENDENCIES:
-  - DateToolsSwift (~> 5.0.0)
   - Firebase/AnalyticsWithoutAdIdSupport
   - FirebaseCrashlytics
   - FirebaseMessaging
   - FirebasePerformance
   - Sourcery (~> 1.8.1)
-  - SwiftGen (~> 6.5.1)
-  - twitter-text (~> 3.1.0)
+  - SwiftGen (~> 6.6.2)
   - XLPagerTabStrip (~> 9.0.0)
-  - ZIPFoundation (~> 0.9.11)
 
 SPEC REPOS:
   trunk:
-    - DateToolsSwift
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
@@ -141,12 +134,9 @@ SPEC REPOS:
     - PromisesObjC
     - Sourcery
     - SwiftGen
-    - twitter-text
     - XLPagerTabStrip
-    - ZIPFoundation
 
 SPEC CHECKSUMS:
-  DateToolsSwift: 4207ada6ad615d8dc076323d27037c94916dbfa6
   Firebase: 4ba896cb8e5105d4b9e247e1c1b6222b548df55a
   FirebaseABTesting: cd1ec762a0078b46a7ce91dfe5b7b8991c2dff8f
   FirebaseAnalytics: af5a03a8dff7648c7b8486f6a78b1368e0268dd3
@@ -164,11 +154,9 @@ SPEC CHECKSUMS:
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   Sourcery: 4d44d4ea26a682a4a9875ec7c1870a1e7b8e183f
-  SwiftGen: a6d22010845f08fe18fbdf3a07a8e380fd22e0ea
-  twitter-text: 3a0d73ca52955439dc8b208ca7e123ea0abd6a51
+  SwiftGen: 1366a7f71aeef49954ca5a63ba4bef6b0f24138c
   XLPagerTabStrip: 61c57fd61f611ee5f01ff1495ad6fbee8bf496c5
-  ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: a6441556e77318b291664364cc5bfbdd86dbd781
+PODFILE CHECKSUM: e2c773b0e4d6bfd3166d7794b7f8babe8f9b9b92
 
 COCOAPODS: 1.11.3

@@ -10,9 +10,6 @@ import UIKit
 import Combine
 import SwiftUI
 import CoreDataStack
-import TwidereCore
-import AppShared
-import TwidereUI
 
 extension StatusThreadRootTableViewCell {
     

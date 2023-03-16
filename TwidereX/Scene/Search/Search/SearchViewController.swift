@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import Combine
 import TwidereLocalization
-import TwidereUI
 
 // DrawerSidebarTransitionableViewController
 final class SearchViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {

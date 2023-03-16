@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import Combine
 import AlamofireImage
-import TwidereUI
 
 final class DrawerSidebarViewController: UIViewController, NeedsDependency {
     

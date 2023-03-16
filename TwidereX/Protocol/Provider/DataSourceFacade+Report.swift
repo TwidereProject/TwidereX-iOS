@@ -10,7 +10,6 @@ import UIKit
 import TwidereAsset
 import TwidereLocalization
 import SwiftMessages
-import TwidereUI
 
 extension DataSourceFacade {
     @MainActor

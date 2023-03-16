@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import TwidereCore
 import CoreDataStack
+import TwidereCore
 
 extension DataSourceFacade {
     

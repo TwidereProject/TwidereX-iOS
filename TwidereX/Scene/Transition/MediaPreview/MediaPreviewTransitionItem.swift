@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import TwidereUI
 
 class MediaPreviewTransitionItem: Identifiable {
     

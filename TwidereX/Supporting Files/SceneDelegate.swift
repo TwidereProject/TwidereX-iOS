@@ -11,8 +11,6 @@ import Combine
 import Intents
 import FPSIndicator
 import CoreDataStack
-import TwidereCore
-import AppShared
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     

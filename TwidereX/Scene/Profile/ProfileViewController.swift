@@ -10,7 +10,6 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import AppShared
 import Floaty
 import Meta
 import MetaTextKit
@@ -18,7 +17,6 @@ import MetaTextArea
 import MetaLabel
 import TabBarPager
 import XLPagerTabStrip
-import TwidereUI
 
 final class ProfileViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
     

@@ -11,7 +11,6 @@ import UIKit
 import Combine
 import SafariServices
 import CoreDataStack
-import TwidereUI
 
 final public class SceneCoordinator {
     
