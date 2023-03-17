@@ -324,6 +324,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
     func tableViewCell(
         _ cell: UITableViewCell,
         viewModel: StatusView.ViewModel,
+        statusToolbarViewModel: StatusToolbarView.ViewModel,
         statusToolbarButtonDidPressed action: StatusToolbarView.Action
     ) {
         Task {
@@ -334,6 +335,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
             await DataSourceFacade.responseToStatusToolbar(
                 provider: self,
                 viewModel: viewModel,
+                statusToolbarViewModel: statusToolbarViewModel,
                 status: status,
                 action: action
             )

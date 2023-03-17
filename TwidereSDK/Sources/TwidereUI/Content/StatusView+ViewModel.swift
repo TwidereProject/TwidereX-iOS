@@ -174,8 +174,6 @@ extension StatusView {
         
         // toolbar
         public let toolbarViewModel = StatusToolbarView.ViewModel()
-        // toolbar - share menu context
-        @Published public var statusLink: URL?
         public var canDelete: Bool {
             guard let authContext = self.authContext else { return false }
             guard let authorUserIdentifier = self.authorUserIdentifier else { return false }
@@ -1124,7 +1122,6 @@ extension StatusView.ViewModel {
         } else {
             // do nothing
         }
-        statusLink = status.statusURL
     }   // end init
 }
 
@@ -1266,6 +1263,5 @@ extension StatusView.ViewModel {
         } else {
             // do nothing
         }
-        statusLink = URL(string: status.url ?? status.uri)
     }
 }

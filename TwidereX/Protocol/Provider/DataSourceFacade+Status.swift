@@ -15,6 +15,7 @@ extension DataSourceFacade {
     static func responseToStatusToolbar(
         provider: DataSourceProvider & AuthContextProvider,
         viewModel: StatusView.ViewModel,
+        statusToolbarViewModel: StatusToolbarView.ViewModel,
         status: StatusRecord,
         action: StatusToolbarView.Action
     ) async {
@@ -111,28 +112,73 @@ extension DataSourceFacade {
             let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
             impactFeedbackGenerator.impactOccurred()
             
-            guard let link = viewModel.statusLink?.absoluteString else { return }
+            let _link: String? = await provider.context.managedObjectContext.perform {
+                guard let object = status.object(in: provider.context.managedObjectContext) else { return nil }
+                guard let url = object.statusURL else { return nil }
+                return url.absoluteString
+            }
+            guard let link = _link else { return }
             UIPasteboard.general.string = link
         case .shareLink:
             let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
             impactFeedbackGenerator.impactOccurred()
             
-            guard let link = viewModel.statusLink?.absoluteString else { return }
-            UIPasteboard.general.string = link
+            await DataSourceFacade.responseToStatusShareAction(
+                provider: provider,
+                status: status,
+                sourceView: statusToolbarViewModel.menuButtonBackgroundView
+            )
         case .saveMedia:
-            break
-        case .translate:
-            break
+            let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+            let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
             
-            // media menu button trigger this
+            let mediaViewModels = viewModel.mediaViewModels
+            do {
+                impactFeedbackGenerator.impactOccurred()
+                for mediaViewModel in mediaViewModels {
+                    guard let url = mediaViewModel.downloadURL else {
+                        assertionFailure()
+                        continue
+                    }
+                    try await provider.context.photoLibraryService.save(
+                        source: .remote(url: url),
+                        resourceType: {
+                            switch mediaViewModel.mediaKind {
+                            case .video:        return .video
+                            case .animatedGIF:  return .video
+                            case .photo:        return .photo
+                            }
+                        }()
+                    )
+                }
+                provider.context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoSaved.title)
+                notificationFeedbackGenerator.notificationOccurred(.success)
+            } catch {
+                provider.context.photoLibraryService.presentFailureNotification(
+                    error: error,
+                    title: L10n.Common.Alerts.PhotoSaveFail.title,
+                    message: L10n.Common.Alerts.PhotoSaveFail.message
+                )
+                notificationFeedbackGenerator.notificationOccurred(.error)
+            }
+        case .translate:
             let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
             impactFeedbackGenerator.impactOccurred()
-            
-//            await DataSourceFacade.responseToStatusShareAction(
-//                provider: provider,
-//                status: status,
-//                button: sender
-//            )
+            do {
+                try await DataSourceFacade.responseToStatusTranslate(
+                    provider: provider,
+                    status: status
+                )
+            } catch {
+                assertionFailure(error.localizedDescription)
+            }
+        case .delete:
+            await DataSourceFacade.responseToRemoveStatusAction(
+                provider: provider,
+                target: .status,
+                status: status,
+                authenticationContext: provider.authContext.authenticationContext
+            )
         }   // end switch action
     }
 }
@@ -236,7 +282,7 @@ extension DataSourceFacade {
         target: StatusTarget,
         status: StatusRecord,
         authenticationContext: AuthenticationContext
-    ) async throws {
+    ) async {
         let _redirectRecord = await DataSourceFacade.status(
             managedObjectContext: provider.context.managedObjectContext,
             status: status,
@@ -244,7 +290,7 @@ extension DataSourceFacade {
         )
         guard let redirectRecord = _redirectRecord else { return }
         
-        try await responseToRemoveStatusAction(
+        await responseToRemoveStatusAction(
             provider: provider,
             status: redirectRecord,
             authenticationContext: authenticationContext
@@ -256,7 +302,7 @@ extension DataSourceFacade {
         provider: DataSourceProvider,
         status: StatusRecord,
         authenticationContext: AuthenticationContext
-    ) async throws {
+    ) async {
         let title: String = {
             switch status {
             case .twitter:      return L10n.Common.Alerts.DeleteTweetConfirm.title

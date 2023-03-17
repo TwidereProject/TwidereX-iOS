@@ -33,6 +33,9 @@ public struct StatusToolbarView: View {
             }
             likeButton
             shareMenu
+                .background(
+                    WrapperViewRepresentable(view: viewModel.menuButtonBackgroundView)
+                )
         }   // end HStack
     }   // end body
     
@@ -108,29 +111,28 @@ extension StatusToolbarView {
     }
     
     public var shareMenu: some View {
-        Button {
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): share")
+        Menu {
             ForEach(menuActions, id: \.self) { action in
-                Button {
+                Button(role: action.isDestructive ? .destructive : nil) {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(String(describing: action))")
                     handler(action)
                 } label: {
                     Label {
-                        
+                        Text(action.text)
                     } icon: {
-                        
+                        Image(uiImage: action.icon)
                     }
                 }   // end Button
             }   // end ForEach
         } label: {
             HStack {
                 let image: UIImage = {
-                    //                        switch viewModel.kind {
-                    //                        case .conversationRoot:
+//                        switch viewModel.kind {
+//                        case .conversationRoot:
                     return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
-                    //                        default:
-                    //                            return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
-                    //                        }
+//                        default:
+//                            return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
+//                        }
                 }()
                 Image(uiImage: image)
                     .foregroundColor(.secondary)
@@ -143,6 +145,8 @@ extension StatusToolbarView {
 
 extension StatusToolbarView {
     public class ViewModel: ObservableObject {
+        public let menuButtonBackgroundView = UIView()
+
         // input
         @Published var platform: Platform = .none
         @Published var replyCount: Int?
@@ -169,18 +173,42 @@ extension StatusToolbarView {
         case shareLink
         case saveMedia
         case translate
+        case delete
         
         public var text: String {
             switch self {
-            case .reply:        return ""
-            case .repost:       return ""
-            case .quote:        return ""
-            case .like:         return ""
-            case .copyText:     return ""
-            case .copyLink:     return ""
-            case .shareLink:    return ""
-            case .saveMedia:    return ""
-            case .translate:    return ""
+            case .reply:        return L10n.Common.Controls.Status.Actions.reply
+            case .repost:       return L10n.Common.Controls.Status.Actions.repost
+            case .quote:        return L10n.Common.Controls.Status.Actions.quote
+            case .like:         return L10n.Common.Controls.Status.Actions.like
+            case .copyText:     return L10n.Common.Controls.Status.Actions.copyText
+            case .copyLink:     return L10n.Common.Controls.Status.Actions.copyLink
+            case .shareLink:    return L10n.Common.Controls.Status.Actions.shareLink
+            case .saveMedia:    return L10n.Common.Controls.Status.Actions.saveMedia
+            case .translate:    return L10n.Common.Controls.Status.Actions.translate
+            case .delete:       return L10n.Common.Controls.Actions.delete
+            }
+        }
+        
+        public var icon: UIImage {
+            switch self {
+            case .reply:        return Asset.Arrows.arrowTurnUpLeft.image
+            case .repost:       return Asset.Media.repeat.image
+            case .quote:        return Asset.TextFormatting.textQuote.image
+            case .like:         return Asset.Health.heartFill.image
+            case .copyText:     return UIImage(systemName: "doc.on.doc")!
+            case .copyLink:     return UIImage(systemName: "link")!
+            case .shareLink:    return UIImage(systemName: "square.and.arrow.up")!
+            case .saveMedia:    return UIImage(systemName: "square.and.arrow.down")!
+            case .translate:    return UIImage(systemName: "character.bubble")!
+            case .delete:       return UIImage(systemName: "minus.circle")!
+            }
+        }
+        
+        public var isDestructive: Bool {
+            switch self {
+            case .delete:       return true
+            default:            return false
             }
         }
     }

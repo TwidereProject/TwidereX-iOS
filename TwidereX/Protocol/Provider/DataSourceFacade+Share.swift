@@ -14,7 +14,7 @@ extension DataSourceFacade {
     public static func responseToStatusShareAction(
         provider: DataSourceProvider,
         status: StatusRecord,
-        button: UIButton
+        sourceView: UIView
     ) async {
         let activityViewController = await createActivityViewController(
             provider: provider,
@@ -23,7 +23,7 @@ extension DataSourceFacade {
         provider.coordinator.present(
             scene: .activityViewController(
                 activityViewController: activityViewController,
-                sourceView: button
+                sourceView: sourceView
             ),
             from: provider,
             transition: .activityViewControllerPresent(animated: true, completion: nil)
@@ -40,13 +40,8 @@ extension DataSourceFacade {
     ) async -> UIActivityViewController {
         var activityItems: [Any] = await provider.context.managedObjectContext.perform {
             guard let object = status.object(in: provider.context.managedObjectContext) else { return [] }
-            switch object {
-            case .twitter(let status):
-                return [status.statusURL]
-            case .mastodon(let status):
-                let url = status.url ?? status.uri
-                return [URL(string: url)].compactMap { $0 } as [Any]
-            }
+            guard let url = object.statusURL else { return [] }
+            return [url] as [Any]
         }
         var applicationActivities: [UIActivity] = [
             SafariActivity(sceneCoordinator: provider.coordinator),     // open URL

@@ -39,7 +39,7 @@ public protocol StatusViewDelegate: AnyObject {
 //
 //    func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
 //
-    func statusView(_ viewModel: StatusView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action)
+    func statusView(_ viewModel: StatusView.ViewModel, statusToolbarViewModel: StatusToolbarView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action)
 //    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
 //
 //    func statusView(_ statusView: StatusView, translateButtonDidPressed button: UIButton)
@@ -330,22 +330,27 @@ extension StatusView {
                 var actions: [StatusToolbarView.Action] = []
                 // copyText
                 actions.append(.copyText)
-                // copyLink, shareLink
-                if viewModel.statusLink != nil {
-                    actions.append(.copyLink)
-                    actions.append(.shareLink)
-                }
+                // copyLink
+                actions.append(.copyLink)
+                // shareLink
+                actions.append(.shareLink)
                 // save media
                 if !viewModel.mediaViewModels.isEmpty {
-                    actions.append(.copyText)
+                    actions.append(.saveMedia)
                 }
-                //
-                actions.append(.copyText)
-                actions.append(.copyText)
+                // translate
+                actions.append(.translate)
+                if viewModel.canDelete {
+                    actions.append(.delete)
+                }
                 return actions
             }(),
             handler: { action in
-                viewModel.delegate?.statusView(viewModel, statusToolbarButtonDidPressed: action)
+                viewModel.delegate?.statusView(
+                    viewModel,
+                    statusToolbarViewModel: viewModel.toolbarViewModel,
+                    statusToolbarButtonDidPressed: action
+                )
             }
         )
         .frame(height: 48)

@@ -694,12 +694,16 @@ public enum L10n {
           public static let copyText = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyText", fallback: "Copy text")
           /// Delete tweet
           public static let deleteTweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.DeleteTweet", fallback: "Delete tweet")
+          /// Like
+          public static let like = L10n.tr("Localizable", "Common.Controls.Status.Actions.Like", fallback: "Like")
           /// Pin on Profile
           public static let pinOnProfile = L10n.tr("Localizable", "Common.Controls.Status.Actions.PinOnProfile", fallback: "Pin on Profile")
           /// Quote
           public static let quote = L10n.tr("Localizable", "Common.Controls.Status.Actions.Quote", fallback: "Quote")
           /// Reply
           public static let reply = L10n.tr("Localizable", "Common.Controls.Status.Actions.Reply", fallback: "Reply")
+          /// Repost
+          public static let repost = L10n.tr("Localizable", "Common.Controls.Status.Actions.Repost", fallback: "Repost")
           /// Retweet
           public static let retweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.Retweet", fallback: "Retweet")
           /// Save media
@@ -712,6 +716,12 @@ public enum L10n {
           public static let shareLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.ShareLink", fallback: "Share link")
           /// Translate
           public static let translate = L10n.tr("Localizable", "Common.Controls.Status.Actions.Translate", fallback: "Translate")
+          /// Undo Boost
+          public static let undoBoost = L10n.tr("Localizable", "Common.Controls.Status.Actions.UndoBoost", fallback: "Undo Boost")
+          /// Undo Repost
+          public static let undoRepost = L10n.tr("Localizable", "Common.Controls.Status.Actions.UndoRepost", fallback: "Undo Repost")
+          /// Undo Retweet
+          public static let undoRetweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.UndoRetweet", fallback: "Undo Retweet")
           /// Unpin from Profile
           public static let unpinFromProfile = L10n.tr("Localizable", "Common.Controls.Status.Actions.UnpinFromProfile", fallback: "Unpin from Profile")
           /// Vote
