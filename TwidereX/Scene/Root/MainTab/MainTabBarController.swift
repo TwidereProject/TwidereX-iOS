@@ -144,7 +144,7 @@ extension MainTabBarController {
                         return
                     }
                     
-                    if let error = error as? Twitter.API.Error.ResponseError {
+                    if let error = error as? Twitter.API.Error.ResponseError, case .accountIsTemporarilyLocked = error.twitterAPIError {
                         Task { @MainActor in
                             DataSourceFacade.presentForbiddenBanner(
                                 error: error,

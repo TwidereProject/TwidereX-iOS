@@ -114,6 +114,8 @@ extension ComposeViewController: ComposeContentViewControllerDelegate {
         switch attachmentViewModel.output {
         case .image(let data, _):
             _item = UIImage(data: data).flatMap { .image(.init(image: $0)) }
+        case .gif(let data, _):
+            _item = UIImage(data: data).flatMap { .image(.init(image: $0)) }
         case .video(let url, _):
             let playerViewController = AVPlayerViewController()
             playerViewController.player = AVPlayer(url: url)

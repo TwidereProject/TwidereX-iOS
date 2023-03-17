@@ -56,7 +56,7 @@ extension DataSourceFacade {
         config.interactiveHide = true
         let bannerView = NotificationBannerView()
         bannerView.configure(style: .warning)
-        bannerView.titleLabel.text = "Forbidden"
+        bannerView.titleLabel.text = "Forbidden"    // TODO: i18n
         bannerView.messageLabel.text = "Application token expired. Please sign in the app again to reactive."
         bannerView.messageLabel.numberOfLines = 0
         bannerView.actionButtonTapHandler = { [weak dependency] _ in

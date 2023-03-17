@@ -149,11 +149,16 @@ public struct StatusView: View {
                         }
                     }   // end VStack
                     .overlay(alignment: .bottom) {
-                        VStack(spacing: .zero) {
-                            Spacer()
-                            Divider()
-                            Color.clear
-                                .frame(height: 1)
+                        switch viewModel.kind {
+                        case .timeline, .repost, .conversationRoot, .conversationThread:
+                            VStack(spacing: .zero) {
+                                Spacer()
+                                Divider()
+                                Color.clear
+                                    .frame(height: 1)
+                            }
+                        default:
+                            EmptyView()
                         }
                     }
                 }   // end HStack

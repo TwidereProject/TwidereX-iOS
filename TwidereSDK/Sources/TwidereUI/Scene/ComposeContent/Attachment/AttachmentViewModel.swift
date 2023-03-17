@@ -46,6 +46,8 @@ final public class AttachmentViewModel: NSObject, ObservableObject, Identifiable
                 switch output {
                 case .image(let data, _):
                     return UIImage(data: data)
+                case .gif(let data, _):
+                    return UIImage(data: data)
                 case .video(let url, _):
                     return AttachmentViewModel.createThumbnailForVideo(url: url)
                 case .none:
@@ -58,8 +60,10 @@ final public class AttachmentViewModel: NSObject, ObservableObject, Identifiable
     deinit {
         switch output {
         case .image:
-            // FIXME:
+            // FIXME: any cleanup?
             break
+        case .gif(_, let url):
+            try? FileManager.default.removeItem(at: url)
         case .video(let url, _):
             try? FileManager.default.removeItem(at: url)
         case nil :
@@ -78,7 +82,7 @@ extension AttachmentViewModel {
     
     public enum Output {
         case image(Data, imageKind: ImageKind)
-        // case gif(Data)
+        case gif(Data, URL)
         case video(URL, mimeType: String)    // assert use file for video only
         
         public enum ImageKind {
@@ -89,6 +93,7 @@ extension AttachmentViewModel {
         public var twitterMediaCategory: TwitterMediaCategory {
             switch self {
             case .image:        return .image
+            case .gif:          return .GIF
             case .video:        return .amplifyVideo
             }
         }
@@ -193,7 +198,12 @@ extension AttachmentViewModel {
     }
     
     private static func load(itemProvider: NSItemProvider) async throws -> Output {
-        if itemProvider.isImage() {
+        if itemProvider.isGIF() {
+            guard let result = try await itemProvider.loadGIFData() else {
+                throw AttachmentError.invalidAttachmentType
+            }
+            return .gif(result.data, result.url)
+        } else if itemProvider.isImage() {
             guard let result = try await itemProvider.loadImageData() else {
                 throw AttachmentError.invalidAttachmentType
             }
@@ -353,6 +363,14 @@ extension AttachmentViewModel: NSItemProviderWriting {
                 default:
                     completionHandler(nil, nil)
                 }
+            case .gif(let data, _):
+                switch typeIdentifier {
+                case UTType.gif.identifier:
+                    loadingProgress.completedUnitCount = 100
+                    completionHandler(data, nil)
+                default:
+                    completionHandler(nil, nil)
+                }
             case .video(let url, _):
                 switch typeIdentifier {
                 case UTType.png.identifier:
@@ -384,6 +402,13 @@ extension AttachmentViewModel: NSItemProviderWriting {
 }
 
 extension NSItemProvider {
+    fileprivate func isGIF() -> Bool {
+        return hasRepresentationConforming(
+            toTypeIdentifier: UTType.gif.identifier,
+            fileOptions: []
+        )
+    }
+    
     fileprivate func isImage() -> Bool {
         return hasRepresentationConforming(
             toTypeIdentifier: UTType.image.identifier,

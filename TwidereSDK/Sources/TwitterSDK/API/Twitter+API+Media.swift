@@ -186,7 +186,7 @@ extension Twitter.API.Media {
     
     public struct FinalizeResponse: Codable {
         public let mediaIDString: String
-        public let size: Int
+        public let size: Int?
         public let expiresAfterSecs: Int
         public let processingInfo: ProcessingInfo?  // server return it when media needs processing
         
@@ -216,7 +216,7 @@ extension Twitter.API.Media {
         session: URLSession,
         query: StatusQuery,
         authorization: Twitter.API.OAuth.Authorization
-    ) async throws -> Twitter.Response.Content<StatusResponse> {
+    ) async throws -> Twitter.Response.Content<FinalizeResponse> {
         let request = Twitter.API.request(
             url: uploadEndpointURL,
             method: .GET,
@@ -224,7 +224,7 @@ extension Twitter.API.Media {
             authorization: authorization
         )
         let (data, response) = try await session.data(for: request, delegate: nil)
-        let value = try Twitter.API.decode(type: StatusResponse.self, from: data, response: response)
+        let value = try Twitter.API.decode(type: FinalizeResponse.self, from: data, response: response)
         return Twitter.Response.Content(value: value, response: response)
     }
     
@@ -247,29 +247,6 @@ extension Twitter.API.Media {
         var formQueryItems: [URLQueryItem]? { nil }
         var contentType: String? { nil }
         var body: Data? { nil }
-    }
-    
-    public struct StatusResponse: Codable {
-        public let mediaIDString: String
-        public let expiresAfterSecs: Int
-        public let processingInfo: ProcessingInfo
-        
-        public enum CodingKeys: String, CodingKey {
-            case mediaIDString = "media_id_string"
-            case expiresAfterSecs = "expires_after_secs"
-            case processingInfo = "processing_info"
-        }
-        
-        public struct ProcessingInfo: Codable {
-            public let state: String        // pending, in_progress, failed, succeeded
-            public let checkAfterSecs: Int?
-
-            
-            public enum CodingKeys: String, CodingKey {
-                case state
-                case checkAfterSecs = "check_after_secs"
-            }
-        }
     }
     
 }
