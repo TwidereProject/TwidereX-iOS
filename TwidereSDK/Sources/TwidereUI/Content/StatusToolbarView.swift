@@ -76,9 +76,11 @@ extension StatusToolbarView {
                 handler(.repost)
             } label: {
                 Label {
-                    Text(L10n.Common.Controls.Status.Actions.retweet)
+                    let text = viewModel.isReposted ? L10n.Common.Controls.Status.Actions.undoRetweet : L10n.Common.Controls.Status.Actions.retweet
+                    Text(text)
                 } icon: {
-                    Image(uiImage: Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate))
+                    let image = viewModel.isReposted ? Asset.Media.repeatOff.image.withRenderingMode(.alwaysTemplate) : Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
+                    Image(uiImage: image)
                 }
             }
             // quote

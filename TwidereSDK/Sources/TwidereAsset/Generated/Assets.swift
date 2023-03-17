@@ -148,6 +148,7 @@ public enum Asset {
     public static let altRectangle = ImageAsset(name: "Media/alt.rectangle")
     public static let gifRectangle = ImageAsset(name: "Media/gif.rectangle")
     public static let playerRectangle = ImageAsset(name: "Media/player.rectangle")
+    public static let repeatOff = ImageAsset(name: "Media/repeat-off")
     public static let `repeat` = ImageAsset(name: "Media/repeat")
     public static let repeatMini = ImageAsset(name: "Media/repeat.mini")
   }
