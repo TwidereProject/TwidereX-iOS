@@ -43,7 +43,7 @@ extension SceneCoordinator {
         case show                           // push
         case showDetail                     // replace
         case modal(animated: Bool, completion: (() -> Void)? = nil)
-        case custom(transitioningDelegate: UIViewControllerTransitioningDelegate)
+        case custom(animated: Bool, transitioningDelegate: UIViewControllerTransitioningDelegate)
         case customPush
         case safariPresent(animated: Bool, completion: (() -> Void)? = nil)
         case activityViewControllerPresent(animated: Bool, completion: (() -> Void)? = nil)
@@ -222,10 +222,10 @@ extension SceneCoordinator {
             }
             presentingViewController.present(modalNavigationController, animated: animated, completion: completion)
             
-        case .custom(let transitioningDelegate):
+        case .custom(let animated, let transitioningDelegate):
             viewController.modalPresentationStyle = .custom
             viewController.transitioningDelegate = transitioningDelegate
-            sender?.present(viewController, animated: true, completion: nil)
+            sender?.present(viewController, animated: animated, completion: nil)
             
         case .customPush:
             // set delegate in view controller

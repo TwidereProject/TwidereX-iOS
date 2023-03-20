@@ -17,8 +17,7 @@ class MediaPreviewTransitionItem: Identifiable {
     // source
     var image: UIImage?
     var aspectRatio: CGSize?
-    var initialFrame: CGRect? = nil
-    var sourceImageView: UIImageView?
+    var initialFrame: CGRect? = nil     // start frame for .push animation
     var sourceImageViewCornerRadius: CGFloat?
     
     // target
@@ -55,18 +54,18 @@ extension MediaPreviewTransitionItem {
             position: UIViewAnimatingPosition,
             index: Int?
         ) {
-//            let alpha: CGFloat = position == .end ? 1 : 0
-//            switch self {
-//            case .none:
-//                break
-//            case .attachment(let mediaView):
-//                mediaView.alpha = alpha
-//            case .attachments(let mediaGridContainerView):
-//                if let index = index {
-//                    mediaGridContainerView.setAlpha(0, index: index)
-//                } else {
-//                    mediaGridContainerView.setAlpha(alpha)
-//                }
+            switch self {
+            case .none:
+                break
+            case .mediaView(let viewModel):
+                viewModel.shouldHideForTransitioning = position != .end
+            case .profileAvatar(let view):
+                // TODO:
+                break
+            case .profileBanner(let view):
+                // TODO:
+                break
+            }
 //            case .profileAvatar(let profileHeaderView):
 //                profileHeaderView.avatarView.avatarButton.alpha = alpha
 //            case .profileBanner:

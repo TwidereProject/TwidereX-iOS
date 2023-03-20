@@ -200,7 +200,7 @@ extension TimelineViewController {
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         let drawerSidebarViewModel = DrawerSidebarViewModel(context: context, authContext: authContext)
-        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(animated: true, transitioningDelegate: drawerSidebarTransitionController))
     }
 
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {

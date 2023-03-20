@@ -35,7 +35,7 @@ extension MediaView {
         // video duration in MS
         public let durationMS: Int?
         
-        @Published public var inContextMenuPreviewing = false
+        @Published public var shouldHideForTransitioning = false
         
         // output
         public var durationText: String?

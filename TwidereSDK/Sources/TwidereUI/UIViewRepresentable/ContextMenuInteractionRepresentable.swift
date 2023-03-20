@@ -5,15 +5,17 @@
 //  Created by MainasuK on 2023/2/27.
 //
 
+import os.log
 import UIKit
 import SwiftUI
+import Combine
 
 struct ContextMenuInteractionRepresentable<Content: View>: UIViewRepresentable {
     
     let contextMenuContentPreviewProvider: UIContextMenuContentPreviewProvider
     let contextMenuActionProvider: UIContextMenuActionProvider
     @ViewBuilder var view: Content
-    let previewAction: () -> Void
+    let previewActionWithContext: (ContextMenuInteractionPreviewActionContext) -> Void
     
     func makeUIView(context: Context) -> UIView {
         let hostingController = UIHostingController(rootView: view)
@@ -34,9 +36,17 @@ struct ContextMenuInteractionRepresentable<Content: View>: UIViewRepresentable {
     }
     
     class Coordinator: NSObject, UIContextMenuInteractionDelegate {
+        let logger = Logger(subsystem: "ContextMenuInteractionRepresentable", category: "Coordinator")
+        
+        var disposeBag = Set<AnyCancellable>()
+        
         let representable: ContextMenuInteractionRepresentable
         
         var hostingViewController: UIHostingController<Content>?
+        
+        var activePreviewActionContext: ContextMenuInteractionPreviewActionContext?
+        
+        @Published var previewViewFrameInWindow: CGRect = .zero
         
         init(representable: ContextMenuInteractionRepresentable) {
             self.representable = representable
@@ -51,11 +61,21 @@ struct ContextMenuInteractionRepresentable<Content: View>: UIViewRepresentable {
             let parameters = UIPreviewParameters()
             parameters.backgroundColor = .clear
             parameters.visiblePath = UIBezierPath(roundedRect: hostingViewController.view.bounds, cornerRadius: MediaGridContainerView.cornerRadius)
-            return UITargetedPreview(view: hostingViewController.view, parameters: parameters)
+            let targetedPreview = UITargetedPreview(view: hostingViewController.view, parameters: parameters)
+            return targetedPreview
+        }
+        
+        func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configuration: UIContextMenuConfiguration, dismissalPreviewForItemWithIdentifier identifier: NSCopying) -> UITargetedPreview? {
+            return activePreviewActionContext?.dismissTargetedPreviewHandler()
         }
         
         func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-            representable.previewAction()
+            let context = ContextMenuInteractionPreviewActionContext(
+                interaction: interaction,
+                animator: animator
+            )
+            activePreviewActionContext = context
+            representable.previewActionWithContext(context)
         }
         
         func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willDisplayMenuFor configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
@@ -65,5 +85,33 @@ struct ContextMenuInteractionRepresentable<Content: View>: UIViewRepresentable {
         func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willEndFor configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
             print(#function)
         }
+    }
+}
+
+public class ContextMenuInteractionPreviewActionContext {
+    public let interaction: UIContextMenuInteraction
+    public let animator: UIContextMenuInteractionCommitAnimating
+    public var dismissTargetedPreviewHandler: () -> UITargetedPreview? = { nil }
+    
+    public init(interaction: UIContextMenuInteraction, animator: UIContextMenuInteractionCommitAnimating) {
+        self.interaction = interaction
+        self.animator = animator
+    }
+}
+
+extension ContextMenuInteractionPreviewActionContext {
+    public func platterClippingView() -> UIView? {
+        // iOS 16: pass
+        guard let window = interaction.view?.window,
+              let contextMenuContainerView = window.subviews.first(where: { !($0.gestureRecognizers ?? []).isEmpty }),
+              let contextMenuPlatterTransitionView = contextMenuContainerView.subviews.first(where: { !($0 is UIVisualEffectView) }),
+              let morphingPlatterView = contextMenuPlatterTransitionView.subviews.first(where: { ($0.gestureRecognizers ?? []).count == 1 }),
+              let platterClippingView = morphingPlatterView.subviews.last, platterClippingView.bounds != .zero
+        else {
+            assertionFailure("system API changes!")
+            return nil
+        }
+ 
+        return platterClippingView
     }
 }

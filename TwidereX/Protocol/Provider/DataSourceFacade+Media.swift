@@ -74,12 +74,10 @@ extension DataSourceFacade {
         provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
         status: StatusRecord,
         statusViewModel: StatusView.ViewModel,
-        mediaViewModel: MediaView.ViewModel
-    ) async {
-//        let attachments: [AttachmentObject] = await provider.context.managedObjectContext.perform {
-//            guard let status = status.object(in: provider.context.managedObjectContext) else { return [] }
-//            return status.attachments
-//        }
+        mediaViewModel: MediaView.ViewModel,
+        previewActionContext: ContextMenuInteractionPreviewActionContext? = nil,
+        animated: Bool = true
+    ) {
         guard let index = statusViewModel.mediaViewModels.firstIndex(of: mediaViewModel) else {
             assertionFailure("invalid callback")
             return
@@ -121,8 +119,15 @@ extension DataSourceFacade {
 //            return
 //        }
         
+        // note:
+        // previewActionContext will automatically dismiss with fade animation style
+        previewActionContext?.animator.preferredCommitStyle = .dismiss
+        let _initialFrame: CGRect? = {
+            guard let platterClippingView = previewActionContext?.platterClippingView() else { return nil }
+            return platterClippingView.convert(platterClippingView.frame, to: nil)
+        }()
         
-        await coordinateToMediaPreviewScene(
+        coordinateToMediaPreviewScene(
             provider: provider,
             status: status,
             mediaPreviewItem: .statusMedia(.init(
@@ -138,7 +143,9 @@ extension DataSourceFacade {
                     previewableViewController: provider
                 )
                 
-                item.initialFrame = mediaViewModel.frameInWindow
+                // use the contextMenu previewView frame if possible
+                // so that the transition will continue from the previewView position
+                item.initialFrame = _initialFrame ?? mediaViewModel.frameInWindow
                 
                 let thumbnail = mediaViewModel.thumbnail
                 item.image = thumbnail
@@ -153,7 +160,8 @@ extension DataSourceFacade {
                 item.sourceImageViewCornerRadius = MediaGridContainerView.cornerRadius
                 
                 return item
-            }()
+            }(),
+            animated: animated
         )   // end coordinateToMediaPreviewScene
     }
     
@@ -162,8 +170,9 @@ extension DataSourceFacade {
         provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
         status: StatusRecord,
         mediaPreviewItem: MediaPreviewViewModel.Item,
-        mediaPreviewTransitionItem: MediaPreviewTransitionItem
-    ) async {
+        mediaPreviewTransitionItem: MediaPreviewTransitionItem,
+        animated: Bool
+    ) {
         let mediaPreviewViewModel = MediaPreviewViewModel(
             context: provider.context,
             authContext: provider.authContext,
@@ -173,7 +182,7 @@ extension DataSourceFacade {
         provider.coordinator.present(
             scene: .mediaPreview(viewModel: mediaPreviewViewModel),
             from: provider,
-            transition: .custom(transitioningDelegate: provider.mediaPreviewTransitionController)
+            transition: .custom(animated: animated, transitioningDelegate: provider.mediaPreviewTransitionController)
         )
     }
 

@@ -151,7 +151,7 @@ extension ComposeViewController: ComposeContentViewControllerDelegate {
         coordinator.present(
             scene: .mediaPreview(viewModel: mediaPreviewViewModel),
             from: self,
-            transition: .custom(transitioningDelegate: mediaPreviewTransitionController)
+            transition: .custom(animated: true, transitioningDelegate: mediaPreviewTransitionController)
         )
     }
 

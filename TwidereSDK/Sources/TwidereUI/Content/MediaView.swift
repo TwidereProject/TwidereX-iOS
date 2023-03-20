@@ -43,6 +43,7 @@ public struct MediaView: View {
                     EmptyView()
                 }
             }
+            .opacity(viewModel.shouldHideForTransitioning ? 0 : 1)
     }
     
 }

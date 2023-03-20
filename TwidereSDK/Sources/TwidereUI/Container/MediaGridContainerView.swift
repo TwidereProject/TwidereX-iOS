@@ -21,6 +21,7 @@ public struct MediaGridContainerView: View {
     public let idealHeight: CGFloat     // ideal height for grid exclude single media
     
     public let previewAction: (MediaView.ViewModel) -> Void
+    public let previewActionWithContext: (MediaView.ViewModel, ContextMenuInteractionPreviewActionContext) -> Void
 
     public var body: some View {
         VStack {
@@ -250,8 +251,8 @@ extension MediaGridContainerView {
                 }
             ]
             return UIMenu(title: "", image: nil, identifier: nil, options: [], children: children)
-        }, previewAction: {
-            previewAction(viewModels[index])
+        }, previewActionWithContext: { context in
+            previewActionWithContext(viewModels[index], context)
         })
     }   // end func
     
@@ -370,6 +371,9 @@ struct MediaGridContainerView_Previews: PreviewProvider {
                     idealHeight: 280,
                     previewAction: { _ in
                         // do nothing
+                    },
+                    previewActionWithContext: { _, _ in
+                        // do nothing
                     }
                 )
                 .frame(width: 300)
@@ -385,12 +389,12 @@ extension View {
     func contextMenu(
         contextMenuContentPreviewProvider: @escaping UIContextMenuContentPreviewProvider,
         contextMenuActionProvider: @escaping UIContextMenuActionProvider,
-        previewAction: @escaping () -> Void
+        previewActionWithContext: @escaping (ContextMenuInteractionPreviewActionContext) -> Void
     ) -> some View {
         modifier(ContextMenuViewModifier(
             contextMenuContentPreviewProvider: contextMenuContentPreviewProvider,
             contextMenuActionProvider: contextMenuActionProvider,
-            previewAction: previewAction
+            previewActionWithContext: previewActionWithContext
         ))
     }
 }
@@ -398,7 +402,7 @@ extension View {
 struct ContextMenuViewModifier: ViewModifier {
     let contextMenuContentPreviewProvider: UIContextMenuContentPreviewProvider
     let contextMenuActionProvider: UIContextMenuActionProvider
-    let previewAction: () -> Void
+    let previewActionWithContext: (ContextMenuInteractionPreviewActionContext) -> Void
     
     func body(content: Content) -> some View {
         ContextMenuInteractionRepresentable(
@@ -406,8 +410,8 @@ struct ContextMenuViewModifier: ViewModifier {
             contextMenuActionProvider: contextMenuActionProvider
         ) {
             content
-        } previewAction: {
-            previewAction()
+        } previewActionWithContext: { context in
+            previewActionWithContext(context)
         }
     }
 }

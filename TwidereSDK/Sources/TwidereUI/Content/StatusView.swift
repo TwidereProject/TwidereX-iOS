@@ -31,6 +31,7 @@ public protocol StatusViewDelegate: AnyObject {
 
     // media
     func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
+    func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel, previewActionContext: ContextMenuInteractionPreviewActionContext)
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
 //    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
 //
@@ -83,7 +84,7 @@ public struct StatusView: View {
                         avatarButton
                             .padding(.trailing, StatusView.hangingAvatarButtonTrailingSapcing)
                     }
-                    let contentSpacing: CGFloat = 0
+                    let contentSpacing: CGFloat = 4
                     VStack(spacing: contentSpacing) {
                         // authorView
                         authorView
@@ -124,6 +125,9 @@ public struct StatusView: View {
                                 idealHeight: 280,
                                 previewAction: { mediaViewModel in
                                     viewModel.delegate?.statusView(viewModel, previewActionForMediaViewModel: mediaViewModel)
+                                },
+                                previewActionWithContext: { mediaViewModel, context in
+                                    viewModel.delegate?.statusView(viewModel, previewActionForMediaViewModel: mediaViewModel, previewActionContext: context)
                                 }
                             )
                             .clipShape(RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius))

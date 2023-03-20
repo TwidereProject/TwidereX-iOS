@@ -152,7 +152,7 @@ extension DrawerSidebarTransitionController {
             hostViewController.coordinator.present(
                 scene: .drawerSidebar(viewModel: drawerSidebarViewModel),
                 from: hostViewController,
-                transition: .custom(transitioningDelegate: self)
+                transition: .custom(animated: true, transitioningDelegate: self)
             )
 
         case .dismiss:

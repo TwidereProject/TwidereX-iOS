@@ -172,6 +172,27 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
             )
         }   // end Task
     }
+    
+    @MainActor
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        viewModel: StatusView.ViewModel,
+        previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel,
+        previewActionContext: ContextMenuInteractionPreviewActionContext
+    ) {
+        guard let status = viewModel.status else {
+            assertionFailure()
+            return
+        }
+        
+        DataSourceFacade.coordinateToMediaPreviewScene(
+            provider: self,
+            status: status,
+            statusViewModel: viewModel,
+            mediaViewModel: mediaViewModel,
+            previewActionContext: previewActionContext
+        )
+    }
 
 //    func tableViewCell(
 //        _ cell: UITableViewCell,
