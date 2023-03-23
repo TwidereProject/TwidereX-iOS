@@ -18,12 +18,12 @@ import TwidereCore
 //    public typealias ConfigurationContext = StatusView.ConfigurationContext
 //}
 
-extension PollOptionView {
-    
-    public func configure(
-        pollOption: PollOptionObject
+//extension PollOptionView {
+//
+//    public func configure(
+//        pollOption: PollOptionObject
 //        configurationContext: ConfigurationContext
-    ) {
+//    ) {
 //        switch pollOption {
 //        case .twitter(let object):
 //            configure(
@@ -36,8 +36,8 @@ extension PollOptionView {
 //                configurationContext: configurationContext
 //            )
 //        }
-    }
-    
+//    }
+//
 //    public func configure(
 //        pollOption option: TwitterPollOption,
 //        configurationContext: ConfigurationContext
@@ -170,5 +170,5 @@ extension PollOptionView {
 //        .assign(to: \.percentage, on: viewModel)
 //        .store(in: &disposeBag)
 //    }
-    
-}
+//    
+//}

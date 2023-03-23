@@ -11,11 +11,41 @@ import TwidereCore
 import CoreDataStack
 
 extension DataSourceFacade {
+    public static func responseToStatusPollUpdate(
+        provider: DataSourceProvider & AuthContextProvider,
+        status: StatusRecord
+    ) async throws {
+        let managedObjectContext = provider.context.managedObjectContext
+        switch (status, provider.authContext.authenticationContext) {
+        case (.twitter(let status), .twitter(let authenticationContext)):
+            let _statusID = await managedObjectContext.perform {
+                return status.object(in: managedObjectContext)?.id
+            }
+            guard let statusID = _statusID else {
+                assertionFailure()
+                return
+            }
+            _ = try await provider.context.apiService.twitterStatus(
+                statusIDs: [statusID],
+                authenticationContext: authenticationContext
+            )
+        case (.mastodon(let status), .mastodon(let authenticationContext)):
+            _ = try await provider.context.apiService.viewMastodonStatusPoll(
+                status: status,
+                authenticationContext: authenticationContext
+            )
+        default:
+            assertionFailure()
+        }
+    }
+}
+
+extension DataSourceFacade {
     public static func responseToStatusPollOption(
         provider: DataSourceProvider,
         target: StatusTarget,
         status: StatusRecord,
-        didSelectRowAt indexPath: IndexPath
+        didSelectRowAt index: Int
     ) async {
         let _redirectRecord = await DataSourceFacade.status(
             managedObjectContext: provider.context.managedObjectContext,
@@ -27,16 +57,16 @@ extension DataSourceFacade {
         await responseToStatusPollOption(
             provider: provider,
             status: redirectRecord,
-            didSelectRowAt: indexPath
+            didSelectRowAt: index
         )
     }
 
     static func responseToStatusPollOption(
         provider: DataSourceProvider,
         status: StatusRecord,
-        didSelectRowAt indexPath: IndexPath
+        didSelectRowAt index: Int
     ) async {
-        // should use same context on UI to make transient property trigger update
+        // use same context on UI to make transient property trigger update
         let managedObjectContext = provider.context.managedObjectContext
         
         do {
@@ -55,8 +85,7 @@ extension DataSourceFacade {
                     guard !poll.isVoting else {
                         return
                     }
-                    
-                    guard let option = poll.options.first(where: { $0.index == indexPath.row }) else {
+                    guard let option = poll.options.first(where: { $0.index == index }) else {
                         assertionFailure()
                         return
                     }
@@ -81,51 +110,24 @@ extension DataSourceFacade {
 
 extension DataSourceFacade {
     
-    public static func responseToStatusPollOption(
+    static func responseToStatusPollVote(
         provider: DataSourceProvider & AuthContextProvider,
-        target: StatusTarget,
-        status: StatusRecord,
-        voteButtonDidPressed button: UIButton
-    ) async {
-        let _redirectRecord = await DataSourceFacade.status(
-            managedObjectContext: provider.context.managedObjectContext,
-            status: status,
-            target: target
-        )
-        guard let redirectRecord = _redirectRecord else { return }
-        
-        await responseToStatusPollOption(
-            provider: provider,
-            status: redirectRecord,
-            voteButtonDidPressed: button
-        )
-    }
-    
-    static func responseToStatusPollOption(
-        provider: DataSourceProvider & AuthContextProvider,
-        status: StatusRecord,
-        voteButtonDidPressed button: UIButton
-    ) async {
-        do {
-            switch status {
-            case .twitter:
-                assertionFailure()
-            case .mastodon(let record):
-                try await responseToStatusPollOption(
-                    provider: provider,
-                    status: record,
-                    voteButtonDidPressed: button
-                )
-            }
-        } catch {
-            // TODO: handle error
+        status: StatusRecord
+    ) async throws {
+        switch status {
+        case .twitter:
+            assertionFailure()
+        case .mastodon(let record):
+            try await responseToStatusPollVote(
+                provider: provider,
+                status: record
+            )
         }
     }
     
-    private static func responseToStatusPollOption(
+    private static func responseToStatusPollVote(
         provider: DataSourceProvider & AuthContextProvider,
-        status: ManagedObjectRecord<MastodonStatus>,
-        voteButtonDidPressed button: UIButton
+        status: ManagedObjectRecord<MastodonStatus>
     ) async throws {
         guard case let .mastodon(authenticationContext) = provider.authContext.authenticationContext else { return }
         
@@ -153,7 +155,7 @@ extension DataSourceFacade {
                 return choices.map { Int($0) }
             }
             
-            await Task.sleep(1_000_000_000) // 1s
+            try? await Task.sleep(nanoseconds: 1 * .second) // 1s
             let response = try await provider.context.apiService.voteMastodonStatusPoll(
                 status: status,
                 choices: choices,
@@ -162,7 +164,6 @@ extension DataSourceFacade {
             provider.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did vote poll: \(response.value.id) with choices: \(choices.debugDescription)")
             
         } catch {
-            assertionFailure(error.localizedDescription)
             _error = error
         }
         
@@ -178,6 +179,10 @@ extension DataSourceFacade {
         } catch {
             assertionFailure(error.localizedDescription)
             _error = error
+        }
+        
+        if let error = _error as? LocalizedError {
+            await DataSourceFacade.presentErrorBanner(error: error)
         }
         
         if let error = _error {

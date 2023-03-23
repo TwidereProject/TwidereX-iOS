@@ -45,6 +45,22 @@ extension DataSourceFacade {
 }
 
 extension DataSourceFacade {
+    
+    @MainActor
+    public static func presentErrorBanner(
+        error: LocalizedError
+    ) {
+        var config = SwiftMessages.defaultConfig
+        config.duration = .seconds(seconds: 3)
+        config.interactiveHide = true
+        let bannerView = NotificationBannerView()
+        bannerView.configure(style: .warning)
+        bannerView.titleLabel.text = error.errorDescription ?? "Unknown Error"
+        let message = [error.failureReason, error.recoverySuggestion].compactMap { $0 }.joined(separator: "\n")
+        bannerView.messageLabel.text = message
+        bannerView.messageLabel.isHidden = message.isEmpty
+        SwiftMessages.show(config: config, view: bannerView)
+    }
 
     @MainActor
     public static func presentForbiddenBanner(

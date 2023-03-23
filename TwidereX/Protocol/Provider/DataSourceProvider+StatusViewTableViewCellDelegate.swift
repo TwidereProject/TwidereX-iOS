@@ -276,6 +276,68 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
 
 // MARK: - poll
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        viewModel: StatusView.ViewModel,
+        pollVoteActionForViewModel pollViewModel: PollView.ViewModel
+    ) {
+        Task {
+            guard let status = viewModel.status else {
+                assertionFailure()
+                return
+            }
+            
+            try await DataSourceFacade.responseToStatusPollVote(
+                provider: self,
+                status: status
+            )
+        }   // end Task
+    }
+    
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        viewModel: StatusView.ViewModel,
+        pollUpdateIfNeedsForViewModel pollViewModel: PollView.ViewModel
+    ) {
+        Task {
+            guard await pollViewModel.needsUpdate else {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Poll] not needs update. skip")
+                return
+            }
+            guard let status = viewModel.status else {
+                assertionFailure()
+                return
+            }
+            
+            try await DataSourceFacade.responseToStatusPollUpdate(
+                provider: self,
+                status: status
+            )
+        }   // end Task
+    }
+
+    
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        viewModel: StatusView.ViewModel,
+        pollViewModel: PollView.ViewModel,
+        pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel
+    ) {
+        Task {
+            guard let status = viewModel.status else {
+                assertionFailure()
+                return
+            }
+            
+            await DataSourceFacade.responseToStatusPollOption(
+                provider: self,
+                target: .status,
+                status: status,
+                didSelectRowAt: optionViewModel.index
+            )
+        }   // end Task
+    }
+
 //    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        Task {
 //            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)

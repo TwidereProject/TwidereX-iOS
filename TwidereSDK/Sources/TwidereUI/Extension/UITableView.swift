@@ -19,6 +19,7 @@ extension UITableView {
 
 extension UITableView {
     
+    // TODO: tweak cell selection background color
     public func deselectRow(with transitionCoordinator: UIViewControllerTransitionCoordinator?, animated: Bool) {
         guard let indexPathForSelectedRow = indexPathForSelectedRow else { return }
         

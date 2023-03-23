@@ -59,14 +59,6 @@ extension StatusView {
 //            return formatter
 //        }()
 //
-//        var disposeBag = Set<AnyCancellable>()
-//        var observations = Set<NSKeyValueObservation>()
-//        var objects = Set<NSManagedObject>()
-
-//        @Published public var platform: Platform = .none
-//        @Published public var authenticationContext: AuthenticationContext?       // me
-//        @Published public var managedObjectContext: NSManagedObjectContext?
-//
 //        @Published public var header: Header = .none
 //
 //        @Published public var userIdentifier: UserIdentifier?
@@ -76,6 +68,7 @@ extension StatusView {
 //        
 //        @Published public var protected: Bool = false
 
+        // content
         @Published public var spoilerContent: MetaContent?
         @Published public var content: MetaContent = PlaintextMetaContent(string: "")
         
@@ -86,6 +79,7 @@ extension StatusView {
             return isContentSensitive ? isContentSensitiveToggled : !isContentEmpty
         }
 
+        // language
         @Published public var language: String?
         @Published public private(set) var translateButtonPreference: UserDefaults.TranslateButtonPreference?
         public var isTranslateButtonDisplay: Bool {
@@ -112,6 +106,7 @@ extension StatusView {
             }
         }
 
+        // media
         @Published public var mediaViewModels: [MediaView.ViewModel] = []
         @Published public var isMediaSensitive: Bool = false
         @Published public var isMediaSensitiveToggled: Bool = false
@@ -146,7 +141,11 @@ extension StatusView {
 //        
 //        @Published public var isRepost = false
 //        @Published public var isRepostEnabled = true
+        
+        // poll
+        @Published public var pollViewModel: PollView.ViewModel?
 
+        // visibility
         @Published public var visibility: MastodonVisibility?
         var visibilityIconImage: UIImage? {
             switch visibility {
@@ -170,6 +169,7 @@ extension StatusView {
 //////
 //        @Published public var groupedAccessibilityLabel = ""
 
+        // timestamp
         @Published public var timestampLabelViewModel: TimestampLabelView.ViewModel?
         
         // toolbar
@@ -1095,6 +1095,14 @@ extension StatusView.ViewModel {
         // media
         mediaViewModels = MediaView.ViewModel.viewModels(from: status)
         
+        // poll
+        if let poll = status.poll {
+            self.pollViewModel = PollView.ViewModel(
+                authContext: authContext,
+                poll: .twitter(object: poll)
+            )
+        }
+        
         // toolbar
         toolbarViewModel.platform = .twitter
         status.publisher(for: \.replyCount)
@@ -1227,6 +1235,14 @@ extension StatusView.ViewModel {
         
         // media
         mediaViewModels = MediaView.ViewModel.viewModels(from: status)
+        
+        // poll
+        if let poll = status.poll {
+            self.pollViewModel = PollView.ViewModel(
+                authContext: authContext,
+                poll: .mastodon(object: poll)
+            )
+        }
         
         // media content warning
         isMediaSensitive = status.isMediaSensitive

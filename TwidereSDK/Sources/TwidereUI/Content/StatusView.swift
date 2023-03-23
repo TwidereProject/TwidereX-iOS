@@ -35,9 +35,10 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
 //    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
 //
-//    func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath)
-//    func statusView(_ statusView: StatusView, pollVoteButtonDidPressed button: UIButton)
-//
+    func statusView(_ viewModel: StatusView.ViewModel, pollVoteActionForViewModel pollViewModel: PollView.ViewModel)
+    func statusView(_ viewModel: StatusView.ViewModel, pollUpdateIfNeedsForViewModel pollViewModel: PollView.ViewModel)
+    func statusView(_ viewModel: StatusView.ViewModel, pollViewModel: PollView.ViewModel, pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel)
+
 //    func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
 //
     func statusView(_ viewModel: StatusView.ViewModel, statusToolbarViewModel: StatusToolbarView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action)
@@ -139,6 +140,21 @@ public struct StatusView: View {
                             }
                             .padding(.horizontal, viewModel.margin)
                         }
+                        // poll
+                        if let pollViewModel = viewModel.pollViewModel {
+                            PollView(
+                                viewModel: pollViewModel,
+                                selectAction: { optionViewModel in
+                                    viewModel.delegate?.statusView(viewModel, pollViewModel: pollViewModel, pollOptionDidSelectForViewModel: optionViewModel)
+                                }, voteAction: { pollViewModel in
+                                    viewModel.delegate?.statusView(viewModel, pollVoteActionForViewModel: pollViewModel)
+                                }
+                            )
+                            .padding(.horizontal, viewModel.margin)
+                            .onAppear {
+                                viewModel.delegate?.statusView(viewModel, pollUpdateIfNeedsForViewModel: pollViewModel)
+                            }
+                        }
                         // quote
                         if let quoteViewModel = viewModel.quoteViewModel {
                             StatusView(viewModel: quoteViewModel)
@@ -219,7 +235,7 @@ extension StatusView {
                 AnyLayout(VStackLayout(alignment: .leading, spacing: .zero))
             infoLayout {
                 let nameLayout = dynamicTypeSize < .accessibility1 ?
-                    AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 6)) :
+                    AnyLayout(HStackLayout(alignment: .bottom, spacing: 6)) :
                     AnyLayout(VStackLayout(alignment: .leading, spacing: .zero))
                 nameLayout {
                     // name
@@ -231,6 +247,8 @@ extension StatusView {
                             label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
                         }
                     )
+                    .fixedSize(horizontal: false, vertical: true)
+                    .layoutPriority(0.618)
                     // username
                     LabelRepresentable(
                         metaContent: PlaintextMetaContent(string: "@" + viewModel.authorUsernme),
@@ -240,6 +258,8 @@ extension StatusView {
                             label.setContentCompressionResistancePriority(.defaultLow - 100, for: .horizontal)
                         }
                     )
+                    .fixedSize(horizontal: false, vertical: true)
+                    .layoutPriority(0.382)
                 }
                 .frame(alignment: .leading)
                 Spacer()
@@ -278,7 +298,13 @@ extension StatusView {
             .onPreferenceChange(ViewHeightKey.self) { height in
                 self.viewModel.authorAvatarDimension = height
             }
-        }
+            // add spacer to make the infoLayout leading align
+            if dynamicTypeSize < .accessibility1 {
+                // do nothing
+            } else {
+                Spacer()
+            }
+        }   // end HStack
     }
     
     public var avatarButton: some View {

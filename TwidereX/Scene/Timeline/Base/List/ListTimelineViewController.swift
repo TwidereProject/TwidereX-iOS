@@ -28,7 +28,7 @@ class ListTimelineViewController: TimelineViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         tableView.selfSizingInvalidation = .enabled
-        tableView.cellLayoutMarginsFollowReadableWidth = true 
+        tableView.cellLayoutMarginsFollowReadableWidth = true
         return tableView
     }()
     

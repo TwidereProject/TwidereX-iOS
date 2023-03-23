@@ -29,6 +29,9 @@ protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel, previewActionContext: ContextMenuInteractionPreviewActionContext)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, pollVoteActionForViewModel pollViewModel: PollView.ViewModel)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, pollUpdateIfNeedsForViewModel pollViewModel: PollView.ViewModel)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, pollViewModel: PollView.ViewModel, pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, statusToolbarViewModel: StatusToolbarView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, viewHeightDidChange: Void)
     // sourcery:end
@@ -52,6 +55,18 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
 
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool) {
         delegate?.tableViewCell(self, viewModel: viewModel, toggleContentWarningOverlayDisplay: isReveal)
+    }
+
+    func statusView(_ viewModel: StatusView.ViewModel, pollVoteActionForViewModel pollViewModel: PollView.ViewModel) {
+        delegate?.tableViewCell(self, viewModel: viewModel, pollVoteActionForViewModel: pollViewModel)
+    }
+
+    func statusView(_ viewModel: StatusView.ViewModel, pollUpdateIfNeedsForViewModel pollViewModel: PollView.ViewModel) {
+        delegate?.tableViewCell(self, viewModel: viewModel, pollUpdateIfNeedsForViewModel: pollViewModel)
+    }
+
+    func statusView(_ viewModel: StatusView.ViewModel, pollViewModel: PollView.ViewModel, pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel) {
+        delegate?.tableViewCell(self, viewModel: viewModel, pollViewModel: pollViewModel, pollOptionDidSelectForViewModel: optionViewModel)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, statusToolbarViewModel: StatusToolbarView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action) {

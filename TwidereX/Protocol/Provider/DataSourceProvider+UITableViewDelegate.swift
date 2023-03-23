@@ -13,6 +13,11 @@ extension UITableViewDelegate where Self: DataSourceProvider & AuthContextProvid
 
     func aspectTableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): indexPath: \(indexPath.debugDescription)")
+        
+        // TODO: tweak cell selection background color
+        // let cell = tableView.cellForRow(at: indexPath)
+        // cell?.backgroundColor = .red
+        
         Task {
             let source = DataSourceItem.Source(tableViewCell: nil, indexPath: indexPath)
             guard let item = await item(from: source) else {

@@ -261,6 +261,7 @@ extension DataSourceFacade {
         provider: DataSourceProvider,
         status: StatusRecord
     ) async throws {
+        // use same context on UI to make transient property trigger update
         let managedObjectContext = provider.context.managedObjectContext
         try await managedObjectContext.performChanges {
             guard let object = status.object(in: managedObjectContext) else { return }

@@ -30,6 +30,7 @@ public enum TextStyle {
     case pollOptionTitle
     case pollOptionPercentage
     case pollVoteDescription
+    case pollVoteButton
     case userAuthorUsername
     case userDescription
     case profileAuthorName
@@ -76,6 +77,7 @@ extension TextStyle {
         case .pollOptionTitle:              return 1
         case .pollOptionPercentage:         return 1
         case .pollVoteDescription:          return 1
+        case .pollVoteButton:               return 1
         case .userAuthorName:               return 1
         case .userAuthorUsername:           return 1
         case .userDescription:              return 1
@@ -117,11 +119,13 @@ extension TextStyle {
         case .statusMetrics:
             return .preferredFont(forTextStyle: .footnote)
         case .pollOptionTitle:
-            return .systemFont(ofSize: 15, weight: .regular)
+            return UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 14))
         case .pollOptionPercentage:
-            return .systemFont(ofSize: 12, weight: .regular)
+            return UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 14))
         case .pollVoteDescription:
-            return .systemFont(ofSize: 14, weight: .regular)
+            return UIFontMetrics(forTextStyle: .callout).scaledFont(for: .systemFont(ofSize: 14))
+        case .pollVoteButton:
+            return UIFontMetrics(forTextStyle: .callout).scaledFont(for: .systemFont(ofSize: 14, weight: .medium))
         case .userAuthorName:
             return .preferredFont(forTextStyle: .headline)
         case .userAuthorUsername:
@@ -187,6 +191,8 @@ extension TextStyle {
             return .secondaryLabel
         case .pollVoteDescription:
             return .secondaryLabel
+        case .pollVoteButton:
+            return .tintColor
         case .userAuthorUsername:
             return .secondaryLabel
         case .userDescription:

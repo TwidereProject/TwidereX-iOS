@@ -44,6 +44,8 @@ class StatusTableViewCell: UITableViewCell {
 extension StatusTableViewCell {
     
     private func _init() {
+        selectionStyle = .none
+        
 //        statusView.translatesAutoresizingMaskIntoConstraints = false
 //        contentView.addSubview(statusView)
 //        NSLayoutConstraint.activate([
