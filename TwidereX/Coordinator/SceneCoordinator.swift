@@ -535,7 +535,7 @@ extension SceneCoordinator {
                 let statusThreadViewModel = StatusThreadViewModel(
                     context: context,
                     authContext: authConext,
-                    root: .root(context: .init(status: .mastodon(record: root.asRecrod)))
+                    kind: .status(.mastodon(record: root.asRecrod))
                 )
                 present(
                     scene: .statusThread(viewModel: statusThreadViewModel),

@@ -27,8 +27,7 @@ extension UITableViewDelegate where Self: DataSourceProvider & AuthContextProvid
             case .status(let status):
                 await DataSourceFacade.coordinateToStatusThreadScene(
                     provider: self,
-                    target: .repost,    // keep repost wrapper
-                    status: status
+                    kind: .status(status)
                 )
             case .user(let user):
                 await DataSourceFacade.coordinateToProfileScene(
@@ -46,13 +45,12 @@ extension UITableViewDelegate where Self: DataSourceProvider & AuthContextProvid
                     if let status = notification.status {
                         await DataSourceFacade.coordinateToStatusThreadScene(
                             provider: self,
-                            target: .repost,    // keep repost wrapper
-                            status: .mastodon(record: .init(objectID: status.objectID))
+                            kind: .status(.mastodon(record: status.asRecrod))
                         )
                     } else {
                         await DataSourceFacade.coordinateToProfileScene(
                             provider: self,
-                            user: .mastodon(record: .init(objectID: notification.account.objectID))
+                            user: .mastodon(record: notification.account.asRecrod)
                         )
                     }
                 }

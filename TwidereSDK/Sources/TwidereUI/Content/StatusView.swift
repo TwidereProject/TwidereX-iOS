@@ -33,16 +33,17 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
     func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel, previewActionContext: ContextMenuInteractionPreviewActionContext)
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
-//    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
-//
+
+    // poll
     func statusView(_ viewModel: StatusView.ViewModel, pollVoteActionForViewModel pollViewModel: PollView.ViewModel)
     func statusView(_ viewModel: StatusView.ViewModel, pollUpdateIfNeedsForViewModel pollViewModel: PollView.ViewModel)
     func statusView(_ viewModel: StatusView.ViewModel, pollViewModel: PollView.ViewModel, pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel)
 
-//    func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
-//
+    // metric
+    func statusView(_ viewModel: StatusView.ViewModel, statusMetricViewModel: StatusMetricView.ViewModel, statusMetricButtonDidPressed action: StatusMetricView.Action)
+    
+    // toolbar
     func statusView(_ viewModel: StatusView.ViewModel, statusToolbarViewModel: StatusToolbarView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action)
-//    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
 //
 //    func statusView(_ statusView: StatusView, translateButtonDidPressed button: UIButton)
     
@@ -89,10 +90,9 @@ public struct StatusView: View {
                     VStack(spacing: contentSpacing) {
                         // authorView
                         authorView
-                            .padding(.horizontal, viewModel.margin)
+                        // spoiler content (Mastodon)
                         if viewModel.spoilerContent != nil {
                             spoilerContentView
-                                .padding(.horizontal, viewModel.margin)
                             if !viewModel.isContentEmpty {
                                 Button {
                                     // force to trigger view update without animation
@@ -110,19 +110,17 @@ public struct StatusView: View {
                                 }
                                 .buttonStyle(.borderless)
                                 .id(UUID())     // fix animation issue
-                                .padding(.horizontal, viewModel.margin)
                             }
                         }
                         // content
                         if viewModel.isContentReveal {
                             contentView
-                                .padding(.horizontal, viewModel.margin)
                         }
                         // media
                         if !viewModel.mediaViewModels.isEmpty {
                             MediaGridContainerView(
                                 viewModels: viewModel.mediaViewModels,
-                                idealWidth: contentWidth,
+                                idealWidth: viewModel.contentWidth,
                                 idealHeight: 280,
                                 previewAction: { mediaViewModel in
                                     viewModel.delegate?.statusView(viewModel, previewActionForMediaViewModel: mediaViewModel)
@@ -138,7 +136,6 @@ public struct StatusView: View {
                                 }
                                 .cornerRadius(MediaGridContainerView.cornerRadius)
                             }
-                            .padding(.horizontal, viewModel.margin)
                         }
                         // poll
                         if let pollViewModel = viewModel.pollViewModel {
@@ -150,7 +147,6 @@ public struct StatusView: View {
                                     viewModel.delegate?.statusView(viewModel, pollVoteActionForViewModel: pollViewModel)
                                 }
                             )
-                            .padding(.horizontal, viewModel.margin)
                             .onAppear {
                                 viewModel.delegate?.statusView(viewModel, pollUpdateIfNeedsForViewModel: pollViewModel)
                             }
@@ -163,17 +159,57 @@ public struct StatusView: View {
                                 }
                                 .cornerRadius(12)
                         }
+                        // metric
+                        if let metricViewModel = viewModel.metricViewModel {
+                            StatusMetricView(viewModel: metricViewModel) { action in
+                                
+                            }
+                            .padding(.vertical, 8)
+                        }
+                        // toolbar
                         if viewModel.hasToolbar {
                             toolbarView
-                                .padding(.top, -contentSpacing)
+                                .overlay(alignment: .top) {
+                                    switch viewModel.kind {
+                                    case .conversationRoot:
+                                        VStack(spacing: .zero) {
+                                            Color.clear
+                                                .frame(height: 1)
+                                            Divider()
+                                                .frame(width: viewModel.viewLayoutFrame.safeAreaLayoutFrame.width)
+                                                .fixedSize()
+                                            Spacer()
+                                        }
+                                    default:
+                                        EmptyView()
+                                    }
+                                }
                         }
                     }   // end VStack
+                    .padding(.top, viewModel.margin)                                    // container margin
+                    .padding(.horizontal, viewModel.margin)                             // container margin
+                    .padding(.bottom, viewModel.hasToolbar ? .zero : viewModel.margin)  // container margin
+                    .frame(width: viewModel.containerWidth)
+                    //.overlay {
+                    //    Text("\(viewModel.containerWidth.description)")
+                    //        .font(.title)
+                    //}
+                    //.border(.red, width: 1)
                     .overlay(alignment: .bottom) {
                         switch viewModel.kind {
-                        case .timeline, .repost, .conversationRoot, .conversationThread:
+                        case .timeline, .repost, .conversationThread:
                             VStack(spacing: .zero) {
                                 Spacer()
                                 Divider()
+                                Color.clear
+                                    .frame(height: 1)
+                            }
+                        case .conversationRoot:
+                            VStack(spacing: .zero) {
+                                Spacer()
+                                Divider()
+                                    .frame(width: viewModel.viewLayoutFrame.safeAreaLayoutFrame.width)
+                                    .fixedSize()
                                 Color.clear
                                     .frame(height: 1)
                             }
@@ -182,8 +218,6 @@ public struct StatusView: View {
                         }
                     }
                 }   // end HStack
-                .padding(.top, viewModel.margin)                                    // container margin
-                .padding(.bottom, viewModel.hasToolbar ? .zero : viewModel.margin)  // container margin
                 .overlay {
                     if viewModel.isBottomConversationLinkLineViewDisplay {
                         HStack(alignment: .top, spacing: .zero) {
@@ -211,18 +245,6 @@ public struct StatusView: View {
 }
 
 extension StatusView {
-    var contentWidth: CGFloat {
-        let width: CGFloat = {
-            switch viewModel.kind {
-            case .conversationRoot:
-                return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin
-            default:
-                return viewModel.viewLayoutFrame.readableContentLayoutFrame.width - 2 * viewModel.margin - StatusView.hangingAvatarButtonDimension - StatusView.hangingAvatarButtonTrailingSapcing
-            }
-        }()
-        return max(width, .leastNonzeroMagnitude)
-    }
-    
     public var authorView: some View {
         HStack(alignment: .center) {
             if !viewModel.hasHangingAvatar {
@@ -230,13 +252,26 @@ extension StatusView {
                 avatarButton
             }
             // info
-            let infoLayout = dynamicTypeSize < .accessibility1 ?
-                AnyLayout(HStackLayout(alignment: .center, spacing: 6)) :
-                AnyLayout(VStackLayout(alignment: .leading, spacing: .zero))
+            let infoLayout: AnyLayout = {
+                if dynamicTypeSize < .accessibility1 {
+                    return AnyLayout(HStackLayout(alignment: .center, spacing: 6))
+                } else {
+                    return AnyLayout(VStackLayout(alignment: .leading, spacing: .zero))
+                }
+            }()
             infoLayout {
-                let nameLayout = dynamicTypeSize < .accessibility1 ?
-                    AnyLayout(HStackLayout(alignment: .bottom, spacing: 6)) :
-                    AnyLayout(VStackLayout(alignment: .leading, spacing: .zero))
+                let nameLayout: AnyLayout = {
+                    switch viewModel.kind {
+                    case .conversationRoot:
+                        return AnyLayout(VStackLayout(alignment: .leading, spacing: .zero))
+                    default:
+                        if dynamicTypeSize < .accessibility1 {
+                            return AnyLayout(HStackLayout(alignment: .bottom, spacing: 6))
+                        } else {
+                            return AnyLayout(VStackLayout(alignment: .leading, spacing: .zero))
+                        }
+                    }
+                }()
                 nameLayout {
                     // name
                     LabelRepresentable(
@@ -249,6 +284,15 @@ extension StatusView {
                     )
                     .fixedSize(horizontal: false, vertical: true)
                     .layoutPriority(0.618)
+                    .background(GeometryReader { proxy in
+                        Color.clear.preference(
+                            key: ViewHeightKey.self,
+                            value: proxy.frame(in: .local).size.height
+                        )
+                    })
+                    .onPreferenceChange(ViewHeightKey.self) { height in
+                        self.visibilityIconImageDimension = height
+                    }
                     // username
                     LabelRepresentable(
                         metaContent: PlaintextMetaContent(string: "@" + viewModel.authorUsernme),
@@ -260,16 +304,26 @@ extension StatusView {
                     )
                     .fixedSize(horizontal: false, vertical: true)
                     .layoutPriority(0.382)
-                }
+                }   // end nameLayout
                 .frame(alignment: .leading)
+                .background(GeometryReader { proxy in
+                    Color.clear.preference(
+                        key: ViewHeightKey.self,
+                        value: proxy.frame(in: .local).size.height
+                    )
+                })
+                .onPreferenceChange(ViewHeightKey.self) { height in
+                    self.viewModel.authorAvatarDimension = height
+                }
                 Spacer()
                 HStack(spacing: 6) {
                     // mastodon visibility
                     if let visibilityIconImage = viewModel.visibilityIconImage, visibilityIconImageDimension > 0 {
                         let dimension = ceil(visibilityIconImageDimension * 0.8)
+                        let alignment: Alignment = viewModel.kind == .conversationRoot ? .top : .center
                         Color.clear
                             .frame(width: dimension)
-                            .overlay {
+                            .overlay(alignment: alignment) {
                                 VectorImageView(image: visibilityIconImage, tintColor: TextStyle.statusTimestamp.textColor)
                                     .frame(width: dimension, height: dimension)
                             }
@@ -277,27 +331,9 @@ extension StatusView {
                     // timestamp
                     if let timestampLabelViewModel = viewModel.timestampLabelViewModel {
                         TimestampLabelView(viewModel: timestampLabelViewModel)
-                            .background(GeometryReader { proxy in
-                                Color.clear.preference(
-                                    key: ViewHeightKey.self,
-                                    value: proxy.frame(in: .local).size.height
-                                )
-                            })
-                            .onPreferenceChange(ViewHeightKey.self) { height in
-                                self.visibilityIconImageDimension = height
-                            }
                     }
                 }
-            }
-            .background(GeometryReader { proxy in
-                Color.clear.preference(
-                    key: ViewHeightKey.self,
-                    value: proxy.frame(in: .local).size.height
-                )
-            })
-            .onPreferenceChange(ViewHeightKey.self) { height in
-                self.viewModel.authorAvatarDimension = height
-            }
+            }   // end infoLayout
             // add spacer to make the infoLayout leading align
             if dynamicTypeSize < .accessibility1 {
                 // do nothing
@@ -336,9 +372,9 @@ extension StatusView {
             TextViewRepresentable(
                 metaContent: viewModel.spoilerContent ?? PlaintextMetaContent(string: ""),
                 textStyle: .statusContent,
-                width: contentWidth
+                width: viewModel.contentWidth
             )
-            .frame(width: contentWidth)
+            .frame(width: viewModel.contentWidth)
         }
     }
     
@@ -347,9 +383,9 @@ extension StatusView {
             TextViewRepresentable(
                 metaContent: viewModel.content,
                 textStyle: .statusContent,
-                width: contentWidth
+                width: viewModel.contentWidth
             )
-            .frame(width: contentWidth)
+            .frame(width: viewModel.contentWidth)
         }
     }
     

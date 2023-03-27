@@ -31,7 +31,7 @@ public struct StatusHeaderView: View {
                     - iconImageDimension
                     - StatusHeaderView.iconImageTrailingSpacing
                 Color.clear
-                    .frame(width: max(.zero, width))
+                    .frame(width: max(.leastNonzeroMagnitude, width))
             }
             Button {
                 

@@ -105,20 +105,6 @@ extension StatusSection {
 //                    }   // end switch
 //                }
                 return cell
-
-            case .thread(let thread):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
-
-                return cell
-//                return StatusSection.dequeueConfiguredReusableCell(
-//                    context: context,
-//                    tableView: tableView,
-//                    indexPath: indexPath,
-//                    configuration: ThreadCellRegistrationConfiguration(
-//                        thread: thread,
-//                        configuration: configuration
-//                    )
-//                )
                 
             case .topLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell

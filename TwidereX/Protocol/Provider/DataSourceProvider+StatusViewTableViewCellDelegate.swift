@@ -401,6 +401,23 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
 //    }
 }
 
+// MARK: - metric
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        viewModel: StatusView.ViewModel,
+        statusMetricViewModel: StatusMetricView.ViewModel,
+        statusMetricButtonDidPressed action: StatusMetricView.Action
+    ) {
+        Task {
+            guard let status = viewModel.status else {
+                assertionFailure()
+                return
+            }
+            // TODO:
+        }   // end Task
+    }
+}
 
 // MARK: - toolbar
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {

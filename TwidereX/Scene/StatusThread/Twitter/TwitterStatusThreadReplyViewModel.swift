@@ -53,44 +53,44 @@ final class TwitterStatusThreadReplyViewModel {
         self.authContext = authContext
         // end init
         
-        Publishers.CombineLatest(
-            $root,
-            viewDidAppear.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)    // <- required here due to state machine access $root value
-        .sink { [weak self] root, _ in
-            guard let self = self else { return }
-            guard root != nil else { return }
-            
-            Task {
-                if await self.stateMachine.currentState is State.Initial {
-                    await self.stateMachine.enter(State.Prepare.self)
-                }
-            }
-        }
-        .store(in: &disposeBag)
-        
-        Publishers.CombineLatest(
-            $nodes,
-            $deletedObjectIDs
-        )
-        .map { nodes, deletedObjectIDs in
-            var items: [StatusItem] = []
-            for (i, node) in nodes.enumerated() {
-                guard case let .success(record) = node.status else { continue }
-                guard !deletedObjectIDs.contains(record.objectID) else { continue }
-                let isLast = i == nodes.count - 1
-                let context = StatusItem.Thread.Context(
-                    status: .twitter(record: record),
-                    displayUpperConversationLink: !isLast,
-                    displayBottomConversationLink: true
-                )
-                let thread = StatusItem.Thread.reply(context: context)
-                items.append(.thread(thread))
-            }
-            return items
-        }
-        .assign(to: &$items)
+//        Publishers.CombineLatest(
+//            $root,
+//            viewDidAppear.eraseToAnyPublisher()
+//        )
+//        .receive(on: DispatchQueue.main)    // <- required here due to state machine access $root value
+//        .sink { [weak self] root, _ in
+//            guard let self = self else { return }
+//            guard root != nil else { return }
+//            
+//            Task {
+//                if await self.stateMachine.currentState is State.Initial {
+//                    await self.stateMachine.enter(State.Prepare.self)
+//                }
+//            }
+//        }
+//        .store(in: &disposeBag)
+//        
+//        Publishers.CombineLatest(
+//            $nodes,
+//            $deletedObjectIDs
+//        )
+//        .map { nodes, deletedObjectIDs in
+//            var items: [StatusItem] = []
+//            for (i, node) in nodes.enumerated() {
+//                guard case let .success(record) = node.status else { continue }
+//                guard !deletedObjectIDs.contains(record.objectID) else { continue }
+//                let isLast = i == nodes.count - 1
+//                let context = StatusItem.Thread.Context(
+//                    status: .twitter(record: record),
+//                    displayUpperConversationLink: !isLast,
+//                    displayBottomConversationLink: true
+//                )
+//                let thread = StatusItem.Thread.reply(context: context)
+//                items.append(.thread(thread))
+//            }
+//            return items
+//        }
+//        .assign(to: &$items)
     }
     
     deinit {

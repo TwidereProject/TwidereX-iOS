@@ -44,7 +44,9 @@ extension StatusThreadViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = "Detail"
         view.backgroundColor = .systemBackground
+        viewModel.viewLayoutFrame.update(view: view)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
@@ -60,22 +62,22 @@ extension StatusThreadViewController {
             tableView: tableView,
             statusViewTableViewCellDelegate: self
         )
-        viewModel.topListBatchFetchViewModel.setup(scrollView: tableView)
-        viewModel.bottomListBatchFetchViewModel.setup(scrollView: tableView)
-        viewModel.topListBatchFetchViewModel.shouldFetch
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.viewModel.twitterStatusThreadReplyViewModel.stateMachine.enter(TwitterStatusThreadReplyViewModel.State.Loading.self)
-            }
-            .store(in: &disposeBag)
-        viewModel.bottomListBatchFetchViewModel.shouldFetch
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.viewModel.loadThreadStateMachine.enter(StatusThreadViewModel.LoadThreadState.Loading.self)
-            }
-            .store(in: &disposeBag)
+//        viewModel.topListBatchFetchViewModel.setup(scrollView: tableView)
+//        viewModel.bottomListBatchFetchViewModel.setup(scrollView: tableView)
+//        viewModel.topListBatchFetchViewModel.shouldFetch
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] _ in
+//                guard let self = self else { return }
+//                self.viewModel.twitterStatusThreadReplyViewModel.stateMachine.enter(TwitterStatusThreadReplyViewModel.State.Loading.self)
+//            }
+//            .store(in: &disposeBag)
+//        viewModel.bottomListBatchFetchViewModel.shouldFetch
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] _ in
+//                guard let self = self else { return }
+//                self.viewModel.loadThreadStateMachine.enter(StatusThreadViewModel.LoadThreadState.Loading.self)
+//            }
+//            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -87,25 +89,44 @@ extension StatusThreadViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        viewModel.viewDidAppear.send()
+//        viewModel.viewDidAppear.send()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        viewModel.viewLayoutFrame.update(view: view)
+    }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        viewModel.viewLayoutFrame.update(view: view)
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate { _ in
+            self.viewModel.viewLayoutFrame.update(view: self.view)
+        }
     }
 }
 
 // MARK: - UITableViewDelegate
 extension StatusThreadViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
     
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return indexPath }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return indexPath }
-        guard case let .thread(thread) = item else { return indexPath }
-        
-        switch thread {
-        case .root:
-            return nil
-        case .reply, .leaf:
-            return indexPath
-        }
-    }
+//    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return indexPath }
+//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return indexPath }
+//        guard case let .thread(thread) = item else { return indexPath }
+//        
+//        switch thread {
+//        case .root:
+//            return nil
+//        case .reply, .leaf:
+//            return indexPath
+//        }
+//    }
     
     // sourcery:inline:StatusThreadViewController.AutoGenerateTableViewDelegate
 

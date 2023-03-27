@@ -42,6 +42,22 @@ public struct StatusToolbarView: View {
 }
 
 extension StatusToolbarView {
+    var isMetricCountDisplay: Bool {
+        switch viewModel.style {
+        case .inline:       return true
+        case .plain:        return false
+        }
+    }
+    
+    var isExtraSpacerDisplay: Bool {
+        switch viewModel.style {
+        case .inline:       return true
+        case .plain:        return false
+        }
+    }
+}
+
+extension StatusToolbarView {
     public var replyButton: some View {
         ToolbarButton(
             handler: { action in
@@ -49,8 +65,15 @@ extension StatusToolbarView {
                 handler(action)
             },
             action: .reply,
-            image: Asset.Arrows.arrowTurnUpLeftMini.image.withRenderingMode(.alwaysTemplate),
-            count: viewModel.replyCount,
+            image: {
+                switch viewModel.style {
+                case .inline:
+                    return Asset.Arrows.arrowTurnUpLeftMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain:
+                    return Asset.Arrows.arrowTurnUpLeft.image.withRenderingMode(.alwaysTemplate)
+                }
+            }(),
+            count: isMetricCountDisplay ? viewModel.replyCount : nil,
             tintColor: nil
         )
     }
@@ -62,8 +85,15 @@ extension StatusToolbarView {
                 handler(action)
             },
             action: .repost,
-            image: Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate),
-            count: viewModel.repostCount,
+            image: {
+                switch viewModel.style {
+                case .inline:
+                    return Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain:
+                    return Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
+                }
+            }(),
+            count: isMetricCountDisplay ? viewModel.repostCount : nil,
             tintColor: viewModel.isReposted ? Asset.Scene.Status.Toolbar.repost.color : nil
         )
     }
@@ -106,8 +136,16 @@ extension StatusToolbarView {
                 handler(action)
             },
             action: .like,
-            image: viewModel.isLiked ? Asset.Health.heartFillMini.image.withRenderingMode(.alwaysTemplate) : Asset.Health.heartMini.image.withRenderingMode(.alwaysTemplate),
-            count: viewModel.likeCount,
+            image: {
+                switch viewModel.style {
+                case .inline:
+                    return viewModel.isLiked ? Asset.Health.heartFillMini.image.withRenderingMode(.alwaysTemplate) : Asset.Health.heartMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain:
+                    return viewModel.isLiked ? Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate) : Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
+                }
+
+            }(),
+            count: isMetricCountDisplay ? viewModel.likeCount : nil,
             tintColor: viewModel.isLiked ? Asset.Scene.Status.Toolbar.like.color : nil
         )
     }
@@ -129,12 +167,12 @@ extension StatusToolbarView {
         } label: {
             HStack {
                 let image: UIImage = {
-//                        switch viewModel.kind {
-//                        case .conversationRoot:
-                    return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
-//                        default:
-//                            return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
-//                        }
+                    switch viewModel.style {
+                    case .inline:
+                        return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
+                    case .plain:
+                        return Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate)
+                    }
                 }()
                 Image(uiImage: image)
                     .foregroundColor(.secondary)
@@ -151,6 +189,7 @@ extension StatusToolbarView {
 
         // input
         @Published var platform: Platform = .none
+        @Published var style: Style = .inline
         @Published var replyCount: Int?
         @Published var repostCount: Int?
         @Published var likeCount: Int?
@@ -165,6 +204,10 @@ extension StatusToolbarView {
 }
 
 extension StatusToolbarView {
+    public enum Style: Hashable {
+        case inline
+        case plain
+    }
     public enum Action: Hashable, CaseIterable {
         case reply
         case repost

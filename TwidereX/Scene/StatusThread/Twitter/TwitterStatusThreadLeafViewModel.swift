@@ -28,24 +28,24 @@ final class TwitterStatusThreadLeafViewModel {
     init(context: AppContext) {
         self.context = context
         
-        Publishers.CombineLatest(
-            $_items,
-            $deletedObjectIDs
-        )
-        .sink { [weak self] items, deletedObjectIDs in
-            guard let self = self else { return }
-            let newItems = items.filter { item in
-                switch item {
-                case .thread(let thread):
-                    return !deletedObjectIDs.contains(thread.statusRecord.objectID)
-                default:
-                    assertionFailure()
-                    return false
-                }
-            }
-            self.items.value = newItems
-        }
-        .store(in: &disposeBag)
+//        Publishers.CombineLatest(
+//            $_items,
+//            $deletedObjectIDs
+//        )
+//        .sink { [weak self] items, deletedObjectIDs in
+//            guard let self = self else { return }
+//            let newItems = items.filter { item in
+//                switch item {
+//                case .thread(let thread):
+//                    return !deletedObjectIDs.contains(thread.statusRecord.objectID)
+//                default:
+//                    assertionFailure()
+//                    return false
+//                }
+//            }
+//            self.items.value = newItems
+//        }
+//        .store(in: &disposeBag)
     }
     
     deinit {
@@ -58,55 +58,55 @@ extension TwitterStatusThreadLeafViewModel {
     
     // FIXME: handle node remove
     func append(nodes: [Node]) {
-        let childrenIDs = nodes
-            .map { node in [node.statusID, node.children.first?.statusID].compactMap { $0 } }
-            .flatMap { $0 }
-        var dictionary: [TwitterStatus.ID: TwitterStatus] = [:]
-        do {
-            let request = TwitterStatus.sortedFetchRequest
-            request.predicate = TwitterStatus.predicate(ids: childrenIDs)
-            let statuses = try self.context.managedObjectContext.fetch(request)
-            for status in statuses {
-                dictionary[status.id] = status
-            }
-        } catch {
-            os_log("%{public}s[%{public}ld], %{public}s: fetch conversation fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-            return
-        }
-        
-        var newItems: [StatusItem] = []
-        for node in nodes {
-            guard let status = dictionary[node.statusID] else { continue }
-            // first tier
-            let record = ManagedObjectRecord<TwitterStatus>(objectID: status.objectID)
-            let context = StatusItem.Thread.Context(
-                status: .twitter(record: record)
-            )
-            let item = StatusItem.thread(.leaf(context: context))
-            newItems.append(item)
-            
-            // second tier
-            if let child = node.children.first {
-                guard let secondaryStatus = dictionary[child.statusID] else { continue }
-                let secondaryRecord = ManagedObjectRecord<TwitterStatus>(objectID: secondaryStatus.objectID)
-                let secondaryContext = StatusItem.Thread.Context(
-                    status: .twitter(record: secondaryRecord),
-                    displayUpperConversationLink: true
-                )
-                let secondaryItem = StatusItem.thread(.leaf(context: secondaryContext))
-                newItems.append(secondaryItem)
-                
-                // update first tier context
-                context.displayBottomConversationLink = true
-            }
-        }
-        
-        var items = self._items
-        for item in newItems {
-            guard !items.contains(item) else { continue }
-            items.append(item)
-        }
-        self._items = items
+//        let childrenIDs = nodes
+//            .map { node in [node.statusID, node.children.first?.statusID].compactMap { $0 } }
+//            .flatMap { $0 }
+//        var dictionary: [TwitterStatus.ID: TwitterStatus] = [:]
+//        do {
+//            let request = TwitterStatus.sortedFetchRequest
+//            request.predicate = TwitterStatus.predicate(ids: childrenIDs)
+//            let statuses = try self.context.managedObjectContext.fetch(request)
+//            for status in statuses {
+//                dictionary[status.id] = status
+//            }
+//        } catch {
+//            os_log("%{public}s[%{public}ld], %{public}s: fetch conversation fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+//            return
+//        }
+//        
+//        var newItems: [StatusItem] = []
+//        for node in nodes {
+//            guard let status = dictionary[node.statusID] else { continue }
+//            // first tier
+//            let record = ManagedObjectRecord<TwitterStatus>(objectID: status.objectID)
+//            let context = StatusItem.Thread.Context(
+//                status: .twitter(record: record)
+//            )
+//            let item = StatusItem.thread(.leaf(context: context))
+//            newItems.append(item)
+//            
+//            // second tier
+//            if let child = node.children.first {
+//                guard let secondaryStatus = dictionary[child.statusID] else { continue }
+//                let secondaryRecord = ManagedObjectRecord<TwitterStatus>(objectID: secondaryStatus.objectID)
+//                let secondaryContext = StatusItem.Thread.Context(
+//                    status: .twitter(record: secondaryRecord),
+//                    displayUpperConversationLink: true
+//                )
+//                let secondaryItem = StatusItem.thread(.leaf(context: secondaryContext))
+//                newItems.append(secondaryItem)
+//                
+//                // update first tier context
+//                context.displayBottomConversationLink = true
+//            }
+//        }
+//        
+//        var items = self._items
+//        for item in newItems {
+//            guard !items.contains(item) else { continue }
+//            items.append(item)
+//        }
+//        self._items = items
     }
     
 }

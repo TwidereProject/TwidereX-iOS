@@ -32,6 +32,7 @@ protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, pollVoteActionForViewModel pollViewModel: PollView.ViewModel)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, pollUpdateIfNeedsForViewModel pollViewModel: PollView.ViewModel)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, pollViewModel: PollView.ViewModel, pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, statusMetricViewModel: StatusMetricView.ViewModel, statusMetricButtonDidPressed action: StatusMetricView.Action)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, statusToolbarViewModel: StatusToolbarView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, viewHeightDidChange: Void)
     // sourcery:end
@@ -67,6 +68,10 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
 
     func statusView(_ viewModel: StatusView.ViewModel, pollViewModel: PollView.ViewModel, pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel) {
         delegate?.tableViewCell(self, viewModel: viewModel, pollViewModel: pollViewModel, pollOptionDidSelectForViewModel: optionViewModel)
+    }
+
+    func statusView(_ viewModel: StatusView.ViewModel, statusMetricViewModel: StatusMetricView.ViewModel, statusMetricButtonDidPressed action: StatusMetricView.Action) {
+        delegate?.tableViewCell(self, viewModel: viewModel, statusMetricViewModel: statusMetricViewModel, statusMetricButtonDidPressed: action)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, statusToolbarViewModel: StatusToolbarView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action) {

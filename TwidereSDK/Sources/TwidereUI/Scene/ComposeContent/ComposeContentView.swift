@@ -43,7 +43,7 @@ public struct ComposeContentView: View {
                 case .reply:
                     if let replyToStatusViewModel = viewModel.replyToStatusViewModel {
                         StatusView(viewModel: replyToStatusViewModel)
-                            .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
+                            // .frame(width: viewModel.viewLayoutFrame.readableContentLayoutFrame.width)
                             .padding(.top, ComposeContentView.contentRowTopPadding)
                     }
                 default:

@@ -16,158 +16,219 @@ import CoreData
 import CoreDataStack
 import TwidereCore
 
+@MainActor
 final class StatusThreadViewModel {
     
     var disposeBag = Set<AnyCancellable>()
     
     let logger = Logger(subsystem: "StatusThreadViewModel", category: "ViewModel")
     
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
+    
+    let conversationRootTableViewCell = StatusTableViewCell()
+
     // input
     let context: AppContext
     let authContext: AuthContext
-    let twitterStatusThreadReplyViewModel: TwitterStatusThreadReplyViewModel
-    let twitterStatusThreadLeafViewModel: TwitterStatusThreadLeafViewModel
-    let mastodonStatusThreadViewModel: MastodonStatusThreadViewModel
-    let topListBatchFetchViewModel = ListBatchFetchViewModel(direction: .top)
-    let bottomListBatchFetchViewModel = ListBatchFetchViewModel(direction: .bottom)
-    let viewDidAppear = PassthroughSubject<Void, Never>()
+    let kind: Kind
+    
+//    let twitterStatusThreadReplyViewModel: TwitterStatusThreadReplyViewModel
+//    let twitterStatusThreadLeafViewModel: TwitterStatusThreadLeafViewModel
+//    let mastodonStatusThreadViewModel: MastodonStatusThreadViewModel
+//    let topListBatchFetchViewModel = ListBatchFetchViewModel(direction: .top)
+//    let bottomListBatchFetchViewModel = ListBatchFetchViewModel(direction: .bottom)
+//    let viewDidAppear = PassthroughSubject<Void, Never>()
 
-    @Published public var viewLayoutFrame = ViewLayoutFrame()
     
     // output
-    var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
-    var root: CurrentValueSubject<StatusItem.Thread?, Never>
-    var threadContext = CurrentValueSubject<ThreadContext?, Never>(nil)
-    @Published var replies: [StatusItem] = []
-    @Published var leafs: [StatusItem] = []
-    @Published var hasReplyTo = false
+    var diffableDataSource: UITableViewDiffableDataSource<Section, Item>?
+    
+    @Published private(set) var status: StatusObject?
+    @Published private(set) var statusViewModel: StatusView.ViewModel?
+    
+//    var root: CurrentValueSubject<StatusItem.Thread?, Never>
+//    var threadContext = CurrentValueSubject<ThreadContext?, Never>(nil)
+//    @Published var replies: [StatusItem] = []
+//    @Published var leafs: [StatusItem] = []
+//    @Published var hasReplyTo = false
     
     // thread
-    @MainActor private(set) lazy var loadThreadStateMachine: GKStateMachine = {
-        let stateMachine = GKStateMachine(states: [
-            LoadThreadState.Initial(viewModel: self),
-            LoadThreadState.Prepare(viewModel: self),
-            LoadThreadState.PrepareFail(viewModel: self),
-            LoadThreadState.Idle(viewModel: self),
-            LoadThreadState.Loading(viewModel: self),
-            LoadThreadState.Fail(viewModel: self),
-            LoadThreadState.NoMore(viewModel: self),
-            
-        ])
-        stateMachine.enter(LoadThreadState.Initial.self)
-        return stateMachine
-    }()
+//    @MainActor private(set) lazy var loadThreadStateMachine: GKStateMachine = {
+//        let stateMachine = GKStateMachine(states: [
+//            LoadThreadState.Initial(viewModel: self),
+//            LoadThreadState.Prepare(viewModel: self),
+//            LoadThreadState.PrepareFail(viewModel: self),
+//            LoadThreadState.Idle(viewModel: self),
+//            LoadThreadState.Loading(viewModel: self),
+//            LoadThreadState.Fail(viewModel: self),
+//            LoadThreadState.NoMore(viewModel: self),
+//
+//        ])
+//        stateMachine.enter(LoadThreadState.Initial.self)
+//        return stateMachine
+//    }()
 
-    private init(
+    public init(
         context: AppContext,
         authContext: AuthContext,
-        optionalRoot: StatusItem.Thread?
+        kind: Kind
     ) {
         self.context = context
         self.authContext = authContext
-        self.twitterStatusThreadReplyViewModel = TwitterStatusThreadReplyViewModel(context: context, authContext: authContext)
-        self.twitterStatusThreadLeafViewModel = TwitterStatusThreadLeafViewModel(context: context)
-        self.mastodonStatusThreadViewModel = MastodonStatusThreadViewModel(context: context)
-        self.root = CurrentValueSubject(optionalRoot)
+        self.kind = kind
         // end init
         
-        viewDidAppear
-            .subscribe(twitterStatusThreadReplyViewModel.viewDidAppear)
-            .store(in: &disposeBag)
+        switch kind {
+        case .status(let status):
+            update(status: status)
+        case .twitter, .mastodon:
+            break
+        }
+
+        //        self.twitterStatusThreadReplyViewModel = TwitterStatusThreadReplyViewModel(context: context, authContext: authContext)
+//        self.twitterStatusThreadLeafViewModel = TwitterStatusThreadLeafViewModel(context: context)
+//        self.mastodonStatusThreadViewModel = MastodonStatusThreadViewModel(context: context)
+//        self.root = CurrentValueSubject(optionalRoot)
         
-        // TODO: handle lazy thread loading
-        hasReplyTo = {
-            guard case let .root(threadContext) = optionalRoot else { return false }
-            guard let status = threadContext.status.object(in: context.managedObjectContext) else { return false }
-            switch status {
-            case .twitter(let _status):
-                let status = _status.repost ?? _status
-                return status.replyToStatusID != nil
-            case .mastodon(let _status):
-                let status = _status.repost ?? _status
-                return status.replyToStatusID != nil
+//        viewDidAppear
+//            .subscribe(twitterStatusThreadReplyViewModel.viewDidAppear)
+//            .store(in: &disposeBag)
+//
+//        // TODO: handle lazy thread loading
+//        hasReplyTo = {
+//            guard case let .root(threadContext) = optionalRoot else { return false }
+//            guard let status = threadContext.status.object(in: context.managedObjectContext) else { return false }
+//            switch status {
+//            case .twitter(let _status):
+//                let status = _status.repost ?? _status
+//                return status.replyToStatusID != nil
+//            case .mastodon(let _status):
+//                let status = _status.repost ?? _status
+//                return status.replyToStatusID != nil
+//            }
+//        }()
+//
+//        ManagedObjectObserver.observe(context: context.managedObjectContext)
+//            .sink(receiveCompletion: { completion in
+//                // do nohting
+//            }, receiveValue: { [weak self] changes in
+//                guard let self = self else { return }
+//
+//                let objectIDs: [NSManagedObjectID] = changes.changeTypes.compactMap { changeType in
+//                    guard case let .delete(object) = changeType else { return nil }
+//                    return object.objectID
+//                }
+//
+//                self.delete(objectIDs: objectIDs)
+//            })
+//            .store(in: &disposeBag)
+//
+//        Publishers.CombineLatest(
+//            twitterStatusThreadReplyViewModel.$items,
+//            mastodonStatusThreadViewModel.ancestors
+//        )
+//        .map { $0 + $1 }
+//        .assign(to: &$replies)
+//
+//        Publishers.CombineLatest(
+//            twitterStatusThreadLeafViewModel.items,
+//            mastodonStatusThreadViewModel.descendants
+//        )
+//        .map { $0 + $1 }
+//        .assign(to: &$leafs)
+    }
+    
+}
+
+extension StatusThreadViewModel {
+    enum Kind {
+        case status(StatusRecord)
+        case twitter(Twitter.Entity.V2.Tweet.ID)
+        case mastodon(Mastodon.Entity.Status.ID)
+    }
+    
+    public enum Section: Hashable {
+        case main
+    }   // end Section
+    
+    public enum Item: Hashable {
+        // case
+        case status(status: StatusRecord)
+        case root
+        case topLoader
+        case bottomLoader
+        
+        public static func == (lhs: StatusThreadViewModel.Item, rhs: StatusThreadViewModel.Item) -> Bool {
+            switch (lhs, rhs) {
+            case (.status(let lhs), .status(let rhs)):
+                return lhs.objectID == rhs.objectID
+            case (.root, .root):
+                return true
+            case (.topLoader, .topLoader):
+                return true
+            case (.bottomLoader, .bottomLoader):
+                return true
+            default:
+                return false
             }
-        }()
+        }
         
-        ManagedObjectObserver.observe(context: context.managedObjectContext)
-            .sink(receiveCompletion: { completion in
-                // do nohting
-            }, receiveValue: { [weak self] changes in
-                guard let self = self else { return }
-                
-                let objectIDs: [NSManagedObjectID] = changes.changeTypes.compactMap { changeType in
-                    guard case let .delete(object) = changeType else { return nil }
-                    return object.objectID
-                }
-                
-                self.delete(objectIDs: objectIDs)
-            })
-            .store(in: &disposeBag)
+        public func hash(into hasher: inout Hasher) {
+            switch self {
+            case .status(let status):
+                hasher.combine(String(describing: Item.status.self))
+                hasher.combine(status.objectID)
+            case .root:
+                hasher.combine(String(describing: Item.root.self))
+            case .topLoader:
+                hasher.combine(String(describing: Item.topLoader.self))
+            case .bottomLoader:
+                hasher.combine(String(describing: Item.bottomLoader.self))
+            }
+        }
         
-        Publishers.CombineLatest(
-            twitterStatusThreadReplyViewModel.$items,
-            mastodonStatusThreadViewModel.ancestors
-        )
-        .map { $0 + $1 }
-        .assign(to: &$replies)
-        
-        Publishers.CombineLatest(
-            twitterStatusThreadLeafViewModel.items,
-            mastodonStatusThreadViewModel.descendants
-        )
-        .map { $0 + $1 }
-        .assign(to: &$leafs)
-    }
-    
-    convenience init(
-        context: AppContext,
-        authContext: AuthContext,
-        root: StatusItem.Thread
-    ) {
-        self.init(
-            context: context,
+        public var isTransient: Bool {
+            switch self {
+            case .topLoader, .bottomLoader:
+                return true
+            default:
+                return false
+            }
+        }
+    }   // end Item
+}
+
+extension StatusThreadViewModel {
+    @MainActor
+    func update(status record: StatusRecord) {
+        guard statusViewModel == nil else { return }
+        guard let status = record.object(in: context.managedObjectContext) else {
+            assertionFailure()
+            return
+        }
+        let _statusViewViewModel = StatusView.ViewModel(
+            status: status,
             authContext: authContext,
-            optionalRoot: root
+            kind: .conversationRoot,
+            delegate: conversationRootTableViewCell,
+            viewLayoutFramePublisher: $viewLayoutFrame
         )
-    }
-    
-}
-
-extension StatusThreadViewModel {
-    enum ThreadContext {
-        case twitter(TwitterConversation)
-        case mastodon(MastodonContext)
-        
-        struct TwitterConversation {
-            let statusID: Twitter.Entity.V2.Tweet.ID
-            let authorID: Twitter.Entity.User.ID
-            let authorUsername: String
-            let createdAt: Date
-            
-            // V2 only
-            let conversationID: Twitter.Entity.V2.Tweet.ConversationID?
-        }
-        
-        struct MastodonContext {
-            let domain: String
-            let contextID: Mastodon.Entity.Status.ID
-            let replyToStatusID: Mastodon.Entity.Status.ID?
-        }
+        self.statusViewModel = _statusViewViewModel
     }
 }
 
 extension StatusThreadViewModel {
-    func delete(objectIDs: [NSManagedObjectID]) {
-        if let root = root.value,
-           case let .root(threadContext) = root,
-           objectIDs.contains(threadContext.status.objectID)
-        {
-            self.root.value = nil
-            self.twitterStatusThreadReplyViewModel.root = nil
-        }
-        
-        self.twitterStatusThreadReplyViewModel.delete(objectIDs: objectIDs)
-        self.twitterStatusThreadLeafViewModel.delete(objectIDs: objectIDs)
-        self.mastodonStatusThreadViewModel.delete(objectIDs: objectIDs)
-    }
+//    func delete(objectIDs: [NSManagedObjectID]) {
+//        if let root = root.value,
+//           case let .root(threadContext) = root,
+//           objectIDs.contains(threadContext.status.objectID)
+//        {
+//            self.root.value = nil
+//            self.twitterStatusThreadReplyViewModel.root = nil
+//        }
+//
+//        self.twitterStatusThreadReplyViewModel.delete(objectIDs: objectIDs)
+//        self.twitterStatusThreadLeafViewModel.delete(objectIDs: objectIDs)
+//        self.mastodonStatusThreadViewModel.delete(objectIDs: objectIDs)
+//    }
 }

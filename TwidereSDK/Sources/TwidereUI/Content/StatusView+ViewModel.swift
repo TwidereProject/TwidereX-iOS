@@ -180,6 +180,9 @@ extension StatusView {
             return authContext.authenticationContext.userIdentifier == authorUserIdentifier
         }
         
+        // metric
+        @Published public var metricViewModel: StatusMetricView.ViewModel?
+        
         @Published public var isBottomConversationLinkLineViewDisplay = false
         
         private init(
@@ -267,6 +270,8 @@ extension StatusView {
 //                }
 //            }
 //            .assign(to: &$isRepostEnabled)
+            
+            toolbarViewModel.style = kind == .conversationRoot ? .plain : .inline
             
             UserDefaults.shared.publisher(for: \.translateButtonPreference)
                 .map { $0 }
@@ -898,6 +903,39 @@ extension StatusView.ViewModel {
 }
 
 extension StatusView.ViewModel {
+    var contentWidth: CGFloat {
+        let width = containerWidth - 2 * margin
+        return max(width, .leastNonzeroMagnitude)
+    }
+    
+    var containerWidth: CGFloat {
+        let width: CGFloat = {
+            var width = parentViewModel?.containerWidth ?? viewLayoutFrame.readableContentLayoutFrame.width
+            width -= containerMargin
+            return width
+        }()
+        return max(width, .leastNonzeroMagnitude)
+    }
+    
+    var containerMargin: CGFloat {
+        var width: CGFloat = 0
+        switch kind {
+        case .timeline, .referenceReplyTo:
+            width += StatusView.hangingAvatarButtonDimension
+            width += StatusView.hangingAvatarButtonTrailingSapcing
+        default:
+            break
+        }
+        return width
+    }
+    
+    public var margin: CGFloat {
+        switch kind {
+        case .quote:        return 12
+        default:            return .zero
+        }
+    }
+    
     var hasHangingAvatar: Bool {
         switch kind {
         case .conversationRoot, .quote:
@@ -908,26 +946,16 @@ extension StatusView.ViewModel {
     }
     
     public var cellTopMargin: CGFloat {
-        switch kind {
-        case .timeline:
-            return repostViewModel == nil ? 12 : 8
-        default:
-            return .zero
-        }
-    }
-    
-    public var margin: CGFloat {
-        switch kind {
-        case .quote:
-            return 12
-        default:
-            return .zero
-        }
+        return .zero
+//        switch kind {
+//        default:
+//            return 12
+//        }
     }
     
     public var hasToolbar: Bool {
         switch kind {
-        case .timeline, .repost, .conversationRoot, .conversationThread:
+        case .timeline, .conversationRoot, .conversationThread:
             return true
         default:
             return false
@@ -1010,7 +1038,7 @@ extension StatusView.ViewModel {
         self.init(
             status: .twitter(record: status.asRecrod),
             authContext: authContext,
-            kind: kind,
+            kind: status.repost != nil ? .repost : kind,
             delegate: delegate,
             viewLayoutFramePublisher: viewLayoutFramePublisher
         )
@@ -1020,7 +1048,7 @@ extension StatusView.ViewModel {
             let _repostViewModel = StatusView.ViewModel(
                 status: repost,
                 authContext: authContext,
-                kind: .repost,
+                kind: kind,
                 delegate: delegate,
                 parentViewModel: self,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
@@ -1064,10 +1092,10 @@ extension StatusView.ViewModel {
         
         // timestamp
         switch kind {
-        case .timeline, .repost:
-            timestampLabelViewModel = TimestampLabelView.ViewModel(timestamp: status.createdAt)
-        default:
+        case .conversationRoot:
             break
+        default:
+            timestampLabelViewModel = TimestampLabelView.ViewModel(timestamp: status.createdAt)
         }
         
         // content
@@ -1130,6 +1158,26 @@ extension StatusView.ViewModel {
         } else {
             // do nothing
         }
+        
+        // metric
+        switch kind {
+        case .conversationRoot:
+            let _metricViewModel = StatusMetricView.ViewModel(platform: .twitter, timestamp: status.createdAt)
+            metricViewModel = _metricViewModel
+            status.publisher(for: \.source)
+                .assign(to: &_metricViewModel.$source)
+            status.publisher(for: \.replyCount)
+                .map { Int($0) }
+                .assign(to: &_metricViewModel.$replyCount)
+            status.publisher(for: \.repostCount)
+                .map { Int($0) }
+                .assign(to: &_metricViewModel.$repostCount)
+            status.publisher(for: \.likeCount)
+                .map { Int($0) }
+                .assign(to: &_metricViewModel.$likeCount)
+        default:
+            break
+        }
     }   // end init
 }
 
@@ -1145,7 +1193,7 @@ extension StatusView.ViewModel {
         self.init(
             status: .mastodon(record: status.asRecrod),
             authContext: authContext,
-            kind: kind,
+            kind: status.repost != nil ? .repost : kind,
             delegate: delegate,
             viewLayoutFramePublisher: viewLayoutFramePublisher
         )
@@ -1155,7 +1203,7 @@ extension StatusView.ViewModel {
             let _repostViewModel = StatusView.ViewModel(
                 status: repost,
                 authContext: authContext,
-                kind: .repost,
+                kind: kind,
                 delegate: delegate,
                 parentViewModel: self,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
@@ -1194,10 +1242,10 @@ extension StatusView.ViewModel {
         
         // timestamp
         switch kind {
-        case .timeline, .repost:
-            timestampLabelViewModel = TimestampLabelView.ViewModel(timestamp: status.createdAt)
-        default:
+        case .conversationRoot:
             break
+        default:
+            timestampLabelViewModel = TimestampLabelView.ViewModel(timestamp: status.createdAt)
         }
         
         // spoiler content
@@ -1278,6 +1326,24 @@ extension StatusView.ViewModel {
                 .assign(to: &toolbarViewModel.$isReposted)
         } else {
             // do nothing
+        }
+        
+        // metric
+        switch kind {
+        case .conversationRoot:
+            let _metricViewModel = StatusMetricView.ViewModel(platform: .mastodon, timestamp: status.createdAt)
+            metricViewModel = _metricViewModel
+            status.publisher(for: \.replyCount)
+                .map { Int($0) }
+                .assign(to: &_metricViewModel.$replyCount)
+            status.publisher(for: \.repostCount)
+                .map { Int($0) }
+                .assign(to: &_metricViewModel.$repostCount)
+            status.publisher(for: \.likeCount)
+                .map { Int($0) }
+                .assign(to: &_metricViewModel.$likeCount)
+        default:
+            break
         }
     }
 }

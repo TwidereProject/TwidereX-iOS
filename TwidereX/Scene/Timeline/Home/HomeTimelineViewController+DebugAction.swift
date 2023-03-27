@@ -264,22 +264,11 @@ extension HomeTimelineViewController {
         Task { @MainActor in
             let authenticationContext = self.viewModel.authContext.authenticationContext
             switch authenticationContext {
-            case .twitter(let authenticationContext):
-                _ = try await self.context.apiService.twitterStatus(
-                    statusIDs: [id],
-                    authenticationContext: authenticationContext
-                )
-                let request = TwitterStatus.sortedFetchRequest
-                request.predicate = TwitterStatus.predicate(id: id)
-                request.fetchLimit = 1
-                let _status = try self.context.managedObjectContext.fetch(request).first
-                guard let status = _status else {
-                    return
-                }
+            case .twitter:
                 let statusThreadViewModel = StatusThreadViewModel(
                     context: self.context,
                     authContext: self.authContext,
-                    root: .root(context: .init(status: .twitter(record: .init(objectID: status.objectID))))
+                    kind: .twitter(id)
                 )
                 self.coordinator.present(
                     scene: .statusThread(viewModel: statusThreadViewModel),
@@ -287,9 +276,16 @@ extension HomeTimelineViewController {
                     transition: .show
                 )
             case .mastodon:
-                assertionFailure("TODO:")
-            default:
-                assertionFailure()
+                let statusThreadViewModel = StatusThreadViewModel(
+                    context: self.context,
+                    authContext: self.authContext,
+                    kind: .mastodon(id)
+                )
+                self.coordinator.present(
+                    scene: .statusThread(viewModel: statusThreadViewModel),
+                    from: self,
+                    transition: .show
+                )
             }
         }   // end Task
     }

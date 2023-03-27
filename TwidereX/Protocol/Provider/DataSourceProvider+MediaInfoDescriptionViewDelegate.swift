@@ -44,8 +44,7 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider & Auth
             
             await DataSourceFacade.coordinateToStatusThreadScene(
                 provider: self,
-                target: .repost,    // keep repost wrapper
-                status: status
+                kind: .status(status)
             )
         }
     }
@@ -63,8 +62,7 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider & Auth
             
             await DataSourceFacade.coordinateToStatusThreadScene(
                 provider: self,
-                target: .repost,    // keep repost wrapper
-                status: status
+                kind: .status(status)
             )
         }
     }
