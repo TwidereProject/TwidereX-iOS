@@ -275,11 +275,11 @@ extension HomeTimelineViewController {
                     from: self,
                     transition: .show
                 )
-            case .mastodon:
+            case .mastodon(let authenticationContext):
                 let statusThreadViewModel = StatusThreadViewModel(
                     context: self.context,
                     authContext: self.authContext,
-                    kind: .mastodon(id)
+                    kind: .mastodon(domain: authenticationContext.domain, id)
                 )
                 self.coordinator.present(
                     scene: .statusThread(viewModel: statusThreadViewModel),

@@ -115,18 +115,36 @@ extension StatusThreadViewController {
 // MARK: - UITableViewDelegate
 extension StatusThreadViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
     
-//    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return indexPath }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return indexPath }
-//        guard case let .thread(thread) = item else { return indexPath }
-//        
-//        switch thread {
-//        case .root:
-//            return nil
-//        case .reply, .leaf:
-//            return indexPath
-//        }
-//    }
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return indexPath }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return indexPath }
+        
+        switch item {
+        case .root:
+            // cancel textView selection
+            view.endEditing(true)
+            return nil
+        default:        return indexPath
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        switch item {
+        case .topLoader:
+            Task {
+                try await viewModel.loadTop()
+            }   // end Task
+        case .bottomLoader:
+            Task {
+                try await viewModel.loadBottom()
+            }   // end Task
+        default:
+            break
+        }
+    }
     
     // sourcery:inline:StatusThreadViewController.AutoGenerateTableViewDelegate
 

@@ -23,7 +23,7 @@ public struct TimestampLabelView: View {
         TimelineView(.periodic(from: .now, by: 1.0)) { timeline in
             let timeAgo = viewModel.timeAgo(now: timeline.date)
             Text("\(timeAgo)")
-                .font(Font.subheadline.monospacedDigit())
+                .font(Font(TextStyle.statusTimestamp.font).monospacedDigit())
                 .foregroundColor(Color(uiColor: TextStyle.statusTimestamp.textColor))
         }
     }

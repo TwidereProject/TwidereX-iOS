@@ -270,9 +270,7 @@ extension StatusToolbarView {
         let tintColor: UIColor?
         
         // output
-        var text: String {
-            Self.metric(count: count)
-        }
+        let text: String
 
         public init(
             handler: @escaping (Action) -> Void,
@@ -286,6 +284,7 @@ extension StatusToolbarView {
             self.image = image
             self.count = count
             self.tintColor = tintColor
+            self.text = Self.metric(count: count)
         }
 
         public var body: some View {

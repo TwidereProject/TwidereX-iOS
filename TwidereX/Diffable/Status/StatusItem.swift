@@ -10,10 +10,17 @@ import Foundation
 import CoreDataStack
 import TwidereCore
 
-enum StatusItem: Hashable {
+enum StatusItem: Hashable, DifferenceItem {
     case feed(record: ManagedObjectRecord<Feed>)
     case feedLoader(record: ManagedObjectRecord<Feed>)
     case status(StatusRecord)
     case topLoader
     case bottomLoader
+    
+    var isTransient: Bool {
+        switch self {
+        case .topLoader, .bottomLoader:     return true
+        default:                            return false
+        }
+    }
 }

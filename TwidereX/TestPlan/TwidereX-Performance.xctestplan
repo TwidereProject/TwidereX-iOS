@@ -16,8 +16,8 @@
   },
   "testTargets" : [
     {
-      "selectedTests" : [
-        "TwidereXUITests\/testLaunchPerformance()"
+      "skippedTests" : [
+        "TwidereXUITests"
       ],
       "target" : {
         "containerPath" : "container:TwidereX.xcodeproj",

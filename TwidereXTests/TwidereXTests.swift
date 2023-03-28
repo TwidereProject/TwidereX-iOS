@@ -7,7 +7,6 @@
 
 import os.log
 import XCTest
-@testable import TwidereX
 
 class TwidereXTests: XCTestCase {
     

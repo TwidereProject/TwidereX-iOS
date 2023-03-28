@@ -135,6 +135,49 @@ extension Twitter.API {
         return request
     }
     
+    static func request(
+        url: URL,
+        method: Method,
+        query: Query?,
+        authorization: Twitter.API.Guest.GuestAuthorization
+    ) -> URLRequest {
+        var components = URLComponents(string: url.absoluteString)!
+        components.queryItems = query?.queryItems
+        if let encodedQueryItems = query?.encodedQueryItems {
+            let percentEncodedQueryItems = (components.percentEncodedQueryItems ?? []) + encodedQueryItems
+            components.percentEncodedQueryItems = percentEncodedQueryItems
+        }
+        
+        let requestURL = components.url!
+        var request = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: Twitter.API.timeoutInterval
+        )
+        request.httpMethod = method.rawValue
+        
+        request.setValue(
+            authorization.userAgent,
+            forHTTPHeaderField: "User-Agent"
+        )
+        request.setValue(
+            authorization.authorization,
+            forHTTPHeaderField: Twitter.API.OAuth.authorizationField
+        )
+        request.setValue(
+            authorization.token,
+            forHTTPHeaderField: "x-guest-token"
+        )
+        if let body = query?.body {
+            request.httpBody = body
+        }
+        if let contentType = query?.contentType {
+            request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        }
+        
+        return request
+    }
+    
 }
 
 extension Twitter.API {

@@ -21,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var coordinator: SceneCoordinator?
 
-    #if DEBUG
+    #if DEBUG || PROFILE
     var fpsIndicator: FPSIndicator?
     #endif
 
@@ -31,7 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
-        #if DEBUG
+        #if DEBUG && !PROFILE
         guard !SceneDelegate.isXcodeUnitTest else {
             window.rootViewController = UIViewController()
             return
@@ -62,7 +62,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window.makeKeyAndVisible()
 
-        #if DEBUG
+        #if DEBUG || PROFILE
         fpsIndicator = FPSIndicator(windowScene: windowScene)
         #endif
     }

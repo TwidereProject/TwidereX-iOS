@@ -9,6 +9,7 @@ import os.log
 import Foundation
 import Combine
 import TwitterSDK
+import MastodonSDK
 import CoreDataStack
 import CommonOSLog
 import func QuartzCore.CACurrentMediaTime
@@ -94,6 +95,42 @@ extension APIService {
                 )
             )
         }   // end .performChanges { … }
+        
+        return response
+    }
+}
+
+extension APIService {
+    public func mastodonStatus(
+        statusID: Mastodon.Entity.Status.ID,
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<Mastodon.Entity.Status> {
+        let domain = authenticationContext.domain
+        let authorization = authenticationContext.authorization
+        let managedObjectContext = backgroundManagedObjectContext
+
+        let response = try await Mastodon.API.Status.lookup(
+            session: session,
+            domain: domain,
+            query: Mastodon.API.Status.LookupStatusQuery(id: statusID),
+            authorization: authorization
+        )
+        
+        try await managedObjectContext.performChanges {
+            let entity = response.value
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            _ = Persistence.MastodonStatus.createOrMerge(
+                in: managedObjectContext,
+                context: .init(
+                    domain: authenticationContext.domain,
+                    entity: entity,
+                    me: me,
+                    statusCache: nil,
+                    userCache: nil,
+                    networkDate: response.networkDate
+                )
+            )
+        }
         
         return response
     }

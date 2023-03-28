@@ -18,14 +18,13 @@ import TwidereCore
 
 public protocol StatusViewDelegate: AnyObject {
 //    func statusView(_ statusView: StatusView, headerDidPressed header: UIView)
-//
+
 //    func statusView(_ statusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
 //    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
 //
 //    func statusView(_ statusView: StatusView, expandContentButtonDidPressed button: UIButton)
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
 
-//
 //    func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
 //    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
 
@@ -41,15 +40,14 @@ public protocol StatusViewDelegate: AnyObject {
 
     // metric
     func statusView(_ viewModel: StatusView.ViewModel, statusMetricViewModel: StatusMetricView.ViewModel, statusMetricButtonDidPressed action: StatusMetricView.Action)
-    
+
     // toolbar
     func statusView(_ viewModel: StatusView.ViewModel, statusToolbarViewModel: StatusToolbarView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action)
-//
+
 //    func statusView(_ statusView: StatusView, translateButtonDidPressed button: UIButton)
-    
+
     func statusView(_ viewModel: StatusView.ViewModel, viewHeightDidChange: Void)
 
-//
 //    // a11y
 //    func statusView(_ statusView: StatusView, accessibilityActivate: Void)
 }
@@ -65,8 +63,9 @@ public struct StatusView: View {
     @ObservedObject public private(set) var viewModel: ViewModel
     
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
-    @State private var visibilityIconImageDimension = CGFloat.zero
-    
+    @ScaledMetric(relativeTo: .subheadline) private var visibilityIconImageDimension: CGFloat = 16
+    @ScaledMetric(relativeTo: .headline) private var inlineAvatarButtonDimension: CGFloat = 20
+
     public init(viewModel: StatusView.ViewModel) {
         self.viewModel = viewModel
     }
@@ -162,7 +161,7 @@ public struct StatusView: View {
                         // metric
                         if let metricViewModel = viewModel.metricViewModel {
                             StatusMetricView(viewModel: metricViewModel) { action in
-                                
+
                             }
                             .padding(.vertical, 8)
                         }
@@ -245,7 +244,7 @@ public struct StatusView: View {
 }
 
 extension StatusView {
-    public var authorView: some View {
+    var authorView: some View {
         HStack(alignment: .center) {
             if !viewModel.hasHangingAvatar {
                 // avatar
@@ -284,15 +283,6 @@ extension StatusView {
                     )
                     .fixedSize(horizontal: false, vertical: true)
                     .layoutPriority(0.618)
-                    .background(GeometryReader { proxy in
-                        Color.clear.preference(
-                            key: ViewHeightKey.self,
-                            value: proxy.frame(in: .local).size.height
-                        )
-                    })
-                    .onPreferenceChange(ViewHeightKey.self) { height in
-                        self.visibilityIconImageDimension = height
-                    }
                     // username
                     LabelRepresentable(
                         metaContent: PlaintextMetaContent(string: "@" + viewModel.authorUsernme),
@@ -306,20 +296,11 @@ extension StatusView {
                     .layoutPriority(0.382)
                 }   // end nameLayout
                 .frame(alignment: .leading)
-                .background(GeometryReader { proxy in
-                    Color.clear.preference(
-                        key: ViewHeightKey.self,
-                        value: proxy.frame(in: .local).size.height
-                    )
-                })
-                .onPreferenceChange(ViewHeightKey.self) { height in
-                    self.viewModel.authorAvatarDimension = height
-                }
                 Spacer()
                 HStack(spacing: 6) {
                     // mastodon visibility
-                    if let visibilityIconImage = viewModel.visibilityIconImage, visibilityIconImageDimension > 0 {
-                        let dimension = ceil(visibilityIconImageDimension * 0.8)
+                    if let visibilityIconImage = viewModel.visibilityIconImage {
+                        let dimension = visibilityIconImageDimension
                         let alignment: Alignment = viewModel.kind == .conversationRoot ? .top : .center
                         Color.clear
                             .frame(width: dimension)
@@ -343,14 +324,14 @@ extension StatusView {
         }   // end HStack
     }
     
-    public var avatarButton: some View {
+    var avatarButton: some View {
         Button {
             
         } label: {
             let dimension: CGFloat = {
                 switch viewModel.kind {
                 case .quote:
-                    return viewModel.authorAvatarDimension
+                    return inlineAvatarButtonDimension
                 default:
                     return StatusView.hangingAvatarButtonDimension
                 }
@@ -367,7 +348,7 @@ extension StatusView {
         .buttonStyle(.borderless)
     }
     
-    public var spoilerContentView: some View {
+    var spoilerContentView: some View {
         VStack(alignment: .leading, spacing: .zero) {
             TextViewRepresentable(
                 metaContent: viewModel.spoilerContent ?? PlaintextMetaContent(string: ""),
@@ -378,7 +359,7 @@ extension StatusView {
         }
     }
     
-    public var contentView: some View {
+    var contentView: some View {
         VStack(alignment: .leading, spacing: .zero) {
             TextViewRepresentable(
                 metaContent: viewModel.content,

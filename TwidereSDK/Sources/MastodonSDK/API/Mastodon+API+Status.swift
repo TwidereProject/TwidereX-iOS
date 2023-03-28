@@ -113,7 +113,6 @@ extension Mastodon.API.Status {
     }
 }
 
-
 extension Mastodon.API.Status {
     
     static func statusEndpointURL(domain: String, statusID: Mastodon.Entity.Status.ID) -> URL {
@@ -121,6 +120,56 @@ extension Mastodon.API.Status {
             .appendingPathComponent("statuses")
             .appendingPathComponent(statusID)
     }
+    
+    /// View a single status
+    ///
+    /// Obtain information about a status.
+    ///
+    /// - Since: 0.0.0
+    /// - Version: 4.1.0
+    /// # Last Update
+    ///   2023/3/28
+    /// # Reference
+    ///   [Document](https://docs.joinmastodon.org/methods/statuses/)
+    /// - Parameters:
+    ///   - session: `URLSession`
+    ///   - domain: Mastodon instance domain. e.g. "example.com"
+    ///   - query: `LookupStatusQuery`
+    ///   - authorization: User token
+    /// - Returns: `Status` nested in the response
+    public static func lookup(
+        session: URLSession,
+        domain: String,
+        query: LookupStatusQuery,
+        authorization: Mastodon.API.OAuth.Authorization?
+    ) async throws -> Mastodon.Response.Content<Mastodon.Entity.Status> {
+        let request = Mastodon.API.request(
+            url: statusEndpointURL(domain: domain, statusID: query.id),
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Mastodon.API.decode(type: Mastodon.Entity.Status.self, from: data, response: response)
+        return Mastodon.Response.Content(value: value, response: response)
+    }
+    
+    public struct LookupStatusQuery: JSONEncodeQuery {
+        
+        public let id: Mastodon.Entity.Status.ID
+        
+        public init(
+            id: Mastodon.Entity.Status.ID
+        ) {
+            self.id = id
+        }
+        
+        var queryItems: [URLQueryItem]? { nil }
+    }
+    
+}
+
+extension Mastodon.API.Status {
     
     /// Delete status
     ///

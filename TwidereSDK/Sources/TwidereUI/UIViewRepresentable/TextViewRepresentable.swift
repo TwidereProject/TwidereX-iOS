@@ -9,24 +9,21 @@ import UIKit
 import SwiftUI
 import TwidereCore
 import MetaTextKit
+import MetaTextArea
 
 public struct TextViewRepresentable: UIViewRepresentable {
-    
-    let textView: WrappedTextView = {
-        let textView = WrappedTextView()
+
+    let textView: MetaTextAreaView = {
+        let textView = MetaTextAreaView()
         textView.backgroundColor = .clear
-        textView.isScrollEnabled = false
-        textView.isEditable = false
-        textView.textContainerInset = .zero
-        textView.textContainer.lineFragmentPadding = 0
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         textView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return textView
     }()
     
     // input
-    public let metaContent: MetaContent
-    public let textStyle: TextStyle
+    let metaContent: MetaContent
+    let textStyle: TextStyle
     let width: CGFloat
     
     public init(
@@ -39,9 +36,10 @@ public struct TextViewRepresentable: UIViewRepresentable {
         self.width = width
     }
     
-    public func makeUIView(context: Context) -> UITextView {
+    public func makeUIView(context: Context) -> MetaTextAreaView {
         let textView = self.textView
-        
+        textView.delegate = context.coordinator
+         
         let attributedString = NSMutableAttributedString(string: metaContent.string)
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: textStyle.font,
@@ -67,7 +65,8 @@ public struct TextViewRepresentable: UIViewRepresentable {
         )
         
         textView.frame.size.width = width
-        textView.textStorage.setAttributedString(attributedString)
+        textView.preferredMaxLayoutWidth = width
+        textView.setAttributedString(attributedString)
         textView.invalidateIntrinsicContentSize()
         textView.setNeedsLayout()
         textView.layoutIfNeeded()
@@ -75,7 +74,7 @@ public struct TextViewRepresentable: UIViewRepresentable {
         return textView
     }
     
-    public func updateUIView(_ view: UITextView, context: Context) {
+    public func updateUIView(_ view: MetaTextAreaView, context: Context) {
         textView.frame.size.width = width
         textView.invalidateIntrinsicContentSize()
         textView.setNeedsLayout()
@@ -93,6 +92,13 @@ public struct TextViewRepresentable: UIViewRepresentable {
             self.view = view
             super.init()
         }
+    }
+}
+
+// MARK: - MetaTextAreaViewDelegate
+extension TextViewRepresentable.Coordinator: MetaTextAreaViewDelegate {
+    public func metaTextAreaView(_ metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
+        
     }
 }
 
@@ -121,3 +127,4 @@ class WrappedTextView: UITextView {
     }
 
 }
+

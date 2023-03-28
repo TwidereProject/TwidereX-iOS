@@ -40,7 +40,6 @@ extension StatusView {
         public weak var delegate: StatusViewDelegate?
         
         weak var parentViewModel: StatusView.ViewModel?
-        @Published public var authorAvatarDimension: CGFloat = .zero
         
         // output
         
@@ -946,11 +945,7 @@ extension StatusView.ViewModel {
     }
     
     public var cellTopMargin: CGFloat {
-        return .zero
-//        switch kind {
-//        default:
-//            return 12
-//        }
+        return parentViewModel == nil ? 12 : 0
     }
     
     public var hasToolbar: Bool {

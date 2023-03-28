@@ -31,6 +31,7 @@ public struct MediaView: View {
             .placeholder { progress in
                 Image(uiImage: Asset.Logo.mediaPlaceholder.image.withRenderingMode(.alwaysTemplate))
             }
+            .aspectRatio(contentMode: .fill)
             .overlay {
                 switch viewModel.mediaKind {
                 case .animatedGIF:

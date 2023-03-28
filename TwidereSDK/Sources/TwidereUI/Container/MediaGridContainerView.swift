@@ -22,7 +22,7 @@ public struct MediaGridContainerView: View {
     
     public let previewAction: (MediaView.ViewModel) -> Void
     public let previewActionWithContext: (MediaView.ViewModel, ContextMenuInteractionPreviewActionContext) -> Void
-
+    
     public var body: some View {
         VStack {
             switch viewModels.count {
@@ -278,7 +278,7 @@ public struct MediaViewFrameModifer: ViewModifier {
     let asepctRatio: CGFloat?
     let idealWidth: CGFloat?
     let idealHeight: CGFloat
-    
+
     public init(
         asepctRatio: CGFloat?,
         idealWidth: CGFloat?,
@@ -291,8 +291,11 @@ public struct MediaViewFrameModifer: ViewModifier {
     
     public func body(content: Content) -> some View {
         if let idealWidth = idealWidth {
+            let minHeight: CGFloat = 44
+            let maxHeight = ceil(3 * idealWidth)
+            let height = min(maxHeight, max(minHeight, idealWidth / (asepctRatio ?? 1.0)))
             content
-                .frame(width: idealWidth, height: idealWidth / (asepctRatio ?? 1.0))
+                .frame(width: idealWidth, height: height)
         } else {
             content
                 .frame(maxHeight: idealHeight)

@@ -21,8 +21,8 @@ public struct StatusHeaderView: View {
     
     @ObservedObject public var viewModel: ViewModel
     
-    @State private var iconImageDimension = CGFloat.zero
-    
+    @ScaledMetric(relativeTo: .footnote) private var iconImageDimension: CGFloat = 16
+
     public var body: some View {
         HStack(spacing: .zero) {
             if viewModel.hasHangingAvatar {
@@ -46,15 +46,6 @@ public struct StatusHeaderView: View {
                             // do nothing
                         }
                     )
-                    .background(GeometryReader { proxy in
-                        Color.clear.preference(
-                            key: ViewHeightKey.self,
-                            value: proxy.frame(in: .local).size.height
-                        )
-                    })
-                    .onPreferenceChange(ViewHeightKey.self) { height in
-                        self.iconImageDimension = height
-                    }
                     .overlay(alignment: .leading) {
                         VectorImageView(image: viewModel.image)
                             .frame(width: iconImageDimension, height: iconImageDimension)

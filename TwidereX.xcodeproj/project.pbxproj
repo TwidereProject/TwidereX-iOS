@@ -249,6 +249,7 @@
 		DB88E62E2890DF7E009A01F5 /* BehaviorsPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88E62D2890DF7E009A01F5 /* BehaviorsPreferenceView.swift */; };
 		DB89F591257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB89F590257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift */; };
 		DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC0F725401BA200E636BE /* UIViewController.swift */; };
+		DB8BFB1C29D1F52900535092 /* TwidereXUITests+Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8BFB1B29D1F52900535092 /* TwidereXUITests+Performance.swift */; };
 		DB8E4FD92563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8E4FD82563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift */; };
 		DB8E4FEC2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8E4FEB2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift */; };
 		DB914C4A26C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB914C4926C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift */; };
@@ -706,6 +707,7 @@
 		DB89F590257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB8AC0F725401BA200E636BE /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		DB8AC18F2542DA9500E636BE /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
+		DB8BFB1B29D1F52900535092 /* TwidereXUITests+Performance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TwidereXUITests+Performance.swift"; sourceTree = "<group>"; };
 		DB8E4FD82563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPinBasedAuthenticationViewController.swift; sourceTree = "<group>"; };
 		DB8E4FEB2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPinBasedAuthenticationViewModel.swift; sourceTree = "<group>"; };
 		DB914C4926C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentOffsetFixedCollectionView.swift; sourceTree = "<group>"; };
@@ -1567,6 +1569,15 @@
 			path = Trend;
 			sourceTree = "<group>";
 		};
+		DB6CD2AA29D1F2AD003AE784 /* TestPlan */ = {
+			isa = PBXGroup;
+			children = (
+				DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */,
+				DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */,
+			);
+			path = TestPlan;
+			sourceTree = "<group>";
+		};
 		DB7274F0273BB25A00577D95 /* Notification */ = {
 			isa = PBXGroup;
 			children = (
@@ -2076,8 +2087,6 @@
 			children = (
 				DBDA8E2F24FCF8A6006750DC /* Info.plist */,
 				DBE76CD2250095D900DEB0FC /* TwidereX.entitlements */,
-				DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */,
-				DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */,
 				DBA122CA256C13B000928671 /* GoogleService-Info.plist */,
 				DBCB408E255D8C2E00DD8D8F /* Activity */,
 				DB2C8710274F4B1C00CE0398 /* Coordinator */,
@@ -2088,6 +2097,7 @@
 				DBF81C8B27F843D700004A56 /* Generated */,
 				DBE76D312502147200DEB0FC /* Extension */,
 				DBED96DC253F5D7B00C5383A /* Protocol */,
+				DB6CD2AA29D1F2AD003AE784 /* TestPlan */,
 				DBDA8E5324FDF3D6006750DC /* Supporting Files */,
 			);
 			path = TwidereX;
@@ -2110,6 +2120,7 @@
 				DBDA8E4524FCF8A7006750DC /* Info.plist */,
 				DBDA8E4324FCF8A7006750DC /* TwidereXUITests.swift */,
 				DBDA7F1927D1CBCA00BA6BE1 /* TwidereXUITests+Onboarding.swift */,
+				DB8BFB1B29D1F52900535092 /* TwidereXUITests+Performance.swift */,
 			);
 			path = TwidereXUITests;
 			sourceTree = "<group>";
@@ -2519,6 +2530,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				DB8BFB1E29D1FC6200535092 /* PBXTargetDependency */,
 				DBDA8E4124FCF8A7006750DC /* PBXTargetDependency */,
 			);
 			name = TwidereXUITests;
@@ -3209,6 +3221,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBDA7F1A27D1CBCA00BA6BE1 /* TwidereXUITests+Onboarding.swift in Sources */,
+				DB8BFB1C29D1F52900535092 /* TwidereXUITests+Performance.swift in Sources */,
 				DBDA8E4424FCF8A7006750DC /* TwidereXUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3238,6 +3251,10 @@
 			isa = PBXTargetDependency;
 			target = DB7FF05D28853A7F00BFD55E /* NotificationService */;
 			targetProxy = DB7FF06328853A7F00BFD55E /* PBXContainerItemProxy */;
+		};
+		DB8BFB1E29D1FC6200535092 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = DB8BFB1D29D1FC6200535092 /* TwidereSDK */;
 		};
 		DBBBBE822744F39C007ACB4B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3451,6 +3468,7 @@
 				CURRENT_PROJECT_VERSION = 118;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3474,6 +3492,7 @@
 				CURRENT_PROJECT_VERSION = 118;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3888,6 +3907,7 @@
 				CURRENT_PROJECT_VERSION = 118;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3913,6 +3933,7 @@
 				CURRENT_PROJECT_VERSION = 118;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3936,6 +3957,7 @@
 				CURRENT_PROJECT_VERSION = 118;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3959,6 +3981,7 @@
 				CURRENT_PROJECT_VERSION = 118;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4121,6 +4144,10 @@
 			productName = TwidereSDK;
 		};
 		DB05E13C29C321960055BF3F /* TwidereSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TwidereSDK;
+		};
+		DB8BFB1D29D1FC6200535092 /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TwidereSDK;
 		};
