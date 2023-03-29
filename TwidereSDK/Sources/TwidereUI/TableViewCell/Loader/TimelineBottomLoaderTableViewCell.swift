@@ -8,9 +8,9 @@
 import UIKit
 import Combine
 
-final class TimelineBottomLoaderTableViewCell: TimelineLoaderTableViewCell {
+public final class TimelineBottomLoaderTableViewCell: TimelineLoaderTableViewCell {
     
-    override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         
         activityIndicatorView.startAnimating()

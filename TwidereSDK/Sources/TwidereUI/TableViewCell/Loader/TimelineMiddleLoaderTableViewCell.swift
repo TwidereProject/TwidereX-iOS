@@ -10,11 +10,11 @@ import UIKit
 import Combine
 import CoreData
 
-protocol TimelineMiddleLoaderTableViewCellDelegate: AnyObject {
+public protocol TimelineMiddleLoaderTableViewCellDelegate: AnyObject {
     func timelineMiddleLoaderTableViewCell(_ cell: TimelineMiddleLoaderTableViewCell, loadMoreButtonDidPressed button: UIButton)
 }
 
-final class TimelineMiddleLoaderTableViewCell: TimelineLoaderTableViewCell {
+public final class TimelineMiddleLoaderTableViewCell: TimelineLoaderTableViewCell {
         
     weak var delegate: TimelineMiddleLoaderTableViewCellDelegate?
     

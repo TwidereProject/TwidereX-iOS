@@ -27,7 +27,7 @@ public struct StatusHeaderView: View {
         HStack(spacing: .zero) {
             if viewModel.hasHangingAvatar {
                 let width = viewModel.avatarDimension
-                    + StatusView.hangingAvatarButtonTrailingSapcing
+                    + StatusView.hangingAvatarButtonTrailingSpacing
                     - iconImageDimension
                     - StatusHeaderView.iconImageTrailingSpacing
                 Color.clear
@@ -66,6 +66,9 @@ extension StatusHeaderView {
         
         @Published public var hasHangingAvatar: Bool = false
         @Published public var avatarDimension: CGFloat = StatusView.hangingAvatarButtonDimension
+        
+        // output
+        public var viewSize: CGSize = .zero
         
         public init(
             image: UIImage,

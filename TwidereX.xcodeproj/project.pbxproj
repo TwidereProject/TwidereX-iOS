@@ -125,7 +125,6 @@
 		DB47AB2D27CE085900CD73C7 /* ListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB2C27CE085800CD73C7 /* ListViewModel+Diffable.swift */; };
 		DB47AB2E27CE097C00CD73C7 /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB1F27CCC18500CD73C7 /* ListItem.swift */; };
 		DB47AB2F27CE097C00CD73C7 /* ListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB2027CCC18500CD73C7 /* ListSection.swift */; };
-		DB47AB3E27CE1F9E00CD73C7 /* TimelineTopLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB3D27CE1F9E00CD73C7 /* TimelineTopLoaderTableViewCell.swift */; };
 		DB51DC1A2715581E00A0D8FB /* ProfileDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC192715581E00A0D8FB /* ProfileDashboardView.swift */; };
 		DB51DC1C2715588E00A0D8FB /* ProfileDashboardMeterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC1B2715588E00A0D8FB /* ProfileDashboardMeterView.swift */; };
 		DB51DC3B2716F82000A0D8FB /* CellFrameCacheContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3A2716F82000A0D8FB /* CellFrameCacheContainer.swift */; };
@@ -247,7 +246,6 @@
 		DB88E6292890DF67009A01F5 /* BehaviorsPreferenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88E6282890DF67009A01F5 /* BehaviorsPreferenceViewController.swift */; };
 		DB88E62C2890DF79009A01F5 /* BehaviorsPreferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88E62B2890DF79009A01F5 /* BehaviorsPreferenceViewModel.swift */; };
 		DB88E62E2890DF7E009A01F5 /* BehaviorsPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88E62D2890DF7E009A01F5 /* BehaviorsPreferenceView.swift */; };
-		DB89F591257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB89F590257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift */; };
 		DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC0F725401BA200E636BE /* UIViewController.swift */; };
 		DB8BFB1C29D1F52900535092 /* TwidereXUITests+Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8BFB1B29D1F52900535092 /* TwidereXUITests+Performance.swift */; };
 		DB8E4FD92563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8E4FD82563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift */; };
@@ -263,8 +261,6 @@
 		DB932E5327FEC7390036A824 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DB932E5527FEC7390036A824 /* Intents.intentdefinition */; };
 		DB94B6B426C65BE100A2E8A1 /* MastodonAuthenticationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */; };
 		DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A65253064FE0053CB31 /* DispatchQueue.swift */; };
-		DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */; };
-		DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */; };
 		DB9B324D285732A400AC818D /* UserTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9B324C285732A400AC818D /* UserTimelineViewController.swift */; };
 		DB9B3251285735F200AC818D /* GridTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9B3250285735F200AC818D /* GridTimelineViewController.swift */; };
 		DB9B32542857369800AC818D /* GridTimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9B32532857369800AC818D /* GridTimelineViewController+DataSourceProvider.swift */; };
@@ -302,7 +298,6 @@
 		DBBBBE8D2744F9D9007ACB4B /* ComposeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBBBE8C2744F9D9007ACB4B /* ComposeViewModel.swift */; };
 		DBBBBE8F2744FB42007ACB4B /* ComposeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBBBE8E2744FB42007ACB4B /* ComposeViewModel.swift */; };
 		DBBF70F726D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF70F626D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift */; };
-		DBC17A5C26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC17A5B26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift */; };
 		DBC747E1259DBD5400787EEF /* AvatarBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747E0259DBD5400787EEF /* AvatarBarButtonItem.swift */; };
 		DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E04A2576337F00401E20 /* DisposeBagCollectable.swift */; };
 		DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E04F257653E100401E20 /* SavePhotoActivity.swift */; };
@@ -591,7 +586,6 @@
 		DB47AB1F27CCC18500CD73C7 /* ListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
 		DB47AB2027CCC18500CD73C7 /* ListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListSection.swift; sourceTree = "<group>"; };
 		DB47AB2C27CE085800CD73C7 /* ListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ListViewModel+Diffable.swift"; sourceTree = "<group>"; };
-		DB47AB3D27CE1F9E00CD73C7 /* TimelineTopLoaderTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineTopLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB51DC192715581E00A0D8FB /* ProfileDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDashboardView.swift; sourceTree = "<group>"; };
 		DB51DC1B2715588E00A0D8FB /* ProfileDashboardMeterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDashboardMeterView.swift; sourceTree = "<group>"; };
 		DB51DC372716AEF000A0D8FB /* TabBarPager */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TabBarPager; sourceTree = "<group>"; };
@@ -704,7 +698,6 @@
 		DB88E6282890DF67009A01F5 /* BehaviorsPreferenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorsPreferenceViewController.swift; sourceTree = "<group>"; };
 		DB88E62B2890DF79009A01F5 /* BehaviorsPreferenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorsPreferenceViewModel.swift; sourceTree = "<group>"; };
 		DB88E62D2890DF7E009A01F5 /* BehaviorsPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorsPreferenceView.swift; sourceTree = "<group>"; };
-		DB89F590257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB8AC0F725401BA200E636BE /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		DB8AC18F2542DA9500E636BE /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
 		DB8BFB1B29D1F52900535092 /* TwidereXUITests+Performance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TwidereXUITests+Performance.swift"; sourceTree = "<group>"; };
@@ -733,8 +726,6 @@
 		DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAuthenticationController.swift; sourceTree = "<group>"; };
 		DB969A65253064FE0053CB31 /* DispatchQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
 		DB97D1F4256CF7710056F8C2 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
-		DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMiddleLoaderTableViewCell.swift; sourceTree = "<group>"; };
-		DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineBottomLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB9B324C285732A400AC818D /* UserTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTimelineViewController.swift; sourceTree = "<group>"; };
 		DB9B3250285735F200AC818D /* GridTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridTimelineViewController.swift; sourceTree = "<group>"; };
 		DB9B32532857369800AC818D /* GridTimelineViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GridTimelineViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
@@ -784,7 +775,6 @@
 		DBBBBE8C2744F9D9007ACB4B /* ComposeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewModel.swift; sourceTree = "<group>"; };
 		DBBBBE8E2744FB42007ACB4B /* ComposeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewModel.swift; sourceTree = "<group>"; };
 		DBBF70F626D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
-		DBC17A5B26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineMiddleLoaderTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DBC747E0259DBD5400787EEF /* AvatarBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarBarButtonItem.swift; sourceTree = "<group>"; };
 		DBC8E04A2576337F00401E20 /* DisposeBagCollectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisposeBagCollectable.swift; sourceTree = "<group>"; };
 		DBC8E04F257653E100401E20 /* SavePhotoActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavePhotoActivity.swift; sourceTree = "<group>"; };
@@ -1821,11 +1811,6 @@
 		DB97D1E7256CBA5D0056F8C2 /* TableViewCell */ = {
 			isa = PBXGroup;
 			children = (
-				DB89F590257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift */,
-				DB47AB3D27CE1F9E00CD73C7 /* TimelineTopLoaderTableViewCell.swift */,
-				DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */,
-				DBC17A5B26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift */,
-				DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */,
 				DB3B906026E8AB480010F64C /* StatusViewTableViewCellDelegate.swift */,
 				DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */,
 				DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */,
@@ -2933,7 +2918,6 @@
 				DB76A659275F498F00A50673 /* MediaPreviewImageView.swift in Sources */,
 				DB580EB8288187BD00BC4A0F /* AccountPreferenceViewController.swift in Sources */,
 				DB6BCD72277AEED600847054 /* TrendViewModel+Diffable.swift in Sources */,
-				DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */,
 				DB0AD4DF285872BE0002ABDB /* UserMediaTimelineViewController.swift in Sources */,
 				DB25C4D32779ADD800EC1435 /* SearchResultContainerViewController.swift in Sources */,
 				DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */,
@@ -2974,7 +2958,6 @@
 				DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */,
 				DB47AB1D27CCB88000CD73C7 /* ListViewModel.swift in Sources */,
 				DB8761BF274552F800BA7EE2 /* StatusItem.swift in Sources */,
-				DB89F591257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift in Sources */,
 				DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */,
 				DB697E0C27904C56004EF2F7 /* FederatedTimelineViewModel.swift in Sources */,
 				DB01A9A427637FE60055FABC /* DataSourceFacade+Meta.swift in Sources */,
@@ -3041,7 +3024,6 @@
 				DB12BEE727329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift in Sources */,
 				DB42411426C3E55200B6C5F8 /* WelcomeView.swift in Sources */,
 				DB1D7B5525B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift in Sources */,
-				DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */,
 				DBA210382759EA91000B7CB2 /* FollowingListViewController+DataSourceProvider.swift in Sources */,
 				DB01A9A2276347B60055FABC /* DataSourceFacade+Poll.swift in Sources */,
 				DB2FFF3E258B78B0003DBC19 /* AVPlayer.swift in Sources */,
@@ -3075,7 +3057,6 @@
 				DB2C8744274F4B7D00CE0398 /* SettingListViewController.swift in Sources */,
 				DB58F1EC298BD07400836FBE /* MeProfileViewModel.swift in Sources */,
 				DBE6357F288555AE001C114B /* PushNotificationScratchView.swift in Sources */,
-				DB47AB3E27CE1F9E00CD73C7 /* TimelineTopLoaderTableViewCell.swift in Sources */,
 				DB0AD4E62858742D0002ABDB /* UserMediaTimelineViewModel+Diffable.swift in Sources */,
 				DB02C77027350D8A007EA0BF /* SearchHashtagViewModel.swift in Sources */,
 				DB5632B226DCF1CD00FC893F /* StatusThreadRootTableViewCell+ViewModel.swift in Sources */,
@@ -3086,7 +3067,6 @@
 				DB8761C2274552F800BA7EE2 /* UserSection.swift in Sources */,
 				DB76A65A275F49AE00A50673 /* ProgressBarView.swift in Sources */,
 				DB76A655275F30E800A50673 /* DataSourceFacade+Media.swift in Sources */,
-				DBC17A5C26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift in Sources */,
 				DB47AB1A27CCB7EC00CD73C7 /* ListViewController.swift in Sources */,
 				DBF63A04259B4811009E12C8 /* TouchBlockingCollectionView.swift in Sources */,
 				DB76A64B275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift in Sources */,

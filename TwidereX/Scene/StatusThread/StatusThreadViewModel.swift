@@ -58,27 +58,7 @@ final class StatusThreadViewModel {
     @Published var isLoadTop: Bool = false
     @Published var isLoadBottom: Bool = false
     
-//    var root: CurrentValueSubject<StatusItem.Thread?, Never>
-//    var threadContext = CurrentValueSubject<ThreadContext?, Never>(nil)
-//    @Published var replies: [StatusItem] = []
-//    @Published var leafs: [StatusItem] = []
-//    @Published var hasReplyTo = false
-    
-    // thread
-//    @MainActor private(set) lazy var loadThreadStateMachine: GKStateMachine = {
-//        let stateMachine = GKStateMachine(states: [
-//            LoadThreadState.Initial(viewModel: self),
-//            LoadThreadState.Prepare(viewModel: self),
-//            LoadThreadState.PrepareFail(viewModel: self),
-//            LoadThreadState.Idle(viewModel: self),
-//            LoadThreadState.Loading(viewModel: self),
-//            LoadThreadState.Fail(viewModel: self),
-//            LoadThreadState.NoMore(viewModel: self),
-//
-//        ])
-//        stateMachine.enter(LoadThreadState.Initial.self)
-//        return stateMachine
-//    }()
+    @Published var conversationLinkConfiguration: [StatusRecord: LinkConfiguration] = [:]
 
     public init(
         context: AppContext,
@@ -209,6 +189,11 @@ extension StatusThreadViewModel {
         }
     }
     
+    struct LinkConfiguration {
+        let isTopLinkDisplay: Bool
+        let isBottomLinkDisplay: Bool
+    }
+    
     public enum Section: Hashable {
         case main
     }   // end Section
@@ -266,6 +251,9 @@ extension StatusThreadViewModel {
             return
         }
         self.status = status
+        
+        // setup link configuration for root
+        updateConversationRootLink(status: status)
         
         guard statusViewModel == nil else { return }
         let _statusViewViewModel = StatusView.ViewModel(
@@ -469,11 +457,100 @@ extension StatusThreadViewModel {
         status: ManagedObjectRecord<MastodonStatus>,
         cursor: Cursor
     ) async throws {
+        guard let authenticationContext = authContext.authenticationContext.mastodonAuthenticationContext else { return }
+        guard let conversationRootStatus = status.object(in: context.managedObjectContext) else {
+            assertionFailure()
+            return
+        }
+        let conversationRootStatusID = conversationRootStatus.id
         
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch conversation for \(conversationRootStatusID), cursor: \(cursor.value ?? "<nil>")")
+
+        let response = try await context.apiService.mastodonStatusContext(
+            statusID: conversationRootStatusID,
+            authenticationContext: authenticationContext
+        )
+        
+        // update cursor
+        self.topCursor = .noMore
+        self.bottomCursor = .noMore
+        
+        let ancestorNodes = MastodonStatusThreadViewModel.Node.replyToThread(
+            for: conversationRootStatus.replyToStatusID,
+            from: response.value.ancestors
+        )
+        let descendantNodes = MastodonStatusThreadViewModel.Node.children(
+            of: conversationRootStatusID,
+            from: response.value.descendants
+        )
+        let statusDict: [Mastodon.Entity.Status.ID: ManagedObjectRecord<MastodonStatus>] = {
+            var dict: [MastodonStatus.ID: ManagedObjectRecord<MastodonStatus>] = [:]
+            let request = MastodonStatus.sortedFetchRequest
+            var statusIDs: [MastodonStatus.ID] = []
+            statusIDs += ancestorNodes.map { $0.statusID }
+            statusIDs += descendantNodes
+                        .map { node in [node.statusID, node.children.first?.statusID].compactMap { $0 } }
+                        .flatMap { $0 }
+            request.predicate = MastodonStatus.predicate(domain: authenticationContext.domain, ids: statusIDs)
+            let result = try? context.managedObjectContext.fetch(request)
+            for status in result ?? [] {
+                guard status.id != conversationRootStatusID else { continue }
+                dict[status.id] = status.asRecrod
+            }
+            return dict
+        }()
+        let topThreads: [Thread] = {
+            var threads: [Thread] = []
+            for node in ancestorNodes {
+                guard let record = statusDict[node.statusID] else { continue }
+                threads.append(.selfThread(status: .mastodon(record: record)))
+            }
+            return threads
+        }()
+        let bottomThreads: [Thread] = {
+            var threads: [Thread] = []
+            for node in descendantNodes {
+                guard let record = statusDict[node.statusID] else { continue }
+                var components: [StatusRecord] = []
+                // first tier
+                components.append(.mastodon(record: record))
+                // second tier
+                if let child = node.children.first, let secondRecord = statusDict[child.statusID] {
+                    components.append(.mastodon(record: secondRecord))
+                }
+                threads.append(.conversationThread(components: components))
+            }
+            return threads
+        }()
+        enqueueTop(threads: topThreads)
+        appendBottom(threads: bottomThreads)
+        
+        if topThreads.isEmpty && bottomThreads.isEmpty {
+            // trigger data source update
+            update(status: .mastodon(record: status))
+        }
     }
 }
 
 extension StatusThreadViewModel {
+    private func updateConversationRootLink(status: StatusObject) {
+        switch status {
+        case .twitter(let status):
+            let hasReplyTo = (status.repost ?? status).replyToStatusID != nil
+            let linkConfiguration = LinkConfiguration(
+                isTopLinkDisplay: hasReplyTo,
+                isBottomLinkDisplay: false
+            )
+            self.conversationLinkConfiguration[.twitter(record: status.asRecrod)] = linkConfiguration
+        case .mastodon(let status):
+            let hasReplyTo = (status.repost ?? status).replyToStatusID != nil
+            let linkConfiguration = LinkConfiguration(
+                isTopLinkDisplay: hasReplyTo,
+                isBottomLinkDisplay: false
+            )
+            self.conversationLinkConfiguration[.mastodon(record: status.asRecrod)] = linkConfiguration
+        }
+    }
 //    func delete(objectIDs: [NSManagedObjectID]) {
 //        if let root = root.value,
 //           case let .root(threadContext) = root,

@@ -77,8 +77,8 @@ final class MastodonStatusThreadViewModel {
     
 }
 
-extension MastodonStatusThreadViewModel {
-    
+//extension MastodonStatusThreadViewModel {
+//
 //    func appendAncestor(
 //        domain: String,
 //        nodes: [Node]
@@ -170,101 +170,101 @@ extension MastodonStatusThreadViewModel {
 //        }
 //        self._descendants = items
 //    }
-    
-}
+//
+//}
 
 extension MastodonStatusThreadViewModel {
-//    class Node {
-//        typealias ID = String
-//
-//        let statusID: ID
-//        let children: [Node]
-//
-//        init(
-//            statusID: ID,
-//            children: [MastodonStatusThreadViewModel.Node]
-//        ) {
-//            self.statusID = statusID
-//            self.children = children
-//        }
-//    }
+    class Node {
+        typealias ID = String
+
+        let statusID: ID
+        let children: [Node]
+
+        init(
+            statusID: ID,
+            children: [MastodonStatusThreadViewModel.Node]
+        ) {
+            self.statusID = statusID
+            self.children = children
+        }
+    }
 }
 
-//extension MastodonStatusThreadViewModel.Node {
-//    static func replyToThread(
-//        for replyToID: Mastodon.Entity.Status.ID?,
-//        from statuses: [Mastodon.Entity.Status]
-//    ) -> [MastodonStatusThreadViewModel.Node] {
-//        guard let replyToID = replyToID else {
-//            return []
-//        }
-//
-//        var dict: [Mastodon.Entity.Status.ID: Mastodon.Entity.Status] = [:]
-//        for status in statuses {
-//            dict[status.id] = status
-//        }
-//
-//        var nextID: Mastodon.Entity.Status.ID? = replyToID
-//        var nodes: [MastodonStatusThreadViewModel.Node] = []
-//        while let _nextID = nextID {
-//            guard let status = dict[_nextID] else { break }
-//            nodes.append(MastodonStatusThreadViewModel.Node(
-//                statusID: _nextID,
-//                children: []
-//            ))
-//            nextID = status.inReplyToID
-//        }
-//
-//        return nodes
-//    }
-//}
+extension MastodonStatusThreadViewModel.Node {
+    static func replyToThread(
+        for replyToID: Mastodon.Entity.Status.ID?,
+        from statuses: [Mastodon.Entity.Status]
+    ) -> [MastodonStatusThreadViewModel.Node] {
+        guard let replyToID = replyToID else {
+            return []
+        }
 
-//extension MastodonStatusThreadViewModel.Node {
-//    static func children(
-//        of statusID: ID,
-//        from statuses: [Mastodon.Entity.Status]
-//    ) -> [MastodonStatusThreadViewModel.Node] {
-//        var dictionary: [ID: Mastodon.Entity.Status] = [:]
-//        var mapping: [ID: Set<ID>] = [:]
-//
-//        for status in statuses {
-//            dictionary[status.id] = status
-//            guard let replyToID = status.inReplyToID else { continue }
-//            if var set = mapping[replyToID] {
-//                set.insert(status.id)
-//                mapping[replyToID] = set
-//            } else {
-//                mapping[replyToID] = Set([status.id])
-//            }
-//        }
-//
-//        var children: [MastodonStatusThreadViewModel.Node] = []
-//        let replies = Array(mapping[statusID] ?? Set())
-//            .compactMap { dictionary[$0] }
-//            .sorted(by: { $0.createdAt > $1.createdAt })
-//        for reply in replies {
-//            let child = child(of: reply.id, dictionary: dictionary, mapping: mapping)
-//            children.append(child)
-//        }
-//        return children
-//    }
-//
-//    static func child(
-//        of statusID: ID,
-//        dictionary: [ID: Mastodon.Entity.Status],
-//        mapping: [ID: Set<ID>]
-//    ) -> MastodonStatusThreadViewModel.Node {
-//        let childrenIDs = mapping[statusID] ?? []
-//        let children = Array(childrenIDs)
-//            .compactMap { dictionary[$0] }
-//            .sorted(by: { $0.createdAt > $1.createdAt })
-//            .map { status in child(of: status.id, dictionary: dictionary, mapping: mapping) }
-//        return MastodonStatusThreadViewModel.Node(
-//            statusID: statusID,
-//            children: children
-//        )
-//    }
-//}
+        var dict: [Mastodon.Entity.Status.ID: Mastodon.Entity.Status] = [:]
+        for status in statuses {
+            dict[status.id] = status
+        }
+
+        var nextID: Mastodon.Entity.Status.ID? = replyToID
+        var nodes: [MastodonStatusThreadViewModel.Node] = []
+        while let _nextID = nextID {
+            guard let status = dict[_nextID] else { break }
+            nodes.append(MastodonStatusThreadViewModel.Node(
+                statusID: _nextID,
+                children: []
+            ))
+            nextID = status.inReplyToID
+        }
+
+        return nodes
+    }
+}
+
+extension MastodonStatusThreadViewModel.Node {
+    static func children(
+        of statusID: ID,
+        from statuses: [Mastodon.Entity.Status]
+    ) -> [MastodonStatusThreadViewModel.Node] {
+        var dictionary: [ID: Mastodon.Entity.Status] = [:]
+        var mapping: [ID: Set<ID>] = [:]
+
+        for status in statuses {
+            dictionary[status.id] = status
+            guard let replyToID = status.inReplyToID else { continue }
+            if var set = mapping[replyToID] {
+                set.insert(status.id)
+                mapping[replyToID] = set
+            } else {
+                mapping[replyToID] = Set([status.id])
+            }
+        }
+
+        var children: [MastodonStatusThreadViewModel.Node] = []
+        let replies = Array(mapping[statusID] ?? Set())
+            .compactMap { dictionary[$0] }
+            .sorted(by: { $0.createdAt > $1.createdAt })
+        for reply in replies {
+            let child = child(of: reply.id, dictionary: dictionary, mapping: mapping)
+            children.append(child)
+        }
+        return children
+    }
+
+    static func child(
+        of statusID: ID,
+        dictionary: [ID: Mastodon.Entity.Status],
+        mapping: [ID: Set<ID>]
+    ) -> MastodonStatusThreadViewModel.Node {
+        let childrenIDs = mapping[statusID] ?? []
+        let children = Array(childrenIDs)
+            .compactMap { dictionary[$0] }
+            .sorted(by: { $0.createdAt > $1.createdAt })
+            .map { status in child(of: status.id, dictionary: dictionary, mapping: mapping) }
+        return MastodonStatusThreadViewModel.Node(
+            statusID: statusID,
+            children: children
+        )
+    }
+}
 
 extension MastodonStatusThreadViewModel {
 //    func delete(objectIDs: [NSManagedObjectID]) {

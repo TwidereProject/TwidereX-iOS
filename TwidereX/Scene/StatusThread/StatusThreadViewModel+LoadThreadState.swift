@@ -12,42 +12,42 @@ import GameplayKit
 import CoreDataStack
 import TwitterSDK
 
-extension StatusThreadViewModel {
-    class LoadThreadState: GKState, NamingState {
-        weak var viewModel: StatusThreadViewModel?
-        var name: String { "Base" }
-        
-        init(viewModel: StatusThreadViewModel) {
-            self.viewModel = viewModel
-        }
-        
-        override func didEnter(from previousState: GKState?) {
-            super.didEnter(from: previousState)
-            os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, name, (previousState as? NamingState)?.name ?? previousState?.description ?? "nil")
-            // guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-        }
-    }
-}
-
-extension StatusThreadViewModel.LoadThreadState {
-    class Initial: StatusThreadViewModel.LoadThreadState {
-        override var name: String { "Initial" }
-        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Prepare.self
-        }
-    }
-    
-    class Prepare: StatusThreadViewModel.LoadThreadState {
-        override var name: String { "Prepare" }
-        let logger = Logger(subsystem: "StatusThreadViewModel.LoadThreadState", category: "Prepare")
-        
-        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Idle.self || stateClass == PrepareFail.self
-        }
-        
-        override func didEnter(from previousState: GKState?) {
-            super.didEnter(from: previousState)
-            
+//extension StatusThreadViewModel {
+//    class LoadThreadState: GKState, NamingState {
+//        weak var viewModel: StatusThreadViewModel?
+//        var name: String { "Base" }
+//
+//        init(viewModel: StatusThreadViewModel) {
+//            self.viewModel = viewModel
+//        }
+//
+//        override func didEnter(from previousState: GKState?) {
+//            super.didEnter(from: previousState)
+//            os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, name, (previousState as? NamingState)?.name ?? previousState?.description ?? "nil")
+//            // guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+//        }
+//    }
+//}
+//
+//extension StatusThreadViewModel.LoadThreadState {
+//    class Initial: StatusThreadViewModel.LoadThreadState {
+//        override var name: String { "Initial" }
+//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+//            return stateClass == Prepare.self
+//        }
+//    }
+//
+//    class Prepare: StatusThreadViewModel.LoadThreadState {
+//        override var name: String { "Prepare" }
+//        let logger = Logger(subsystem: "StatusThreadViewModel.LoadThreadState", category: "Prepare")
+//
+//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+//            return stateClass == Idle.self || stateClass == PrepareFail.self
+//        }
+//
+//        override func didEnter(from previousState: GKState?) {
+//            super.didEnter(from: previousState)
+//
 //            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
 //            guard case let .root(threadContext) = viewModel.root.value else {
 //                assertionFailure()
@@ -63,13 +63,13 @@ extension StatusThreadViewModel.LoadThreadState {
 //                    await prepareMastodonStatusThread(record: record)
 //                }
 //            }
-        }
-        
+//        }
+//
         // prepare ThreadContext
         // note:
         // The conversationID is V2 only API.
         // Needs query conversationID via V2 endpoint if the status persisted from V1 API.
-        func prepareTwitterStatusThread(record: ManagedObjectRecord<TwitterStatus>) async {
+//        func prepareTwitterStatusThread(record: ManagedObjectRecord<TwitterStatus>) async {
 //            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
 //
 //            let managedObjectContext = viewModel.context.managedObjectContext
@@ -133,9 +133,9 @@ extension StatusThreadViewModel.LoadThreadState {
 //                await enter(state: Idle.self)
 //                await enter(state: Loading.self)
 //            }
-        }
-        
-        func prepareMastodonStatusThread(record: ManagedObjectRecord<MastodonStatus>) async {
+//        }
+//
+//        func prepareMastodonStatusThread(record: ManagedObjectRecord<MastodonStatus>) async {
 //            guard let viewModel = viewModel else { return }
 //
 //            let managedObjectContext = viewModel.context.managedObjectContext
@@ -161,71 +161,71 @@ extension StatusThreadViewModel.LoadThreadState {
 //            viewModel.threadContext.value = .mastodon(mastodonContext)
 //            await enter(state: Idle.self)
 //            await enter(state: Loading.self)
-        }
-        
-        @MainActor
-        func enter(state: StatusThreadViewModel.LoadThreadState.Type) {
-            stateMachine?.enter(state)
-        }
-        
-    }   // end class Prepare { … }
-    
-    class PrepareFail: StatusThreadViewModel.LoadThreadState {
-        override var name: String { "PrepareFail" }
-        var prepareFailCount = 0
-        
-        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Prepare.self || stateClass == Fail.self
-        }
-        
-        override func didEnter(from previousState: GKState?) {
-            super.didEnter(from: previousState)
-            
-            // retry 3 times
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
-                guard let self = self else { return }
-                guard let stateMachine = self.stateMachine else { return }
-                
-                guard self.prepareFailCount < 3 else {
-                    stateMachine.enter(Fail.self)
-                    return
-                }
-                self.prepareFailCount += 1
-                stateMachine.enter(Prepare.self)
-            }
-        }
-    }
-    
-    class Idle: StatusThreadViewModel.LoadThreadState {
-        override var name: String { "Idle" }
-        
-        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Loading.self
-        }
-    }
-    
-    class Loading: StatusThreadViewModel.LoadThreadState {
-        override var name: String { "Loading" }
-
-        var needsFallback = false
-        
-        var maxID: String?          // v1
-        var nextToken: String?      // v2
-
-        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            switch stateClass {
-            case is Idle.Type, is NoMore.Type:
-                return true
-            case is Fail.Type:
-                return true
-            default:
-                return false
-            }
-        }
-
-        override func didEnter(from previousState: GKState?) {
-            super.didEnter(from: previousState)
-
+//        }
+//
+//        @MainActor
+//        func enter(state: StatusThreadViewModel.LoadThreadState.Type) {
+//            stateMachine?.enter(state)
+//        }
+//
+//    }   // end class Prepare { … }
+//
+//    class PrepareFail: StatusThreadViewModel.LoadThreadState {
+//        override var name: String { "PrepareFail" }
+//        var prepareFailCount = 0
+//
+//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+//            return stateClass == Prepare.self || stateClass == Fail.self
+//        }
+//
+//        override func didEnter(from previousState: GKState?) {
+//            super.didEnter(from: previousState)
+//
+//            // retry 3 times
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+//                guard let self = self else { return }
+//                guard let stateMachine = self.stateMachine else { return }
+//
+//                guard self.prepareFailCount < 3 else {
+//                    stateMachine.enter(Fail.self)
+//                    return
+//                }
+//                self.prepareFailCount += 1
+//                stateMachine.enter(Prepare.self)
+//            }
+//        }
+//    }
+//
+//    class Idle: StatusThreadViewModel.LoadThreadState {
+//        override var name: String { "Idle" }
+//
+//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+//            return stateClass == Loading.self
+//        }
+//    }
+//
+//    class Loading: StatusThreadViewModel.LoadThreadState {
+//        override var name: String { "Loading" }
+//
+//        var needsFallback = false
+//
+//        var maxID: String?          // v1
+//        var nextToken: String?      // v2
+//
+//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+//            switch stateClass {
+//            case is Idle.Type, is NoMore.Type:
+//                return true
+//            case is Fail.Type:
+//                return true
+//            default:
+//                return false
+//            }
+//        }
+//
+//        override func didEnter(from previousState: GKState?) {
+//            super.didEnter(from: previousState)
+//
 //            guard let viewModel = viewModel else { return }
 //            guard let threadContext = viewModel.threadContext.value else {
 //                assertionFailure()
@@ -247,10 +247,10 @@ extension StatusThreadViewModel.LoadThreadState {
 //                    await append(response: response)
 //                }
 //            }
-        }
-
-        // TODO: group into `StatusListFetchViewModel`
-        // fetch thread via V2 API
+//        }
+//
+//        // TODO: group into `StatusListFetchViewModel`
+//        // fetch thread via V2 API
 //        func fetch(
 //            twitterConversation: StatusThreadViewModel.ThreadContext.TwitterConversation
 //        ) async -> [TwitterStatusThreadLeafViewModel.Node] {
@@ -310,7 +310,7 @@ extension StatusThreadViewModel.LoadThreadState {
 //                return []
 //            }
 //        }
-        
+//
         // fetch thread via V1 API
 //        func fetchFallback(
 //            twitterConversation: StatusThreadViewModel.ThreadContext.TwitterConversation
@@ -362,17 +362,17 @@ extension StatusThreadViewModel.LoadThreadState {
 //                return []
 //            }
 //        }
-        
-        @MainActor
-        private func append(nodes: [TwitterStatusThreadLeafViewModel.Node]) async {
-            guard let viewModel = viewModel else { return }
+//
+//        @MainActor
+//        private func append(nodes: [TwitterStatusThreadLeafViewModel.Node]) async {
+//            guard let viewModel = viewModel else { return }
 //            viewModel.twitterStatusThreadLeafViewModel.append(nodes: nodes)
-        }
-        
-        @MainActor
-        private func append(response: MastodonContextResponse) async {
-            guard let viewModel = viewModel else { return }
-            
+//        }
+//
+//        @MainActor
+//        private func append(response: MastodonContextResponse) async {
+//            guard let viewModel = viewModel else { return }
+//
 //            viewModel.mastodonStatusThreadViewModel.appendAncestor(
 //                domain: response.domain,
 //                nodes: response.ancestorNodes
@@ -382,15 +382,15 @@ extension StatusThreadViewModel.LoadThreadState {
 //                domain: response.domain,
 //                nodes: response.descendantNodes
 //            )
-        }
-        
-        struct MastodonContextResponse {
-            let domain: String
+//        }
+//
+//        struct MastodonContextResponse {
+//            let domain: String
 //            let ancestorNodes: [MastodonStatusThreadViewModel.Node]
 //            let descendantNodes: [MastodonStatusThreadViewModel.Node]
-        }
-        
-        // fetch thread
+//        }
+//
+//        // fetch thread
 //        func fetch(
 //            mastodonContext: StatusThreadViewModel.ThreadContext.MastodonContext
 //        ) async -> MastodonContextResponse {
@@ -442,35 +442,35 @@ extension StatusThreadViewModel.LoadThreadState {
 //                )
 //            }
 //        }
-        
-        @MainActor
-        func enter(state: StatusThreadViewModel.LoadThreadState.Type) {
-            stateMachine?.enter(state)
-        }
-    }
-    
-    class Fail: StatusThreadViewModel.LoadThreadState {
-        override var name: String { "Fail" }
-        
-        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Loading.self
-        }
-
-        override func didEnter(from previousState: GKState?) {
-            super.didEnter(from: previousState)
-        }
-    }
-    
-    class NoMore: StatusThreadViewModel.LoadThreadState {
-        override var name: String { "NoMore" }
-        
-        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return false
-        }
-
-        override func didEnter(from previousState: GKState?) {
-            super.didEnter(from: previousState)
-        }
-    }
-    
-}
+//
+//        @MainActor
+//        func enter(state: StatusThreadViewModel.LoadThreadState.Type) {
+//            stateMachine?.enter(state)
+//        }
+//    }
+//
+//    class Fail: StatusThreadViewModel.LoadThreadState {
+//        override var name: String { "Fail" }
+//
+//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+//            return stateClass == Loading.self
+//        }
+//
+//        override func didEnter(from previousState: GKState?) {
+//            super.didEnter(from: previousState)
+//        }
+//    }
+//
+//    class NoMore: StatusThreadViewModel.LoadThreadState {
+//        override var name: String { "NoMore" }
+//
+//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+//            return false
+//        }
+//
+//        override func didEnter(from previousState: GKState?) {
+//            super.didEnter(from: previousState)
+//        }
+//    }
+//
+//}

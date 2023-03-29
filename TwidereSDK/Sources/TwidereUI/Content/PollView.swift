@@ -241,6 +241,13 @@ extension PollView {
             }
             
             // collect votes into votesCount
+            
+            let votesCount = options
+                .map { $0.votes }
+                .reduce(0, +)
+            options
+                .forEach { $0.totalVotes = votesCount }
+            
             Publishers.MergeMany(options.map { $0.$votes })
                 .receive(on: DispatchQueue.main)
                 .compactMap { [weak self]  _ in

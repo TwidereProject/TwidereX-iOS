@@ -37,6 +37,10 @@ extension StatusThreadViewModel {
                         delegate: cell,
                         viewLayoutFramePublisher: self.$viewLayoutFrame
                     )
+                    if let linkConfiguration = self.conversationLinkConfiguration[record] {
+                        viewModel.isTopConversationLinkLineViewDisplay = linkConfiguration.isTopLinkDisplay
+                        viewModel.isBottomConversationLinkLineViewDisplay = linkConfiguration.isBottomLinkDisplay
+                    }
                     cell.contentConfiguration = UIHostingConfiguration {
                         StatusView(viewModel: viewModel)
                     }
@@ -45,12 +49,13 @@ extension StatusThreadViewModel {
                 return cell
             case .root:
                 let cell = self.conversationRootTableViewCell
-                guard let statusViewModel = self.statusViewModel else {
+                guard let viewModel = self.statusViewModel else {
                     return UITableViewCell()
                 }
                 cell.delegate = statusViewTableViewCellDelegate
+                self.updateConversationRootLink(viewModel: viewModel)
                 cell.contentConfiguration = UIHostingConfiguration {
-                    StatusView(viewModel: statusViewModel)
+                    StatusView(viewModel: viewModel)
                 }
                 .margins(.vertical, 0)  // remove vertical margins
                 return cell
@@ -70,7 +75,7 @@ extension StatusThreadViewModel {
             let hasReplyTo: Bool = {
                 guard let status = status.object(in: context.managedObjectContext) else { return false }
                 switch status {
-                case .twitter(let status):      return status.replyToStatusID != nil
+                case .twitter(let status):      return (status.repost ?? status).replyToStatusID != nil
                 case .mastodon(let status):     return status.replyToStatusID != nil
                 }
             }()
@@ -86,54 +91,6 @@ extension StatusThreadViewModel {
         }
         diffableDataSource?.apply(snapshot, animatingDifferences: false, completion: nil)
         
-//        let configuration = StatusSection.Configuration(
-//            statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-//            timelineMiddleLoaderTableViewCellDelegate: nil,
-//            viewLayoutFramePublisher: $viewLayoutFrame
-//        )
-//
-//        diffableDataSource = StatusSection.diffableDataSource(
-//            tableView: tableView,
-//            context: context,
-//            authContext: authContext,
-//            configuration: configuration
-//        )
-//
-//        var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
-//        snapshot.appendSections([.main])
-//        if hasReplyTo {
-//            snapshot.appendItems([.topLoader], toSection: .main)
-//        }
-//        if let root = self.root.value, case let .root(threadContext) = root {
-//            switch threadContext.status {
-//            case .twitter(let record):
-//                if twitterStatusThreadReplyViewModel.root == nil {
-//                    twitterStatusThreadReplyViewModel.root = record
-//                }
-//            case .mastodon:
-//                break
-//            }
-//
-//            let item = StatusItem.thread(root)
-//            snapshot.appendItems([item, .bottomLoader], toSection: .main)
-//        } else {
-//            root.eraseToAnyPublisher()
-//                .sink { [weak self] root in
-//                    guard let self = self else { return }
-//
-//                    guard case .root(let threadContext) = root else { return }
-//                    guard case let .twitter(record) = threadContext.status else { return }
-//
-//                    guard self.twitterStatusThreadReplyViewModel.root == nil else { return }
-//                    self.twitterStatusThreadReplyViewModel.root = record
-//                }
-//                .store(in: &disposeBag)
-//        }
-//        diffableDataSource?.apply(snapshot)
-//
-//        // trigger thread loading
-//        loadThreadStateMachine.enter(LoadThreadState.Prepare.self)
-//
         Publishers.CombineLatest4(
             $status,
             $topThreads.removeDuplicates(),
@@ -154,13 +111,11 @@ extension StatusThreadViewModel {
 
                 // top loader
                 switch self.topCursor {
-                case .noMore:
-                    break
-                default:
+                case .none:
                     // top loader
                     let hasReplyTo: Bool = {
                         switch status {
-                        case .twitter(let status):      return status.replyToStatusID != nil
+                        case .twitter(let status):      return (status.repost ?? status).replyToStatusID != nil
                         case .mastodon(let status):     return status.replyToStatusID != nil
                         case nil:                       return false
                         }
@@ -168,12 +123,24 @@ extension StatusThreadViewModel {
                     if hasReplyTo {
                         newSnapshot.appendItems([.topLoader], toSection: .main)
                     }
+                case .value:
+                    newSnapshot.appendItems([.topLoader], toSection: .main)
+                default:
+                    break
                 }
                 // self reply
-                let topItems: [Item] = topThreads.compactMap { thread -> Item? in
+                let topItems: [Item] = topThreads.enumerated().compactMap { index, thread -> Item? in
                     switch thread {
-                    case .selfThread(let status):       return .status(status: status)
-                    default:                            return nil
+                    case .selfThread(let status):
+                        let isFirst = index == 0
+                        let linkConfiguration = LinkConfiguration(
+                            isTopLinkDisplay: isFirst ? self.topCursor.value != nil : true,
+                            isBottomLinkDisplay: true
+                        )
+                        self.conversationLinkConfiguration[status] = linkConfiguration
+                        return .status(status: status)
+                    default:
+                        return nil
                     }
                 }.removingDuplicates()
                 newSnapshot.appendItems(topItems, toSection: .main)
@@ -186,10 +153,14 @@ extension StatusThreadViewModel {
                 let bottomItems: [Item] = bottomThreads.compactMap { thread -> [Item]? in
                     switch thread {
                     case .conversationThread(let components):
-                        return components.compactMap { status -> Item? in
-//                            guard !deleteStatusIDs.contains(status.id) else {
-//                                return nil
-//                            }
+                        return components.enumerated().compactMap { index, status -> Item? in
+                            let isFirst = index == 0
+                            let isLast = index == components.count - 1
+                            let linkConfiguration = LinkConfiguration(
+                                isTopLinkDisplay: !isFirst,
+                                isBottomLinkDisplay: !isLast
+                            )
+                            self.conversationLinkConfiguration[status] = linkConfiguration
                             return Item.status(status: status)
                         }
                     default:
@@ -202,10 +173,10 @@ extension StatusThreadViewModel {
                 newSnapshot.appendItems(bottomItems, toSection: .main)
                 // bottom loader
                 switch self.bottomCursor {
-                case .noMore:
-                    break
-                default:
+                case .none, .value:
                     newSnapshot.appendItems([.bottomLoader], toSection: .main)
+                default:
+                    break
                 }
 
                 let hasChanges = newSnapshot.itemIdentifiers != oldSnapshot.itemIdentifiers
@@ -238,6 +209,16 @@ extension StatusThreadViewModel {
             }   // end Task
         }
         .store(in: &disposeBag)
+    }
+    
+    private func updateConversationRootLink(viewModel: StatusView.ViewModel) {
+        guard let record = viewModel.status else { return }
+        guard let linkConfiguration = conversationLinkConfiguration[record] else { return }
+        
+        viewModel.isTopConversationLinkLineViewDisplay = linkConfiguration.isTopLinkDisplay
+        viewModel.isBottomConversationLinkLineViewDisplay = linkConfiguration.isBottomLinkDisplay
+        viewModel.repostViewModel?.isTopConversationLinkLineViewDisplay = linkConfiguration.isTopLinkDisplay
+        viewModel.repostViewModel?.isBottomConversationLinkLineViewDisplay = linkConfiguration.isBottomLinkDisplay
     }
 
 }
@@ -336,8 +317,6 @@ extension StatusThreadViewModel {
             tableView.panGestureRecognizer.isEnabled = true
         }
         diffableDataSource?.applySnapshotUsingReloadData(newSnapshot)
-
-        // set bottom inset
         
         guard let index = newSnapshot.indexOfItem(.root),
               let lastItem = newSnapshot.itemIdentifiers.last,
@@ -345,6 +324,11 @@ extension StatusThreadViewModel {
         else {
             return
         }
+        
+        // fix contentOffset update delay issue
+        tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
+        tableView.layoutIfNeeded()
+        
         let rectForCell = tableView.rectForRow(at: IndexPath(row: index, section: 0))
         let rectForLastCell = tableView.rectForRow(at: IndexPath(row: lastIndex, section: 0))
         let rectForTargetCell = tableView.rectForRow(at: difference.targetIndexPath)
@@ -357,11 +341,13 @@ extension StatusThreadViewModel {
         tableView.contentInset.bottom = max(0, inset)
         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): content inset bottom: \(tableView.contentInset.bottom)")
         
-        tableView.contentOffset.y = {
+        let contentOffsetY: CGFloat = {
             var offset: CGFloat = rectForTargetCell.minY
             offset -= tableView.safeAreaInsets.top
             offset -= difference.sourceDistanceToTableViewTopEdge
             return offset
         }()
+        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): contentOffsetY: \(contentOffsetY)")
+        tableView.contentOffset.y = contentOffsetY
     }
 }

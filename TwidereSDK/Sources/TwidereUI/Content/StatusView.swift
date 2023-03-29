@@ -57,8 +57,9 @@ public struct StatusView: View {
     static let logger = Logger(subsystem: "StatusView", category: "View")
     var logger: Logger { StatusView.logger }
     
+    static var statusHeaderBottomSpacing: CGFloat { 6.0 }
     static var hangingAvatarButtonDimension: CGFloat { 44.0 }
-    static var hangingAvatarButtonTrailingSapcing: CGFloat { 10.0 }
+    static var hangingAvatarButtonTrailingSpacing: CGFloat { 10.0 }
     
     @ObservedObject public private(set) var viewModel: ViewModel
     
@@ -71,11 +72,21 @@ public struct StatusView: View {
     }
     
     public var body: some View {
-        VStack {
+        VStack(spacing: .zero) {
             if let repostViewModel = viewModel.repostViewModel {
                 // header
                 if let statusHeaderViewModel = repostViewModel.statusHeaderViewModel {
                     StatusHeaderView(viewModel: statusHeaderViewModel)
+                        .background(GeometryReader { proxy in
+                            Color.clear.preference(
+                                key: ViewFrameKey.self,
+                                value: proxy.frame(in: .local)
+                            )
+                            .onPreferenceChange(ViewFrameKey.self) { frame in
+                                statusHeaderViewModel.viewSize = frame.size
+                            }
+                        })
+                    Color.clear.frame(height: StatusView.statusHeaderBottomSpacing)
                 }
                 // post
                 StatusView(viewModel: repostViewModel)
@@ -83,7 +94,7 @@ public struct StatusView: View {
                 HStack(alignment: .top, spacing: .zero) {
                     if viewModel.hasHangingAvatar {
                         avatarButton
-                            .padding(.trailing, StatusView.hangingAvatarButtonTrailingSapcing)
+                            .padding(.trailing, Self.hangingAvatarButtonTrailingSpacing)
                     }
                     let contentSpacing: CGFloat = 4
                     VStack(spacing: contentSpacing) {
@@ -218,19 +229,30 @@ public struct StatusView: View {
                     }
                 }   // end HStack
                 .overlay {
-                    if viewModel.isBottomConversationLinkLineViewDisplay {
-                        HStack(alignment: .top, spacing: .zero) {
-                            VStack(spacing: 0) {
-                                Color.clear
-                                    .frame(width: StatusView.hangingAvatarButtonDimension, height: StatusView.hangingAvatarButtonDimension)
+                    HStack(alignment: .top, spacing: .zero) {
+                        VStack(alignment: .center, spacing: 0) {
+                            Color.clear
+                                .frame(width: StatusView.hangingAvatarButtonDimension, height: StatusView.hangingAvatarButtonDimension)
+                            // bottom conversation link
+                            Rectangle()
+                                .foregroundColor(Color(uiColor: .separator))
+                                .background(.clear)
+                                .frame(width: 1)
+                                .opacity(viewModel.isBottomConversationLinkLineViewDisplay ? 1 : 0)
+                        }
+                        .overlay(alignment: .top) {
+                            Group {
+                                // top conversation link
                                 Rectangle()
                                     .foregroundColor(Color(uiColor: .separator))
                                     .background(.clear)
-                                    .frame(width: 1)
-                            }
-                            Spacer()
-                        }   // end HStack
-                    }   // end if
+                                    .frame(width: 1, height: viewModel.topConversationLinkViewHeight)
+                                    .offset(y: -viewModel.topConversationLinkViewHeight)
+                                    .opacity(viewModel.isTopConversationLinkLineViewDisplay ? 1 : 0)
+                            }   // end Group
+                        }
+                        Spacer()
+                    }   // end HStack
                 }   // end overlay
             }   // end if … else …
         }   // end VStack

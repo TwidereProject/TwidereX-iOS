@@ -55,17 +55,21 @@ public struct PollOptionView: View {
                     .padding(markViewPadding)
                     .frame(width: rowHeight, height: rowHeight)
                     .opacity(viewModel.canSelect || viewModel.isOptionVoted ? 1 : 0)
-                LabelRepresentable(
-                    metaContent: viewModel.content,
-                    textStyle: .pollOptionTitle,
-                    setupLabel: { label in
-                        label.setContentHuggingPriority(.required, for: .horizontal)
-                        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(alignment: .center) {
+                        LabelRepresentable(
+                            metaContent: viewModel.content,
+                            textStyle: .pollOptionTitle,
+                            setupLabel: { label in
+                                label.setContentHuggingPriority(.required, for: .horizontal)
+                                label.setContentCompressionResistancePriority(.required, for: .horizontal)
+                            }
+                        )
+                        .fixedSize(horizontal: false, vertical: true)
+                        Spacer()
                     }
-                )
-                .fixedSize(horizontal: false, vertical: true)
-                .border(.red, width: 1)
-                Spacer()
+                }   // end ScrollView
+                // TODO: https://developer.apple.com/documentation/swiftui/view/scrollbouncebehavior(_:axes:)?changes=latest_minor
                 Text(viewModel.percentageText)
                     .font(Font(bodyFont))
                     .foregroundColor(.secondary)
@@ -166,6 +170,7 @@ extension PollOptionView {
                 isClosed = true     // cannot vote for Twitter
                 isMulitpleChoice = false
                 isSelected = false
+                votes = Int(option.votes)
                 option.publisher(for: \.votes)
                     .map { Int($0) }
                     .assign(to: &$votes)
@@ -183,9 +188,7 @@ extension PollOptionView {
                 isMulitpleChoice = option.poll.multiple
                 option.poll.publisher(for: \.expired)
                     .assign(to: &$isClosed)
-                option.poll.publisher(for: \.votesCount)
-                    .map { Int($0) }
-                    .assign(to: &$totalVotes)
+                votes = Int(option.votesCount)
                 option.publisher(for: \.votesCount)
                     .map { Int($0) }
                     .assign(to: &$votes)

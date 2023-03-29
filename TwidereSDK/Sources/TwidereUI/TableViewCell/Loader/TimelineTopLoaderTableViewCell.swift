@@ -9,4 +9,4 @@
 import UIKit
 import Combine
 
-final class TimelineTopLoaderTableViewCell: TimelineLoaderTableViewCell { }
+public final class TimelineTopLoaderTableViewCell: TimelineLoaderTableViewCell { }

@@ -15,44 +15,44 @@ import CoreData
 import CoreDataStack
 import TwidereCore
 
-final class TwitterStatusThreadReplyViewModel {
-    
-    var disposeBag = Set<AnyCancellable>()
-    
-    // input
-    let context: AppContext
-    let authContext: AuthContext
-    @Published var root: ManagedObjectRecord<TwitterStatus>?
-    @Published var nodes: [TwitterStatusReplyNode] = []
-    @Published private(set) var deletedObjectIDs: Set<NSManagedObjectID> = Set()
-    let viewDidAppear = PassthroughSubject<Void, Never>()
-    
-    // output
-    @Published var items: [StatusItem] = []
-    
-    @MainActor private(set) lazy var stateMachine: GKStateMachine = {
-        // exclude timeline middle fetcher state
-        let stateMachine = GKStateMachine(states: [
-            State.Initial(viewModel: self),
-            State.Prepare(viewModel: self),
-            State.Idle(viewModel: self),
-            State.Loading(viewModel: self),
-            State.Fail(viewModel: self),
-            State.NoMore(viewModel: self),
-            
-        ])
-        stateMachine.enter(State.Initial.self)
-        return stateMachine
-    }()
-    
-    init(
-        context: AppContext,
-        authContext: AuthContext
-    ) {
-        self.context = context
-        self.authContext = authContext
-        // end init
-        
+//final class TwitterStatusThreadReplyViewModel {
+//    
+//    var disposeBag = Set<AnyCancellable>()
+//    
+//    // input
+//    let context: AppContext
+//    let authContext: AuthContext
+//    @Published var root: ManagedObjectRecord<TwitterStatus>?
+//    @Published var nodes: [TwitterStatusReplyNode] = []
+//    @Published private(set) var deletedObjectIDs: Set<NSManagedObjectID> = Set()
+//    let viewDidAppear = PassthroughSubject<Void, Never>()
+//    
+//    // output
+//    @Published var items: [StatusItem] = []
+//    
+//    @MainActor private(set) lazy var stateMachine: GKStateMachine = {
+//        // exclude timeline middle fetcher state
+//        let stateMachine = GKStateMachine(states: [
+//            State.Initial(viewModel: self),
+//            State.Prepare(viewModel: self),
+//            State.Idle(viewModel: self),
+//            State.Loading(viewModel: self),
+//            State.Fail(viewModel: self),
+//            State.NoMore(viewModel: self),
+//            
+//        ])
+//        stateMachine.enter(State.Initial.self)
+//        return stateMachine
+//    }()
+//    
+//    init(
+//        context: AppContext,
+//        authContext: AuthContext
+//    ) {
+//        self.context = context
+//        self.authContext = authContext
+//        // end init
+//        
 //        Publishers.CombineLatest(
 //            $root,
 //            viewDidAppear.eraseToAnyPublisher()
@@ -91,49 +91,49 @@ final class TwitterStatusThreadReplyViewModel {
 //            return items
 //        }
 //        .assign(to: &$items)
-    }
-    
-    deinit {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-    }
-    
-}
-
-extension TwitterStatusThreadReplyViewModel {
-    public class TwitterStatusReplyNode: CustomDebugStringConvertible {
-        let statusID: TwitterStatus.ID
-        let replyToStatusID: TwitterStatus.ID?
-        
-        let status: Status
-        
-        init(
-            statusID: TwitterStatus.ID,
-            replyToStatusID: TwitterStatus.ID?,
-            status: Status
-        ) {
-            self.statusID = statusID
-            self.replyToStatusID = replyToStatusID
-            self.status = status
-        }
-        
-        enum Status {
-            case notDetermined
-            case fail(Error)
-            case success(ManagedObjectRecord<TwitterStatus>)
-        }
-        
-        public var debugDescription: String {
-            return "twitter status [\(statusID)] -> \(replyToStatusID ?? "<nil>"), \(status)"
-        }
-    }
-}
-
-extension TwitterStatusThreadReplyViewModel {
-    func delete(objectIDs: [NSManagedObjectID]) {
-        var set = deletedObjectIDs
-        for objectID in objectIDs {
-            set.insert(objectID)
-        }
-        self.deletedObjectIDs = set
-    }
-}
+//    }
+//    
+//    deinit {
+//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+//    }
+//    
+//}
+//
+//extension TwitterStatusThreadReplyViewModel {
+//    public class TwitterStatusReplyNode: CustomDebugStringConvertible {
+//        let statusID: TwitterStatus.ID
+//        let replyToStatusID: TwitterStatus.ID?
+//        
+//        let status: Status
+//        
+//        init(
+//            statusID: TwitterStatus.ID,
+//            replyToStatusID: TwitterStatus.ID?,
+//            status: Status
+//        ) {
+//            self.statusID = statusID
+//            self.replyToStatusID = replyToStatusID
+//            self.status = status
+//        }
+//        
+//        enum Status {
+//            case notDetermined
+//            case fail(Error)
+//            case success(ManagedObjectRecord<TwitterStatus>)
+//        }
+//        
+//        public var debugDescription: String {
+//            return "twitter status [\(statusID)] -> \(replyToStatusID ?? "<nil>"), \(status)"
+//        }
+//    }
+//}
+//
+//extension TwitterStatusThreadReplyViewModel {
+//    func delete(objectIDs: [NSManagedObjectID]) {
+//        var set = deletedObjectIDs
+//        for objectID in objectIDs {
+//            set.insert(objectID)
+//        }
+//        self.deletedObjectIDs = set
+//    }
+//}

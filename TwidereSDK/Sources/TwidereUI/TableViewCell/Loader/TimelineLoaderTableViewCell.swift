@@ -10,9 +10,9 @@ import UIKit
 import Combine
 import TwidereCore
 
-class TimelineLoaderTableViewCell: UITableViewCell {
+public class TimelineLoaderTableViewCell: UITableViewCell {
     
-    static let cellHeight: CGFloat = 48
+    public static let cellHeight: CGFloat = 48
     
     var disposeBag = Set<AnyCancellable>()
     
@@ -26,24 +26,24 @@ class TimelineLoaderTableViewCell: UITableViewCell {
         return button
     }()
     
-    let activityIndicatorView: UIActivityIndicatorView = {
+    public let activityIndicatorView: UIActivityIndicatorView = {
         let activityIndicatorView = UIActivityIndicatorView(style: .medium)
         activityIndicatorView.tintColor = .systemFill
         activityIndicatorView.hidesWhenStopped = true
         return activityIndicatorView
     }()
     
-    override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag.removeAll()
     }
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         _init()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         _init()
     }

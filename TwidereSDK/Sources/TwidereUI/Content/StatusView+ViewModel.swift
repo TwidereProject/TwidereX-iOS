@@ -182,6 +182,8 @@ extension StatusView {
         // metric
         @Published public var metricViewModel: StatusMetricView.ViewModel?
         
+        // conversation link
+        @Published public var isTopConversationLinkLineViewDisplay = false
         @Published public var isBottomConversationLinkLineViewDisplay = false
         
         private init(
@@ -921,14 +923,14 @@ extension StatusView.ViewModel {
         switch kind {
         case .timeline, .referenceReplyTo:
             width += StatusView.hangingAvatarButtonDimension
-            width += StatusView.hangingAvatarButtonTrailingSapcing
+            width += StatusView.hangingAvatarButtonTrailingSpacing
         default:
             break
         }
         return width
     }
     
-    public var margin: CGFloat {
+    var margin: CGFloat {
         switch kind {
         case .quote:        return 12
         default:            return .zero
@@ -944,11 +946,21 @@ extension StatusView.ViewModel {
         }
     }
     
-    public var cellTopMargin: CGFloat {
+    var cellTopMargin: CGFloat {
         return parentViewModel == nil ? 12 : 0
     }
     
-    public var hasToolbar: Bool {
+    var topConversationLinkViewHeight: CGFloat {
+        var height: CGFloat = cellTopMargin
+        if let statusHeaderViewModel = statusHeaderViewModel {
+            height += statusHeaderViewModel.viewSize.height
+            height += StatusView.statusHeaderBottomSpacing
+            height += parentViewModel?.cellTopMargin ?? 0
+        }
+        return height
+    }
+    
+    var hasToolbar: Bool {
         switch kind {
         case .timeline, .conversationRoot, .conversationThread:
             return true
@@ -1060,7 +1072,10 @@ extension StatusView.ViewModel {
                     return label
                 }()
             )
-            _statusHeaderViewModel.hasHangingAvatar = _repostViewModel.hasHangingAvatar
+            _statusHeaderViewModel.hasHangingAvatar = {
+                if kind == .conversationRoot { return true }
+                return _repostViewModel.hasHangingAvatar
+            }()
             _repostViewModel.statusHeaderViewModel = _statusHeaderViewModel
         }
         if let quote = status.quote {
