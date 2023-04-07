@@ -595,7 +595,6 @@
 		DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusMediaGalleryCollectionCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB51DC4D27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackMediaCollectionCell.swift; sourceTree = "<group>"; };
 		DB51DC4F27181DE400A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoverFlowStackMediaCollectionCell+ViewModel.swift"; sourceTree = "<group>"; };
-		DB55495E29DFFCBC004AF42A /* MetaTextKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = MetaTextKit; path = ../MetaTextKit; sourceTree = "<group>"; };
 		DB55495F29E01330004AF42A /* DataSourceProvider+UITableViewDataSourcePrefetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceProvider+UITableViewDataSourcePrefetching.swift"; sourceTree = "<group>"; };
 		DB56329626DCBE1600FC893F /* StatusThreadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusThreadViewController.swift; sourceTree = "<group>"; };
 		DB56329926DCBE7300FC893F /* StatusThreadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusThreadViewModel.swift; sourceTree = "<group>"; };
@@ -2049,7 +2048,6 @@
 		DBDA8E1524FCF8A3006750DC = {
 			isa = PBXGroup;
 			children = (
-				DB55495E29DFFCBC004AF42A /* MetaTextKit */,
 				DB33E5B42719637400EC2225 /* CoverFlowStackCollectionViewLayout */,
 				DB51DC372716AEF000A0D8FB /* TabBarPager */,
 				DB43239D251491EB004FAAEC /* TwidereSDK */,
