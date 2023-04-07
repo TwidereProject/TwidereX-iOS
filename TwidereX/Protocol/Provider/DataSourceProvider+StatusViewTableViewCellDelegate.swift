@@ -148,6 +148,22 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
             )
         }   // end Task
     }
+    
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta) {
+        Task { @MainActor in
+            guard let status = viewModel.status else {
+                assertionFailure()
+                return
+            }
+            
+            await DataSourceFacade.responseToMetaText(
+                provider: self,
+                status: status,
+                didSelectMeta: meta
+            )
+        }   // end Task
+    }
+
 }
 
 

@@ -76,10 +76,10 @@ extension SearchSection {
     ) {
         switch object {
         case .twitter(let history):
-            let metaContent = Meta.convert(from: .plaintext(string: history.name))
+            let metaContent = Meta.convert(document: .plaintext(string: history.name))
             cell.primaryTextLabel.configure(content: metaContent)
         case .mastodon(let history):
-            let metaContent = Meta.convert(from: .plaintext(string: history.query))
+            let metaContent = Meta.convert(document: .plaintext(string: history.query))
             cell.primaryTextLabel.configure(content: metaContent)
         }
     }
@@ -90,11 +90,11 @@ extension SearchSection {
     ) {
         switch object {
         case .twitter(let trend):
-            let metaContent = Meta.convert(from: .plaintext(string: trend.name))
+            let metaContent = Meta.convert(document: .plaintext(string: trend.name))
             cell.primaryLabel.configure(content: metaContent)
             cell.accessoryType = .disclosureIndicator
         case .mastodon(let tag):
-            let metaContent = Meta.convert(from: .plaintext(string: "#" + tag.name))
+            let metaContent = Meta.convert(document: .plaintext(string: "#" + tag.name))
             
             cell.primaryLabel.configure(content: metaContent)
             cell.secondaryLabel.text = L10n.Scene.Trends.accounts(tag.talkingPeopleCount ?? 0)

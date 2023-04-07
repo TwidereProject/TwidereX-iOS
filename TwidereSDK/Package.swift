@@ -30,7 +30,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.34.0"),
         .package(url: "https://github.com/Flipboard/FLAnimatedImage.git", from: "1.0.0"),
         .package(url: "https://github.com/MainasuK/CommonOSLog", from: "0.1.1"),
-        .package(url: "https://github.com/TwidereProject/MetaTextKit.git", exact: "4.4.2"),
+        .package(url: "https://github.com/TwidereProject/MetaTextKit.git", exact: "4.5.1"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.5.0"),
         .package(url: "https://github.com/Alamofire/AlamofireImage.git", from: "4.1.0"),
         .package(url: "https://github.com/Alamofire/AlamofireNetworkActivityIndicator.git", from: "3.1.0"),
@@ -51,6 +51,7 @@ let package = Package(
         .package(url: "https://github.com/uias/Tabman.git", from: "3.0.1"),
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.6.0"),
         .package(url: "https://github.com/tid-kijyun/Kanna.git", from: "5.2.7"),
+        .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", from: "0.2.0"),
         .package(name: "ArkanaKeys", path: "../dependencies/ArkanaKeys"),
     ],
     targets: [
@@ -123,6 +124,7 @@ let package = Package(
                 .product(name: "DateToolsSwift", package: "DateTools"),
                 .product(name: "CryptoSwift", package: "CryptoSwift"),
                 .product(name: "Kanna", package: "Kanna"),
+                .product(name: "CollectionConcurrencyKit", package: "CollectionConcurrencyKit"),
             ]
         ),
         .target(

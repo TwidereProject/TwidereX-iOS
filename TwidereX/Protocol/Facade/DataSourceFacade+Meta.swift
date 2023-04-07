@@ -13,32 +13,9 @@ import MetaTextArea
 import Meta
 
 extension DataSourceFacade {
-    static func responseToMetaTextAreaView(
-        provider: DataSourceProvider & AuthContextProvider,
-        target: StatusTarget,
-        status: StatusRecord,
-        metaTextAreaView: MetaTextAreaView,
-        didSelectMeta meta: Meta
-    ) async {
-        let _redirectRecord = await DataSourceFacade.status(
-            managedObjectContext: provider.context.managedObjectContext,
-            status: status,
-            target: target
-        )
-        guard let redirectRecord = _redirectRecord else { return }
-        
-        await responseToMetaTextAreaView(
-            provider: provider,
-            status: redirectRecord,
-            metaTextAreaView: metaTextAreaView,
-            didSelectMeta: meta
-        )
-    }
-    
-    static func responseToMetaTextAreaView(
+    static func responseToMetaText(
         provider: DataSourceProvider & AuthContextProvider,
         status: StatusRecord,
-        metaTextAreaView: MetaTextAreaView,
         didSelectMeta meta: Meta
     ) async {
         switch meta {

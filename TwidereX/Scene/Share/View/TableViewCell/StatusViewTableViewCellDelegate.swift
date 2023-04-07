@@ -26,6 +26,7 @@ protocol StatusViewContainerTableViewCell: UITableViewCell, AutoGenerateProtocol
 protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     // sourcery:inline:StatusViewTableViewCellDelegate.AutoGenerateProtocolDelegate
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel, previewActionContext: ContextMenuInteractionPreviewActionContext)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
@@ -44,6 +45,10 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
     // sourcery:inline:StatusViewContainerTableViewCell.AutoGenerateProtocolRelayDelegate
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool) {
         delegate?.tableViewCell(self, viewModel: viewModel, toggleContentDisplay: isReveal)
+    }
+
+    func statusView(_ viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta) {
+        delegate?.tableViewCell(self, viewModel: viewModel, textViewDidSelectMeta: meta)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel) {

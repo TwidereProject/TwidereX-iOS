@@ -27,13 +27,15 @@ extension DataSourceFacade {
             case .mastodon(let status):
                 let status = status.repost ?? status
                 let spoilerText = status.spoilerText.flatMap {
-                    Meta.convert(from: .mastodon(string: $0, emojis: [:]))
+                    let content = MastodonContent(content: $0, emojis: [:])
+                    return Meta.convert(document: .mastodon(content: content))
                 }
                 
-                let content = Meta.convert(from: .mastodon(string: status.content, emojis: [:]))
+                let content = MastodonContent(content: status.content, emojis: [:])
+                let metaContent = Meta.convert(document: .mastodon(content: content))
                 return [
                     spoilerText?.string,
-                    content.string
+                    metaContent.string
                 ]
                 .compactMap { $0 }
                 .joined(separator: "\n")

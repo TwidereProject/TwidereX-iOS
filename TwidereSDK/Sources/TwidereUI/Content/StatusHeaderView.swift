@@ -32,30 +32,26 @@ public struct StatusHeaderView: View {
                     - StatusHeaderView.iconImageTrailingSpacing
                 Color.clear
                     .frame(width: max(.leastNonzeroMagnitude, width))
-            }
-            Button {
-                
-            } label: {
-                HStack(spacing: StatusHeaderView.iconImageTrailingSpacing) {
-                    Color.clear
-                        .frame(width: iconImageDimension)
-                    LabelRepresentable(
-                        metaContent: viewModel.label,
-                        textStyle: .statusHeader,
-                        setupLabel: { label in
-                            // do nothing
-                        }
-                    )
-                    .overlay(alignment: .leading) {
-                        VectorImageView(image: viewModel.image)
-                            .frame(width: iconImageDimension, height: iconImageDimension)
-                            .offset(x: -(StatusHeaderView.iconImageTrailingSpacing + iconImageDimension), y: 0)
+            }   // end if
+            HStack(spacing: StatusHeaderView.iconImageTrailingSpacing) {
+                VectorImageView(image: viewModel.image)
+                    .frame(width: iconImageDimension, height: iconImageDimension)
+                    .offset(y: -1)
+                LabelRepresentable(
+                    metaContent: viewModel.label,
+                    textStyle: .statusHeader,
+                    setupLabel: { label in
+                        // do nothing
                     }
-                    Spacer()
-                }
-            }   // end Button
+                )
+                .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+            }   // HStack
+        }   // HStack
+        .onTapGesture {
+            // TODO:
         }
-    }
+    }   // end body
     
 }
 

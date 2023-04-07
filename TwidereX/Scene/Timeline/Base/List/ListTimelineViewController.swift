@@ -292,6 +292,13 @@ extension ListTimelineViewController: UITableViewDelegate, AutoGenerateTableView
     }
 }
 
+// MARK: - UITableViewDataSourcePrefetching
+extension ListTimelineViewController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        aspectTableView(tableView, prefetchRowsAt: indexPaths)
+    }
+}
+
 // MARK: - ScrollViewContainer
 extension ListTimelineViewController: ScrollViewContainer {
 

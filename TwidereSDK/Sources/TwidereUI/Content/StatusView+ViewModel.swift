@@ -58,8 +58,6 @@ extension StatusView {
 //            return formatter
 //        }()
 //
-//        @Published public var header: Header = .none
-//
 //        @Published public var userIdentifier: UserIdentifier?
 //        @Published public var authorAvatarImage: UIImage?
 //        @Published public var authorAvatarImageURL: URL?
@@ -113,31 +111,7 @@ extension StatusView {
             return isMediaSensitiveToggled ? isMediaSensitive : !isMediaSensitive
         }
 
-//        @Published public var isContentReveal: Bool = false
-//        
-//        @Published public var isMediaSensitive: Bool = false
-//        @Published public var isMediaSensitiveToggled: Bool = false
-//            
-//        @Published public var isMediaSensitiveSwitchable = false
-//        @Published public var isMediaReveal: Bool = false
-//        
-//        // poll input
-//        @Published public var pollItems: [PollItem] = []
-//        @Published public var isVotable: Bool = false
-//        @Published public var isVoting: Bool = false
-//        @Published public var isVoteButtonEnabled: Bool = false
-//        @Published public var voterCount: Int?
-//        @Published public var voteCount = 0
-//        @Published public var expireAt: Date?
-//        @Published public var expired: Bool = false
-//        
-//        // poll output
-//        @Published public var pollVoteDescription = ""
-//        @Published public var pollCountdownDescription: String?
-//        
-//        @Published public var location: String?
-//        @Published public var source: String?
-//        
+
 //        @Published public var isRepost = false
 //        @Published public var isRepostEnabled = true
         
@@ -171,6 +145,12 @@ extension StatusView {
         // timestamp
         @Published public var timestampLabelViewModel: TimestampLabelView.ViewModel?
         
+        // location
+        @Published public var location: String?
+        
+        // metric
+        @Published public var metricViewModel: StatusMetricView.ViewModel?
+
         // toolbar
         public let toolbarViewModel = StatusToolbarView.ViewModel()
         public var canDelete: Bool {
@@ -178,10 +158,7 @@ extension StatusView {
             guard let authorUserIdentifier = self.authorUserIdentifier else { return false }
             return authContext.authenticationContext.userIdentifier == authorUserIdentifier
         }
-        
-        // metric
-        @Published public var metricViewModel: StatusMetricView.ViewModel?
-        
+
         // conversation link
         @Published public var isTopConversationLinkLineViewDisplay = false
         @Published public var isBottomConversationLinkLineViewDisplay = false
@@ -1109,10 +1086,10 @@ extension StatusView.ViewModel {
         }
         
         // content
-        let content = TwitterContent(content: status.displayText)
+        let content = TwitterContent(content: status.displayText, urlEntities: status.urlEntities)
         let metaContent = TwitterMetaContent.convert(
-            content: content,
-            urlMaximumLength: 20,
+            document: content,
+            urlMaximumLength: .max,
             twitterTextProvider: SwiftTwitterTextProvider(),
             useParagraphMark: true
         )
@@ -1140,7 +1117,30 @@ extension StatusView.ViewModel {
                 poll: .twitter(object: poll)
             )
         }
-        
+
+        // location
+        location = status.location?.fullName
+
+        // metric
+        switch kind {
+        case .conversationRoot:
+            let _metricViewModel = StatusMetricView.ViewModel(platform: .twitter, timestamp: status.createdAt)
+            metricViewModel = _metricViewModel
+            status.publisher(for: \.source)
+                .assign(to: &_metricViewModel.$source)
+            status.publisher(for: \.replyCount)
+                .map { Int($0) }
+                .assign(to: &_metricViewModel.$replyCount)
+            status.publisher(for: \.repostCount)
+                .map { Int($0) }
+                .assign(to: &_metricViewModel.$repostCount)
+            status.publisher(for: \.likeCount)
+                .map { Int($0) }
+                .assign(to: &_metricViewModel.$likeCount)
+        default:
+            break
+        }
+
         // toolbar
         toolbarViewModel.platform = .twitter
         status.publisher(for: \.replyCount)
@@ -1167,26 +1167,6 @@ extension StatusView.ViewModel {
                 .assign(to: &toolbarViewModel.$isReposted)
         } else {
             // do nothing
-        }
-        
-        // metric
-        switch kind {
-        case .conversationRoot:
-            let _metricViewModel = StatusMetricView.ViewModel(platform: .twitter, timestamp: status.createdAt)
-            metricViewModel = _metricViewModel
-            status.publisher(for: \.source)
-                .assign(to: &_metricViewModel.$source)
-            status.publisher(for: \.replyCount)
-                .map { Int($0) }
-                .assign(to: &_metricViewModel.$replyCount)
-            status.publisher(for: \.repostCount)
-                .map { Int($0) }
-                .assign(to: &_metricViewModel.$repostCount)
-            status.publisher(for: \.likeCount)
-                .map { Int($0) }
-                .assign(to: &_metricViewModel.$likeCount)
-        default:
-            break
         }
     }   // end init
 }

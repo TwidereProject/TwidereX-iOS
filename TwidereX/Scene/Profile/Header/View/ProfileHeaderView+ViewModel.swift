@@ -230,7 +230,7 @@ extension ProfileHeaderView {
         // name
         user.publisher(for: \.name)
             .combineLatest(UIContentSizeCategory.publisher) { value, _ in
-                Meta.convert(from: .plaintext(string: value))
+                Meta.convert(document: .plaintext(string: value))
             }
             .assign(to: \.name, on: viewModel)
             .store(in: &viewModel.configureDisposeBag)
@@ -353,7 +353,8 @@ extension ProfileHeaderView {
             UIContentSizeCategory.publisher
         )
         .map { _, emojis, _ -> MetaContent in
-            Meta.convert(from: .mastodon(string: user.name, emojis: emojis.asDictionary))
+            let content = MastodonContent(content: user.name, emojis: emojis.asDictionary)
+            return Meta.convert(document: .mastodon(content: content))
         }
         .assign(to: \.name, on: viewModel)
         .store(in: &viewModel.configureDisposeBag)
@@ -402,10 +403,10 @@ extension ProfileHeaderView {
             let emojis = emojis.asDictionary
             let items = fields.enumerated().map { i, field -> ProfileFieldListView.Item in
                 let key = Meta.convert(
-                    from: .mastodon(string: field.name, emojis: emojis)
+                    document: .mastodon(content: MastodonContent(content: field.name, emojis: emojis))
                 )
                 let value = Meta.convert(
-                    from: .mastodon(string: field.value, emojis: emojis)
+                    document: .mastodon(content: MastodonContent(content: field.value, emojis: emojis))
                 )
                 return ProfileFieldListView.Item(
                     index: i,

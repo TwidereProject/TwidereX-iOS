@@ -25,6 +25,9 @@ public protocol StatusViewDelegate: AnyObject {
 //    func statusView(_ statusView: StatusView, expandContentButtonDidPressed button: UIButton)
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
 
+    // meta
+    func statusView(_ viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta)
+
 //    func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
 //    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
 
@@ -169,6 +172,17 @@ public struct StatusView: View {
                                 }
                                 .cornerRadius(12)
                         }
+                        // location (inline)
+                        if let location = viewModel.location {
+                            HStack {
+                                Image(uiImage: Asset.ObjectTools.mappinMini.image.withRenderingMode(.alwaysTemplate))
+                                Text(location + location + location + location)
+                                Spacer()
+                            }
+                            .foregroundColor(.secondary)
+                            .font(Font(TextStyle.statusLocation.font))
+                            .frame(alignment: .leading)
+                        }
                         // metric
                         if let metricViewModel = viewModel.metricViewModel {
                             StatusMetricView(viewModel: metricViewModel) { action in
@@ -200,11 +214,6 @@ public struct StatusView: View {
                     .padding(.horizontal, viewModel.margin)                             // container margin
                     .padding(.bottom, viewModel.hasToolbar ? .zero : viewModel.margin)  // container margin
                     .frame(width: viewModel.containerWidth)
-                    //.overlay {
-                    //    Text("\(viewModel.containerWidth.description)")
-                    //        .font(.title)
-                    //}
-                    //.border(.red, width: 1)
                     .overlay(alignment: .bottom) {
                         switch viewModel.kind {
                         case .timeline, .repost, .conversationThread:
@@ -375,7 +384,11 @@ extension StatusView {
             TextViewRepresentable(
                 metaContent: viewModel.spoilerContent ?? PlaintextMetaContent(string: ""),
                 textStyle: .statusContent,
-                width: viewModel.contentWidth
+                width: viewModel.contentWidth,
+                isSelectable: viewModel.kind == .conversationRoot,
+                handler: { meta in
+                    viewModel.delegate?.statusView(viewModel, textViewDidSelectMeta: meta)
+                }
             )
             .frame(width: viewModel.contentWidth)
         }
@@ -386,7 +399,11 @@ extension StatusView {
             TextViewRepresentable(
                 metaContent: viewModel.content,
                 textStyle: .statusContent,
-                width: viewModel.contentWidth
+                width: viewModel.contentWidth,
+                isSelectable: viewModel.kind == .conversationRoot,
+                handler: { meta in
+                    viewModel.delegate?.statusView(viewModel, textViewDidSelectMeta: meta)
+                }
             )
             .frame(width: viewModel.contentWidth)
         }
