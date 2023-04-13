@@ -8,11 +8,10 @@
 import UIKit
 
 // sourcery: protocolName = "UserViewDelegate"
-// sourcery: replaceOf = "userView(userView"
-// sourcery: replaceWith = "delegate?.tableViewCell(self, userView: userView"
+// sourcery: replaceOf = "userView(viewModel"
+// sourcery: replaceWith = "userViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel"
 public protocol UserViewContainerTableViewCell: UITableViewCell, AutoGenerateProtocolRelayDelegate {
-    var delegate: UserViewTableViewCellDelegate? { get }
-    var userView: UserView { get }
+    var userViewTableViewCellDelegate: UserViewTableViewCellDelegate? { get }
 }
 
 
@@ -22,36 +21,26 @@ public protocol UserViewContainerTableViewCell: UITableViewCell, AutoGeneratePro
 // sourcery: replaceWith = "func tableViewCell(_ cell: UITableViewCell,"
 public protocol UserViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     // sourcery:inline:UserViewTableViewCellDelegate.AutoGenerateProtocolDelegate
-    func tableViewCell(_ cell: UITableViewCell, userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton)
-    func tableViewCell(_ cell: UITableViewCell, userView: UserView, friendshipButtonDidPressed button: UIButton)
-    func tableViewCell(_ cell: UITableViewCell, userView: UserView, membershipButtonDidPressed button: UIButton)
-    func tableViewCell(_ cell: UITableViewCell, userView: UserView, acceptFollowReqeustButtonDidPressed button: UIButton)
-    func tableViewCell(_ cell: UITableViewCell, userView: UserView, rejectFollowReqeustButtonDidPressed button: UIButton)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: UserView.ViewModel, userAvatarButtonDidPressed user: UserRecord)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: UserView.ViewModel, menuActionDidPressed action: UserView.ViewModel.MenuAction)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: UserView.ViewModel, followReqeustButtonDidPressed user: UserRecord, accept: Bool)
     // sourcery:end
 }
 
 // MARK: - AutoGenerateProtocolDelegate
 // Protocol Extension
-extension UserViewDelegate where Self: UserViewContainerTableViewCell {
+public extension UserViewDelegate where Self: UserViewContainerTableViewCell {
     // sourcery:inline:UserViewContainerTableViewCell.AutoGenerateProtocolRelayDelegate
-    func userView(_ userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton) {
-        delegate?.tableViewCell(self, userView: userView, menuActionDidPressed: action, menuButton: button)
+    func userView(_ viewModel: UserView.ViewModel, userAvatarButtonDidPressed user: UserRecord) {
+        userViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, userAvatarButtonDidPressed: user)
     }
 
-    func userView(_ userView: UserView, friendshipButtonDidPressed button: UIButton) {
-        delegate?.tableViewCell(self, userView: userView, friendshipButtonDidPressed: button)
+    func userView(_ viewModel: UserView.ViewModel, menuActionDidPressed action: UserView.ViewModel.MenuAction) {
+        userViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, menuActionDidPressed: action)
     }
 
-    func userView(_ userView: UserView, membershipButtonDidPressed button: UIButton) {
-        delegate?.tableViewCell(self, userView: userView, membershipButtonDidPressed: button)
-    }
-
-    func userView(_ userView: UserView, acceptFollowReqeustButtonDidPressed button: UIButton) {
-        delegate?.tableViewCell(self, userView: userView, acceptFollowReqeustButtonDidPressed: button)
-    }
-
-    func userView(_ userView: UserView, rejectFollowReqeustButtonDidPressed button: UIButton) {
-        delegate?.tableViewCell(self, userView: userView, rejectFollowReqeustButtonDidPressed: button)
+    func userView(_ viewModel: UserView.ViewModel, followReqeustButtonDidPressed user: UserRecord, accept: Bool) {
+        userViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, followReqeustButtonDidPressed: user, accept: accept)
     }
   
     // sourcery:end  

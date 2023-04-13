@@ -117,14 +117,21 @@ extension SceneCoordinator {
 extension SceneCoordinator {
     
     @MainActor
-    func setup() {
+    func setup(authentication record: ManagedObjectRecord<AuthenticationIndex>? = nil) {
         let rootViewController: UIViewController
         
         do {
             // check AuthContext
-            let request = AuthenticationIndex.sortedFetchRequest
-            request.fetchLimit = 1
-            let _authenticationIndex = try context.managedObjectContext.fetch(request).first
+            let _authenticationIndex: AuthenticationIndex? = try {
+                if let index = record?.object(in: context.managedObjectContext) {
+                    return index
+                } else {
+                    let request = AuthenticationIndex.sortedFetchRequest
+                    request.fetchLimit = 1
+                    let result = try context.managedObjectContext.fetch(request).first
+                    return result
+                }
+            }()
             guard let authenticationIndex = _authenticationIndex,
                   let authContext = AuthContext(authenticationIndex: authenticationIndex)
             else {

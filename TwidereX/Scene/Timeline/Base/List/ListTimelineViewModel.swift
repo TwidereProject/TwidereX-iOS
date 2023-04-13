@@ -45,7 +45,10 @@ extension ListTimelineViewModel {
     
     @MainActor
     func loadMore(item: StatusItem) async {
-        guard case let .feedLoader(record) = item else { return }
+        guard case let .feedLoader(record) = item else {
+            assertionFailure()
+            return
+        }
         guard let diffableDataSource = diffableDataSource else { return }
         var snapshot = diffableDataSource.snapshot()
 
@@ -55,7 +58,7 @@ extension ListTimelineViewModel {
         let key = "LoadMore@\(record.objectID)#\(UUID().uuidString)"
 
         guard let feed = record.object(in: managedObjectContext) else { return }
-        guard let statusObject = feed.statusObject else { return }
+        guard case let .status(status) = feed.content else { return }
         
         // keep transient property alive
         managedObjectContext.cache(feed, key: key)
@@ -81,7 +84,7 @@ extension ListTimelineViewModel {
                 managedObjectContext: managedObjectContext,
                 authenticationContext: authenticationContext,
                 kind: kind,
-                position: .middle(anchor: statusObject.asRecord),
+                position: .middle(anchor: status.asRecord),
                 filter: StatusFetchViewModel.Timeline.Filter(rule: .empty)
             )
             let input = try await StatusFetchViewModel.Timeline.prepare(fetchContext: fetchContext)

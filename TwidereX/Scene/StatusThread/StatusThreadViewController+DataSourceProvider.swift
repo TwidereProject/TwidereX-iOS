@@ -22,7 +22,7 @@ extension StatusThreadViewController: DataSourceProvider {
         
         switch item {
         case .root:
-            guard let status = viewModel.statusViewModel?.status else  { return nil }
+            guard let status = viewModel.statusViewModel?.status.asRecord else  { return nil }
             return .status(status)
         case .status(let status):
             return .status(status)

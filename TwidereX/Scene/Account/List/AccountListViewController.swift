@@ -117,7 +117,7 @@ extension AccountListViewController: UITableViewDelegate {
             do {
                 let isActive = try await self.context.authenticationService.activeAuthenticationIndex(record: record)
                 guard isActive else { return }
-                self.coordinator.setup()
+                self.coordinator.setup(authentication: record)
             } catch {
                 // handle error
                 assertionFailure(error.localizedDescription)

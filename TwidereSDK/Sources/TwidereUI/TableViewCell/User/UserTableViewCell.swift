@@ -11,21 +11,16 @@ import UIKit
 import Combine
 
 public class UserTableViewCell: UITableViewCell {
-    
-    var disposeBag = Set<AnyCancellable>()
-    
-    let logger = Logger(subsystem: "UserTableViewCell", category: "View")
         
-    public let userView = UserView()
-    
-    public weak var delegate: UserViewTableViewCellDelegate?
-    
+    let logger = Logger(subsystem: "UserTableViewCell", category: "View")
+            
+    public weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
+
     public override func prepareForReuse() {
         super.prepareForReuse()
         
-        userView.prepareForReuse()
-        disposeBag.removeAll()
-        delegate = nil
+        contentConfiguration = nil
+        userViewTableViewCellDelegate = nil
     }
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -39,16 +34,7 @@ public class UserTableViewCell: UITableViewCell {
     }
     
     func _init() {
-        userView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(userView)
-        NSLayoutConstraint.activate([
-            userView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            userView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
-            userView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: userView.bottomAnchor, constant: 16).priority(.defaultHigh),
-        ])
-        
-        userView.delegate = self
+        // selectionStyle = .none
     }
     
 }
@@ -56,5 +42,5 @@ public class UserTableViewCell: UITableViewCell {
 // MARK: - UserViewContainerTableViewCell
 extension UserTableViewCell: UserViewContainerTableViewCell { }
 
-// MARK: - 
+// MARK: - UserViewDelegate
 extension UserTableViewCell: UserViewDelegate { }

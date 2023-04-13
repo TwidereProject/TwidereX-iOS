@@ -60,9 +60,10 @@ extension HomeTimelineViewModel {
     
     var sinceID: String? {
         guard let first = feedFetchedResultsController.records.first,
-              let object = first.object(in: context.managedObjectContext)?.statusObject
+              let feed = first.object(in: context.managedObjectContext),
+              case let .status(status) = feed.content
         else { return nil }
-        return object.id
+        return status.id
     }
     
 }

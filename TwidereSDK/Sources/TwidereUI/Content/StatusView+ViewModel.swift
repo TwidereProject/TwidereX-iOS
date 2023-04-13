@@ -34,7 +34,8 @@ extension StatusView {
         @Published public var quoteViewModel: StatusView.ViewModel?
         
         // input
-        public let status: StatusRecord?
+        public let status: StatusObject
+        public let author: UserObject
         public let authContext: AuthContext?
         public let kind: Kind
         public weak var delegate: StatusViewDelegate?
@@ -164,13 +165,15 @@ extension StatusView {
         @Published public var isBottomConversationLinkLineViewDisplay = false
         
         private init(
-            status: StatusRecord?,
+            status: StatusObject,
+            author: UserObject,
             authContext: AuthContext?,
             kind: Kind,
             delegate: StatusViewDelegate?,
             viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
         ) {
             self.status = status
+            self.author = author
             self.authContext = authContext
             self.kind = kind
             self.delegate = delegate
@@ -955,27 +958,16 @@ extension StatusView.ViewModel {
         viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     ) {
         switch feed.content {
-        case .twitter(let status):
+        case .status(let object):
             self.init(
-                status: status,
+                status: object,
                 authContext: authContext,
                 kind: .timeline,
                 delegate: delegate,
-                parentViewModel: nil,
                 viewLayoutFramePublisher: viewLayoutFramePublisher
             )
-        case .mastodon(let status):
-            self.init(
-                status: status,
-                authContext: authContext,
-                kind: .timeline,
-                delegate: delegate,
-                parentViewModel: nil,
-                viewLayoutFramePublisher: viewLayoutFramePublisher
-            )
-        case .mastodonNotification(let notification):
-            return nil
-        case .none:
+        default:
+            assertionFailure("should use other View & ViewModel")
             return nil
         }
     }   // end init
@@ -1020,7 +1012,8 @@ extension StatusView.ViewModel {
         viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     ) {
         self.init(
-            status: .twitter(record: status.asRecrod),
+            status: .twitter(object: status),
+            author: .twitter(object: status.author),
             authContext: authContext,
             kind: status.repost != nil ? .repost : kind,
             delegate: delegate,
@@ -1181,7 +1174,8 @@ extension StatusView.ViewModel {
         viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     ) {
         self.init(
-            status: .mastodon(record: status.asRecrod),
+            status: .mastodon(object: status),
+            author: .mastodon(object: status.author),
             authContext: authContext,
             kind: status.repost != nil ? .repost : kind,
             delegate: delegate,

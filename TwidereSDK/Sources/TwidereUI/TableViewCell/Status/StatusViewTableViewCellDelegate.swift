@@ -13,18 +13,18 @@ import Meta
 
 // sourcery: protocolName = "StatusViewDelegate"
 // sourcery: replaceOf = "statusView(viewModel"
-// sourcery: replaceWith = "delegate?.tableViewCell(self, viewModel: viewModel"
-protocol StatusViewContainerTableViewCell: UITableViewCell, AutoGenerateProtocolRelayDelegate {
-    var delegate: StatusViewTableViewCellDelegate? { get }
-    var viewModel: StatusView.ViewModel? { get }
+// sourcery: replaceWith = "statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel"
+public protocol StatusViewContainerTableViewCell: UITableViewCell, AutoGenerateProtocolRelayDelegate {
+    var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate? { get }
 }
 
 // MARK: - AutoGenerateProtocolDelegate
 // sourcery: protocolName = "StatusViewDelegate"
 // sourcery: replaceOf = "statusView(_"
 // sourcery: replaceWith = "func tableViewCell(_ cell: UITableViewCell,"
-protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
+public protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     // sourcery:inline:StatusViewTableViewCellDelegate.AutoGenerateProtocolDelegate
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, userAvatarButtonDidPressed user: UserRecord)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
@@ -41,50 +41,54 @@ protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
 
 // MARK: - AutoGenerateProtocolDelegate
 // Protocol Extension
-extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
+public extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
     // sourcery:inline:StatusViewContainerTableViewCell.AutoGenerateProtocolRelayDelegate
+    func statusView(_ viewModel: StatusView.ViewModel, userAvatarButtonDidPressed user: UserRecord) {
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, userAvatarButtonDidPressed: user)
+    }
+
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool) {
-        delegate?.tableViewCell(self, viewModel: viewModel, toggleContentDisplay: isReveal)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, toggleContentDisplay: isReveal)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta) {
-        delegate?.tableViewCell(self, viewModel: viewModel, textViewDidSelectMeta: meta)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, textViewDidSelectMeta: meta)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel) {
-        delegate?.tableViewCell(self, viewModel: viewModel, previewActionForMediaViewModel: mediaViewModel)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, previewActionForMediaViewModel: mediaViewModel)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel, previewActionContext: ContextMenuInteractionPreviewActionContext) {
-        delegate?.tableViewCell(self, viewModel: viewModel, previewActionForMediaViewModel: mediaViewModel, previewActionContext: previewActionContext)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, previewActionForMediaViewModel: mediaViewModel, previewActionContext: previewActionContext)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool) {
-        delegate?.tableViewCell(self, viewModel: viewModel, toggleContentWarningOverlayDisplay: isReveal)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, toggleContentWarningOverlayDisplay: isReveal)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, pollVoteActionForViewModel pollViewModel: PollView.ViewModel) {
-        delegate?.tableViewCell(self, viewModel: viewModel, pollVoteActionForViewModel: pollViewModel)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, pollVoteActionForViewModel: pollViewModel)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, pollUpdateIfNeedsForViewModel pollViewModel: PollView.ViewModel) {
-        delegate?.tableViewCell(self, viewModel: viewModel, pollUpdateIfNeedsForViewModel: pollViewModel)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, pollUpdateIfNeedsForViewModel: pollViewModel)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, pollViewModel: PollView.ViewModel, pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel) {
-        delegate?.tableViewCell(self, viewModel: viewModel, pollViewModel: pollViewModel, pollOptionDidSelectForViewModel: optionViewModel)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, pollViewModel: pollViewModel, pollOptionDidSelectForViewModel: optionViewModel)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, statusMetricViewModel: StatusMetricView.ViewModel, statusMetricButtonDidPressed action: StatusMetricView.Action) {
-        delegate?.tableViewCell(self, viewModel: viewModel, statusMetricViewModel: statusMetricViewModel, statusMetricButtonDidPressed: action)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, statusMetricViewModel: statusMetricViewModel, statusMetricButtonDidPressed: action)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, statusToolbarViewModel: StatusToolbarView.ViewModel, statusToolbarButtonDidPressed action: StatusToolbarView.Action) {
-        delegate?.tableViewCell(self, viewModel: viewModel, statusToolbarViewModel: statusToolbarViewModel, statusToolbarButtonDidPressed: action)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, statusToolbarViewModel: statusToolbarViewModel, statusToolbarButtonDidPressed: action)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, viewHeightDidChange: Void) {
-        delegate?.tableViewCell(self, viewModel: viewModel, viewHeightDidChange: viewHeightDidChange)
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, viewHeightDidChange: viewHeightDidChange)
     }
     // sourcery:end
 }

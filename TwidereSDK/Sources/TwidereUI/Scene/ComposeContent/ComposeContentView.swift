@@ -397,19 +397,6 @@ extension ComposeContentView {
     
 }
 
-private extension ComposeContentView {
-    struct SizeDimensionPreferenceKey: PreferenceKey {
-        static let defaultValue: CGFloat = 0
-
-        static func reduce(
-            value: inout CGFloat,
-            nextValue: () -> CGFloat
-        ) {
-            value = max(value, nextValue())
-        }
-    }
-}
-
 // MARK: - TypeIdentifiedItemProvider
 extension PollComposeItem.Option: TypeIdentifiedItemProvider {
     public static var typeIdentifier: String {

@@ -11,10 +11,6 @@ import TwidereLocalization
 import Meta
 import Kingfisher
 
-protocol StatusHeaderViewDelegate: AnyObject {
-    func viewDidPressed(_ viewModel: StatusHeaderView.ViewModel)
-}
-
 public struct StatusHeaderView: View {
     
     static var iconImageTrailingSpacing: CGFloat { 4.0 }

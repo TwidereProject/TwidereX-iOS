@@ -149,7 +149,8 @@ extension TimelineViewModel {
                     let anchor: StatusRecord? = {
                         guard let record = feedFetchedResultsController.records.first else { return nil }
                         guard let feed = record.object(in: managedObjectContext) else { return nil }
-                        return feed.statusObject?.asRecord
+                        guard case let .status(status) = feed.content else { return nil }
+                        return status.asRecord
                     }()
                     return .top(anchor: anchor)
                 case .public, .hashtag, .list:

@@ -8,23 +8,23 @@
 
 import UIKit
 
-public final class UserRelationshipStyleTableViewCell: UserTableViewCell {
-    
-    let separator = SeparatorLineView()
-    
-    public override func _init() {
-        super._init()
-        
-        userView.setup(style: .relationship)
-
-        separator.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(separator)
-        NSLayoutConstraint.activate([
-            separator.leadingAnchor.constraint(equalTo: userView.nameLabel.leadingAnchor),
-            separator.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
-            separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            separator.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
-        ])
-    }
-    
-}
+//public final class UserRelationshipStyleTableViewCell: UserTableViewCell {
+//    
+//    let separator = SeparatorLineView()
+//    
+//    public override func _init() {
+//        super._init()
+//        
+//        userView.setup(style: .relationship)
+//
+//        separator.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(separator)
+//        NSLayoutConstraint.activate([
+//            separator.leadingAnchor.constraint(equalTo: userView.nameLabel.leadingAnchor),
+//            separator.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
+//            separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+//            separator.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
+//        ])
+//    }
+//    
+//}

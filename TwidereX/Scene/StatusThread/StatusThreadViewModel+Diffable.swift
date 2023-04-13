@@ -28,7 +28,7 @@ extension StatusThreadViewModel {
             switch item {
             case .status(let record):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
-                cell.delegate = statusViewTableViewCellDelegate
+                cell.statusViewTableViewCellDelegate = statusViewTableViewCellDelegate
                 self.context.managedObjectContext.performAndWait {
                     guard let status = record.object(in: self.context.managedObjectContext) else { return }
                     let viewModel = StatusView.ViewModel(
@@ -52,7 +52,7 @@ extension StatusThreadViewModel {
                 guard let viewModel = self.statusViewModel else {
                     return UITableViewCell()
                 }
-                cell.delegate = statusViewTableViewCellDelegate
+                cell.statusViewTableViewCellDelegate = statusViewTableViewCellDelegate
                 self.updateConversationRootLink(viewModel: viewModel)
                 cell.contentConfiguration = UIHostingConfiguration {
                     StatusView(viewModel: viewModel)
@@ -212,7 +212,7 @@ extension StatusThreadViewModel {
     }
     
     private func updateConversationRootLink(viewModel: StatusView.ViewModel) {
-        guard let record = viewModel.status else { return }
+        let record = viewModel.status.asRecord
         guard let linkConfiguration = conversationLinkConfiguration[record] else { return }
         
         viewModel.isTopConversationLinkLineViewDisplay = linkConfiguration.isTopLinkDisplay

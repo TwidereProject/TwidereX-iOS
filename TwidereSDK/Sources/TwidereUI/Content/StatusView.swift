@@ -19,17 +19,14 @@ import TwidereCore
 public protocol StatusViewDelegate: AnyObject {
 //    func statusView(_ statusView: StatusView, headerDidPressed header: UIView)
 
-//    func statusView(_ statusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
-//    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
-//
-//    func statusView(_ statusView: StatusView, expandContentButtonDidPressed button: UIButton)
+    // avatar
+    func statusView(_ viewModel: StatusView.ViewModel, userAvatarButtonDidPressed user: UserRecord)
+
+    // spoiler
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
 
     // meta
     func statusView(_ viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta)
-
-//    func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
-//    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
 
     // media
     func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
@@ -357,7 +354,7 @@ extension StatusView {
     
     var avatarButton: some View {
         Button {
-            
+            viewModel.delegate?.statusView(viewModel, userAvatarButtonDidPressed: viewModel.author.asRecord)
         } label: {
             let dimension: CGFloat = {
                 switch viewModel.kind {

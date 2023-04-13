@@ -48,7 +48,7 @@ extension StatusSection {
             switch item {
             case .feed(let record):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
-                cell.delegate = configuration.statusViewTableViewCellDelegate
+                cell.statusViewTableViewCellDelegate = configuration.statusViewTableViewCellDelegate
                 context.managedObjectContext.performAndWait {
                     guard let feed = record.object(in: context.managedObjectContext) else { return }
                     let _viewModel = StatusView.ViewModel(
@@ -65,6 +65,7 @@ extension StatusSection {
                     .margins(.vertical, 0)  // remove vertical margins
                 }
                 return cell
+
             case .feedLoader(let record):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
 //                context.managedObjectContext.performAndWait {

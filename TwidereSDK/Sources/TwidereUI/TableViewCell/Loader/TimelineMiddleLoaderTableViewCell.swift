@@ -18,7 +18,7 @@ public final class TimelineMiddleLoaderTableViewCell: TimelineLoaderTableViewCel
         
     weak var delegate: TimelineMiddleLoaderTableViewCellDelegate?
     
-    private(set) lazy var viewModel: ViewModel = {
+    public private(set) lazy var viewModel: ViewModel = {
         let viewModel = ViewModel()
         viewModel.bind(cell: self)
         return viewModel

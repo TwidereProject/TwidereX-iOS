@@ -107,7 +107,8 @@ extension TimelineViewModel.LoadOldestState {
                     case .home:
                         guard let record = viewModel.feedFetchedResultsController.records.last else { return nil }
                         guard let feed = record.object(in: managedObjectContext) else { return nil }
-                        return feed.statusObject?.asRecord
+                        guard case let .status(status) = feed.content else { return nil }
+                        return status.asRecord
                     case .public, .hashtag, .list, .search, .user:
                         guard let status = viewModel.statusRecordFetchedResultController.records.last else { return nil }
                         return status

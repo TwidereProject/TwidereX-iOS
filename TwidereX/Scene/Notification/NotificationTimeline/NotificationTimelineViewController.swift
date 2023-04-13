@@ -30,10 +30,6 @@ final class NotificationTimelineViewController: UIViewController, NeedsDependenc
     
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
-        tableView.register(UserNotificationStyleTableViewCell.self, forCellReuseIdentifier: String(describing: UserNotificationStyleTableViewCell.self))
-        tableView.register(TimelineMiddleLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self))
-        tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.backgroundColor = .systemBackground
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
@@ -117,6 +113,29 @@ extension NotificationTimelineViewController {
                 }
                 viewModel.lastAutomaticFetchTimestamp = now
             }
+        }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        viewModel.viewLayoutFrame.update(view: view)
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        viewModel.viewLayoutFrame.update(view: view)
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate {[weak self] _ in
+            guard let self = self else { return }
+            self.viewModel.viewLayoutFrame.update(view: self.view)
+        } completion: {  _ in
+            // do nothing
         }
     }
 }

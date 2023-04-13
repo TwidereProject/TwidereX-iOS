@@ -21,10 +21,6 @@ extension UserHistoryViewModel {
             configuration: .init(
                 statusViewTableViewCellDelegate: nil,
                 userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-                userViewConfigurationContext: .init(
-                    authContext: authContext,
-                    listMembershipViewModel: nil
-                ),
                 viewLayoutFramePublisher: $viewLayoutFrame
             )
         )

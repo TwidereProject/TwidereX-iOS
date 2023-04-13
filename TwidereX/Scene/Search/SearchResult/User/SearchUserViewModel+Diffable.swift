@@ -23,11 +23,7 @@ extension SearchUserViewModel {
             context: context,
             authContext: authContext,
             configuration: UserSection.Configuration(
-                userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-                userViewConfigurationContext: .init(
-                    authContext: authContext,
-                    listMembershipViewModel: listMembershipViewModel
-                )
+                userViewTableViewCellDelegate: userViewTableViewCellDelegate
             )
         )
         
@@ -57,9 +53,9 @@ extension SearchUserViewModel {
                         let newItems: [UserItem] = records.map { record in
                             switch self.kind {
                             case .friendship:
-                                return .user(record: record, style: .relationship)
+                                return .user(record: record, kind: .relationship)
                             case .listMember:
-                                return .user(record: record, style: .addListMember)
+                                return .user(record: record, kind: .addListMember)
                             }   // end switch
                         }
                         snapshot.appendItems(newItems, toSection: .main)

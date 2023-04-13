@@ -20,11 +20,7 @@ extension ListUserViewModel {
             context: context,
             authContext: authContext,
             configuration: UserSection.Configuration(
-                userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-                userViewConfigurationContext: .init(
-                    authContext: authContext,
-                    listMembershipViewModel: listMembershipViewModel
-                )
+                userViewTableViewCellDelegate: userViewTableViewCellDelegate
             )
         )
         
@@ -36,7 +32,7 @@ extension ListUserViewModel {
 
                 snapshot.appendSections([.main])
 
-                let items = records.map { UserItem.user(record: $0, style: .listMember) }
+                let items = records.map { UserItem.user(record: $0, kind: .listMember) }
                 snapshot.appendItems(items, toSection: .main)
 
                 let currentState = await self.stateMachine.currentState

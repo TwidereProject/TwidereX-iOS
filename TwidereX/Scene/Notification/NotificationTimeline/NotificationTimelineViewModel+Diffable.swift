@@ -23,15 +23,12 @@ extension NotificationTimelineViewModel {
         let configuration = NotificationSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
             userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-            userViewConfigurationContext: .init(
-                authContext: authContext,
-                listMembershipViewModel: nil
-            ),
             viewLayoutFramePublisher: $viewLayoutFrame
         )
         diffableDataSource = NotificationSection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: configuration
         )
 
@@ -179,7 +176,11 @@ extension NotificationTimelineViewModel {
         
         // fetch data
         do {
-            switch (feed.content, authenticationContext) {
+            guard case let .notification(object) = feed.content else {
+                assertionFailure()
+                throw AppError.implicit(.badRequest)
+            }
+            switch (object, authenticationContext) {
             case (.twitter(let status), .twitter(let authenticationContext)):
                 let query = Twitter.API.Statuses.Timeline.TimelineQuery(
                     count: 20,
@@ -190,13 +191,13 @@ extension NotificationTimelineViewModel {
                     authenticationContext: authenticationContext
                 )
                 
-            case (.mastodonNotification(let mastodonNotification), .mastodon(let authenticationContext)):
+            case (.mastodon(let notification), .mastodon(let authenticationContext)):
                 guard case let .mastodon(timelineScope) = scope else {
                     throw AppError.implicit(.badRequest)
                 }
                 _ = try await context.apiService.mastodonNotificationTimeline(
                     query: .init(
-                        maxID: mastodonNotification.id,
+                        maxID: notification.id,
                         types: timelineScope.includeTypes,
                         excludeTypes: timelineScope.excludeTypes
                     ),

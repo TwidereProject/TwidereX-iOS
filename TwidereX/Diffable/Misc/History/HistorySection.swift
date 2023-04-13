@@ -25,7 +25,6 @@ extension HistorySection {
     struct Configuration {
         weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
         weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
-        let userViewConfigurationContext: UserView.ConfigurationContext
         let viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
     }
     
@@ -35,7 +34,7 @@ extension HistorySection {
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<HistorySection, HistoryItem> {
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
-        tableView.register(UserRelationshipStyleTableViewCell.self, forCellReuseIdentifier: String(describing: UserRelationshipStyleTableViewCell.self))
+//        tableView.register(UserRelationshipStyleTableViewCell.self, forCellReuseIdentifier: String(describing: UserRelationshipStyleTableViewCell.self))
 
         let diffableDataSource = UITableViewDiffableDataSource<HistorySection, HistoryItem>(tableView: tableView) { tableView, indexPath, item in
             // data source should dispatch in main thread

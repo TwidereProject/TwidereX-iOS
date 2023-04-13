@@ -35,14 +35,19 @@ extension UITableViewDelegate where Self: DataSourceProvider & AuthContextProvid
                     user: user
                 )
             case .notification(let notification):
-                let managedObjectContext = self.context.managedObjectContext
-                guard let object = notification.object(in: managedObjectContext) else {
-                    assertionFailure()
-                    return
-                }
-                switch object {
+                switch notification {
+                case .twitter(let status):
+                    await DataSourceFacade.coordinateToStatusThreadScene(
+                        provider: self,
+                        kind: .status(.twitter(record: status))
+                    )
                 case .mastodon(let notification):
-                    if let status = notification.status {
+                    let managedObjectContext = self.context.managedObjectContext
+                    guard let object = notification.object(in: managedObjectContext) else {
+                        assertionFailure()
+                        return
+                    }
+                    if let status = object.status {
                         await DataSourceFacade.coordinateToStatusThreadScene(
                             provider: self,
                             kind: .status(.mastodon(record: status.asRecrod))
@@ -50,7 +55,7 @@ extension UITableViewDelegate where Self: DataSourceProvider & AuthContextProvid
                     } else {
                         await DataSourceFacade.coordinateToProfileScene(
                             provider: self,
-                            user: .mastodon(record: notification.account.asRecrod)
+                            user: .mastodon(record: object.account.asRecrod)
                         )
                     }
                 }

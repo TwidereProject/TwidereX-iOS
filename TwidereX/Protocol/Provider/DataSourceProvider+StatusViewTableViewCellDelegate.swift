@@ -38,54 +38,18 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
 
 // MARK: - avatar button
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
-    
-//    func tableViewCell(
-//        _ cell: UITableViewCell,
-//        statusView: StatusView,
-//        authorAvatarButtonDidPressed button: AvatarButton
-//    ) {
-//        Task {
-//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-//            guard let item = await item(from: source) else {
-//                assertionFailure()
-//                return
-//            }
-//            guard let status = await item.status(in: self.context.managedObjectContext) else {
-//                assertionFailure("only works for status data provider")
-//                return
-//            }
-//            await DataSourceFacade.coordinateToProfileScene(
-//                provider: self,
-//                target: .status,
-//                status: status
-//            )
-//        }
-//    }
-//
-//    func tableViewCell(
-//        _ cell: UITableViewCell,
-//        statusView: StatusView,
-//        quoteStatusView: StatusView,
-//        authorAvatarButtonDidPressed button: AvatarButton
-//    ) {
-//        Task {
-//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-//            guard let item = await item(from: source) else {
-//                assertionFailure()
-//                return
-//            }
-//            guard let status = await item.status(in: self.context.managedObjectContext) else {
-//                assertionFailure("only works for status data provider")
-//                return
-//            }
-//            await DataSourceFacade.coordinateToProfileScene(
-//                provider: self,
-//                target: .quote,
-//                status: status
-//            )
-//        }
-//    }
-
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        viewModel: TwidereUI.StatusView.ViewModel,
+        userAvatarButtonDidPressed user: TwidereCore.UserRecord
+    ) {
+        Task {
+            await DataSourceFacade.coordinateToProfileScene(
+                provider: self,
+                user: user
+            )
+        }   // end Task
+    }
 }
 
 // MARK: - content
@@ -136,10 +100,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
     
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool) {
         Task { @MainActor in
-            guard let status = viewModel.status else {
-                assertionFailure()
-                return
-            }
+            let status = viewModel.status.asRecord
 
             try await DataSourceFacade.responseToToggleContentSensitiveAction(
                 provider: self,
@@ -151,10 +112,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
     
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta) {
         Task { @MainActor in
-            guard let status = viewModel.status else {
-                assertionFailure()
-                return
-            }
+            let status = viewModel.status.asRecord
             
             await DataSourceFacade.responseToMetaText(
                 provider: self,
@@ -175,10 +133,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel
     ) {
         Task {
-            guard let status = viewModel.status else {
-                assertionFailure()
-                return
-            }
+            let status = viewModel.status.asRecord
             
             await DataSourceFacade.coordinateToMediaPreviewScene(
                 provider: self,
@@ -196,10 +151,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel,
         previewActionContext: ContextMenuInteractionPreviewActionContext
     ) {
-        guard let status = viewModel.status else {
-            assertionFailure()
-            return
-        }
+        let status = viewModel.status.asRecord
         
         DataSourceFacade.coordinateToMediaPreviewScene(
             provider: self,
@@ -257,10 +209,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         toggleContentWarningOverlayDisplay isReveal: Bool
     ) {
         Task {
-            guard let status = viewModel.status else {
-                assertionFailure()
-                return
-            }
+            let status = viewModel.status.asRecord
             try await DataSourceFacade.responseToToggleMediaSensitiveAction(
                 provider: self,
                 target: .status,
@@ -298,10 +247,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         pollVoteActionForViewModel pollViewModel: PollView.ViewModel
     ) {
         Task {
-            guard let status = viewModel.status else {
-                assertionFailure()
-                return
-            }
+            let status = viewModel.status.asRecord
             
             try await DataSourceFacade.responseToStatusPollVote(
                 provider: self,
@@ -320,10 +266,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Poll] not needs update. skip")
                 return
             }
-            guard let status = viewModel.status else {
-                assertionFailure()
-                return
-            }
+            let status = viewModel.status.asRecord
             
             try await DataSourceFacade.responseToStatusPollUpdate(
                 provider: self,
@@ -340,10 +283,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel
     ) {
         Task {
-            guard let status = viewModel.status else {
-                assertionFailure()
-                return
-            }
+            let status = viewModel.status.asRecord
             
             await DataSourceFacade.responseToStatusPollOption(
                 provider: self,
@@ -426,10 +366,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         statusMetricButtonDidPressed action: StatusMetricView.Action
     ) {
         Task {
-            guard let status = viewModel.status else {
-                assertionFailure()
-                return
-            }
+            let status = viewModel.status.asRecord
             // TODO:
         }   // end Task
     }
@@ -444,10 +381,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         statusToolbarButtonDidPressed action: StatusToolbarView.Action
     ) {
         Task {
-            guard let status = viewModel.status else {
-                assertionFailure()
-                return
-            }
+            let status = viewModel.status.asRecord
             await DataSourceFacade.responseToStatusToolbar(
                 provider: self,
                 viewModel: viewModel,

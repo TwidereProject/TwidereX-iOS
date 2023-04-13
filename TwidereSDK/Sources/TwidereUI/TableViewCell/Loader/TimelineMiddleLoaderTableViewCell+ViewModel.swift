@@ -12,10 +12,10 @@ import SwiftUI
 import CoreDataStack
 
 extension TimelineMiddleLoaderTableViewCell {
-    class ViewModel {
+    public class ViewModel {
         var disposeBag = Set<AnyCancellable>()
 
-        @Published var isFetching = false
+        @Published public var isFetching = false
     }
     
     func configure(

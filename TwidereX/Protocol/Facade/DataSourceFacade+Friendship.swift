@@ -62,7 +62,7 @@ extension DataSourceFacade {
         
         do {
             switch (notification, authenticationContext) {
-            case (_, .twitter):
+            case (.twitter, .twitter):
                 assertionFailure("Twitter notification has no entry for follow request")
                 return
             case (.mastodon(let notification), .mastodon(let authenticationContext)):
@@ -77,6 +77,9 @@ extension DataSourceFacade {
                     }(),
                     authenticationContext: authenticationContext
                 )
+            default:
+                assertionFailure()
+                return
             }   // end switch
             
             await notificationFeedbackGenerator.notificationOccurred(.success)
