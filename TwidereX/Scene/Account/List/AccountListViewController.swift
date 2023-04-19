@@ -31,7 +31,6 @@ final class AccountListViewController: UIViewController, NeedsDependency {
     }()
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(AccountListTableViewCell.self, forCellReuseIdentifier: String(describing: AccountListTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView

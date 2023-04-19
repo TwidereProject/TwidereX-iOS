@@ -200,6 +200,15 @@ extension MediaView.ViewModel {
 //}
 //
 extension MediaView.ViewModel {
+    public static func viewModels(from status: StatusObject) -> [MediaView.ViewModel] {
+        switch status {
+        case .twitter(let object):
+            return viewModels(from: object)
+        case .mastodon(let object):
+            return viewModels(from: object)
+        }
+    }
+    
     public static func viewModels(from status: TwitterStatus) -> [MediaView.ViewModel] {
         return status.attachments.map { attachment -> MediaView.ViewModel in
             MediaView.ViewModel(
@@ -240,38 +249,4 @@ extension MediaView.ViewModel {
             )
         }
     }
-
-//    public static func configuration(mastodonStatus status: MastodonStatus) -> [MediaView.Configuration] {
-//        func videoInfo(from attachment: MastodonAttachment) -> MediaView.Configuration.VideoInfo {
-//            MediaView.Configuration.VideoInfo(
-//                aspectRadio: attachment.size,
-//                assetURL: attachment.assetURL,
-//                previewURL: attachment.previewURL,
-//                durationMS: attachment.durationMS
-//            )
-//        }
-//
-//        let status = status.repost ?? status
-//        return status.attachments.map { attachment -> MediaView.Configuration in
-//            switch attachment.kind {
-//            case .image:
-//                let info = MediaView.Configuration.ImageInfo(
-//                    aspectRadio: attachment.size,
-//                    assetURL: attachment.assetURL,
-//                    downloadURL: attachment.downloadURL
-//                )
-//                return .image(info: info)
-//            case .video:
-//                let info = videoInfo(from: attachment)
-//                return .video(info: info)
-//            case .gifv:
-//                let info = videoInfo(from: attachment)
-//                return .gif(info: info)
-//            case .audio:
-//                // TODO:
-//                let info = videoInfo(from: attachment)
-//                return .video(info: info)
-//            }
-//        }
-//    }
 }

@@ -52,8 +52,8 @@ extension SearchUserViewModel {
                         snapshot.appendSections([.main])
                         let newItems: [UserItem] = records.map { record in
                             switch self.kind {
-                            case .friendship:
-                                return .user(record: record, kind: .relationship)
+                            case .search:
+                                return .user(record: record, kind: .search)
                             case .listMember:
                                 return .user(record: record, kind: .addListMember)
                             }   // end switch

@@ -203,25 +203,9 @@ extension MediaGridContainerView {
             }
         })
         .overlay(alignment: .bottom) {
-            HStack {
-                let viewModel = viewModels[index]
-                Spacer()
-                Group {
-                    if viewModel.mediaKind == .animatedGIF {
-                        Text("GIF")
-                    } else if let durationText = viewModel.durationText {
-                        Text("\(Image(systemName: "play.fill")) \(durationText)")
-                    }
-                }
-                .foregroundColor(Color(uiColor: .label))
-                .font(.system(.footnote, design: .default, weight: .medium))
-                .padding(.horizontal, 5)
-                .padding(.vertical, 3)
-                .background(.thinMaterial)
-                .cornerRadius(4)
-            }
-            .padding(EdgeInsets(top: 0, leading: 11, bottom: 8, trailing: 11))
-            .allowsHitTesting(false)
+            MediaMetaIndicatorView(viewModel: viewModels[index])
+                .padding(EdgeInsets(top: 0, leading: 11, bottom: 8, trailing: 11))
+                .allowsHitTesting(false)
         }
         .overlay(
             RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius)

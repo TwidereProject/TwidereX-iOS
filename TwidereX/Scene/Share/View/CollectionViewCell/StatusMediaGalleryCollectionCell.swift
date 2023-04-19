@@ -19,15 +19,15 @@ protocol StatusMediaGalleryCollectionCellDelegate: AnyObject {
 final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
     
     let logger = Logger(subsystem: "StatusMediaGalleryCollectionCell", category: "Cell")
-    
-    weak var delegate: StatusMediaGalleryCollectionCellDelegate?
-    
-    var disposeBag = Set<AnyCancellable>()
-    private(set) lazy var viewModel: ViewModel = {
-        let viewModel = ViewModel()
-        viewModel.bind(cell: self)
-        return viewModel
-    }()
+
+//    weak var delegate: StatusMediaGalleryCollectionCellDelegate?
+//
+//    var disposeBag = Set<AnyCancellable>()
+//    private(set) lazy var viewModel: ViewModel = {
+//        let viewModel = ViewModel()
+//        viewModel.bind(cell: self)
+//        return viewModel
+//    }()
     
 //    let sensitiveToggleButtonBlurVisualEffectView: UIVisualEffectView = {
 //        let visualEffectView = UIVisualEffectView(effect: ContentWarningOverlayView.blurVisualEffect)
@@ -37,11 +37,11 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
 //        return visualEffectView
 //    }()
 //    let sensitiveToggleButtonVibrancyVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: ContentWarningOverlayView.blurVisualEffect))
-    let sensitiveToggleButton: HitTestExpandedButton = {
-        let button = HitTestExpandedButton(type: .system)
-        button.setImage(Asset.Human.eyeSlashMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        return button
-    }()
+//    let sensitiveToggleButton: HitTestExpandedButton = {
+//        let button = HitTestExpandedButton(type: .system)
+//        button.setImage(Asset.Human.eyeSlashMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
+//        return button
+//    }()
     
 //    public let contentWarningOverlayView: ContentWarningOverlayView = {
 //        let overlay = ContentWarningOverlayView()
@@ -53,27 +53,28 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
     
 //    let mediaView = MediaView()
     
-    let collectionViewLayout: CoverFlowStackCollectionViewLayout = {
-        let layout = CoverFlowStackCollectionViewLayout()
-        layout.sizeScaleRatio = 0.9
-        return layout
-    }()
-    private(set) lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
-        collectionView.backgroundColor = .clear
-        collectionView.layer.masksToBounds = true
-//        collectionView.layer.cornerRadius = MediaView.cornerRadius
-        collectionView.layer.cornerCurve = .continuous
-        return collectionView
-    }()
-    var diffableDataSource: UICollectionViewDiffableDataSource<CoverFlowStackSection, CoverFlowStackItem>?
+//    let collectionViewLayout: CoverFlowStackCollectionViewLayout = {
+//        let layout = CoverFlowStackCollectionViewLayout()
+//        layout.sizeScaleRatio = 0.9
+//        return layout
+//    }()
+//    private(set) lazy var collectionView: UICollectionView = {
+//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+//        collectionView.backgroundColor = .clear
+//        collectionView.layer.masksToBounds = true
+////        collectionView.layer.cornerRadius = MediaView.cornerRadius
+//        collectionView.layer.cornerCurve = .continuous
+//        return collectionView
+//    }()
+//    var diffableDataSource: UICollectionViewDiffableDataSource<CoverFlowStackSection, CoverFlowStackItem>?
         
     override func prepareForReuse() {
         super.prepareForReuse()
     
-        disposeBag.removeAll()
+        contentConfiguration = nil
+//        disposeBag.removeAll()
 //        mediaView.prepareForReuse()
-        diffableDataSource?.applySnapshotUsingReloadData(.init())
+//        diffableDataSource?.applySnapshotUsingReloadData(.init())
     }
 
     override init(frame: CGRect) {
@@ -161,17 +162,17 @@ extension StatusMediaGalleryCollectionCell {
     
 }
 
-extension StatusMediaGalleryCollectionCell {
-    @objc private func sensitiveToggleButtonDidPressed(_ sender: UIButton) {
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-//        delegate?.statusMediaGalleryCollectionCell(self, toggleContentWarningOverlayViewDisplay: contentWarningOverlayView)
-    }
-}
-
-// MARK: - UICollectionViewDelegate
-extension StatusMediaGalleryCollectionCell: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did select \(indexPath.debugDescription)")
-        delegate?.statusMediaGalleryCollectionCell(self, coverFlowCollectionView: collectionView, didSelectItemAt: indexPath)
-    }
-}
+//extension StatusMediaGalleryCollectionCell {
+//    @objc private func sensitiveToggleButtonDidPressed(_ sender: UIButton) {
+//        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+////        delegate?.statusMediaGalleryCollectionCell(self, toggleContentWarningOverlayViewDisplay: contentWarningOverlayView)
+//    }
+//}
+//
+//// MARK: - UICollectionViewDelegate
+//extension StatusMediaGalleryCollectionCell: UICollectionViewDelegate {
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did select \(indexPath.debugDescription)")
+//        delegate?.statusMediaGalleryCollectionCell(self, coverFlowCollectionView: collectionView, didSelectItemAt: indexPath)
+//    }
+//}

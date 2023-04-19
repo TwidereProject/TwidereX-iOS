@@ -42,8 +42,6 @@ extension UserView {
 //        @Published public var authenticationContext: AuthenticationContext?       // me
 //        @Published public var userAuthenticationContext: AuthenticationContext?
 //
-//        @Published public var header: Header = .none
-//
 //        @Published public var userIdentifier: UserIdentifier? = nil
 //        @Published public var avatarImageURL: URL?
 //        @Published public var avatarBadge: AvatarBadge = .none
@@ -56,8 +54,12 @@ extension UserView {
 //
 //        @Published public var followerCount: Int?
 //
+        // follow request
         @Published public var isFollowRequestActionDisplay = false
         @Published public var isFollowRequestBusy = false
+        
+        // follow
+        @Published public var followButtonViewModel: FollowButton.ViewModel?
 //
 //        public var listMembershipViewModel: ListMembershipViewModel?
 //        @Published public var listOwnerUserIdentifier: UserIdentifier? = nil
@@ -84,6 +86,7 @@ extension UserView {
             self.delegate = delegate
             // end init
             
+            // notification
             switch kind {
             case .notification(let notification):
                 self.notification = notification
@@ -91,6 +94,7 @@ extension UserView {
                 break
             }
             
+            // follow request
             switch notification {
             case .twitter:
                 break
@@ -98,6 +102,15 @@ extension UserView {
                 self.isFollowRequestActionDisplay = notification.notificationType == .followRequest
                 notification.publisher(for: \.isFollowRequestBusy)
                     .assign(to: &$isFollowRequestBusy)
+            default:
+                break
+            }
+            
+            switch kind {
+            case .search:       // follow
+                if let authContext = authContext {
+                    self.followButtonViewModel = .init(user: user, authContext: authContext)
+                }
             default:
                 break
             }
@@ -141,12 +154,12 @@ extension UserView.ViewModel {
         // headline: name | lock | username
         // subheadline: follower count
         // accessory: follow button
-        case relationship
+        case search
         
         // headline: name | lock
         // subheadline: username
-        // accessory: action button
-        case friendship
+        // accessory: none
+        case friend
         
         // header: notification
         // headline: name | lock | username

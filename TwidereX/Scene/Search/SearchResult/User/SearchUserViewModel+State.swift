@@ -92,7 +92,7 @@ extension SearchUserViewModel.State {
                             searchText: searchText,
                             following: {
                                 switch viewModel.kind {
-                                case .friendship:       return false
+                                case .search:       return false
                                 case .listMember:       return true
                                 }
                             }(),

@@ -181,9 +181,9 @@ extension UserView {
             switch viewModel.kind {
             case .account:
                 nameLabel
-            case .relationship:
+            case .search:
                 nameLabel
-            case .friendship:
+            case .friend:
                 nameLabel
             case .notification:
                 nameLabel
@@ -202,9 +202,9 @@ extension UserView {
             switch viewModel.kind {
             case .account:
                 usernameLabel
-            case .relationship:
+            case .search:
                 usernameLabel
-            case .friendship:
+            case .friend:
                 usernameLabel
             case .notification:
                 usernameLabel
@@ -223,9 +223,10 @@ extension UserView {
             switch viewModel.kind {
             case .account:
                 menuView
-            case .relationship:
+            case .search:
+                // TODO: follow button
                 EmptyView()
-            case .friendship:
+            case .friend:
                 EmptyView()
             case .notification:
                 if viewModel.isFollowRequestActionDisplay {

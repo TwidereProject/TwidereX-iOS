@@ -4,13 +4,16 @@
 import PackageDescription
 
 let package = Package(
-    name: "CoverFlowStackCollectionViewLayout",
-    platforms: [.iOS(.v10)],
+    name: "CoverFlowStackLayout",
+    platforms: [.iOS(.v13)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "CoverFlowStackCollectionViewLayout",
-            targets: ["CoverFlowStackCollectionViewLayout"]),
+            name: "CoverFlowStackLayout",
+            targets: [
+                "CoverFlowStackCollectionViewLayout",
+                "CoverFlowStackScrollView",
+            ]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -21,6 +24,9 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "CoverFlowStackCollectionViewLayout",
+            dependencies: []),
+        .target(
+            name: "CoverFlowStackScrollView",
             dependencies: []),
         .testTarget(
             name: "CoverFlowStackCollectionViewLayoutTests",

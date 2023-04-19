@@ -16,6 +16,8 @@ public class StatusTableViewCell: UITableViewCell {
     
     public weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
     
+    @Published public private(set) var viewLayoutaFrame = ViewLayoutFrame()
+    
     public override func prepareForReuse() {
         super.prepareForReuse()
         
@@ -31,6 +33,18 @@ public class StatusTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         _init()
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        viewLayoutaFrame.update(view: self)
+    }
+    
+    public override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+        
+        viewLayoutaFrame.update(view: self)
     }
     
 }

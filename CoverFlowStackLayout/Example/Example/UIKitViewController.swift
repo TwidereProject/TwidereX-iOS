@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  UIKitViewController.swift
 //  Example
 //
 //  Created by Cirno MainasuK on 2021-10-15.
@@ -8,7 +8,7 @@
 import UIKit
 import CoverFlowStackCollectionViewLayout
 
-class ViewController: UIViewController {
+class UIKitViewController: UIViewController {
     
     var colors: [UIColor] = (0..<20).map { i in
         return [.systemRed, .systemGreen, .systemBlue][i % 3]
@@ -25,6 +25,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        title = "UIKit"
         
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
@@ -64,7 +66,7 @@ extension CollectionViewCell {
 }
 
 // MARK: - UICollectionViewDataSource
-extension ViewController: UICollectionViewDataSource {
+extension UIKitViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return colors.count
     }

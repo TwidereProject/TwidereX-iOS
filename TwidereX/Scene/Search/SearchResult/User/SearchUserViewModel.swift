@@ -89,7 +89,7 @@ final class SearchUserViewModel {
 
 extension SearchUserViewModel {
     enum Kind {
-        case friendship
+        case search
         case listMember(list: ListRecord)
     }
 }

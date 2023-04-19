@@ -352,7 +352,6 @@
 		DBFA471F2859C4AE00C9FF7F /* UserLikeTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA471E2859C4AE00C9FF7F /* UserLikeTimelineViewController.swift */; };
 		DBFA47212859C4F300C9FF7F /* UserLikeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA47202859C4F300C9FF7F /* UserLikeTimelineViewModel.swift */; };
 		DBFA4A2025A5924C00D51703 /* ListTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1F25A5924C00D51703 /* ListTimelineViewModel+Diffable.swift */; };
-		DBFADA892872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */; };
 		DBFADA8B2872BEDE00B512D6 /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DBFADA8A2872BEDE00B512D6 /* TabBarPager */; };
 		DBFCC44725667C620016698E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC44625667C620016698E /* UILabel.swift */; };
 		DBFCEF1228939C9600EEBFB1 /* UserHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCEF1128939C9600EEBFB1 /* UserHistoryViewController.swift */; };
@@ -541,7 +540,6 @@
 		DB2EBBEF255D368200956CAA /* TableViewEntryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewEntryRow.swift; sourceTree = "<group>"; };
 		DB2FFF3D258B78B0003DBC19 /* AVPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayer.swift; sourceTree = "<group>"; };
 		DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionToolbarContainer.swift; sourceTree = "<group>"; };
-		DB33E5B42719637400EC2225 /* CoverFlowStackCollectionViewLayout */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CoverFlowStackCollectionViewLayout; sourceTree = "<group>"; };
 		DB36F35D257F74C00028F81E /* ScrollViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewContainer.swift; sourceTree = "<group>"; };
 		DB36F375257F79DB0028F81E /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		DB37F69F274B556B0081603F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -811,6 +809,7 @@
 		DBDA8E9724FE075E006750DC /* MainTabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineViewController.swift; sourceTree = "<group>"; };
 		DBDDE72D254C084A0057CF8E /* SearchUserViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchUserViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DBE399D829EFE3A7008FA278 /* CoverFlowStackLayout */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = CoverFlowStackLayout; sourceTree = "<group>"; };
 		DBE6357928855302001C114B /* PushNotificationScratchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationScratchViewController.swift; sourceTree = "<group>"; };
 		DBE6357C2885557C001C114B /* PushNotificationScratchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationScratchViewModel.swift; sourceTree = "<group>"; };
 		DBE6357E288555AE001C114B /* PushNotificationScratchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationScratchView.swift; sourceTree = "<group>"; };
@@ -898,7 +897,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DB05E13D29C321960055BF3F /* TwidereSDK in Frameworks */,
-				DBFADA892872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout in Frameworks */,
 				DBFADA8B2872BEDE00B512D6 /* TabBarPager in Frameworks */,
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
 			);
@@ -2039,7 +2037,7 @@
 		DBDA8E1524FCF8A3006750DC = {
 			isa = PBXGroup;
 			children = (
-				DB33E5B42719637400EC2225 /* CoverFlowStackCollectionViewLayout */,
+				DBE399D829EFE3A7008FA278 /* CoverFlowStackLayout */,
 				DB51DC372716AEF000A0D8FB /* TabBarPager */,
 				DB43239D251491EB004FAAEC /* TwidereSDK */,
 				DBDA8E2024FCF8A3006750DC /* TwidereX */,
@@ -2477,7 +2475,6 @@
 			);
 			name = TwidereX;
 			packageProductDependencies = (
-				DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */,
 				DBFADA8A2872BEDE00B512D6 /* TabBarPager */,
 				DB05E13C29C321960055BF3F /* TwidereSDK */,
 			);
@@ -4130,10 +4127,6 @@
 		DB8BFB1D29D1FC6200535092 /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TwidereSDK;
-		};
-		DBFADA882872BEDA00B512D6 /* CoverFlowStackCollectionViewLayout */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CoverFlowStackCollectionViewLayout;
 		};
 		DBFADA8A2872BEDE00B512D6 /* TabBarPager */ = {
 			isa = XCSwiftPackageProductDependency;

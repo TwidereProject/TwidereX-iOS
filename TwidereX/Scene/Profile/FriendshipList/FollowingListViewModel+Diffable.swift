@@ -52,7 +52,7 @@ extension FriendshipListViewModel {
                         var snapshot = NSDiffableDataSourceSnapshot<UserSection, UserItem>()
                         snapshot.appendSections([.main])
                         let newItems: [UserItem] = records.map {
-                            .user(record: $0, kind: .friendship)
+                            .user(record: $0, kind: .friend)
                         }
                         snapshot.appendItems(newItems, toSection: .main)
                         return snapshot

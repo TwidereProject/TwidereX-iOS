@@ -9,23 +9,25 @@
 /* Begin PBXBuildFile section */
 		DB33E59D27193C9600EC2225 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB33E59C27193C9600EC2225 /* AppDelegate.swift */; };
 		DB33E59F27193C9600EC2225 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB33E59E27193C9600EC2225 /* SceneDelegate.swift */; };
-		DB33E5A127193C9600EC2225 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB33E5A027193C9600EC2225 /* ViewController.swift */; };
 		DB33E5A427193C9600EC2225 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DB33E5A227193C9600EC2225 /* Main.storyboard */; };
 		DB33E5A627193C9900EC2225 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB33E5A527193C9900EC2225 /* Assets.xcassets */; };
 		DB33E5A927193C9900EC2225 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DB33E5A727193C9900EC2225 /* LaunchScreen.storyboard */; };
-		DB33E5B327193CEA00EC2225 /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DB33E5B227193CEA00EC2225 /* CoverFlowStackCollectionViewLayout */; };
+		DB3E0D9829ED51650077EE8B /* SwiftUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3E0D9729ED51650077EE8B /* SwiftUIViewController.swift */; };
+		DBE399DB29EFE448008FA278 /* CoverFlowStackLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DBE399DA29EFE448008FA278 /* CoverFlowStackLayout */; };
+		DBE3DC4429ED518F0054DC25 /* UIKitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE3DC4329ED518F0054DC25 /* UIKitViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		DB33E59927193C9600EC2225 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB33E59C27193C9600EC2225 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DB33E59E27193C9600EC2225 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		DB33E5A027193C9600EC2225 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		DB33E5A327193C9600EC2225 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DB33E5A527193C9900EC2225 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DB33E5A827193C9900EC2225 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DB33E5AA27193C9900EC2225 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DB33E5B027193CDB00EC2225 /* CoverFlowStackCollectionViewLayout */ = {isa = PBXFileReference; lastKnownFileType = folder; name = CoverFlowStackCollectionViewLayout; path = ..; sourceTree = "<group>"; };
+		DB3E0D9729ED51650077EE8B /* SwiftUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIViewController.swift; sourceTree = "<group>"; };
+		DBE399D929EFE429008FA278 /* CoverFlowStackLayout */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = CoverFlowStackLayout; path = ..; sourceTree = "<group>"; };
+		DBE3DC4329ED518F0054DC25 /* UIKitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIKitViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,7 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB33E5B327193CEA00EC2225 /* CoverFlowStackCollectionViewLayout in Frameworks */,
+				DBE399DB29EFE448008FA278 /* CoverFlowStackLayout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,7 +45,7 @@
 		DB33E59027193C9600EC2225 = {
 			isa = PBXGroup;
 			children = (
-				DB33E5B027193CDB00EC2225 /* CoverFlowStackCollectionViewLayout */,
+				DBE399D929EFE429008FA278 /* CoverFlowStackLayout */,
 				DB33E59B27193C9600EC2225 /* Example */,
 				DB33E59A27193C9600EC2225 /* Products */,
 				DB33E5B127193CEA00EC2225 /* Frameworks */,
@@ -63,7 +65,8 @@
 			children = (
 				DB33E59C27193C9600EC2225 /* AppDelegate.swift */,
 				DB33E59E27193C9600EC2225 /* SceneDelegate.swift */,
-				DB33E5A027193C9600EC2225 /* ViewController.swift */,
+				DBE3DC4329ED518F0054DC25 /* UIKitViewController.swift */,
+				DB3E0D9729ED51650077EE8B /* SwiftUIViewController.swift */,
 				DB33E5A227193C9600EC2225 /* Main.storyboard */,
 				DB33E5A527193C9900EC2225 /* Assets.xcassets */,
 				DB33E5A727193C9900EC2225 /* LaunchScreen.storyboard */,
@@ -96,7 +99,7 @@
 			);
 			name = Example;
 			packageProductDependencies = (
-				DB33E5B227193CEA00EC2225 /* CoverFlowStackCollectionViewLayout */,
+				DBE399DA29EFE448008FA278 /* CoverFlowStackLayout */,
 			);
 			productName = Example;
 			productReference = DB33E59927193C9600EC2225 /* Example.app */;
@@ -153,7 +156,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB33E5A127193C9600EC2225 /* ViewController.swift in Sources */,
+				DB3E0D9829ED51650077EE8B /* SwiftUIViewController.swift in Sources */,
+				DBE3DC4429ED518F0054DC25 /* UIKitViewController.swift in Sources */,
 				DB33E59D27193C9600EC2225 /* AppDelegate.swift in Sources */,
 				DB33E59F27193C9600EC2225 /* SceneDelegate.swift in Sources */,
 			);
@@ -377,9 +381,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		DB33E5B227193CEA00EC2225 /* CoverFlowStackCollectionViewLayout */ = {
+		DBE399DA29EFE448008FA278 /* CoverFlowStackLayout */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = CoverFlowStackCollectionViewLayout;
+			productName = CoverFlowStackLayout;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

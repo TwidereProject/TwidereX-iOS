@@ -65,6 +65,25 @@ extension StatusSection {
                     .margins(.vertical, 0)  // remove vertical margins
                 }
                 return cell
+                
+            case .status(let record):
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                cell.statusViewTableViewCellDelegate = configuration.statusViewTableViewCellDelegate
+                context.managedObjectContext.performAndWait {
+                    guard let status = record.object(in: context.managedObjectContext) else { return }
+                    let viewModel = StatusView.ViewModel(
+                        status: status,
+                        authContext: authContext,
+                        delegate: cell,
+                        viewLayoutFramePublisher: cell.$viewLayoutaFrame
+                    )
+                    
+                    cell.contentConfiguration = UIHostingConfiguration {
+                        StatusView(viewModel: viewModel)
+                    }
+                    .margins(.vertical, 0)  // remove vertical margins
+                }
+                return cell
 
             case .feedLoader(let record):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
@@ -78,34 +97,7 @@ extension StatusSection {
 //                }
                 return cell
                 
-            case .status(let status):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
-//                setupStatusPollDataSource(
-//                    context: context,
-//                    statusView: cell.statusView,
-//                    configurationContext: configuration.statusViewConfigurationContext
-//                )
-//                context.managedObjectContext.performAndWait {
-//                    switch status {
-//                    case .twitter(let record):
-//                        guard let status = record.object(in: context.managedObjectContext) else { return }
-//                        configure(
-//                            tableView: tableView,
-//                            cell: cell,
-//                            viewModel: StatusTableViewCell.ViewModel(value: .twitterStatus(status)),
-//                            configuration: configuration
-//                        )
-//                    case .mastodon(let record):
-//                        guard let status = record.object(in: context.managedObjectContext) else { return }
-//                        configure(
-//                            tableView: tableView,
-//                            cell: cell,
-//                            viewModel: StatusTableViewCell.ViewModel(value: .mastodonStatus(status)),
-//                            configuration: configuration
-//                        )
-//                    }   // end switch
-//                }
-                return cell
+
                 
             case .topLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
