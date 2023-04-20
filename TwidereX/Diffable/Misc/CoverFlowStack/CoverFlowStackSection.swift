@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import TwidereCore
 
 enum CoverFlowStackSection: Hashable {
     case main
@@ -22,7 +23,7 @@ extension CoverFlowStackSection {
         configuration: Configuration
     ) -> UICollectionViewDiffableDataSource<CoverFlowStackSection, CoverFlowStackItem> {
         
-        let mediaCell = UICollectionView.CellRegistration<CoverFlowStackMediaCollectionCell, MediaView.Configuration> { cell, indexPath, configuration in
+        let mediaCell = UICollectionView.CellRegistration<CoverFlowStackMediaCollectionCell, MediaView.ViewModel> { cell, indexPath, configuration in
             cell.configure(configuration: configuration)
         }
         

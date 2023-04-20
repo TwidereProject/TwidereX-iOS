@@ -9,7 +9,6 @@
 import SwiftUI
 import TwidereAsset
 import TwidereLocalization
-import TwidereUI
 import func QuartzCore.CACurrentMediaTime
 
 struct SidebarView: View {
@@ -132,9 +131,10 @@ extension SidebarView {
 #if DEBUG
 struct SidebarView_Previews: PreviewProvider {
     static var previews: some View {
-        SidebarView(viewModel: SidebarViewModel(context: .shared))
-            .previewLayout(.fixed(width: 80, height: 800))
-            
+        if let authContext = AuthContext.mock(context: .shared) {
+            SidebarView(viewModel: SidebarViewModel(context: .shared, authContext: authContext))
+                .previewLayout(.fixed(width: 80, height: 800))
+        }
     }
 }
 #endif

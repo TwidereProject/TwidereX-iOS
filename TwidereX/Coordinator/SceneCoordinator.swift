@@ -11,7 +11,6 @@ import UIKit
 import Combine
 import SafariServices
 import CoreDataStack
-import TwidereUI
 
 final public class SceneCoordinator {
     
@@ -44,7 +43,7 @@ extension SceneCoordinator {
         case show                           // push
         case showDetail                     // replace
         case modal(animated: Bool, completion: (() -> Void)? = nil)
-        case custom(transitioningDelegate: UIViewControllerTransitioningDelegate)
+        case custom(animated: Bool, transitioningDelegate: UIViewControllerTransitioningDelegate)
         case customPush
         case safariPresent(animated: Bool, completion: (() -> Void)? = nil)
         case activityViewControllerPresent(animated: Bool, completion: (() -> Void)? = nil)
@@ -100,11 +99,11 @@ extension SceneCoordinator {
         case setting(viewModel: SettingListViewModel)
         case accountPreference(viewModel: AccountPreferenceViewModel)
         case behaviorsPreference(viewModel: BehaviorsPreferenceViewModel)
-        case displayPreference
-        case about
+        case displayPreference(viewModel: DisplayPreferenceViewModel)
+        case about(viewModel: AboutViewModel)
         
         #if DEBUG
-        case developer
+        case developer(viewModel: DeveloperViewModel)
         
         case pushNotificationScratch
         #endif
@@ -118,24 +117,36 @@ extension SceneCoordinator {
 extension SceneCoordinator {
     
     @MainActor
-    func setup() {
+    func setup(authentication record: ManagedObjectRecord<AuthenticationIndex>? = nil) {
         let rootViewController: UIViewController
         
         do {
-            let request = AuthenticationIndex.sortedFetchRequest
-            request.fetchLimit = 1
-            let _authenticationIndex = try context.managedObjectContext.fetch(request).first
+            // check AuthContext
+            let _authenticationIndex: AuthenticationIndex? = try {
+                if let index = record?.object(in: context.managedObjectContext) {
+                    return index
+                } else {
+                    let request = AuthenticationIndex.sortedFetchRequest
+                    request.fetchLimit = 1
+                    let result = try context.managedObjectContext.fetch(request).first
+                    return result
+                }
+            }()
             guard let authenticationIndex = _authenticationIndex,
                   let authContext = AuthContext(authenticationIndex: authenticationIndex)
             else {
+                // no AuthContext, use empty ViewController as root and show welcome via modal
                 let configuration = WelcomeViewModel.Configuration(allowDismissModal: false)
                 let welcomeViewModel = WelcomeViewModel(context: context, configuration: configuration)
-                let welcomeViewController = WelcomeViewController()
-                welcomeViewController.viewModel = welcomeViewModel
-                welcomeViewController.context = context
-                welcomeViewController.coordinator = self
-                rootViewController = welcomeViewController
-                sceneDelegate.window?.rootViewController = rootViewController               // entry #1: Welcome
+                sceneDelegate.window?.rootViewController = UIViewController()
+                // use async without animation modal to fix the UIKit safe-area not take effect issue
+                DispatchQueue.main.async {
+                    self.present(
+                        scene: .welcome(viewModel: welcomeViewModel),
+                        from: nil,
+                        transition: .modal(animated: false)
+                    )                                                                       // entry #1: Welcome
+                }
                 return
             }
         
@@ -218,10 +229,10 @@ extension SceneCoordinator {
             }
             presentingViewController.present(modalNavigationController, animated: animated, completion: completion)
             
-        case .custom(let transitioningDelegate):
+        case .custom(let animated, let transitioningDelegate):
             viewController.modalPresentationStyle = .custom
             viewController.transitioningDelegate = transitioningDelegate
-            sender?.present(viewController, animated: true, completion: nil)
+            sender?.present(viewController, animated: animated, completion: nil)
             
         case .customPush:
             // set delegate in view controller
@@ -381,13 +392,19 @@ private extension SceneCoordinator {
             let _viewController = BehaviorsPreferenceViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
-        case .displayPreference:
-            viewController = DisplayPreferenceViewController()
-        case .about:
-            viewController = AboutViewController()
+        case .displayPreference(let viewModel):
+            let _viewController = DisplayPreferenceViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .about(let viewModel):
+            let _viewController = AboutViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         #if DEBUG
-        case .developer:
-            viewController = DeveloperViewController()
+        case .developer(let viewModel):
+            let _viewController = DeveloperViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .pushNotificationScratch:
             viewController = PushNotificationScratchViewController()
         #endif
@@ -450,13 +467,19 @@ extension SceneCoordinator {
                 return
             }
             
+            let mastodonAuthenticationContext = MastodonAuthenticationContext(authentication: authentication)
+            let authConext = AuthContext(authenticationContext: .mastodon(authenticationContext: mastodonAuthenticationContext))
+            
             // 1. active notification account
-            guard let currentAuthenticationContext = context.authenticationService.activeAuthenticationContext else {
-                // discard task if no available account
-                return
-            }
+            let authenticationIndexRequest = AuthenticationIndex.sortedFetchRequest
+            authenticationIndexRequest.fetchLimit = 1
+            let _authenticationIndex = try context.managedObjectContext.fetch(authenticationIndexRequest).first
+            guard let authenticationIndex = _authenticationIndex,
+                  let currentAuthenticationContext = AuthContext(authenticationIndex: authenticationIndex)
+            else { return }
+                    
             let needsSwitchActiveAccount: Bool = {
-                switch currentAuthenticationContext {
+                switch currentAuthenticationContext.authenticationContext {
                 case .mastodon(let authenticationContext):
                     let result = authenticationContext.authorization.accessToken != pushNotification.accessToken
                     return result
@@ -491,6 +514,7 @@ extension SceneCoordinator {
             case .follow:
                 let remoteProfileViewModel = RemoteProfileViewModel(
                     context: context,
+                    authContext: authConext,
                     profileContext: .mastodon(.userID(notification.account.id))
                 )
                 present(
@@ -517,7 +541,8 @@ extension SceneCoordinator {
                 }
                 let statusThreadViewModel = StatusThreadViewModel(
                     context: context,
-                    root: .root(context: .init(status: .mastodon(record: root.asRecrod)))
+                    authContext: authConext,
+                    kind: .status(.mastodon(record: root.asRecrod))
                 )
                 present(
                     scene: .statusThread(viewModel: statusThreadViewModel),

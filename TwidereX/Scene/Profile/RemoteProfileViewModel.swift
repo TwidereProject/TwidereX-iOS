@@ -14,8 +14,12 @@ import MastodonSDK
 
 final class RemoteProfileViewModel: ProfileViewModel {
     
-    init(context: AppContext, profileContext: ProfileContext) {
-        super.init(context: context)
+    init(
+        context: AppContext,
+        authContext: AuthContext,
+        profileContext: ProfileContext
+    ) {
+        super.init(context: context, authContext: authContext)
         
         configure(profileContext: profileContext)
     }
@@ -26,7 +30,7 @@ final class RemoteProfileViewModel: ProfileViewModel {
             setup(user: record)
         case .twitter(let twitterContext):
             Task {
-                guard case let .twitter(authenticationContext) = context.authenticationService.activeAuthenticationContext else { return }
+                guard case let .twitter(authenticationContext) = self.authContext.authenticationContext else { return }
                 do {
                     let _record = try await fetchTwitterUser(
                         twitterContext: twitterContext,
@@ -40,7 +44,7 @@ final class RemoteProfileViewModel: ProfileViewModel {
             }   // end Task
         case .mastodon(let mastodonContext):
             Task {
-                guard case let .mastodon(authenticationContext) = context.authenticationService.activeAuthenticationContext else { return }
+                guard case let .mastodon(authenticationContext) = self.authContext.authenticationContext else { return }
                 do {
                     let _record = try await fetchMastodonUser(
                         mastodonContext: mastodonContext,

@@ -49,13 +49,12 @@ extension SettingListViewController {
                 guard let self = self else { return }                
                 switch entry.type {
                 case .account:
-                    // FIXME:
-                    guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
-                    guard let user = self.viewModel.user else { return }
+                    let authContext = self.viewModel.authContext
+                    guard let user = authContext.authenticationContext.user(in: self.context.managedObjectContext) else { return }
 
                     let accountPreferenceViewModel = AccountPreferenceViewModel(
                         context: self.context,
-                        auth: .init(authenticationContext: authenticationContext),
+                        authContext: self.viewModel.authContext,
                         user: user
                     )
                     self.coordinator.present(
@@ -71,7 +70,8 @@ extension SettingListViewController {
                         transition: .show
                     )
                 case .display:
-                    self.coordinator.present(scene: .displayPreference, from: self, transition: .show)
+                    let displayPreferenceViewModel = DisplayPreferenceViewModel(authContext: self.viewModel.authContext)
+                    self.coordinator.present(scene: .displayPreference(viewModel: displayPreferenceViewModel), from: self, transition: .show)
                 case .layout:
                     break
                 case .webBrowser:
@@ -79,10 +79,12 @@ extension SettingListViewController {
                 case .appIcon:
                     break
                 case .about:
-                    self.coordinator.present(scene: .about, from: self, transition: .show)
+                    let aboutViewModel = AboutViewModel(authContext: self.viewModel.authContext)
+                    self.coordinator.present(scene: .about(viewModel: aboutViewModel), from: self, transition: .show)
                 #if DEBUG
                 case .developer:
-                    self.coordinator.present(scene: .developer, from: self, transition: .show)
+                    let developerViewModel = DeveloperViewModel(authContext: self.viewModel.authContext)
+                    self.coordinator.present(scene: .developer(viewModel: developerViewModel), from: self, transition: .show)
                 #endif
                 }
             }

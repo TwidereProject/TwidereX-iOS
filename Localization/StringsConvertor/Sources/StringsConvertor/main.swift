@@ -52,19 +52,20 @@ class Helper {
     
     private func map(language: String) -> String? {
         switch language {
-        case "ar_SA":   return "ar"         // Arabic
-        case "eu_ES":   return "eu"         // Basque
-        case "en_US":   return "en"
-        case "zh_CN":   return "zh-Hans"    // Chinese Simplified
-        case "ja_JP":   return "ja"         // Japanese
-        case "gl_ES":   return "gl"         // Galician
-        case "de_DE":   return "de"         // German
-        case "pt_BR":   return "pt-BR"      // Brazilian Portuguese
-        case "ca_ES":   return "ca"         // Catalan
-        case "es_ES":   return "es"         // Spanish
-        case "ko_KR":   return "ko"         // Korean
-        case "tr_TR":   return "tr"         // Turkish
-        default:        return nil
+        case "Base.lproj":      return "Base"
+        case "ar_SA":           return "ar"         // Arabic
+        case "eu_ES":           return "eu"         // Basque
+        case "en_US":           return "en"
+        case "zh_CN":           return "zh-Hans"    // Chinese Simplified
+        case "ja_JP":           return "ja"         // Japanese
+        case "gl_ES":           return "gl"         // Galician
+        case "de_DE":           return "de"         // German
+        case "pt_BR":           return "pt-BR"      // Brazilian Portuguese
+        case "ca_ES":           return "ca"         // Catalan
+        case "es_ES":           return "es"         // Spanish
+        case "ko_KR":           return "ko"         // Korean
+        case "tr_TR":           return "tr"         // Turkish
+        default:                return nil
         }
     }
     

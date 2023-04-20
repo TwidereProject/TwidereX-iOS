@@ -11,7 +11,6 @@ import UIKit
 import SwiftUI
 import Combine
 import CoreDataStack
-import TwidereCommon
 import TwidereCore
 import TwitterSDK
 import MastodonSDK

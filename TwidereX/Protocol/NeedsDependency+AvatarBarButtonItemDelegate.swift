@@ -9,7 +9,7 @@
 import UIKit
 
 // MARK: - AvatarBarButtonItemDelegate
-extension NeedsDependency where Self: AvatarBarButtonItemDelegate {
+extension NeedsDependency where Self: AvatarBarButtonItemDelegate & AuthContextProvider {
     
     func avatarBarButtonItem(
         _ barButtonItem: AvatarBarButtonItem,
@@ -19,7 +19,7 @@ extension NeedsDependency where Self: AvatarBarButtonItemDelegate {
             let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
             feedbackGenerator.impactOccurred()
             
-            let accountListViewModel = AccountListViewModel(context: context)
+            let accountListViewModel = AccountListViewModel(context: context, authContext: authContext)
             coordinator.present(
                 scene: .accountList(viewModel: accountListViewModel),
                 from: nil,

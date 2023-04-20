@@ -107,7 +107,8 @@ extension TimelineViewModel.LoadOldestState {
                     case .home:
                         guard let record = viewModel.feedFetchedResultsController.records.last else { return nil }
                         guard let feed = record.object(in: managedObjectContext) else { return nil }
-                        return feed.statusObject?.asRecord
+                        guard case let .status(status) = feed.content else { return nil }
+                        return status.asRecord
                     case .public, .hashtag, .list, .search, .user:
                         guard let status = viewModel.statusRecordFetchedResultController.records.last else { return nil }
                         return status
@@ -121,10 +122,7 @@ extension TimelineViewModel.LoadOldestState {
         private func fetch(anchor record: StatusRecord?) async {
             guard let viewModel = viewModel, let _ = stateMachine else { return }
             
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else {
-                enter(state: Fail.self)
-                return
-            }
+            let authenticationContext = viewModel.authContext.authenticationContext
             
             if nextInput == nil {
                 let managedObjectContext = viewModel.context.managedObjectContext
@@ -133,10 +131,8 @@ extension TimelineViewModel.LoadOldestState {
                     authenticationContext: authenticationContext,
                     kind: viewModel.kind,
                     position: {
-                        guard let record = record else {
-                            return .top(anchor: nil)
-                        }
-                        return .bottom(anchor: record)
+                        // always reload at top when nextInput is nil
+                        return .top(anchor: nil)
                     }(),
                     filter: StatusFetchViewModel.Timeline.Filter(rule: .empty)
                 )

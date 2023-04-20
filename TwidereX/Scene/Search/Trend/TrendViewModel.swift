@@ -20,6 +20,7 @@ final class TrendViewModel: ObservableObject {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let trendService: TrendService
     @Published var trendGroupIndex: TrendService.TrendGroupIndex = .none
     @Published var searchText = ""
@@ -32,28 +33,24 @@ final class TrendViewModel: ObservableObject {
 
     let activeTwitterTrendPlacePublisher = PassthroughSubject<Twitter.Entity.Trend.Place, Never>()
     
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
         self.context = context
+        self.authContext = authContext
         self.trendService = TrendService(apiService: context.apiService)
         // end init
         
-        context.authenticationService.$activeAuthenticationContext
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                
-                switch authenticationContext {
-                case .twitter:
-                    let placeID = TrendViewModel.defaultTwitterTrendPlace?.woeid ?? 1 // fallback to world-wide "1"
-                    self.trendGroupIndex = .twitter(placeID: placeID)
-                case .mastodon(let authenticationContext):
-                    self.trendGroupIndex = .mastodon(domain: authenticationContext.domain)
-                case nil:
-                    self.trendGroupIndex = .none
-                }
-            }
-            .store(in: &disposeBag)
+        switch authContext.authenticationContext {
+        case .twitter:
+            let placeID = TrendViewModel.defaultTwitterTrendPlace?.woeid ?? 1 // fallback to world-wide "1"
+            self.trendGroupIndex = .twitter(placeID: placeID)
+        case .mastodon(let authenticationContext):
+            self.trendGroupIndex = .mastodon(domain: authenticationContext.domain)
+        case nil:
+            self.trendGroupIndex = .none
+        }
         
         Publishers.CombineLatest(
             $trendGroupIndex,
@@ -81,7 +78,7 @@ final class TrendViewModel: ObservableObject {
 extension TrendViewModel {
     func fetchTrendPlaces() async throws {
         guard twitterTrendPlaces.isEmpty else { return }
-        guard case let .twitter(authenticationContext) = context.authenticationService.activeAuthenticationContext else { return }
+        guard case let .twitter(authenticationContext) = authContext.authenticationContext else { return }
         let response = try await context.apiService.twitterTrendPlaces(authenticationContext: authenticationContext)
         twitterTrendPlaces = response.value
             .filter { $0.parentID == 1 }

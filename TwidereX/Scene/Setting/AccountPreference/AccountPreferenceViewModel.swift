@@ -17,7 +17,7 @@ final class AccountPreferenceViewModel: ObservableObject {
 
     // input
     let context: AppContext
-    let auth: AuthContext
+    let authContext: AuthContext
     let user: UserObject
     
     // notification
@@ -29,19 +29,26 @@ final class AccountPreferenceViewModel: ObservableObject {
     @Published var isMentionEnabled = true
 
     // output
+    @Published var userViewModel: UserView.ViewModel?
     let listEntryPublisher = PassthroughSubject<AccountPreferenceListEntry, Never>()
     
     init(
         context: AppContext,
-        auth: AuthContext,
+        authContext: AuthContext,
         user: UserObject
     ) {
         self.context = context
-        self.auth = auth
+        self.authContext = authContext
         self.user = user
         // end init
         
         setupNotificationSource()
+        userViewModel = UserView.ViewModel(
+            user: user,
+            authContext: authContext,
+            kind: .plain,
+            delegate: nil
+        )
     }
     
     deinit {
@@ -60,7 +67,7 @@ extension AccountPreferenceViewModel {
             mastodonNotificationSectionViewModel = user.mastodonAuthentication?.notificationSubscription.flatMap {
                 return .init(
                     context: context,
-                    auth: auth,
+                    authContext: authContext,
                     notificationSubscription: $0
                 )
             }

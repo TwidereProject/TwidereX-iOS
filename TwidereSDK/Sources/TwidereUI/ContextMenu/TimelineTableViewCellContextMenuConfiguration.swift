@@ -13,5 +13,6 @@ public final class TimelineTableViewCellContextMenuConfiguration: UIContextMenuC
     
     public var indexPath: IndexPath?
     public var index: Int?
+    public var mediaViewModel: MediaView.ViewModel?
     
 }

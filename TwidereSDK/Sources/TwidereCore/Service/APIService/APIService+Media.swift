@@ -60,7 +60,7 @@ extension APIService {
     public func twitterMediaStatus(
         mediaID: String,
         twitterAuthenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.Media.StatusResponse> {
+    ) async throws -> Twitter.Response.Content<Twitter.API.Media.FinalizeResponse> {
         let authorization = twitterAuthenticationContext.authorization
         let query = Twitter.API.Media.StatusQuery(mediaID: mediaID)
         return try await Twitter.API.Media.status(

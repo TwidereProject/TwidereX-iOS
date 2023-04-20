@@ -88,6 +88,11 @@ extension SearchHashtagViewController: DeselectRowTransitionCoordinator {
     }
 }
 
+// MARK: - AuthContextProvider
+extension SearchHashtagViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - UITableViewDelegate
 extension SearchHashtagViewController: UITableViewDelegate {
 
@@ -97,7 +102,7 @@ extension SearchHashtagViewController: UITableViewDelegate {
         case .hashtag(let data):
             switch data {
             case .mastodon(let tag):
-                let hashtagTimelineViewModel = HashtagTimelineViewModel(context: context, hashtag: tag.name)
+                let hashtagTimelineViewModel = HashtagTimelineViewModel(context: context, authContext: authContext, hashtag: tag.name)
                 coordinator.present(scene: .hashtagTimeline(viewModel: hashtagTimelineViewModel), from: self, transition: .show)
             }
             

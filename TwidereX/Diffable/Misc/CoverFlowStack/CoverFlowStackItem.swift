@@ -9,5 +9,5 @@
 import Foundation
 
 enum CoverFlowStackItem: Hashable {
-    case media(configuration: MediaView.Configuration)
+    case media(viewModel: MediaView.ViewModel)
 }

@@ -7,9 +7,9 @@
 //
 
 import UIKit
+import SwiftUI
 import Combine
 import CoreDataStack
-import TwidereUI
 
 enum UserSection {
     case main
@@ -19,114 +19,104 @@ extension UserSection {
     
     struct Configuration {
         weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
-        let userViewConfigurationContext: UserView.ConfigurationContext
+        // let userViewConfigurationContext: UserView.ConfigurationContext
     }
     
     static func diffableDataSource(
         tableView: UITableView,
         context: AppContext,
+        authContext: AuthContext,
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<UserSection, UserItem> {
-        let cellTypes = [
-            UserAccountStyleTableViewCell.self,
-            UserRelationshipStyleTableViewCell.self,
-            UserFriendshipStyleTableViewCell.self,
-            UserMentionPickStyleTableViewCell.self,
-            UserNotificationStyleTableViewCell.self,
-            UserListMemberStyleTableViewCell.self,
-            UserAddListMemberStyleTableViewCell.self,
-            TimelineBottomLoaderTableViewCell.self,
-        ]
-            
-        cellTypes.forEach { type in
-            tableView.register(type, forCellReuseIdentifier: String(describing: type))
-        }
-        
+        tableView.register(UserTableViewCell.self, forCellReuseIdentifier: String(describing: UserTableViewCell.self))
+        tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
+
         return UITableViewDiffableDataSource<UserSection, UserItem>(tableView: tableView) { tableView, indexPath, item in
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
             
+            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserTableViewCell.self), for: indexPath) as! UserTableViewCell
+            cell.userViewTableViewCellDelegate = configuration.userViewTableViewCellDelegate
+            
             // configure cell with item
             switch item {
             case .authenticationIndex(let record):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserAccountStyleTableViewCell.self), for: indexPath) as! UserAccountStyleTableViewCell
                 context.managedObjectContext.performAndWait {
                     guard let authenticationIndex = record.object(in: context.managedObjectContext) else { return }
                     guard let me = authenticationIndex.user else { return }
-                    let viewModel = UserTableViewCell.ViewModel(
+                    let _viewModel = UserView.ViewModel(
                         user: me,
-                        me: me,
-                        notification: nil
+                        authContext: authContext,
+                        kind: .account,
+                        delegate: cell
                     )
-                    configure(
-                        cell: cell,
-                        viewModel: viewModel,
-                        configuration: configuration
-                    )
+                    guard let viewModel = _viewModel else { return }
+                    cell.contentConfiguration = UIHostingConfiguration {
+                        UserView(viewModel: viewModel)
+                    }
+                    .margins(.vertical, 0)  // remove vertical margins
                 }
-                return cell
-            case .user(let record, let style):
-                let cell = dequeueReusableCell(tableView: tableView, indexPath: indexPath, style: style)
+            case .user(let record, let kind):
                 context.managedObjectContext.performAndWait {
                     guard let user = record.object(in: context.managedObjectContext) else { return }
-                    let authenticationContext = context.authenticationService.activeAuthenticationContext
-                    let me = authenticationContext?.user(in: context.managedObjectContext)
-                    let viewModel = UserTableViewCell.ViewModel(
+                    let _viewModel = UserView.ViewModel(
                         user: user,
-                        me: me,
-                        notification: nil
+                        authContext: authContext,
+                        kind: kind,
+                        delegate: cell
                     )
-                    configure(
-                        cell: cell,
-                        viewModel: viewModel,
-                        configuration: configuration
-                    )
+                    guard let viewModel = _viewModel else { return }
+                    cell.contentConfiguration = UIHostingConfiguration {
+                        UserView(viewModel: viewModel)
+                    }
+                    .margins(.vertical, 0)  // remove vertical margins
                 }
-                return cell
             case .bottomLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
                 cell.activityIndicatorView.startAnimating()
                 return cell
-            }
+            }   // end switch
+            
+            return cell
         }
-    }
+    }   // end func
     
 }
 
 extension UserSection {
     
-    static func dequeueReusableCell(
-        tableView: UITableView,
-        indexPath: IndexPath,
-        style: UserView.Style
-    ) -> UserTableViewCell {
-        switch style {
-        case .account:
-            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserAccountStyleTableViewCell.self), for: indexPath) as! UserAccountStyleTableViewCell
-        case .relationship:
-            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserRelationshipStyleTableViewCell.self), for: indexPath) as! UserRelationshipStyleTableViewCell
-        case .friendship:
-            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
-        case .notification:
-            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserNotificationStyleTableViewCell.self), for: indexPath) as! UserNotificationStyleTableViewCell
-        case .mentionPick:
-            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserMentionPickStyleTableViewCell.self), for: indexPath) as! UserMentionPickStyleTableViewCell
-        case .listMember:
-            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserListMemberStyleTableViewCell.self), for: indexPath) as! UserListMemberStyleTableViewCell
-        case .addListMember:
-            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserAddListMemberStyleTableViewCell.self), for: indexPath) as! UserAddListMemberStyleTableViewCell
-        }
-    }
+//    static func dequeueReusableCell(
+//        tableView: UITableView,
+//        indexPath: IndexPath,
+//        style: UserView.Style
+//    ) -> UserTableViewCell {
+//        switch style {
+//        case .account:
+//            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserAccountStyleTableViewCell.self), for: indexPath) as! UserAccountStyleTableViewCell
+//        case .relationship:
+//            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserRelationshipStyleTableViewCell.self), for: indexPath) as! UserRelationshipStyleTableViewCell
+//        case .friendship:
+//            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
+//        case .notification:
+//            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserNotificationStyleTableViewCell.self), for: indexPath) as! UserNotificationStyleTableViewCell
+//        case .mentionPick:
+//            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserMentionPickStyleTableViewCell.self), for: indexPath) as! UserMentionPickStyleTableViewCell
+//        case .listMember:
+//            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserListMemberStyleTableViewCell.self), for: indexPath) as! UserListMemberStyleTableViewCell
+//        case .addListMember:
+//            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserAddListMemberStyleTableViewCell.self), for: indexPath) as! UserAddListMemberStyleTableViewCell
+//        }
+//    }
     
-    static func configure(
-        cell: UserTableViewCell,
-        viewModel: UserTableViewCell.ViewModel,
-        configuration: Configuration
-    ) {
-        cell.configure(
-            viewModel: viewModel,
-            configurationContext: configuration.userViewConfigurationContext,
-            delegate: configuration.userViewTableViewCellDelegate
-        )
-    }
+//    static func configure(
+//        cell: UserTableViewCell,
+//        viewModel: UserTableViewCell.ViewModel,
+//        configuration: Configuration
+//    ) {
+//        cell.configure(
+//            viewModel: viewModel,
+//            configurationContext: configuration.userViewConfigurationContext,
+//            delegate: configuration.userViewTableViewCellDelegate
+//        )
+//    }
 }

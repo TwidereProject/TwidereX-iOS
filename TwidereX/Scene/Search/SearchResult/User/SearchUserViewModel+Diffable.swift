@@ -12,7 +12,6 @@ import CoreData
 import CoreDataStack
 import AlamofireImage
 import Kingfisher
-import TwidereUI
 
 extension SearchUserViewModel {
     @MainActor func setupDiffableDataSource(
@@ -22,12 +21,9 @@ extension SearchUserViewModel {
         diffableDataSource = UserSection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: UserSection.Configuration(
-                userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-                userViewConfigurationContext: .init(
-                    listMembershipViewModel: listMembershipViewModel,
-                    authenticationContext: context.authenticationService.activeAuthenticationContext
-                )
+                userViewTableViewCellDelegate: userViewTableViewCellDelegate
             )
         )
         
@@ -56,10 +52,10 @@ extension SearchUserViewModel {
                         snapshot.appendSections([.main])
                         let newItems: [UserItem] = records.map { record in
                             switch self.kind {
-                            case .friendship:
-                                return .user(record: record, style: .relationship)
+                            case .search:
+                                return .user(record: record, kind: .search)
                             case .listMember:
-                                return .user(record: record, style: .addListMember)
+                                return .user(record: record, kind: .addListMember)
                             }   // end switch
                         }
                         snapshot.appendItems(newItems, toSection: .main)

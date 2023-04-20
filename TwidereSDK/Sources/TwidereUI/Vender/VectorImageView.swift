@@ -19,7 +19,7 @@ public struct VectorImageView: UIViewRepresentable {
     public init(
         image: UIImage,
         contentMode: UIView.ContentMode = .scaleAspectFit,
-        tintColor: UIColor = .black
+        tintColor: UIColor = UIColor.tintColor
     ) {
         self.image = image
         self.contentMode = contentMode
@@ -28,10 +28,7 @@ public struct VectorImageView: UIViewRepresentable {
     
     public func makeUIView(context: Context) -> UIImageView {
         let imageView = UIImageView()
-        imageView.setContentCompressionResistancePriority(
-            .fittingSizeLevel,
-            for: .vertical
-        )
+        imageView.setContentCompressionResistancePriority(.fittingSizeLevel,for: .vertical)
         return imageView
     }
     

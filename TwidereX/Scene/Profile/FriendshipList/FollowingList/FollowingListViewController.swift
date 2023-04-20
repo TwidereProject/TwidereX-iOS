@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import Combine
 import GameplayKit
-import TwidereUI
+import TwidereCore
 import TwidereAsset
 import TwidereLocalization
 
@@ -98,6 +98,11 @@ extension FollowingListViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
+}
+
+// MARK: - AuthContextProvider
+extension FollowingListViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }
 
 // MARK: - UITableViewDelegate

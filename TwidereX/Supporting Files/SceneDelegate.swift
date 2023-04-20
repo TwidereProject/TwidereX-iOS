@@ -11,8 +11,6 @@ import Combine
 import Intents
 import FPSIndicator
 import CoreDataStack
-import TwidereCore
-import AppShared
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -23,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var coordinator: SceneCoordinator?
 
-    #if DEBUG
+    #if DEBUG || PROFILE
     var fpsIndicator: FPSIndicator?
     #endif
 
@@ -33,7 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
-        #if DEBUG
+        #if DEBUG && !PROFILE
         guard !SceneDelegate.isXcodeUnitTest else {
             window.rootViewController = UIViewController()
             return
@@ -64,7 +62,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window.makeKeyAndVisible()
 
-        #if DEBUG
+        #if DEBUG || PROFILE
         fpsIndicator = FPSIndicator(windowScene: windowScene)
         #endif
     }
@@ -156,27 +154,30 @@ extension SceneDelegate {
                 topMost.dismiss(animated: false)
             }
             let composeViewModel = ComposeViewModel(context: coordinator.context)
-            let composeContentViewModel = ComposeContentViewModel(
-                kind: .post,
-                configurationContext: .init(
-                    apiService: coordinator.context.apiService,
-                    authenticationService: coordinator.context.authenticationService,
-                    mastodonEmojiService: coordinator.context.mastodonEmojiService,
-                    statusViewConfigureContext: .init(
-                        dateTimeProvider: DateTimeSwiftProvider(),
-                        twitterTextProvider: OfficialTwitterTextProvider(),
-                        authenticationContext: coordinator.context.authenticationService.$activeAuthenticationContext
-                    )
-                )
-            )
-            coordinator.present(
-                scene: .compose(
-                    viewModel: composeViewModel,
-                    contentViewModel: composeContentViewModel
-                ),
-                from: nil,
-                transition: .modal(animated: true)
-            )
+            assertionFailure("TODO: check authContext and handle alert")
+//            let composeContentViewModel = ComposeContentViewModel(
+//                context: .shared,
+//                authContext: <#T##AuthContext#>,
+//                kind: .post,
+//                configurationContext: .init(
+//                    apiService: coordinator.context.apiService,
+//                    authenticationService: coordinator.context.authenticationService,
+//                    mastodonEmojiService: coordinator.context.mastodonEmojiService,
+//                    statusViewConfigureContext: .init(
+//                        dateTimeProvider: DateTimeSwiftProvider(),
+//                        twitterTextProvider: OfficialTwitterTextProvider(),
+//                        authenticationContext: coordinator.context.authenticationService.$activeAuthenticationContext
+//                    )
+//                )
+//            )
+//            coordinator.present(
+//                scene: .compose(
+//                    viewModel: composeViewModel,
+//                    contentViewModel: composeContentViewModel
+//                ),
+//                from: nil,
+//                transition: .modal(animated: true)
+//            )
             return true
         case "com.twidere.TwidereX.search":
             if let topMost = topMostViewController(), topMost.isModal {

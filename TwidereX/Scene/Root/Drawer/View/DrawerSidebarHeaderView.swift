@@ -11,7 +11,6 @@ import UIKit
 import TwidereCore
 import MetaTextKit
 import MetaLabel
-import TwidereUI
 
 protocol DrawerSidebarHeaderViewDelegate: AnyObject {
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, avatarButtonDidPressed button: UIButton)

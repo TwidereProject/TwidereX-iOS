@@ -22,23 +22,23 @@ final class SettingListViewModel: ObservableObject {
 
     // input
     let context: AppContext
-    let auth: AuthContext?
+    let authContext: AuthContext
     
     // output
     let settingListEntryPublisher = PassthroughSubject<SettingListEntry, Never>()
     
     // account
-    @Published var user: UserObject?
+    @Published var userViewModel: UserView.ViewModel?
     
     // App Icon
     @Published var alternateIconNamePreference = UserDefaults.shared.alternateIconNamePreference
     
     init(
         context: AppContext,
-        auth: AuthContext?
+        authContext: AuthContext
     ) {
         self.context = context
-        self.auth = auth
+        self.authContext = authContext
         // end init
         
         Task {
@@ -55,6 +55,12 @@ final class SettingListViewModel: ObservableObject {
 extension SettingListViewModel {
     @MainActor
     func setupAccountSource() async {
-        user = auth?.authenticationContext.user(in: context.managedObjectContext)
+        guard let user = authContext.authenticationContext.user(in: context.managedObjectContext) else { return }
+        userViewModel = UserView.ViewModel(
+            user: user,
+            authContext: authContext,
+            kind: .settingAccountSection,
+            delegate: nil
+        )
     }
 }

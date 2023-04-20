@@ -17,6 +17,7 @@ final class NotificationViewModel {
 
     // input
     let context: AppContext
+    let authContext: AuthContext
     let _coordinator: SceneCoordinator  // only use for `setup`
     @Published var selectedScope: NotificationTimelineViewModel.Scope? = nil
     
@@ -28,18 +29,17 @@ final class NotificationViewModel {
     @Published var currentPageIndex = 0
     @Published var userIdentifier: UserIdentifier?
     
-    init(context: AppContext, coordinator: SceneCoordinator) {
+    init(
+        context: AppContext,
+        authContext: AuthContext,
+        coordinator: SceneCoordinator
+    ) {
         self.context = context
+        self.authContext = authContext
         self._coordinator = coordinator
         // end init
         
-        context.authenticationService.$activeAuthenticationContext
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                self.setup(for: authenticationContext)
-            }
-            .store(in: &disposeBag)
+        setup(for: authContext.authenticationContext)
     }
     
 }
@@ -70,8 +70,7 @@ extension NotificationViewModel {
         }
         let viewControllers = scopes.map { scope in
             createViewController(
-                scope: scope,
-                authenticationContext: authenticationContext
+                scope: scope
             )
         }
         
@@ -82,16 +81,15 @@ extension NotificationViewModel {
     }
     
     private func createViewController(
-        scope: NotificationTimelineViewModel.Scope,
-        authenticationContext: AuthenticationContext
+        scope: NotificationTimelineViewModel.Scope
     ) -> UIViewController {
         let viewController = NotificationTimelineViewController()
         viewController.context = context
         viewController.coordinator = _coordinator
         viewController.viewModel = NotificationTimelineViewModel(
             context: context,
-            scope: scope,
-            authenticationContext: authenticationContext
+            authContext: authContext,
+            scope: scope
         )
         return viewController
     }

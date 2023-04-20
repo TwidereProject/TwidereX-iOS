@@ -51,6 +51,7 @@ extension AddListMemberViewController {
         searchUserViewController.coordinator = coordinator
         searchUserViewController.viewModel = SearchUserViewModel(
             context: context,
+            authContext: viewModel.authContext,
             kind: .listMember(list: viewModel.list)
         )
         viewModel.$userIdentifier.assign(to: &searchUserViewController.viewModel.$userIdentifier)

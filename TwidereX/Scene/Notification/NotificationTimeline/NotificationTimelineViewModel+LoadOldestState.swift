@@ -54,11 +54,8 @@ extension NotificationTimelineViewModel.LoadOldestState {
             super.didEnter(from: previousState)
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext
-            else {
-                stateMachine.enter(Fail.self)
-                return
-            }
+            
+            let authenticationContext = viewModel.authContext.authenticationContext
             
             guard let lsatFeedRecord = viewModel.fetchedResultsController.records.last else {
                 stateMachine.enter(Fail.self)
@@ -71,7 +68,8 @@ extension NotificationTimelineViewModel.LoadOldestState {
                     let managedObjectContext = viewModel.context.managedObjectContext
                     let _input: NotificationFetchViewModel.Input? = try await managedObjectContext.perform {
                         guard let feed = lsatFeedRecord.object(in: managedObjectContext) else { return nil }
-                        switch (feed.content, authenticationContext) {
+                        guard case let .notification(object) = feed.content else { return nil }
+                        switch (object, authenticationContext) {
                         case (.twitter(let status), .twitter(let authenticationContext)):
                             return NotificationFetchViewModel.Input.twitter(.init(
                                 authenticationContext: authenticationContext,
@@ -79,7 +77,7 @@ extension NotificationTimelineViewModel.LoadOldestState {
                                 count: 20
                             ))
                             
-                        case (.mastodonNotification(let notification), .mastodon(let authenticationContext)):
+                        case (.mastodon(let notification), .mastodon(let authenticationContext)):
                             guard case let .mastodon(timelineScope) = viewModel.scope else {
                                 throw AppError.implicit(.badRequest)
                             }

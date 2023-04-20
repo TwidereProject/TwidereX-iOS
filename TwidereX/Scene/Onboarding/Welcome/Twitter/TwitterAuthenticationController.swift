@@ -13,9 +13,6 @@ import CoreDataStack
 import AuthenticationServices
 import WebKit
 import TwitterSDK
-import TwidereCommon
-import TwidereCore
-import AppShared
 
 // Note:
 // use given AuthorizationContext to authorize user

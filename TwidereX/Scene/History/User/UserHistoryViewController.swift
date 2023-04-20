@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import Combine
 import CoreDataStack
-import TwidereUI
 
 final class UserHistoryViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
 
@@ -64,6 +63,11 @@ extension UserHistoryViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
+}
+
+// MARK: - AuthContextProvider
+extension UserHistoryViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }
 
 // MARK: - UITableViewDelegate

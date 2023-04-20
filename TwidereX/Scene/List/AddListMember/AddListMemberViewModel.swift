@@ -13,6 +13,7 @@ final class AddListMemberViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let list: ListRecord
     weak var listMembershipViewModelDelegate: ListMembershipViewModelDelegate?
     
@@ -21,15 +22,15 @@ final class AddListMemberViewModel {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         list: ListRecord
     ) {
         self.context = context
+        self.authContext = authContext
         self.list = list
         // end init
         
-        context.authenticationService.$activeAuthenticationContext
-            .map { $0?.userIdentifier }
-            .assign(to: &$userIdentifier)
+        userIdentifier = authContext.authenticationContext.userIdentifier
     }
     
 }

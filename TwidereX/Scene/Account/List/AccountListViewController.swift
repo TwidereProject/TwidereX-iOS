@@ -12,7 +12,6 @@ import AuthenticationServices
 import Combine
 import CoreDataStack
 import TwitterSDK
-import TwidereCommon
 
 final class AccountListViewController: UIViewController, NeedsDependency {
     
@@ -32,7 +31,6 @@ final class AccountListViewController: UIViewController, NeedsDependency {
     }()
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(AccountListTableViewCell.self, forCellReuseIdentifier: String(describing: AccountListTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
@@ -118,13 +116,18 @@ extension AccountListViewController: UITableViewDelegate {
             do {
                 let isActive = try await self.context.authenticationService.activeAuthenticationIndex(record: record)
                 guard isActive else { return }
-                self.coordinator.setup()
+                self.coordinator.setup(authentication: record)
             } catch {
                 // handle error
                 assertionFailure(error.localizedDescription)
             }
         }
     }
+}
+
+// MARK: - AuthContextProvider
+extension AccountListViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }
 
 // MARK: - UserViewTableViewCellDelegate

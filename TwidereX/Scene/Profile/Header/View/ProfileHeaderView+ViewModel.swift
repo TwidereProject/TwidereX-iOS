@@ -12,8 +12,6 @@ import CoreDataStack
 import TwitterMeta
 import MastodonMeta
 import AlamofireImage
-import AppShared
-import TwidereCore
 
 extension ProfileHeaderView {
     class ViewModel: ObservableObject {
@@ -232,7 +230,7 @@ extension ProfileHeaderView {
         // name
         user.publisher(for: \.name)
             .combineLatest(UIContentSizeCategory.publisher) { value, _ in
-                Meta.convert(from: .plaintext(string: value))
+                Meta.convert(document: .plaintext(string: value))
             }
             .assign(to: \.name, on: viewModel)
             .store(in: &viewModel.configureDisposeBag)
@@ -270,7 +268,7 @@ extension ProfileHeaderView {
             user.publisher(for: \.bioEntities),
             UIContentSizeCategory.publisher
         )
-        .map { _, _, _ in user.bioMetaContent(provider: OfficialTwitterTextProvider()) }
+        .map { _, _, _ in user.bioMetaContent(provider: SwiftTwitterTextProvider()) }
         .assign(to: \.bioMetaContent, on: viewModel)
         .store(in: &viewModel.configureDisposeBag)
     }
@@ -285,7 +283,7 @@ extension ProfileHeaderView {
             var fields: [ProfileFieldListView.Item] = []
             var index = 0
             let now = Date()
-            if let value = user.urlMetaContent(provider: OfficialTwitterTextProvider()) {
+            if let value = user.urlMetaContent(provider: SwiftTwitterTextProvider()) {
                 let item = ProfileFieldListView.Item(
                     index: index,
                     updateAt: now,
@@ -296,7 +294,7 @@ extension ProfileHeaderView {
                 fields.append(item)
                 index += 1
             }
-            if let value = user.locationMetaContent(provider: OfficialTwitterTextProvider()) {
+            if let value = user.locationMetaContent(provider: SwiftTwitterTextProvider()) {
                 let item = ProfileFieldListView.Item(
                     index: index,
                     updateAt: now,
@@ -355,7 +353,8 @@ extension ProfileHeaderView {
             UIContentSizeCategory.publisher
         )
         .map { _, emojis, _ -> MetaContent in
-            Meta.convert(from: .mastodon(string: user.name, emojis: emojis.asDictionary))
+            let content = MastodonContent(content: user.name, emojis: emojis.asDictionary)
+            return Meta.convert(document: .mastodon(content: content))
         }
         .assign(to: \.name, on: viewModel)
         .store(in: &viewModel.configureDisposeBag)
@@ -404,10 +403,10 @@ extension ProfileHeaderView {
             let emojis = emojis.asDictionary
             let items = fields.enumerated().map { i, field -> ProfileFieldListView.Item in
                 let key = Meta.convert(
-                    from: .mastodon(string: field.name, emojis: emojis)
+                    document: .mastodon(content: MastodonContent(content: field.name, emojis: emojis))
                 )
                 let value = Meta.convert(
-                    from: .mastodon(string: field.value, emojis: emojis)
+                    document: .mastodon(content: MastodonContent(content: field.value, emojis: emojis))
                 )
                 return ProfileFieldListView.Item(
                     index: i,

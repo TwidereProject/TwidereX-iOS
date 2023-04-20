@@ -16,6 +16,7 @@ final class SearchResultViewModel {
 
     // input
     let context: AppContext
+    let authContext: AuthContext
     let _coordinator: SceneCoordinator  // only use for `setup`
     var preferredScope: Scope?
     @Published var searchText: String = ""
@@ -27,17 +28,16 @@ final class SearchResultViewModel {
     @Published var currentPageIndex = 0
     @Published var userIdentifier: UserIdentifier?
     
-    init(context: AppContext, coordinator: SceneCoordinator) {
+    init(
+        context: AppContext,
+        authContext: AuthContext,
+        coordinator: SceneCoordinator
+    ) {
         self.context = context
+        self.authContext = authContext
         self._coordinator = coordinator
         
-        context.authenticationService.$activeAuthenticationContext
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                self.setup(for: authenticationContext)
-            }
-            .store(in: &disposeBag)
+        self.setup(for: authContext.authenticationContext)
     }
     
 }
@@ -102,28 +102,28 @@ extension SearchResultViewModel {
         switch scope {
         case .status:
             let _viewController = SearchTimelineViewController()
-            let _viewModel = SearchTimelineViewModel(context: context)
+            let _viewModel = SearchTimelineViewModel(context: context, authContext: authContext)
             _viewController.viewModel = _viewModel
             $searchText.assign(to: &_viewModel.$searchText)
             viewController = _viewController
         
         case .media:
             let _viewController = SearchMediaTimelineViewController()
-            let _viewModel = SearchMediaTimelineViewModel(context: context)
+            let _viewModel = SearchMediaTimelineViewModel(context: context, authContext: authContext)
             _viewController.viewModel = _viewModel
             $searchText.assign(to: &_viewModel.$searchText)
             viewController = _viewController
             
         case .user:
             let _viewController = SearchUserViewController()
-            _viewController.viewModel = SearchUserViewModel(context: context, kind: .friendship)
+            _viewController.viewModel = SearchUserViewModel(context: context, authContext: authContext, kind: .search)
             $searchText.assign(to: &_viewController.viewModel.$searchText)
             $userIdentifier.assign(to: &_viewController.viewModel.$userIdentifier)
             viewController = _viewController
             
         case .hashtag:
             let _viewController = SearchHashtagViewController()
-            _viewController.viewModel = SearchHashtagViewModel(context: context)
+            _viewController.viewModel = SearchHashtagViewModel(context: context, authContext: authContext)
             $searchText.assign(to: &_viewController.viewModel.$searchText)
             viewController = _viewController
         }   // end switch

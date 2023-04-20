@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import Combine
 import AVKit
-import TwidereUI
 
 final class ComposeViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
@@ -73,9 +72,6 @@ extension ComposeViewController {
             .assign(to: \.isEnabled, on: sendBarButtonItem)
             .store(in: &disposeBag)
         
-        // bind author
-        viewModel.$author.assign(to: &composeContentViewModel.$author)
-        
         composeContentViewController.delegate = self
     }
     
@@ -112,9 +108,13 @@ extension ComposeViewController: ComposeContentViewControllerDelegate {
     ) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
+        guard let authContext = viewController.viewModel.authContext else { return }
+        
         let _item: MediaPreviewViewModel.Item?
         switch attachmentViewModel.output {
         case .image(let data, _):
+            _item = UIImage(data: data).flatMap { .image(.init(image: $0)) }
+        case .gif(let data, _):
             _item = UIImage(data: data).flatMap { .image(.init(image: $0)) }
         case .video(let url, _):
             let playerViewController = AVPlayerViewController()
@@ -134,6 +134,7 @@ extension ComposeViewController: ComposeContentViewControllerDelegate {
         
         let mediaPreviewViewModel = MediaPreviewViewModel(
             context: context,
+            authContext: authContext,
             item: item,
             transitionItem: {
                 let item = MediaPreviewTransitionItem(
@@ -150,7 +151,7 @@ extension ComposeViewController: ComposeContentViewControllerDelegate {
         coordinator.present(
             scene: .mediaPreview(viewModel: mediaPreviewViewModel),
             from: self,
-            transition: .custom(transitioningDelegate: mediaPreviewTransitionController)
+            transition: .custom(animated: true, transitioningDelegate: mediaPreviewTransitionController)
         )
     }
 

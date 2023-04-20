@@ -25,13 +25,17 @@ class TimelineViewModel: TimelineViewModelDriver {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let kind: StatusFetchViewModel.Timeline.Kind
     let feedFetchedResultsController: FeedFetchedResultsController
     let statusRecordFetchedResultController: StatusRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
+    
     @Published var enableAutoFetchLatest = false
+    @Published var didAutoFetchLatest = false
     @Published var isRefreshControlEnabled = true
     @Published var isFloatyButtonDisplay = true
     @Published var isLoadingLatest = false
@@ -67,9 +71,11 @@ class TimelineViewModel: TimelineViewModelDriver {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         kind: StatusFetchViewModel.Timeline.Kind
     ) {
         self.context  = context
+        self.authContext = authContext
         self.kind = kind
         self.feedFetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
         self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
@@ -132,10 +138,9 @@ extension TimelineViewModel {
             isLoadingLatest = false
         }
         
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         let fetchContext = StatusFetchViewModel.Timeline.FetchContext(
             managedObjectContext: context.managedObjectContext,
-            authenticationContext: authenticationContext,
+            authenticationContext: authContext.authenticationContext,
             kind: kind,
             position: {
                 switch kind {
@@ -144,7 +149,8 @@ extension TimelineViewModel {
                     let anchor: StatusRecord? = {
                         guard let record = feedFetchedResultsController.records.first else { return nil }
                         guard let feed = record.object(in: managedObjectContext) else { return nil }
-                        return feed.statusObject?.asRecord
+                        guard case let .status(status) = feed.content else { return nil }
+                        return status.asRecord
                     }()
                     return .top(anchor: anchor)
                 case .public, .hashtag, .list:
@@ -153,9 +159,11 @@ extension TimelineViewModel {
                     assertionFailure("do not support refresh for search")
                     return .top(anchor: nil)
                 case .user:
-                    // FIXME: use anchor with minID or reset the data source
-                    // the like timeline gap may missing
-                    return .top(anchor: nil)
+                    let anchor: StatusRecord? = {
+                        guard let record = statusRecordFetchedResultController.records.first else { return nil }
+                        return record
+                    }()
+                    return .top(anchor: anchor)
                 }
             }(),
             filter: StatusFetchViewModel.Timeline.Filter(rule: .empty)

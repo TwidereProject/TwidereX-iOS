@@ -8,7 +8,6 @@
 
 import UIKit
 import Combine
-import AppShared
 
 extension StatusHistoryViewModel {
     
@@ -21,16 +20,8 @@ extension StatusHistoryViewModel {
             context: context,
             configuration: .init(
                 statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-                statusViewConfigurationContext: .init(
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    authenticationContext: context.authenticationService.$activeAuthenticationContext
-                ),
                 userViewTableViewCellDelegate: nil,
-                userViewConfigurationContext: .init(
-                    listMembershipViewModel: nil,
-                    authenticationContext: context.authenticationService.activeAuthenticationContext
-                )
+                viewLayoutFramePublisher: $viewLayoutFrame
             )
         )
         

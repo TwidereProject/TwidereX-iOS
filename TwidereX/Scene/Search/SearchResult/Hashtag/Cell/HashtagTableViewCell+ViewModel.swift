@@ -47,7 +47,7 @@ extension HashtagTableViewCell {
     
     func configure(tag: Mastodon.Entity.Tag) {
         // primary
-        let primaryContent = Meta.convert(from: .plaintext(string: "#" + tag.name))
+        let primaryContent = Meta.convert(document: .plaintext(string: "#" + tag.name))
         viewModel.primaryContent = primaryContent
         // secondary
         let count = tag.history?.sorted(by: { $0.day < $1.day })

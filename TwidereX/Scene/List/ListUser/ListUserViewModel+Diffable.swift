@@ -8,7 +8,6 @@
 
 import UIKit
 import Combine
-import TwidereUI
 
 extension ListUserViewModel {
     
@@ -19,12 +18,9 @@ extension ListUserViewModel {
         diffableDataSource = UserSection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: UserSection.Configuration(
-                userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-                userViewConfigurationContext: .init(
-                    listMembershipViewModel: listMembershipViewModel,
-                    authenticationContext: context.authenticationService.activeAuthenticationContext
-                )
+                userViewTableViewCellDelegate: userViewTableViewCellDelegate
             )
         )
         
@@ -36,7 +32,7 @@ extension ListUserViewModel {
 
                 snapshot.appendSections([.main])
 
-                let items = records.map { UserItem.user(record: $0, style: .listMember) }
+                let items = records.map { UserItem.user(record: $0, kind: .listMember) }
                 snapshot.appendItems(items, toSection: .main)
 
                 let currentState = await self.stateMachine.currentState

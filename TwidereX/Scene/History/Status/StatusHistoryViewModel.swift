@@ -12,7 +12,6 @@ import Combine
 import CoreDataStack
 import MastodonSDK
 import TwidereCore
-import TwidereUI
 
 final class StatusHistoryViewModel {
     
@@ -24,6 +23,8 @@ final class StatusHistoryViewModel {
     let context: AppContext
     let authContext: AuthContext
     let historyFetchedResultsController: HistoryFetchedResultsController
+    
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<HistorySection, HistoryItem>?

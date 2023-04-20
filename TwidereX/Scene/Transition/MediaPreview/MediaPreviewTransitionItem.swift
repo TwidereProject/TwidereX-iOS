@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import TwidereUI
 
 class MediaPreviewTransitionItem: Identifiable {
     
@@ -18,8 +17,7 @@ class MediaPreviewTransitionItem: Identifiable {
     // source
     var image: UIImage?
     var aspectRatio: CGSize?
-    var initialFrame: CGRect? = nil
-    var sourceImageView: UIImageView?
+    var initialFrame: CGRect? = nil     // start frame for .push animation
     var sourceImageViewCornerRadius: CGFloat?
     
     // target
@@ -48,8 +46,7 @@ class MediaPreviewTransitionItem: Identifiable {
 extension MediaPreviewTransitionItem {
     enum Source {
         case none
-        case attachment(MediaView)
-        case attachments(MediaGridContainerView)
+        case mediaView(MediaView.ViewModel)
         case profileAvatar(ProfileHeaderView)
         case profileBanner(ProfileHeaderView)
         
@@ -57,23 +54,23 @@ extension MediaPreviewTransitionItem {
             position: UIViewAnimatingPosition,
             index: Int?
         ) {
-            let alpha: CGFloat = position == .end ? 1 : 0
             switch self {
             case .none:
                 break
-            case .attachment(let mediaView):
-                mediaView.alpha = alpha
-            case .attachments(let mediaGridContainerView):
-                if let index = index {
-                    mediaGridContainerView.setAlpha(0, index: index)
-                } else {
-                    mediaGridContainerView.setAlpha(alpha)
-                }
-            case .profileAvatar(let profileHeaderView):
-                profileHeaderView.avatarView.avatarButton.alpha = alpha
-            case .profileBanner:
-                break    // keep source
+            case .mediaView(let viewModel):
+                viewModel.shouldHideForTransitioning = position != .end
+            case .profileAvatar(let view):
+                // TODO:
+                break
+            case .profileBanner(let view):
+                // TODO:
+                break
             }
+//            case .profileAvatar(let profileHeaderView):
+//                profileHeaderView.avatarView.avatarButton.alpha = alpha
+//            case .profileBanner:
+//                break    // keep source
+//            }
         }
     }
 }

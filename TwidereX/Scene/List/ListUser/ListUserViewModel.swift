@@ -20,6 +20,7 @@ final class ListUserViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let kind: Kind
     let fetchedResultController: UserRecordFetchedResultController
     let listMembershipViewModel: ListMembershipViewModel
@@ -44,9 +45,11 @@ final class ListUserViewModel {
 
     init(
         context: AppContext,
+        authContext: AuthContext,
         kind: Kind
     ) {
         self.context = context
+        self.authContext = authContext
         self.kind = kind
         self.fetchedResultController = UserRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         self.listMembershipViewModel = ListMembershipViewModel(api: context.apiService, list: kind.list)

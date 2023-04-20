@@ -9,7 +9,6 @@
 import CoreData
 import CoreDataStack
 import SwiftUI
-import TwidereUI
 
 struct TextCaseEraseStyle: ViewModifier {
     func body(content: Content) -> some View {
@@ -86,11 +85,8 @@ struct SettingListView: View {
     
     @ViewBuilder
     var accountView: some View {
-        if let user = viewModel.user {
-            UserContentView(viewModel: .init(
-                user: user,
-                accessoryType: .disclosureIndicator
-            ))
+        if let userViewModel = viewModel.userViewModel {
+            UserView(viewModel: userViewModel)
         } else {
             EmptyView()
         }
@@ -214,15 +210,17 @@ struct SettingListView: View {
 struct SettingListView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            SettingListView(viewModel: SettingListViewModel(
-                context: .shared,
-                auth: nil
-            ))
-            SettingListView(viewModel: SettingListViewModel(
-                context: .shared,
-                auth: nil
-            ))
-            .preferredColorScheme(.dark)
+            if let authContext = AuthContext.mock(context: .shared) {
+                SettingListView(viewModel: SettingListViewModel(
+                    context: .shared,
+                    authContext: authContext
+                ))
+                SettingListView(viewModel: SettingListViewModel(
+                    context: .shared,
+                    authContext: authContext
+                ))
+                .preferredColorScheme(.dark)                
+            }
         }
     }
 }

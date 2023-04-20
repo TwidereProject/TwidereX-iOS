@@ -9,7 +9,6 @@
 import os.log
 import Foundation
 import SwiftUI
-import TwidereCommon
 
 struct TranslateButtonPreferenceView: View {
     

@@ -70,6 +70,11 @@ extension TrendViewController {
     
 }
 
+// MARK: - AuthContextProvider
+extension TrendViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - UITableViewDelegate
 extension TrendViewController: UITableViewDelegate {
     
@@ -88,6 +93,7 @@ extension TrendViewController: UITableViewDelegate {
         case .mastodon(let tag):
             let hashtagTimelineViewModel = HashtagTimelineViewModel(
                 context: context,
+                authContext: authContext,
                 hashtag: tag.name
             )
             coordinator.present(

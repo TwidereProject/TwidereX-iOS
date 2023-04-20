@@ -21,6 +21,7 @@ final class EditListViewModel: ObservableObject {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let platform: Platform
     let kind: Kind
     
@@ -34,10 +35,12 @@ final class EditListViewModel: ObservableObject {
         
     init(
         context: AppContext,
+        authContext: AuthContext,
         platform: Platform,
         kind: Kind
     ) {
         self.context = context
+        self.authContext = authContext
         self.platform = platform
         self.kind = kind
         // end init
@@ -92,9 +95,7 @@ extension EditListViewModel {
                 ))
             }
         }()
-        guard let query = _query,
-              let authenticationContext = context.authenticationService.activeAuthenticationContext
-        else {
+        guard let query = _query else {
             throw AppError.implicit(.badRequest)
         }
         
@@ -107,7 +108,7 @@ extension EditListViewModel {
         do {
             let response = try await context.apiService.create(
                 query: query,
-                authenticationContext: authenticationContext
+                authenticationContext: authContext.authenticationContext
             )
             
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): create list success")
@@ -184,9 +185,7 @@ extension EditListViewModel {
                 ))
             }
         }()
-        guard let query = _query,
-              let authenticationContext = context.authenticationService.activeAuthenticationContext
-        else {
+        guard let query = _query else {
             throw AppError.implicit(.badRequest)
         }
         
@@ -200,7 +199,7 @@ extension EditListViewModel {
             let response = try await context.apiService.update(
                 list: list,
                 query: query,
-                authenticationContext: authenticationContext
+                authenticationContext: authContext.authenticationContext
             )
             
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update list success")

@@ -11,7 +11,6 @@ import UIKit
 import Photos
 import Alamofire
 import AlamofireImage
-import TwidereCommon
 import SwiftMessages
 import Kingfisher
 

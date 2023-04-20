@@ -34,3 +34,21 @@ extension Mastodon.API {
         
     }
 }
+
+extension Mastodon.API.Error: LocalizedError {
+    public var errorDescription: String? {
+        guard let mastodonError = mastodonError else {
+            return httpResponseStatus.reasonPhrase
+        }
+        
+        return mastodonError.errorDescription
+    }
+    
+    public var failureReason: String? {
+        guard let mastodonError = mastodonError else {
+            return nil
+        }
+        
+        return mastodonError.failureReason
+    }
+}

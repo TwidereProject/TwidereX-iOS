@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import TwidereUI
-import AppShared
 
 extension ListStatusTimelineViewModel {
     
@@ -20,15 +18,12 @@ extension ListStatusTimelineViewModel {
         let configuration = StatusSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
             timelineMiddleLoaderTableViewCellDelegate: nil,
-            statusViewConfigurationContext: StatusView.ConfigurationContext(
-                dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider(),
-                authenticationContext: context.authenticationService.$activeAuthenticationContext
-            )
+            viewLayoutFramePublisher: $viewLayoutFrame
         )
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: configuration
         )
         

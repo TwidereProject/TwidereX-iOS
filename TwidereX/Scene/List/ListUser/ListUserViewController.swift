@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import Combine
 import CoreDataStack
-import TwidereUI
 import SwiftMessages
 
 final class ListUserViewController: UIViewController, NeedsDependency {
@@ -49,29 +48,23 @@ extension ListUserViewController {
 
         title = viewModel.kind.title
         view.backgroundColor = .systemBackground
-        context.authenticationService.$activeAuthenticationContext
-            .asyncMap { [weak self] authenticationContext -> UIBarButtonItem? in
-                guard let self = self else { return nil }
-                guard let authenticationContext = authenticationContext else { return nil }
-                // only setup bar button for `members` kind list
-                switch self.viewModel.kind {
-                case .members:      break
-                case .subscribers:  return nil
-                }
+        
+        let rightBarButtonItem: UIBarButtonItem? = {
+            // only setup bar button for `members` kind list
+            switch self.viewModel.kind {
+            case .members:
                 // only setup bar button for myList
-                let managedObjectContext = self.context.managedObjectContext
-                let isMyList: Bool = await managedObjectContext.perform {
+                let isMyList: Bool = {
+                    let managedObjectContext = self.context.managedObjectContext
                     guard let list = self.viewModel.kind.list.object(in: managedObjectContext) else { return false }
-                    return list.owner.userIdentifer == authenticationContext.userIdentifier
-                }
+                    return list.owner.userIdentifer == viewModel.authContext.authenticationContext.userIdentifier
+                }()
                 return isMyList ? self.addBarButtonItem : nil
+            case .subscribers:
+                return nil
             }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] barButtonItem in
-                guard let self = self else { return }
-                self.navigationItem.rightBarButtonItem = barButtonItem
-            }
-            .store(in: &disposeBag)
+        }()
+        self.navigationItem.rightBarButtonItem = rightBarButtonItem
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.frame = view.bounds
@@ -115,7 +108,7 @@ extension ListUserViewController {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
                 
         let list = viewModel.kind.list
-        let addListMemberViewModel = AddListMemberViewModel(context: context, list: list)
+        let addListMemberViewModel = AddListMemberViewModel(context: context, authContext: authContext, list: list)
         addListMemberViewModel.listMembershipViewModelDelegate = self
         
         coordinator.present(
@@ -141,62 +134,59 @@ extension ListUserViewController: UITableViewDelegate, AutoGenerateTableViewDele
 
 // MARK: - UserViewTableViewCellDelegate
 extension ListUserViewController: UserViewTableViewCellDelegate {
-    func tableViewCell(
-        _ cell: UITableViewCell,
-        userView: UserView,
-        menuActionDidPressed action: UserView.MenuAction,
-        menuButton button: UIButton
-    ) {
-        switch action {
-        case .remove:
-            Task {
-                let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-                guard let item = await item(from: source) else {
-                    assertionFailure()
-                    return
-                }
-                guard case let .user(user) = item else {
-                    assertionFailure("only works for status data provider")
-                    return
-                }
-                
-                guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else {
-                    assertionFailure()
-                    return
-                }
-                
-                do {
-                    let list = self.viewModel.kind.list
-                    _ = try await self.context.apiService.removeListMember(
-                        list: list,
-                        user: user,
-                        authenticationContext: authenticationContext
-                    )
-                    await self.viewModel.update(user: user, action: .remove)
-                    
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotificationBannerView()
-                    bannerView.configure(style: .success)
-                    bannerView.titleLabel.text = L10n.Common.Alerts.ListMemberRemoved.title
-                    bannerView.messageLabel.isHidden = true
-                    SwiftMessages.show(config: config, view: bannerView)
-                } catch {
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotificationBannerView()
-                    bannerView.configure(style: .warning)
-                    bannerView.titleLabel.text = L10n.Common.Alerts.FailedToRemoveListMember.title
-                    bannerView.messageLabel.text = L10n.Common.Alerts.FailedToRemoveListMember.message
-                    SwiftMessages.show(config: config, view: bannerView)
-                }
-            }   // end Task
-        default:
-            assertionFailure()
-        }   // end swtich
-    }
+//    func tableViewCell(
+//        _ cell: UITableViewCell,
+//        userView: UserView,
+//        menuActionDidPressed action: UserView.MenuAction,
+//        menuButton button: UIButton
+//    ) {
+//        switch action {
+//        case .remove:
+//            Task {
+//                let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+//                guard let item = await item(from: source) else {
+//                    assertionFailure()
+//                    return
+//                }
+//                guard case let .user(user) = item else {
+//                    assertionFailure("only works for status data provider")
+//                    return
+//                }
+//                
+//                let authenticationContext = self.viewModel.authContext.authenticationContext
+//                
+//                do {
+//                    let list = self.viewModel.kind.list
+//                    _ = try await self.context.apiService.removeListMember(
+//                        list: list,
+//                        user: user,
+//                        authenticationContext: authenticationContext
+//                    )
+//                    await self.viewModel.update(user: user, action: .remove)
+//                    
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotificationBannerView()
+//                    bannerView.configure(style: .success)
+//                    bannerView.titleLabel.text = L10n.Common.Alerts.ListMemberRemoved.title
+//                    bannerView.messageLabel.isHidden = true
+//                    SwiftMessages.show(config: config, view: bannerView)
+//                } catch {
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotificationBannerView()
+//                    bannerView.configure(style: .warning)
+//                    bannerView.titleLabel.text = L10n.Common.Alerts.FailedToRemoveListMember.title
+//                    bannerView.messageLabel.text = L10n.Common.Alerts.FailedToRemoveListMember.message
+//                    SwiftMessages.show(config: config, view: bannerView)
+//                }
+//            }   // end Task
+//        default:
+//            assertionFailure()
+//        }   // end swtich
+//    }
 }
 
 // MARK: - ListMembershipViewModelDelegate
@@ -215,4 +205,9 @@ extension ListUserViewController: ListMembershipViewModelDelegate {
             await self.viewModel.update(user: user, action: .remove)
         }   // end Task
     }
+}
+
+// MARK: - AuthContextProvider
+extension ListUserViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }

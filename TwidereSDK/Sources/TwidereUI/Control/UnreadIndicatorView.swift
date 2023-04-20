@@ -30,7 +30,9 @@ final public class UnreadIndicatorView: UIView {
         }
     }
     
+    // input
     public var count = 0
+    
     private var currentCount = 0
     
     var displayLink: CADisplayLink?

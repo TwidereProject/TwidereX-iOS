@@ -20,12 +20,14 @@ extension StatusThreadViewController: DataSourceProvider {
             return nil
         }
         
-        guard case let .thread(thread) = item else { return nil }
-        switch thread {
-        case .reply(let threadContext),
-             .root(let threadContext),
-             .leaf(let threadContext):
-            return .status(threadContext.status)
+        switch item {
+        case .root:
+            guard let status = viewModel.statusViewModel?.status?.asRecord else  { return nil }
+            return .status(status)
+        case .status(let status):
+            return .status(status)
+        case .topLoader, .bottomLoader:
+            return nil
         }
     }
     

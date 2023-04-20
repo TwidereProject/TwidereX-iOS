@@ -22,6 +22,10 @@ class ListTimelineViewModel: TimelineViewModel {
         animatingDifferences: Bool
     ) {
         diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
+        
+        if enableAutoFetchLatest, !didAutoFetchLatest {
+            autoFetchLatestAction.send()
+        }
     }
     
     @MainActor
@@ -29,6 +33,10 @@ class ListTimelineViewModel: TimelineViewModel {
         snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>
     ) {
         diffableDataSource?.applySnapshotUsingReloadData(snapshot)
+        
+        if enableAutoFetchLatest, !didAutoFetchLatest {
+            autoFetchLatestAction.send()
+        }
     }
     
 }
@@ -37,16 +45,20 @@ extension ListTimelineViewModel {
     
     @MainActor
     func loadMore(item: StatusItem) async {
-        guard case let .feedLoader(record) = item else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
+        guard case let .feedLoader(record) = item else {
+            assertionFailure()
+            return
+        }
         guard let diffableDataSource = diffableDataSource else { return }
         var snapshot = diffableDataSource.snapshot()
+
+        let authenticationContext = authContext.authenticationContext
 
         let managedObjectContext = context.managedObjectContext
         let key = "LoadMore@\(record.objectID)#\(UUID().uuidString)"
 
         guard let feed = record.object(in: managedObjectContext) else { return }
-        guard let statusObject = feed.statusObject else { return }
+        guard case let .status(status) = feed.content else { return }
         
         // keep transient property alive
         managedObjectContext.cache(feed, key: key)
@@ -72,7 +84,7 @@ extension ListTimelineViewModel {
                 managedObjectContext: managedObjectContext,
                 authenticationContext: authenticationContext,
                 kind: kind,
-                position: .middle(anchor: statusObject.asRecord),
+                position: .middle(anchor: status.asRecord),
                 filter: StatusFetchViewModel.Timeline.Filter(rule: .empty)
             )
             let input = try await StatusFetchViewModel.Timeline.prepare(fetchContext: fetchContext)

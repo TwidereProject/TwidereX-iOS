@@ -125,7 +125,7 @@ extension ProfileFieldContentView {
         guard let item = configuration.item else { return }
         
         _placeholderMetaLabel.setupAttributes(style: .profileFieldValue)
-        _placeholderMetaLabel.configure(content: Meta.convert(from: .plaintext(string: " ")))
+        _placeholderMetaLabel.configure(content: Meta.convert(document: .plaintext(string: " ")))
         
         if let symbol = item.symbol {
             symbolImageView.image = symbol.withRenderingMode(.alwaysTemplate)

@@ -16,170 +16,170 @@ import MastodonMeta
 
 final class MastodonStatusThreadViewModel {
     
-    var disposeBag = Set<AnyCancellable>()
-    
-    // input
-    let context: AppContext
-    @Published private(set) var deletedObjectIDs: Set<NSManagedObjectID> = Set()
-
-    // output
-    @Published var _ancestors: [StatusItem] = []
-    let ancestors = CurrentValueSubject<[StatusItem], Never>([])
-    
-    @Published var _descendants: [StatusItem] = []
-    let descendants = CurrentValueSubject<[StatusItem], Never>([])
-    
-    init(context: AppContext) {
-        self.context = context
-        
-        Publishers.CombineLatest(
-            $_ancestors,
-            $deletedObjectIDs
-        )
-        .sink { [weak self] items, deletedObjectIDs in
-            guard let self = self else { return }
-            let newItems = items.filter { item in
-                switch item {
-                case .thread(let thread):
-                    return !deletedObjectIDs.contains(thread.statusRecord.objectID)
-                default:
-                    assertionFailure()
-                    return false
-                }
-            }
-            self.ancestors.value = newItems
-        }
-        .store(in: &disposeBag)
-        
-        Publishers.CombineLatest(
-            $_descendants,
-            $deletedObjectIDs
-        )
-        .sink { [weak self] items, deletedObjectIDs in
-            guard let self = self else { return }
-            let newItems = items.filter { item in
-                switch item {
-                case .thread(let thread):
-                    return !deletedObjectIDs.contains(thread.statusRecord.objectID)
-                default:
-                    assertionFailure()
-                    return false
-                }
-            }
-            self.descendants.value = newItems
-        }
-        .store(in: &disposeBag)
-    }
-    
-    deinit {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-    }
-    
-}
-
-extension MastodonStatusThreadViewModel {
-    
-    func appendAncestor(
-        domain: String,
-        nodes: [Node]
-    ) {
-        let ids = nodes.map { $0.statusID }
-        var dictionary: [MastodonStatus.ID: MastodonStatus] = [:]
-        do {
-            let request = MastodonStatus.sortedFetchRequest
-            request.predicate = MastodonStatus.predicate(domain: domain, ids: ids)
-            let statuses = try self.context.managedObjectContext.fetch(request)
-            for status in statuses {
-                dictionary[status.id] = status
-            }
-        } catch {
-            os_log("%{public}s[%{public}ld], %{public}s: fetch conversation fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-            return
-        }
-        
-        var newItems: [StatusItem] = []
-        for (i, node) in nodes.enumerated() {
-            guard let status = dictionary[node.statusID] else { continue }
-            let isLast = i == nodes.count - 1
-            
-            let record = ManagedObjectRecord<MastodonStatus>(objectID: status.objectID)
-            let context = StatusItem.Thread.Context(
-                status: .mastodon(record: record),
-                displayUpperConversationLink: !isLast,
-                displayBottomConversationLink: true
-            )
-            let item = StatusItem.thread(.leaf(context: context))
-            newItems.append(item)
-        }
-        
-        let items = self._ancestors + newItems
-        self._ancestors = items
-    }
-    
-    func appendDescendant(
-        domain: String,
-        nodes: [Node]
-    ) {
-        let childrenIDs = nodes
-            .map { node in [node.statusID, node.children.first?.statusID].compactMap { $0 } }
-            .flatMap { $0 }
-        var dictionary: [MastodonStatus.ID: MastodonStatus] = [:]
-        do {
-            let request = MastodonStatus.sortedFetchRequest
-            request.predicate = MastodonStatus.predicate(domain: domain, ids: childrenIDs)
-            let statuses = try self.context.managedObjectContext.fetch(request)
-            for status in statuses {
-                dictionary[status.id] = status
-            }
-        } catch {
-            os_log("%{public}s[%{public}ld], %{public}s: fetch conversation fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-            return
-        }
-        
-        var newItems: [StatusItem] = []
-        for node in nodes {
-            guard let status = dictionary[node.statusID] else { continue }
-            // first tier
-            let record = ManagedObjectRecord<MastodonStatus>(objectID: status.objectID)
-            let context = StatusItem.Thread.Context(
-                status: .mastodon(record: record)
-            )
-            let item = StatusItem.thread(.leaf(context: context))
-            newItems.append(item)
-            
-            // second tier
-            if let child = node.children.first {
-                guard let secondaryStatus = dictionary[child.statusID] else { continue }
-                let secondaryRecord = ManagedObjectRecord<MastodonStatus>(objectID: secondaryStatus.objectID)
-                let secondaryContext = StatusItem.Thread.Context(
-                    status: .mastodon(record: secondaryRecord),
-                    displayUpperConversationLink: true
-                )
-                let secondaryItem = StatusItem.thread(.leaf(context: secondaryContext))
-                newItems.append(secondaryItem)
-                
-                // update first tier context
-                context.displayBottomConversationLink = true
-            }
-        }
-        
-        var items = self._descendants
-        for item in newItems {
-            guard !items.contains(item) else { continue }
-            items.append(item)
-        }
-        self._descendants = items
-    }
+//    var disposeBag = Set<AnyCancellable>()
+//
+//    // input
+//    let context: AppContext
+//    @Published private(set) var deletedObjectIDs: Set<NSManagedObjectID> = Set()
+//
+//    // output
+//    @Published var _ancestors: [StatusItem] = []
+//    let ancestors = CurrentValueSubject<[StatusItem], Never>([])
+//
+//    @Published var _descendants: [StatusItem] = []
+//    let descendants = CurrentValueSubject<[StatusItem], Never>([])
+//
+//    init(context: AppContext) {
+//        self.context = context
+//
+//        Publishers.CombineLatest(
+//            $_ancestors,
+//            $deletedObjectIDs
+//        )
+//        .sink { [weak self] items, deletedObjectIDs in
+//            guard let self = self else { return }
+//            let newItems = items.filter { item in
+//                switch item {
+//                case .thread(let thread):
+//                    return !deletedObjectIDs.contains(thread.statusRecord.objectID)
+//                default:
+//                    assertionFailure()
+//                    return false
+//                }
+//            }
+//            self.ancestors.value = newItems
+//        }
+//        .store(in: &disposeBag)
+//
+//        Publishers.CombineLatest(
+//            $_descendants,
+//            $deletedObjectIDs
+//        )
+//        .sink { [weak self] items, deletedObjectIDs in
+//            guard let self = self else { return }
+//            let newItems = items.filter { item in
+//                switch item {
+//                case .thread(let thread):
+//                    return !deletedObjectIDs.contains(thread.statusRecord.objectID)
+//                default:
+//                    assertionFailure()
+//                    return false
+//                }
+//            }
+//            self.descendants.value = newItems
+//        }
+//        .store(in: &disposeBag)
+//    }
+//
+//    deinit {
+//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+//    }
     
 }
+
+//extension MastodonStatusThreadViewModel {
+//
+//    func appendAncestor(
+//        domain: String,
+//        nodes: [Node]
+//    ) {
+//        let ids = nodes.map { $0.statusID }
+//        var dictionary: [MastodonStatus.ID: MastodonStatus] = [:]
+//        do {
+//            let request = MastodonStatus.sortedFetchRequest
+//            request.predicate = MastodonStatus.predicate(domain: domain, ids: ids)
+//            let statuses = try self.context.managedObjectContext.fetch(request)
+//            for status in statuses {
+//                dictionary[status.id] = status
+//            }
+//        } catch {
+//            os_log("%{public}s[%{public}ld], %{public}s: fetch conversation fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+//            return
+//        }
+//
+//        var newItems: [StatusItem] = []
+//        for (i, node) in nodes.enumerated() {
+//            guard let status = dictionary[node.statusID] else { continue }
+//            let isLast = i == nodes.count - 1
+//
+//            let record = ManagedObjectRecord<MastodonStatus>(objectID: status.objectID)
+//            let context = StatusItem.Thread.Context(
+//                status: .mastodon(record: record),
+//                displayUpperConversationLink: !isLast,
+//                displayBottomConversationLink: true
+//            )
+//            let item = StatusItem.thread(.leaf(context: context))
+//            newItems.append(item)
+//        }
+//
+//        let items = self._ancestors + newItems
+//        self._ancestors = items
+//    }
+    
+//    func appendDescendant(
+//        domain: String,
+//        nodes: [Node]
+//    ) {
+//        let childrenIDs = nodes
+//            .map { node in [node.statusID, node.children.first?.statusID].compactMap { $0 } }
+//            .flatMap { $0 }
+//        var dictionary: [MastodonStatus.ID: MastodonStatus] = [:]
+//        do {
+//            let request = MastodonStatus.sortedFetchRequest
+//            request.predicate = MastodonStatus.predicate(domain: domain, ids: childrenIDs)
+//            let statuses = try self.context.managedObjectContext.fetch(request)
+//            for status in statuses {
+//                dictionary[status.id] = status
+//            }
+//        } catch {
+//            os_log("%{public}s[%{public}ld], %{public}s: fetch conversation fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+//            return
+//        }
+//
+//        var newItems: [StatusItem] = []
+//        for node in nodes {
+//            guard let status = dictionary[node.statusID] else { continue }
+//            // first tier
+//            let record = ManagedObjectRecord<MastodonStatus>(objectID: status.objectID)
+//            let context = StatusItem.Thread.Context(
+//                status: .mastodon(record: record)
+//            )
+//            let item = StatusItem.thread(.leaf(context: context))
+//            newItems.append(item)
+//
+//            // second tier
+//            if let child = node.children.first {
+//                guard let secondaryStatus = dictionary[child.statusID] else { continue }
+//                let secondaryRecord = ManagedObjectRecord<MastodonStatus>(objectID: secondaryStatus.objectID)
+//                let secondaryContext = StatusItem.Thread.Context(
+//                    status: .mastodon(record: secondaryRecord),
+//                    displayUpperConversationLink: true
+//                )
+//                let secondaryItem = StatusItem.thread(.leaf(context: secondaryContext))
+//                newItems.append(secondaryItem)
+//
+//                // update first tier context
+//                context.displayBottomConversationLink = true
+//            }
+//        }
+//
+//        var items = self._descendants
+//        for item in newItems {
+//            guard !items.contains(item) else { continue }
+//            items.append(item)
+//        }
+//        self._descendants = items
+//    }
+//
+//}
 
 extension MastodonStatusThreadViewModel {
     class Node {
         typealias ID = String
-        
+
         let statusID: ID
         let children: [Node]
-        
+
         init(
             statusID: ID,
             children: [MastodonStatusThreadViewModel.Node]
@@ -198,12 +198,12 @@ extension MastodonStatusThreadViewModel.Node {
         guard let replyToID = replyToID else {
             return []
         }
-        
+
         var dict: [Mastodon.Entity.Status.ID: Mastodon.Entity.Status] = [:]
         for status in statuses {
             dict[status.id] = status
         }
-        
+
         var nextID: Mastodon.Entity.Status.ID? = replyToID
         var nodes: [MastodonStatusThreadViewModel.Node] = []
         while let _nextID = nextID {
@@ -214,7 +214,7 @@ extension MastodonStatusThreadViewModel.Node {
             ))
             nextID = status.inReplyToID
         }
-        
+
         return nodes
     }
 }
@@ -226,7 +226,7 @@ extension MastodonStatusThreadViewModel.Node {
     ) -> [MastodonStatusThreadViewModel.Node] {
         var dictionary: [ID: Mastodon.Entity.Status] = [:]
         var mapping: [ID: Set<ID>] = [:]
-        
+
         for status in statuses {
             dictionary[status.id] = status
             guard let replyToID = status.inReplyToID else { continue }
@@ -237,7 +237,7 @@ extension MastodonStatusThreadViewModel.Node {
                 mapping[replyToID] = Set([status.id])
             }
         }
-        
+
         var children: [MastodonStatusThreadViewModel.Node] = []
         let replies = Array(mapping[statusID] ?? Set())
             .compactMap { dictionary[$0] }
@@ -248,7 +248,7 @@ extension MastodonStatusThreadViewModel.Node {
         }
         return children
     }
-    
+
     static func child(
         of statusID: ID,
         dictionary: [ID: Mastodon.Entity.Status],
@@ -264,15 +264,14 @@ extension MastodonStatusThreadViewModel.Node {
             children: children
         )
     }
-    
 }
 
 extension MastodonStatusThreadViewModel {
-    func delete(objectIDs: [NSManagedObjectID]) {
-        var set = deletedObjectIDs
-        for objectID in objectIDs {
-            set.insert(objectID)
-        }
-        self.deletedObjectIDs = set
-    }
+//    func delete(objectIDs: [NSManagedObjectID]) {
+//        var set = deletedObjectIDs
+//        for objectID in objectIDs {
+//            set.insert(objectID)
+//        }
+//        self.deletedObjectIDs = set
+//    }
 }

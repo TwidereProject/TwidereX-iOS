@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import Combine
 import CoreDataStack
-import TwidereUI
 
 final class StatusHistoryViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
 
@@ -121,6 +120,11 @@ extension StatusHistoryViewController: UITableViewDelegate, AutoGenerateTableVie
         }
     }
     
+}
+
+// MARK: - AuthContextProvider
+extension StatusHistoryViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }
 
 // MARK: - StatusViewTableViewCellDelegate

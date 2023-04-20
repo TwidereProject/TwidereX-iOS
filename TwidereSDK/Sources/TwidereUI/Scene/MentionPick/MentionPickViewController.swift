@@ -9,7 +9,6 @@ import os.log
 import UIKit
 import Combine
 import TwidereLocalization
-import TwidereUI
 
 protocol MentionPickViewControllerDelegate: AnyObject {
     func mentionPickViewController(_ controller: MentionPickViewController, itemPickDidChange items: [MentionPickViewModel.Item])
@@ -50,12 +49,12 @@ extension MentionPickViewController {
         ])
         
         tableView.delegate = self
-        viewModel.setupDiffableDataSource(
-            for: tableView,
-            configuration: MentionPickViewModel.DataSourceConfiguration(
-                userTableViewCellDelegate: self
-            )
-        )
+//        viewModel.setupDiffableDataSource(
+//            for: tableView,
+//            configuration: MentionPickViewModel.DataSourceConfiguration(
+//                userTableViewCellDelegate: self
+//            )
+//        )
     }
     
 }
@@ -101,24 +100,24 @@ extension MentionPickViewController: UITableViewDelegate {
 }
 
 // MARK: - UserTableViewCellDelegate
-extension MentionPickViewController: UserViewTableViewCellDelegate {
-    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton) {
-        // do nothing
-    }
-    
-    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, friendshipButtonDidPressed button: UIButton) {
-        // do nothing
-    }
-    
-    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, membershipButtonDidPressed button: UIButton) {
-        // do nothing
-    }
-    
-    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, acceptFollowReqeustButtonDidPressed button: UIButton) {
-        // do nothing
-    }
-    
-    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, rejectFollowReqeustButtonDidPressed button: UIButton) {
-        // do nothing
-    }
-}
+//extension MentionPickViewController: UserViewTableViewCellDelegate {
+//    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton) {
+//        // do nothing
+//    }
+//    
+//    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, friendshipButtonDidPressed button: UIButton) {
+//        // do nothing
+//    }
+//    
+//    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, membershipButtonDidPressed button: UIButton) {
+//        // do nothing
+//    }
+//    
+//    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, acceptFollowReqeustButtonDidPressed button: UIButton) {
+//        // do nothing
+//    }
+//    
+//    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, rejectFollowReqeustButtonDidPressed button: UIButton) {
+//        // do nothing
+//    }
+//}

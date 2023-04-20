@@ -12,6 +12,7 @@ import CoreDataStack
 import TwidereAsset
 import TwidereLocalization
 import MetaTextKit
+import MastodonMeta
 
 public struct NotificationHeaderInfo {
     
@@ -100,6 +101,7 @@ extension NotificationHeaderInfo {
             // assertionFailure()
             return nil
         }
-        return Meta.convert(from: .mastodon(string: text, emojis: user.emojis.asDictionary))
+        let content = MastodonContent(content: text, emojis: user.emojis.asDictionary)
+        return Meta.convert(document: .mastodon(content: content))
     }
 }

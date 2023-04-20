@@ -121,3 +121,8 @@ extension HistoryViewController {
     }
 
 }
+
+// MARK: - AuthContextProvider
+extension HistoryViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}

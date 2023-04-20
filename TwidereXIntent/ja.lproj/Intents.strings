@@ -1,83 +1,83 @@
-"0e8JfP" = "Just to confirm, you wanted ‘${account}’?";
+"0e8JfP" = "「${account}」で間違いないですか？";
 
-"1iPE2d-BS59z4" = "Just to confirm, you wanted ‘Public’?";
+"1iPE2d-BS59z4" = "「パブリック」で間違いないですか？";
 
-"1iPE2d-aV5Ezl" = "Just to confirm, you wanted ‘Default’?";
+"1iPE2d-aV5Ezl" = "「デフォルト」で間違いないですか？";
 
-"1iPE2d-aV8f0g" = "Just to confirm, you wanted ‘Private’?";
+"1iPE2d-aV8f0g" = "「プライベート」で間違いないですか？";
 
-"1iPE2d-aeaw8w" = "Just to confirm, you wanted ‘Direct’?";
+"1iPE2d-aeaw8w" = "「ダイレクト」で間違いないですか？";
 
-"1iPE2d-jEAHra" = "Just to confirm, you wanted ‘Unlisted’?";
+"1iPE2d-jEAHra" = "「リストから削除」で間違いないですか？";
 
 "8WWS78" = "ユーザー名";
 
-"9OV1Ic" = "Posts";
+"9OV1Ic" = "投稿";
 
-"ApmQKm" = "Switch Account";
+"ApmQKm" = "アカウントの切り替え";
 
 "BS59z4" = "公開";
 
 "Ciuk7c" = "名前";
 
-"DBgjXT" = "Account";
+"DBgjXT" = "アカウント";
 
 "Fn8AQn" = "URL";
 
-"G5v3xr" = "Set active account";
+"G5v3xr" = "アクティブなアカウントを設定";
 
-"GILN5g" = "There are ${count} options matching ‘${accounts}’.";
+"GILN5g" = "${accounts} にマッチする${count} 個のオプションがあります。";
 
 "N4GVJI" = "${errorDescription}";
 
-"QSA5ql" = "Account";
+"QSA5ql" = "アカウント";
 
-"QWcTQP" = "Switch to ${account}";
+"QWcTQP" = "${account}に変更";
 
-"SnCJhk" = "Publish Post";
+"SnCJhk" = "投稿する";
 
-"SqRrlA" = "Just to confirm, you wanted ‘${accounts}’?";
+"SqRrlA" = "「${accounts}」で間違いないですか？";
 
-"SrV2FP" = "Error Description";
+"SrV2FP" = "エラーの説明";
 
-"TzDamL" = "Toot Visibility";
+"TzDamL" = "公開範囲";
 
 "WVP0I1" = "${errorDescription}";
 
-"Xs6a35" = "Toot Visibility";
+"Xs6a35" = "公開範囲";
 
-"YNUo2I" = "There are ${count} options matching ‘${account}’.";
+"YNUo2I" = "${account} にマッチする${count} 個のオプションがあります。";
 
 "Yb4tzx" = "アカウント";
 
-"aV5Ezl" = "Default";
+"aV5Ezl" = "デフォルト";
 
 "aV8f0g" = "フォロワー限定";
 
 "aeaw8w" = "ダイレクト";
 
-"ch7ADX" = "Compose new post";
+"ch7ADX" = "投稿の新規作成";
 
-"f1YNIs" = "Post Content";
+"f1YNIs" = "投稿内容";
 
 "jEAHra" = "未収載";
 
-"kWl9zU" = "Post ${content}with ${accounts}";
+"kWl9zU" = "${accounts}で${content}を投稿";
 
-"noeHVX" = "Post";
+"noeHVX" = "投稿";
 
-"vbgnbQ" = "Post ${content}with ${accounts}";
+"vbgnbQ" = "${accounts}で${content}を投稿";
 
-"xeqcBa-BS59z4" = "There are ${count} options matching ‘Public’.";
+"xeqcBa-BS59z4" = "「パブリック」にマッチするオプションが${count}個あります。";
 
-"xeqcBa-aV5Ezl" = "There are ${count} options matching ‘Default’.";
+"xeqcBa-aV5Ezl" = " 「デフォルト」にマッチする${count} 個のオプションがあります。";
 
-"xeqcBa-aV8f0g" = "There are ${count} options matching ‘Private’.";
+"xeqcBa-aV8f0g" = "「プライベート」にマッチするオプションが${count}個あります。";
 
-"xeqcBa-aeaw8w" = "There are ${count} options matching ‘Direct’.";
+"xeqcBa-aeaw8w" = "「ダイレクト」にマッチするオプションが${count}個あります。";
 
-"xeqcBa-jEAHra" = "There are ${count} options matching ‘Unlisted’.";
+"xeqcBa-jEAHra" = "「リストから削除」にマッチするオプションが${count}個あります。";
 
-"z3DAP7" = "Switch to ${account}";
+"z3DAP7" = "${account}に変更";
 
-"zlMGvn" = "Content";
+"zlMGvn" = "コンテンツ";

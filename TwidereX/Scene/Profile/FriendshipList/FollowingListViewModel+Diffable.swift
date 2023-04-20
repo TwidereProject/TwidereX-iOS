@@ -18,16 +18,13 @@ extension FriendshipListViewModel {
         tableView: UITableView
     ) {
         let configuration = UserSection.Configuration(
-            userViewTableViewCellDelegate: nil,
-            userViewConfigurationContext: .init(
-                listMembershipViewModel: nil,
-                authenticationContext: context.authenticationService.activeAuthenticationContext
-            )
+            userViewTableViewCellDelegate: nil
         )
         
         diffableDataSource = UserSection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: configuration
         )
         
@@ -55,7 +52,7 @@ extension FriendshipListViewModel {
                         var snapshot = NSDiffableDataSourceSnapshot<UserSection, UserItem>()
                         snapshot.appendSections([.main])
                         let newItems: [UserItem] = records.map {
-                            .user(record: $0, style: .friendship)
+                            .user(record: $0, kind: .friend)
                         }
                         snapshot.appendItems(newItems, toSection: .main)
                         return snapshot

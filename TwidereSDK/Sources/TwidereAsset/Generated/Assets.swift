@@ -8,6 +8,9 @@
 #elseif os(tvOS) || os(watchOS)
   import UIKit
 #endif
+#if canImport(SwiftUI)
+  import SwiftUI
+#endif
 
 // Deprecated typealiases
 @available(*, deprecated, renamed: "ColorAsset.Color", message: "This typealias will be removed in SwiftGen 7.0")
@@ -145,6 +148,7 @@ public enum Asset {
     public static let altRectangle = ImageAsset(name: "Media/alt.rectangle")
     public static let gifRectangle = ImageAsset(name: "Media/gif.rectangle")
     public static let playerRectangle = ImageAsset(name: "Media/player.rectangle")
+    public static let repeatOff = ImageAsset(name: "Media/repeat-off")
     public static let `repeat` = ImageAsset(name: "Media/repeat")
     public static let repeatMini = ImageAsset(name: "Media/repeat.mini")
   }
@@ -211,6 +215,7 @@ public enum Asset {
     public static let capitalFloatLeftLarge = ImageAsset(name: "TextFormatting/capital.float.left.large")
     public static let listBullet = ImageAsset(name: "TextFormatting/list.bullet")
     public static let textHeaderRedaction = ImageAsset(name: "TextFormatting/text.header.redaction")
+    public static let textQuote = ImageAsset(name: "TextFormatting/text.quote")
     public static let textQuoteMini = ImageAsset(name: "TextFormatting/text.quote.mini")
   }
   public enum Transportation {
@@ -251,6 +256,13 @@ public final class ColorAsset {
   }
   #endif
 
+  #if canImport(SwiftUI)
+  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+  public private(set) lazy var swiftUIColor: SwiftUI.Color = {
+    SwiftUI.Color(asset: self)
+  }()
+  #endif
+
   fileprivate init(name: String) {
     self.name = name
   }
@@ -269,6 +281,16 @@ public extension ColorAsset.Color {
     #endif
   }
 }
+
+#if canImport(SwiftUI)
+@available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+public extension SwiftUI.Color {
+  init(asset: ColorAsset) {
+    let bundle = Bundle.module
+    self.init(asset.name, bundle: bundle)
+  }
+}
+#endif
 
 public struct ImageAsset {
   public fileprivate(set) var name: String
@@ -306,6 +328,13 @@ public struct ImageAsset {
     return result
   }
   #endif
+
+  #if canImport(SwiftUI)
+  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+  public var swiftUIImage: SwiftUI.Image {
+    SwiftUI.Image(asset: self)
+  }
+  #endif
 }
 
 public extension ImageAsset.Image {
@@ -323,3 +352,23 @@ public extension ImageAsset.Image {
     #endif
   }
 }
+
+#if canImport(SwiftUI)
+@available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+public extension SwiftUI.Image {
+  init(asset: ImageAsset) {
+    let bundle = Bundle.module
+    self.init(asset.name, bundle: bundle)
+  }
+
+  init(asset: ImageAsset, label: Text) {
+    let bundle = Bundle.module
+    self.init(asset.name, bundle: bundle, label: label)
+  }
+
+  init(decorative asset: ImageAsset) {
+    let bundle = Bundle.module
+    self.init(decorative: asset.name, bundle: bundle)
+  }
+}
+#endif

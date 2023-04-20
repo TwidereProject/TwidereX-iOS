@@ -106,6 +106,7 @@ public struct AttachmentView: View {
             let canAddCaption: Bool = {
                 switch viewModel.output {
                 case .image:        return true
+                case .gif:          return false
                 case .video:        return false
                 case .none:         return false
                 }
@@ -146,6 +147,11 @@ public struct AttachmentView: View {
                     // preview
                     switch viewModel.output {
                     case .image:
+                        let image = viewModel.thumbnail ?? .placeholder(color: .systemGray3)
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    case .gif:
                         let image = viewModel.thumbnail ?? .placeholder(color: .systemGray3)
                         Image(uiImage: image)
                             .resizable()
@@ -205,6 +211,11 @@ public struct AttachmentView: View {
                     // preview
                     switch viewModel.output {
                     case .image:
+                        let image = viewModel.thumbnail ?? .placeholder(color: .systemGray3)
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    case .gif:
                         let image = viewModel.thumbnail ?? .placeholder(color: .systemGray3)
                         Image(uiImage: image)
                             .resizable()

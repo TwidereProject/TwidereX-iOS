@@ -12,7 +12,6 @@ import CoreData
 import CoreDataStack
 import MastodonSDK
 import TwidereCommon
-import CoreData
 
 public struct NotificationSubject {
     public let fcmToken: String?

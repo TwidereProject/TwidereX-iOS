@@ -14,11 +14,12 @@ final class SearchTimelineViewModel: ListTimelineViewModel {
     
     // input
     @Published var searchText = ""
-    
+        
     // output
     
     init(
-        context: AppContext
+        context: AppContext,
+        authContext: AuthContext
     ) {
         let searchTimelineContext = StatusFetchViewModel.Timeline.Kind.SearchTimelineContext(
             timelineKind: .status,
@@ -26,15 +27,14 @@ final class SearchTimelineViewModel: ListTimelineViewModel {
         )
         super.init(
             context: context,
+            authContext: authContext,
             kind: .search(searchTimelineContext: searchTimelineContext)
         )
         
         isRefreshControlEnabled = false
         isFloatyButtonDisplay = false
         
-        context.authenticationService.$activeAuthenticationContext
-            .map { $0?.userIdentifier }
-            .assign(to: &statusRecordFetchedResultController.$userIdentifier)
+        statusRecordFetchedResultController.userIdentifier = authContext.authenticationContext.userIdentifier
         
         // bind searchText
         $searchText.assign(to: &searchTimelineContext.$searchText)

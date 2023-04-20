@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftUI
 import CoreData
 import CoreDataStack
 
@@ -33,12 +34,13 @@ extension StatusMediaGallerySection {
                     assertionFailure()
                     return
                 }
-                configure(
-                    collectionView: collectionView,
-                    cell: cell,
-                    status: status,
-                    configuration: configuration
-                )
+                let items = MediaView.ViewModel.viewModels(from: status)
+                let viewModel = MediaStackContainerView.ViewModel(items: items)
+                cell.contentConfiguration = UIHostingConfiguration {
+                    MediaStackContainerView(viewModel: viewModel)
+                }
+                .margins(.vertical, 0)  // remove vertical margins
+                
             }
         }
         
@@ -63,14 +65,14 @@ extension StatusMediaGallerySection {
 
 extension StatusMediaGallerySection {
 
-    static func configure(
-        collectionView: UICollectionView,
-        cell: StatusMediaGalleryCollectionCell,
-        status: StatusObject,
-        configuration: Configuration
-    ) {
-        cell.configure(status: status)
-        cell.delegate = configuration.statusMediaGalleryCollectionCellDelegate
-    }
+//    static func configure(
+//        collectionView: UICollectionView,
+//        cell: StatusMediaGalleryCollectionCell,
+//        status: StatusObject,
+//        configuration: Configuration
+//    ) {
+//        cell.configure(status: status)
+//        cell.delegate = configuration.statusMediaGalleryCollectionCellDelegate
+//    }
     
 }

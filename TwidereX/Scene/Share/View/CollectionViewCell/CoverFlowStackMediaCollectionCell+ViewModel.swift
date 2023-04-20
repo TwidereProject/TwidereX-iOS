@@ -14,24 +14,24 @@ extension CoverFlowStackMediaCollectionCell {
     final class ViewModel: ObservableObject {
         var disposeBag = Set<AnyCancellable>()
         
-        @Published var mediaViewConfiguration: MediaView.Configuration?
+        @Published var mediaViewModel: MediaView.ViewModel?
     }
 }
 
 extension CoverFlowStackMediaCollectionCell.ViewModel {
     func bind(cell: CoverFlowStackMediaCollectionCell) {
-        $mediaViewConfiguration
-            .sink { configuration in
-                guard let configuration = configuration else { return }
-                cell.mediaView.setup(configuration: configuration)
-            }
-            .store(in: &disposeBag)
+//        $mediaViewConfiguration
+//            .sink { configuration in
+//                guard let configuration = configuration else { return }
+//                cell.mediaView.setup(configuration: configuration)
+//            }
+//            .store(in: &disposeBag)
     }
 }
 
 
 extension CoverFlowStackMediaCollectionCell {
-    func configure(configuration: MediaView.Configuration) {
-        viewModel.mediaViewConfiguration = configuration
+    func configure(configuration: MediaView.ViewModel) {
+//        viewModel.mediaViewConfiguration = configuration
     }
 }

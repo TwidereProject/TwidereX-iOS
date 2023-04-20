@@ -97,6 +97,11 @@ extension FollowerListViewController {
     
 }
 
+// MARK: - AuthContextProvider
+extension FollowerListViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
+
 // MARK: - UITableViewDelegate
 extension FollowerListViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
     // sourcery:inline:FollowerListViewController.AutoGenerateTableViewDelegate

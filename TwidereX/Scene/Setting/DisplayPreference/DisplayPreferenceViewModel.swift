@@ -9,10 +9,6 @@
 import os.log
 import UIKit
 import Combine
-import AppShared
-import TwidereAsset
-import TwidereLocalization
-import TwidereUI
 import TwitterMeta
 
 final class DisplayPreferenceViewModel: ObservableObject {
@@ -21,9 +17,12 @@ final class DisplayPreferenceViewModel: ObservableObject {
     
     // MARK: - layout
     @Published var viewSize: CGSize = .zero
+    @Published public var viewLayoutFrame = ViewLayoutFrame()    
 
     // input
-        
+    let authContext: AuthContext
+    lazy var statusViewModel = StatusView.ViewModel.prototype(viewLayoutFramePublisher: $viewLayoutFrame)
+
     // avatar
     @Published var avatarStyle = UserDefaults.shared.avatarStyle
     
@@ -33,8 +32,12 @@ final class DisplayPreferenceViewModel: ObservableObject {
 
     // output
     @Published var authenticationContext: AuthenticationContext?
+    
 
-    init() {
+    init(authContext: AuthContext) {
+        self.authContext = authContext
+        // end init
+        
         // avatar style
         UserDefaults.shared.publisher(for: \.avatarStyle)
             .removeDuplicates()

@@ -17,6 +17,7 @@ class CompositeListViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let kind: Kind
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     
@@ -29,19 +30,21 @@ class CompositeListViewModel {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         kind: Kind
     ) {
         self.context = context
+        self.authContext = authContext
         self.kind = kind
         switch kind {
         case .lists:
-            self.ownedListViewModel = ListViewModel(context: context, kind: .owned(user: kind.user))
-            self.subscribedListViewModel = ListViewModel(context: context, kind: .subscribed(user: kind.user))
-            self.listedListViewModel = ListViewModel(context: context, kind: .none)
+            self.ownedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .owned(user: kind.user))
+            self.subscribedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .subscribed(user: kind.user))
+            self.listedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .none)
         case .listed:
-            self.ownedListViewModel = ListViewModel(context: context, kind: .none)
-            self.subscribedListViewModel = ListViewModel(context: context, kind: .none)
-            self.listedListViewModel = ListViewModel(context: context, kind: .listed(user: kind.user))
+            self.ownedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .none)
+            self.subscribedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .none)
+            self.listedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .listed(user: kind.user))
         }
         // end init
     }

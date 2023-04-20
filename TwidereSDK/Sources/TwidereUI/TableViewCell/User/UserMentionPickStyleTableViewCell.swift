@@ -7,13 +7,13 @@
 
 import UIKit
 
-public final class UserMentionPickStyleTableViewCell: UserTableViewCell {
-    
-        
-    public override func _init() {
-        super._init()
-        
-        userView.setup(style: .mentionPick)
-    }
-    
-}
+//public final class UserMentionPickStyleTableViewCell: UserTableViewCell {
+//    
+//        
+//    public override func _init() {
+//        super._init()
+//        
+//        userView.setup(style: .mentionPick)
+//    }
+//    
+//}

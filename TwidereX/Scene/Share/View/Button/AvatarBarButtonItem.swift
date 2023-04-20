@@ -9,7 +9,6 @@
 import os.log
 import UIKit
 import Combine
-import TwidereUI
 
 public protocol AvatarBarButtonItemDelegate: AnyObject {
     func avatarBarButtonItem(_ barButtonItem: AvatarBarButtonItem, didLongPressed sender: UILongPressGestureRecognizer)

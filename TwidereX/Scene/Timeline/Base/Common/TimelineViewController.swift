@@ -10,9 +10,6 @@ import os.log
 import UIKit
 import Combine
 import Floaty
-import AppShared
-import TwidereCore
-import TwidereUI
 import TabBarPager
 
 class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewableViewController {
@@ -98,17 +95,14 @@ extension TimelineViewController {
         avatarBarButtonItem.delegate = self
         
         // bind avatarBarButtonItem data
-        Publishers.CombineLatest(
-            context.authenticationService.$activeAuthenticationContext,
-            _viewModel.viewDidAppear.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] authenticationContext, _ in
-            guard let self = self else { return }
-            let user = authenticationContext?.user(in: self.context.managedObjectContext)
-            self.avatarBarButtonItem.configure(user: user)
-        }
-        .store(in: &disposeBag)
+        _viewModel.viewDidAppear
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                let user = self._viewModel.authContext.authenticationContext.user(in: self.context.managedObjectContext)
+                self.avatarBarButtonItem.configure(user: user)
+            }
+            .store(in: &disposeBag)
         
         // layout publish progress
         publishProgressView.translatesAutoresizingMaskIntoConstraints = false
@@ -170,13 +164,32 @@ extension TimelineViewController {
         
         _viewModel.viewDidAppear.send()
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        _viewModel.viewLayoutFrame.update(view: view)
+    }
 
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
+        
+        _viewModel.viewLayoutFrame.update(view: view)
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.floatyButton.paddingY = self.view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+        }
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate {[weak self] _ in
+            guard let self = self else { return }
+            self._viewModel.viewLayoutFrame.update(view: self.view)
+        } completion: {  _ in
+            // do nothing
         }
     }
 
@@ -186,8 +199,8 @@ extension TimelineViewController {
 
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context)
-        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context, authContext: authContext)
+        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(animated: true, transitioningDelegate: drawerSidebarTransitionController))
     }
 
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
@@ -215,6 +228,8 @@ extension TimelineViewController {
         
         let composeViewModel = ComposeViewModel(context: context)
         let composeContentViewModel = ComposeContentViewModel(
+            context: context,
+            authContext: authContext,
             kind: {
                 switch _viewModel.kind {
                 case .home:
@@ -243,21 +258,16 @@ extension TimelineViewController {
                     break
                 }
                 return settings
-            }(),
-            configurationContext: ComposeContentViewModel.ConfigurationContext(
-                apiService: context.apiService,
-                authenticationService: context.authenticationService,
-                mastodonEmojiService: context.mastodonEmojiService,
-                statusViewConfigureContext: .init(
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    authenticationContext: context.authenticationService.$activeAuthenticationContext
-                )
-            )
+            }()
         )
         coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
 
+}
+
+// MARK: - AuthContextProvider
+extension TimelineViewController: AuthContextProvider {
+    var authContext: AuthContext { _viewModel.authContext }
 }
 
 // MARK: - AvatarBarButtonItemDelegate

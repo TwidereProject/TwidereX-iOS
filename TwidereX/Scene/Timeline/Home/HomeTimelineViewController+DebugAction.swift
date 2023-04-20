@@ -13,11 +13,8 @@ import UIKit
 import CoreData
 import CoreDataStack
 import TwitterSDK
-import ZIPFoundation
-import FLEX
 import MetaTextKit
 import MetaTextArea
-import TwidereUI
 import SwiftMessages
 
 extension HomeTimelineViewController {
@@ -205,6 +202,10 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.moveToFirst(action, category: .blockingAuthor)
                 }),
+                UIAction(title: "First Duplicated Status", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirst(action, category: .duplicated)
+                }),
             ]
         )
     }
@@ -239,10 +240,6 @@ extension HomeTimelineViewController {
             identifier: nil,
             options: [],
             children: [
-                UIAction(title: "Enable FLEX", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.showFLEXAction(action)
-                }),
                 UIAction(title: "Display TextView Frame", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.displayTextViewFrame(action)
@@ -262,40 +259,33 @@ extension HomeTimelineViewController {
 }
 
 extension HomeTimelineViewController {
-    
-    @objc private func showFLEXAction(_ sender: UIAction) {
-        FLEXManager.shared.showExplorer()
-    }
-    
+
     @objc private func showStatusByID(_ id: String) {
-        Task {
-            let authenticationContext = self.context.authenticationService.activeAuthenticationContext
+        Task { @MainActor in
+            let authenticationContext = self.viewModel.authContext.authenticationContext
             switch authenticationContext {
-            case .twitter(let authenticationContext):
-                _ = try await self.context.apiService.twitterStatus(
-                    statusIDs: [id],
-                    authenticationContext: authenticationContext
-                )
-                let request = TwitterStatus.sortedFetchRequest
-                request.predicate = TwitterStatus.predicate(id: id)
-                request.fetchLimit = 1
-                let _status = try self.context.managedObjectContext.fetch(request).first
-                guard let status = _status else {
-                    return
-                }
+            case .twitter:
                 let statusThreadViewModel = StatusThreadViewModel(
                     context: self.context,
-                    root: .root(context: .init(status: .twitter(record: .init(objectID: status.objectID))))
+                    authContext: self.authContext,
+                    kind: .twitter(id)
                 )
-                await self.coordinator.present(
+                self.coordinator.present(
                     scene: .statusThread(viewModel: statusThreadViewModel),
                     from: self,
                     transition: .show
                 )
-            case .mastodon:
-                assertionFailure("TODO:")
-            default:
-                assertionFailure()
+            case .mastodon(let authenticationContext):
+                let statusThreadViewModel = StatusThreadViewModel(
+                    context: self.context,
+                    authContext: self.authContext,
+                    kind: .mastodon(domain: authenticationContext.domain, id)
+                )
+                self.coordinator.present(
+                    scene: .statusThread(viewModel: statusThreadViewModel),
+                    from: self,
+                    transition: .show
+                )
             }
         }   // end Task
     }
@@ -309,17 +299,17 @@ extension HomeTimelineViewController {
     }
     
     @objc private func showLocalTimelineAction(_ sender: UIAction) {
-        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, isLocal: true)
+        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, authContext: authContext, isLocal: true)
         coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
     }
     
     @objc private func showPublicTimelineAction(_ sender: UIAction) {
-        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, isLocal: false)
+        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, authContext: authContext, isLocal: false)
         coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
     }
     
     @objc private func showAccountListAction(_ sender: UIAction) {
-        let accountListViewModel = AccountListViewModel(context: context)
+        let accountListViewModel = AccountListViewModel(context: context, authContext: authContext)
         coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
@@ -333,9 +323,10 @@ extension HomeTimelineViewController {
         case followsYouAuthor
         case blockingAuthor
         case status(id: String)
+        case duplicated
         
-        func match(item: StatusItem) -> Bool {
-            let authenticationContext = AppContext.shared.authenticationService.activeAuthenticationContext
+        func match(item: StatusItem, authContext: AuthContext) -> Bool {
+            let authenticationContext = authContext.authenticationContext
             switch item {
             case .feed(let record):
                 guard let feed = record.object(in: AppContext.shared.managedObjectContext) else { return false }
@@ -361,6 +352,8 @@ extension HomeTimelineViewController {
                         return (status.repost ?? status).author.blockingBy.contains(me)
                     case .status(let id):
                         return status.id == id
+                    case .duplicated:
+                        return false
                     default:
                         return false
                     }
@@ -374,8 +367,50 @@ extension HomeTimelineViewController {
             }
         }
         
-        func firstMatch(in items: [StatusItem]) -> StatusItem? {
-            return items.first { item in self.match(item: item) }
+        func firstMatch(in items: [StatusItem], authContext: AuthContext) -> StatusItem? {
+            switch self {
+            case .duplicated:
+                var index = 0
+                while index < items.count - 2 {
+                    defer { index += 1 }
+                    
+                    let this = items[index]
+                    let next = items[index + 1]
+                    
+                    switch (this, next) {
+                    case (.feed(let thisRecord), .feed(let nextRecord)):
+                        guard let thisFeed = thisRecord.object(in: AppContext.shared.managedObjectContext) else { continue }
+                        guard let nextFeed = nextRecord.object(in: AppContext.shared.managedObjectContext) else { continue }
+                        
+                        if let thisTwitterStatus = thisFeed.twitterStatus,
+                           let nextTwitterStatus = nextFeed.twitterStatus
+                        {
+                            if thisTwitterStatus.id == nextTwitterStatus.id {
+                                return this
+                            } else {
+                                continue
+                            }
+                        } else if let thisMastodonStatus = thisFeed.mastodonStatus,
+                                  let nextMastodonStatus = nextFeed.mastodonStatus
+                        {
+                            if thisMastodonStatus.id == nextMastodonStatus.id {
+                                return this
+                            } else {
+                                continue
+                            }
+                        } else {
+                            continue
+                        }
+                    default:
+                        continue
+                    }
+                }
+                let logger = Logger(subsystem: "HomeTimelineViewController", category: "DebugAction")
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): not found duplicated in \(index) count items")
+                return nil
+            default:
+                return items.first { item in self.match(item: item, authContext: authContext) }
+            }
         }
     }
     
@@ -383,7 +418,7 @@ extension HomeTimelineViewController {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         let snapshot = diffableDataSource.snapshot()
         let items = snapshot.itemIdentifiers
-        guard let targetItem = category.firstMatch(in: items),
+        guard let targetItem = category.firstMatch(in: items, authContext: authContext),
               let index = snapshot.indexOfItem(targetItem)
         else { return }
         let indexPath = IndexPath(row: index, section: 0)
@@ -526,14 +561,18 @@ extension HomeTimelineViewController {
         let droppingObjectIDs = snapshot.itemIdentifiers.prefix(count).compactMap { item -> [NSManagedObjectID]? in
             switch item {
             case .feed(let record):
-                var ids: [NSManagedObjectID] = [record.objectID]
-                if let feed = record.object(in: context.apiService.backgroundManagedObjectContext) {
-                    if let objectID = feed.twitterStatus?.objectID {
-                        ids.append(objectID)
+                let managedObjectContext = context.managedObjectContext
+                let ids: [NSManagedObjectID] = managedObjectContext.performAndWait {
+                    var ids: [NSManagedObjectID] = [record.objectID]
+                    if let feed = record.object(in: managedObjectContext) {
+                        if let objectID = feed.twitterStatus?.objectID {
+                            ids.append(objectID)
+                        }
+                        if let objectID = feed.mastodonStatus?.objectID {
+                            ids.append(objectID)
+                        }
                     }
-                    if let objectID = feed.mastodonStatus?.objectID {
-                        ids.append(objectID)
-                    }
+                    return ids
                 }
                 return ids
             default:

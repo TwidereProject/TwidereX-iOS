@@ -12,7 +12,6 @@ import CoreData
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
-import AppShared
 
 extension NotificationTimelineViewModel {
     
@@ -24,19 +23,12 @@ extension NotificationTimelineViewModel {
         let configuration = NotificationSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
             userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-            statusViewConfigurationContext: .init(
-                dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider(),
-                authenticationContext: context.authenticationService.$activeAuthenticationContext
-            ),
-            userViewConfigurationContext: .init(
-                listMembershipViewModel: nil,
-                authenticationContext: context.authenticationService.activeAuthenticationContext
-            )
+            viewLayoutFramePublisher: $viewLayoutFrame
         )
         diffableDataSource = NotificationSection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: configuration
         )
 
@@ -134,7 +126,7 @@ extension NotificationTimelineViewModel {
     // load lastest
     func loadLatest() async {
         do {
-            switch (scope, authenticationContext) {
+            switch (scope, authContext.authenticationContext) {
             case (.twitter, .twitter(let authenticationContext)):
                 _ = try await context.apiService.twitterMentionTimeline(
                     query: Twitter.API.Statuses.Timeline.TimelineQuery(
@@ -166,7 +158,8 @@ extension NotificationTimelineViewModel {
     // load timeline gap
     func loadMore(item: NotificationItem) async {
         guard case let .feedLoader(record) = item else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
+        
+        let authenticationContext = authContext.authenticationContext
 
         let managedObjectContext = context.managedObjectContext
         let key = "LoadMore@\(record.objectID)"
@@ -183,7 +176,11 @@ extension NotificationTimelineViewModel {
         
         // fetch data
         do {
-            switch (feed.content, authenticationContext) {
+            guard case let .notification(object) = feed.content else {
+                assertionFailure()
+                throw AppError.implicit(.badRequest)
+            }
+            switch (object, authenticationContext) {
             case (.twitter(let status), .twitter(let authenticationContext)):
                 let query = Twitter.API.Statuses.Timeline.TimelineQuery(
                     count: 20,
@@ -194,13 +191,13 @@ extension NotificationTimelineViewModel {
                     authenticationContext: authenticationContext
                 )
                 
-            case (.mastodonNotification(let mastodonNotification), .mastodon(let authenticationContext)):
+            case (.mastodon(let notification), .mastodon(let authenticationContext)):
                 guard case let .mastodon(timelineScope) = scope else {
                     throw AppError.implicit(.badRequest)
                 }
                 _ = try await context.apiService.mastodonNotificationTimeline(
                     query: .init(
-                        maxID: mastodonNotification.id,
+                        maxID: notification.id,
                         types: timelineScope.includeTypes,
                         excludeTypes: timelineScope.excludeTypes
                     ),

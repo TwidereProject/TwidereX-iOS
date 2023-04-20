@@ -21,6 +21,7 @@ final class SearchViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let savedSearchViewModel: SavedSearchViewModel
     let trendViewModel: TrendViewModel
     let viewDidAppear = PassthroughSubject<Void, Never>()
@@ -29,16 +30,20 @@ final class SearchViewModel {
     var diffableDataSource: UITableViewDiffableDataSource<SearchSection, SearchItem>?
     @Published var savedSearchTexts = Set<String>()
 
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
         self.context = context
-        self.savedSearchViewModel = SavedSearchViewModel(context: context)
-        self.trendViewModel = TrendViewModel(context: context)
+        self.authContext = authContext
+        self.savedSearchViewModel = SavedSearchViewModel(context: context, authContext: authContext)
+        self.trendViewModel = TrendViewModel(context: context, authContext: authContext)
         // end init
         
         viewDidAppear
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
+                let authenticationContext = self.authContext.authenticationContext
                 
                 Task {
                     do {
@@ -57,7 +62,7 @@ final class SearchViewModel {
         )
         .sink { [weak self] trendGroupIndex, _ in
             guard let self = self else { return }
-            guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
+            let authenticationContext = self.authContext.authenticationContext
             
             Task { @MainActor in 
                 do {

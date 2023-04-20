@@ -24,6 +24,10 @@ public final class CoreDataStack {
     
     // output
     @Published public var didFinishLoad = false
+    
+    private lazy var persistHistoryManagedObjectContext: NSManagedObjectContext = {
+        return self.newTaskContext()
+    }()
         
     /// A persistent history token used for fetching transactions from the store.
     private var lastHistoryToken: NSPersistentHistoryToken?
@@ -168,7 +172,7 @@ extension CoreDataStack {
     // seealso: `NSPersistentStoreRemoteChangeNotificationPostOptionKey`
     private func processRemoteStoreChange() async throws {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        let context = self.newTaskContext()
+        let context = persistHistoryManagedObjectContext
         context.transactionAuthor = "PersistentHistoryContext"
         context.name = "PersistentHistoryContext"
 

@@ -10,8 +10,6 @@ import os.log
 import UIKit
 import Combine
 import Floaty
-import AppShared
-import TwidereCore
 import TabBarPager
 
 class ListTimelineViewController: TimelineViewController {
@@ -29,6 +27,8 @@ class ListTimelineViewController: TimelineViewController {
         tableView.backgroundColor = .systemBackground
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
+        tableView.selfSizingInvalidation = .enabled
+        tableView.cellLayoutMarginsFollowReadableWidth = true
         return tableView
     }()
     
@@ -72,7 +72,20 @@ extension ListTimelineViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
+                // do not fetch more when on background
                 guard self.isDisplaying else { return }
+                
+                switch self.viewModel.kind {
+                case .home:
+                    // do not fetch more when empty on home timeline
+                    // otherwise the fetchLatest will be override at app launch
+                    guard let snapshot = self.viewModel.diffableDataSource?.snapshot(),
+                          snapshot.numberOfItems > 0
+                    else { return }
+                default:
+                    break
+                }
+                
                 self.viewModel.stateMachine.enter(TimelineViewModel.LoadOldestState.Loading.self)
             }
             .store(in: &disposeBag)
@@ -276,6 +289,13 @@ extension ListTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cacheCellFrame(tableView: tableView, didEndDisplaying: cell, forRowAt: indexPath)
+    }
+}
+
+// MARK: - UITableViewDataSourcePrefetching
+extension ListTimelineViewController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        aspectTableView(tableView, prefetchRowsAt: indexPaths)
     }
 }
 

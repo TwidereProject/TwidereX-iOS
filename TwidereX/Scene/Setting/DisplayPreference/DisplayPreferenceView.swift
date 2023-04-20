@@ -9,31 +9,28 @@
 import Foundation
 import SwiftUI
 import Combine
-import TwidereCore
-import TwidereUI
-import TwidereLocalization
-import AppShared
 
 struct DisplayPreferenceView: View {
     
     @ObservedObject var viewModel: DisplayPreferenceViewModel
     
-    @State var timelineStatusViewHeight: CGFloat = .zero
     @State var threadStatusViewHeight: CGFloat = .zero
     
     var body: some View {
         List {
             Section {
-                PrototypeStatusViewRepresentable(
-                    style: .timeline,
-                    configurationContext: StatusView.ConfigurationContext(
-                        dateTimeProvider: DateTimeSwiftProvider(),
-                        twitterTextProvider: OfficialTwitterTextProvider(),
-                        authenticationContext: viewModel.$authenticationContext
-                    ),
-                    height: $timelineStatusViewHeight
-                )
-                .frame(height: timelineStatusViewHeight)
+                StatusView(viewModel: StatusView.ViewModel.prototype(
+                    viewLayoutFramePublisher: viewModel.$viewLayoutFrame
+                ))
+//                PrototypeStatusViewRepresentable(
+//                    style: .timeline,
+//                    configurationContext: StatusView.ConfigurationContext(
+//                        authContext: viewModel.authContext,
+//                        dateTimeProvider: DateTimeSwiftProvider(),
+//                        twitterTextProvider: OfficialTwitterTextProvider()
+//                    ),
+//                    height: $timelineStatusViewHeight
+//                )
             } header: {
                 Text(verbatim: L10n.Scene.Settings.Display.SectionHeader.preview)
                     .textCase(nil)

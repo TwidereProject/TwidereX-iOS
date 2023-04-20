@@ -12,7 +12,6 @@ import CoreData
 import CoreDataStack
 import Pageboy
 import TwidereCore
-import TwidereUI
 
 final class MediaPreviewViewModel: NSObject {
     
@@ -22,8 +21,11 @@ final class MediaPreviewViewModel: NSObject {
 
     // input
     let context: AppContext
+    let authContext: AuthContext
     let item: Item
     let transitionItem: MediaPreviewTransitionItem
+    
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
     
     @Published var currentPage: Int
     
@@ -33,14 +35,16 @@ final class MediaPreviewViewModel: NSObject {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         item: Item,
         transitionItem: MediaPreviewTransitionItem
     ) {
         self.context = context
+        self.authContext = authContext
         self.item = item
         self.currentPage = {
             switch item {
-            case .statusAttachment(let previewContext):
+            case .statusMedia(let previewContext):
                 return previewContext.initialIndex
             case .image:
                 return 0
@@ -50,7 +54,7 @@ final class MediaPreviewViewModel: NSObject {
         // setup output
         self.status = {
             switch item {
-            case .statusAttachment(let previewContext):
+            case .statusMedia(let previewContext):
                 let status = previewContext.status.object(in: context.managedObjectContext)
                 return status
             case .image:
@@ -60,15 +64,15 @@ final class MediaPreviewViewModel: NSObject {
         self.viewControllers = {
             var viewControllers: [UIViewController] = []
             switch item {
-            case .statusAttachment(let previewContext):
-                for (i, attachment) in previewContext.attachments.enumerated() {
-                    switch attachment.kind {
-                    case .image:
+            case .statusMedia(let previewContext):
+                for (i, mediaViewModel) in previewContext.mediaViewModels.enumerated() {
+                    switch mediaViewModel.mediaKind {
+                    case .photo:
                         let viewController = MediaPreviewImageViewController()
                         viewController.viewModel = MediaPreviewImageViewModel(
                             context: context,
                             item: .remote(.init(
-                                assetURL: attachment.assetURL,
+                                assetURL: mediaViewModel.assetURL,
                                 thumbnail: previewContext.thumbnail(at: i)
                             ))
                         )
@@ -78,23 +82,21 @@ final class MediaPreviewViewModel: NSObject {
                         viewController.viewModel = MediaPreviewVideoViewModel(
                             context: context,
                             item: .video(.init(
-                                assetURL: attachment.assetURL,
-                                previewURL: attachment.previewURL
+                                assetURL: mediaViewModel.assetURL,
+                                previewURL: mediaViewModel.previewURL
                             ))
                         )
                         viewControllers.append(viewController)
-                    case .gif:
+                    case .animatedGIF:
                         let viewController = MediaPreviewVideoViewController()
                         viewController.viewModel = MediaPreviewVideoViewModel(
                             context: context,
                             item: .gif(.init(
-                                assetURL: attachment.assetURL,
-                                previewURL: attachment.previewURL
+                                assetURL: mediaViewModel.assetURL,
+                                previewURL: mediaViewModel.previewURL
                             ))
                         )
                         viewControllers.append(viewController)
-                    case .audio:
-                        viewControllers.append(UIViewController())
                     }
                 }
             case .image(let previewContext):
@@ -127,13 +129,13 @@ final class MediaPreviewViewModel: NSObject {
 extension MediaPreviewViewModel {
     
     enum Item {
-        case statusAttachment(StatusAttachmentPreviewContext)
+        case statusMedia(StatusMediaPreviewContext)
         case image(ImagePreviewContext)
     }
 
-    struct StatusAttachmentPreviewContext {
+    struct StatusMediaPreviewContext {
         let status: StatusRecord
-        let attachments: [AttachmentObject]
+        let mediaViewModels: [MediaView.ViewModel]
         let initialIndex: Int
         let preloadThumbnails: [UIImage?]
         
@@ -166,7 +168,7 @@ extension MediaPreviewViewModel: PageboyViewControllerDataSource {
 
     func defaultPage(for pageboyViewController: PageboyViewController) -> PageboyViewController.Page? {
         switch item {
-        case .statusAttachment(let previewContext):
+        case .statusMedia(let previewContext):
             return .at(index: previewContext.initialIndex)
         case .image:
             return .first

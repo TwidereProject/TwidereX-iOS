@@ -18,8 +18,8 @@ public final class MentionPickViewModel {
     var disposeBag = Set<AnyCancellable>()
     
     // input
-    let apiService: APIService
-    let authenticationService: AuthenticationService
+    let context: AppContext
+    let authContext: AuthContext
     let primaryItem: Item
     let secondaryItems: [Item]
     
@@ -27,29 +27,25 @@ public final class MentionPickViewModel {
     var diffableDataSource: UITableViewDiffableDataSource<Section, Item>?
     
     init(
-        apiService: APIService,
-        authenticationService: AuthenticationService,
+        context: AppContext,
+        authContext: AuthContext,
         primaryItem: Item,
         secondaryItems: [Item]
     ) {
-        self.apiService = apiService
-        self.authenticationService = authenticationService
+        self.context = context
+        self.authContext = authContext
         self.primaryItem = primaryItem
         self.secondaryItems = secondaryItems
+        // end init
         
-        authenticationService.$activeAuthenticationContext
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                switch authenticationContext {
-                case .twitter(let twitterAuthenticationContext):
-                    Task {
-                        try await self.resolveLoadingItems(twitterAuthenticationContext: twitterAuthenticationContext)
-                    }
-                default:
-                    break
-                }
+        switch authContext.authenticationContext {
+        case .twitter(let authenticationContext):
+            Task {
+                try await self.resolveLoadingItems(twitterAuthenticationContext: authenticationContext)
             }
-            .store(in: &disposeBag)
+        case .mastodon:
+            break
+        }
     }
     
     deinit {
@@ -138,7 +134,7 @@ extension MentionPickViewModel {
                 }
             }
         
-        let response = try await apiService.twitterUsers(
+        let response = try await context.apiService.twitterUsers(
             usernames: usernames,
             twitterAuthenticationContext: twitterAuthenticationContext
         )

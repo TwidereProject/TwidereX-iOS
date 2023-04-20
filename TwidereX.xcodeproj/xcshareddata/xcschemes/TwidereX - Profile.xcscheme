@@ -29,10 +29,10 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:TwidereX/TwidereX-Performance.xctestplan">
+            reference = "container:TwidereX/New Group/TwidereX-Performance.xctestplan">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:TwidereX/TwidereX.xctestplan"
+            reference = "container:TwidereX/New Group/TwidereX.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>

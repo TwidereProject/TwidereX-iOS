@@ -17,7 +17,7 @@ final class AboutViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    let viewModel = AboutViewModel()
+    var viewModel: AboutViewModel!
     
 }
 
@@ -51,16 +51,15 @@ extension AboutViewController {
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS")!
                     self.coordinator.present(scene: .safari(url: url.absoluteString), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 case .twitter:
-                    switch self.context.authenticationService.activeAuthenticationContext {
+                    switch self.viewModel.authContext.authenticationContext {
                     case .twitter:
                         let profileViewModel = RemoteProfileViewModel(
                             context: self.context,
+                            authContext: self.viewModel.authContext,
                             profileContext: .twitter(.username("TwidereProject"))
                         )
                         self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                     case .mastodon:
-                        fallthrough
-                    case .none:
                         let url = URL(string: "https://twitter.com/twidereproject")!
                         self.coordinator.present(scene: .safari(url: url.absoluteString), from: nil, transition: .safariPresent(animated: true, completion: nil))
                     }

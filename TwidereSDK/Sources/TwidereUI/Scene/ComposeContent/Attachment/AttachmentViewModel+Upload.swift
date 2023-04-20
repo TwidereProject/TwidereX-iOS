@@ -171,8 +171,11 @@ extension AttachmentViewModel {
                 type: imageData.kf.imageFormat == .PNG ? UTType.png : UTType.jpeg
             )
             
-//        case .gif(let url):
-//            fatalError()
+        case .gif(_, let url):
+            return SliceResult(
+                url: url,
+                type: .gif
+            )
         case .video(let url, _):
             return SliceResult(
                 url: url,
@@ -251,12 +254,24 @@ extension AttachmentViewModel {
             chunkIndex += 1
         }
         
+        var isFinalizing = false
         var isFinalized = false
         repeat {
-            let mediaFinalizedResponse = try await context.apiService.TwitterMediaFinalize(
-                mediaID: mediaID,
-                twitterAuthenticationContext: twitterAuthenticationContext
-            )
+            let mediaFinalizedResponse: Twitter.Response.Content<Twitter.API.Media.FinalizeResponse> = try await {
+                if !isFinalizing {
+                    let result = try await context.apiService.TwitterMediaFinalize(
+                        mediaID: mediaID,
+                        twitterAuthenticationContext: twitterAuthenticationContext
+                    )
+                    isFinalizing = true
+                    return result
+                } else {
+                    return try await context.apiService.twitterMediaStatus(
+                        mediaID: mediaID,
+                        twitterAuthenticationContext: twitterAuthenticationContext
+                    )
+                }
+            }()
             
             guard let processingInfo = mediaFinalizedResponse.value.processingInfo else {
                 isFinalized = true
@@ -265,14 +280,14 @@ extension AttachmentViewModel {
             
             if let checkAfterSecs = processingInfo.checkAfterSecs {
                 let checkAfterSeconds = UInt64(checkAfterSecs)
-                AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): finalize status pending. check after \(checkAfterSecs)s")
+                AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): mediaID: \(mediaID) - finalize status pending. check after \(checkAfterSecs)s")
                 
                 assert(!Thread.isMainThread)
                 try? await Task.sleep(nanoseconds: checkAfterSeconds * .second)     // 1s * checkAfterSeconds
                 continue
             
             } else {
-                AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): finalize success")
+                AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): mediaID: \(mediaID) - finalize success")
                 isFinalized = true
             }
         } while !isFinalized
@@ -404,6 +419,8 @@ extension AttachmentViewModel.Output {
             case .png:      return .png(data)
             case .jpg:      return .jpeg(data)
             }
+        case .gif(let data, _):
+            return .gif(data)
         case .video(let url, _):
             return .other(url, fileExtension: url.pathExtension, mimeType: "video/mp4")
         }

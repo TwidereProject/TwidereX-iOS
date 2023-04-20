@@ -37,11 +37,11 @@ extension ComposeContentViewModel: MetaTextDelegate {
             
             switch platform {
             case .twitter:
-                let content = TwitterContent(content: textInput)
+                let content = TwitterContent(content: textInput, urlEntities: [])
                 let metaContent = TwitterMetaContent.convert(
-                    content: content,
+                    text: content,
                     urlMaximumLength: .max,
-                    twitterTextProvider: configurationContext.statusViewConfigureContext.twitterTextProvider
+                    twitterTextProvider: SwiftTwitterTextProvider()
                 )
                 return metaContent
                 

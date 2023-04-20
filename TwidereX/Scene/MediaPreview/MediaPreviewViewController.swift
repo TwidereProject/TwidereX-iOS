@@ -11,7 +11,6 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import AppShared
 import AlamofireImage
 import Kingfisher
 import Pageboy
@@ -136,14 +135,14 @@ extension MediaPreviewViewController {
         ])
         
         if let status = viewModel.status {
-            mediaInfoDescriptionView.configure(
-                statusObject: status,
-                configurationContext: .init(
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    authenticationContext: context.authenticationService.$activeAuthenticationContext
-                )
-            )
+//            mediaInfoDescriptionView.configure(
+//                statusObject: status,
+//                configurationContext: .init(
+//                    dateTimeProvider: DateTimeSwiftProvider(),
+//                    twitterTextProvider: OfficialTwitterTextProvider(),
+//                    viewLayoutFramePublisher: viewModel.$viewLayoutFrame
+//                )
+//            )
         } else {
             mediaInfoDescriptionView.isHidden = true
         }
@@ -164,29 +163,29 @@ extension MediaPreviewViewController {
         closeButton.addTarget(self, action: #selector(MediaPreviewViewController.closeButtonPressed(_:)), for: .touchUpInside)
         
         // bind view model
-        viewModel.$currentPage
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] index in
-                guard let self = self else { return }
-                // update page control
-                self.pageControl.currentPage = index
-                
-                // update mediaGridContainerView
-                switch self.viewModel.transitionItem.source {
-                case .none:
-                    break
-                case .attachment:
-                    break
-                case .attachments(let mediaGridContainerView):
-                    UIView.animate(withDuration: 0.3) {
-                        mediaGridContainerView.setAlpha(1)
-                        mediaGridContainerView.setAlpha(0, index: index)
-                    }
-                case .profileAvatar, .profileBanner:
-                    break
-                }
-            }
-            .store(in: &disposeBag)
+//        viewModel.$currentPage
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] index in
+//                guard let self = self else { return }
+//                // update page control
+//                self.pageControl.currentPage = index
+//                
+//                // update mediaGridContainerView
+//                switch self.viewModel.transitionItem.source {
+//                case .none:
+//                    break
+//                case .attachment:
+//                    break
+//                case .attachments(let mediaGridContainerView):
+//                    UIView.animate(withDuration: 0.3) {
+//                        mediaGridContainerView.setAlpha(1)
+//                        mediaGridContainerView.setAlpha(0, index: index)
+//                    }
+//                case .profileAvatar, .profileBanner:
+//                    break
+//                }
+//            }
+//            .store(in: &disposeBag)
         
         viewModel.$currentPage
             .receive(on: DispatchQueue.main)
@@ -326,13 +325,18 @@ extension MediaPreviewViewController: MediaPreviewImageViewControllerDelegate {
         impactFeedbackGenerator.impactOccurred()
         
         // trigger menu button action
-        mediaInfoDescriptionView.toolbar.delegate?.statusToolbar(
-            mediaInfoDescriptionView.toolbar,
-            actionDidPressed: .menu,
-            button: mediaInfoDescriptionView.toolbar.menuButton
-        )
+//        mediaInfoDescriptionView.toolbar.delegate?.statusToolbar(
+//            mediaInfoDescriptionView.toolbar,
+//            actionDidPressed: .menu,
+//            button: mediaInfoDescriptionView.toolbar.menuButton
+//        )
     }
 
+}
+
+// MARK: - AuthContextProvider
+extension MediaPreviewViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }
 
 // MARK: - MediaInfoDescriptionViewDelegate
