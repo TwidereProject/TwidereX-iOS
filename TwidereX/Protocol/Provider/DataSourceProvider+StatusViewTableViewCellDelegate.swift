@@ -127,81 +127,22 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
 
 // MARK: - media
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController {
-    func tableViewCell(
-        _ cell: UITableViewCell,
-        viewModel: StatusView.ViewModel,
-        previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel
-    ) {
-        Task {
-            let status = viewModel.status.asRecord
-            
-            await DataSourceFacade.coordinateToMediaPreviewScene(
-                provider: self,
-                status: status,
-                statusViewModel: viewModel,
-                mediaViewModel: mediaViewModel
-            )
-        }   // end Task
-    }
-    
+
     @MainActor
     func tableViewCell(
         _ cell: UITableViewCell,
         viewModel: StatusView.ViewModel,
-        previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel,
-        previewActionContext: ContextMenuInteractionPreviewActionContext
+        mediaViewModel: MediaView.ViewModel,
+        action: MediaView.ViewModel.Action
     ) {
-        let status = viewModel.status.asRecord
-        
-        DataSourceFacade.coordinateToMediaPreviewScene(
+        assert(Thread.isMainThread)
+        DataSourceFacade.responseToMediaViewAction(
             provider: self,
-            status: status,
             statusViewModel: viewModel,
             mediaViewModel: mediaViewModel,
-            previewActionContext: previewActionContext
+            action: action
         )
     }
-
-//    func tableViewCell(
-//        _ cell: UITableViewCell,
-//        statusView: StatusView,
-//        mediaGridContainerView containerView: MediaGridContainerView,
-//        didTapMediaView mediaView: MediaView,
-//        at index: Int
-//    ) {
-//
-//    }
-//
-//    func tableViewCell(
-//        _ cell: UITableViewCell,
-//        statusView: StatusView,
-//        quoteStatusView: StatusView,
-//        mediaGridContainerView containerView: MediaGridContainerView,
-//        didTapMediaView mediaView: MediaView,
-//        at index: Int
-//    ) {
-//        Task {
-//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-//            guard let item = await item(from: source) else {
-//                assertionFailure()
-//                return
-//            }
-//            guard let status = await item.status(in: self.context.managedObjectContext) else {
-//                assertionFailure("only works for status data provider")
-//                return
-//            }
-//            await DataSourceFacade.coordinateToMediaPreviewScene(
-//                provider: self,
-//                target: .quote,
-//                status: status,
-//                mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
-//                    containerView: .mediaGridContainerView(containerView),
-//                    mediaView: mediaView,
-//                    index: index
-//                )
-//            )
-//        }
-//    }
 
     func tableViewCell(
         _ cell: UITableViewCell,

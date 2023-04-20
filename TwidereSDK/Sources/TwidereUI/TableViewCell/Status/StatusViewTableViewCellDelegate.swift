@@ -27,8 +27,7 @@ public protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, userAvatarButtonDidPressed user: UserRecord)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta)
-    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
-    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel, previewActionContext: ContextMenuInteractionPreviewActionContext)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, mediaViewModel: MediaView.ViewModel, action: MediaView.ViewModel.Action)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, pollVoteActionForViewModel pollViewModel: PollView.ViewModel)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, pollUpdateIfNeedsForViewModel pollViewModel: PollView.ViewModel)
@@ -55,12 +54,8 @@ public extension StatusViewDelegate where Self: StatusViewContainerTableViewCell
         statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, textViewDidSelectMeta: meta)
     }
 
-    func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel) {
-        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, previewActionForMediaViewModel: mediaViewModel)
-    }
-
-    func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel, previewActionContext: ContextMenuInteractionPreviewActionContext) {
-        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, previewActionForMediaViewModel: mediaViewModel, previewActionContext: previewActionContext)
+    func statusView(_ viewModel: StatusView.ViewModel, mediaViewModel: MediaView.ViewModel, action: MediaView.ViewModel.Action) {
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, mediaViewModel: mediaViewModel, action: action)
     }
 
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool) {

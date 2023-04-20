@@ -98,6 +98,47 @@ extension MediaView.ViewModel {
         case photo
         case animatedGIF
     }
+    
+    public enum Action {
+        case preview
+        case previewWithContext(ContextMenuInteractionPreviewActionContext)
+        case save
+        case copy
+        case shareLink
+        case shareMedia
+        
+        public var title: String {
+            switch self {
+            case .preview:  return "Preview"
+            case .previewWithContext: return "Preview with context"
+            case .save: return L10n.Common.Controls.Actions.save
+            case .copy: return L10n.Common.Controls.Actions.copy
+            case .shareLink: return L10n.Common.Controls.Actions.shareLink
+            case .shareMedia: return L10n.Common.Controls.Actions.shareMedia
+            }
+        }
+        
+        public var image: UIImage? {
+            switch self {
+            case .preview:  return UIImage(systemName: "eye")
+            case .previewWithContext: return UIImage(systemName: "eye.fill")
+            case .save: return UIImage(systemName: "square.and.arrow.down")
+            case .copy: return UIImage(systemName: "doc.on.doc")
+            case .shareLink: return UIImage(systemName: "link")
+            case .shareMedia: return UIImage(systemName: "photo")
+            }
+        }
+    }
+}
+
+extension MediaView.ViewModel.MediaKind {
+    public var resourceType: PHAssetResourceType {
+        switch self {
+        case .video:        return .video
+        case .photo:        return .photo
+        case .animatedGIF:  return .video
+        }
+    }
 }
 
 

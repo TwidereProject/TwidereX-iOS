@@ -29,8 +29,7 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta)
 
     // media
-    func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel)
-    func statusView(_ viewModel: StatusView.ViewModel, previewActionForMediaViewModel mediaViewModel: MediaView.ViewModel, previewActionContext: ContextMenuInteractionPreviewActionContext)
+    func statusView(_ viewModel: StatusView.ViewModel, mediaViewModel mediaViewModel: MediaView.ViewModel, action: MediaView.ViewModel.Action)
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
 
     // poll
@@ -132,14 +131,11 @@ public struct StatusView: View {
                                 viewModels: viewModel.mediaViewModels,
                                 idealWidth: viewModel.contentWidth,
                                 idealHeight: 280,
-                                previewAction: { mediaViewModel in
-                                    viewModel.delegate?.statusView(viewModel, previewActionForMediaViewModel: mediaViewModel)
-                                },
-                                previewActionWithContext: { mediaViewModel, context in
-                                    viewModel.delegate?.statusView(viewModel, previewActionForMediaViewModel: mediaViewModel, previewActionContext: context)
+                                handler: { mediaViewModel, action in
+                                    viewModel.delegate?.statusView(viewModel, mediaViewModel: mediaViewModel, action: action)
                                 }
                             )
-                            .clipShape(RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius))
+                            // .clipShape(RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius))
                             .overlay {
                                 ContentWarningOverlayView(isReveal: viewModel.isMediaContentWarningOverlayReveal) {
                                     viewModel.delegate?.statusView(viewModel, toggleContentWarningOverlayDisplay: !viewModel.isMediaContentWarningOverlayReveal)

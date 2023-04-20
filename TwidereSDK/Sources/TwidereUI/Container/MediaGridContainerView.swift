@@ -20,8 +20,7 @@ public struct MediaGridContainerView: View {
     public let idealWidth: CGFloat?
     public let idealHeight: CGFloat     // ideal height for grid exclude single media
     
-    public let previewAction: (MediaView.ViewModel) -> Void
-    public let previewActionWithContext: (MediaView.ViewModel, ContextMenuInteractionPreviewActionContext) -> Void
+    public let handler: (MediaView.ViewModel, MediaView.ViewModel.Action) -> Void
     
     public var body: some View {
         VStack {
@@ -159,16 +158,6 @@ public struct MediaGridContainerView: View {
 }
 
 extension MediaGridContainerView {
-    public func contextMenuItems(for viewModel: MediaView.ViewModel) -> some View {
-        Button {
-            
-        } label: {
-            Label(L10n.Common.Controls.Actions.save, systemImage: "square.and.arrow.down")
-        }
-    }
-}
-
-extension MediaGridContainerView {
     
     private func mediaView(at index: Int, width: CGFloat?, height: CGFloat?) -> some View {
         Group {
@@ -213,7 +202,8 @@ extension MediaGridContainerView {
         )
         .contentShape(Rectangle())
         .onTapGesture {
-            previewAction(viewModels[index])
+            let viewModel = viewModels[index]
+            handler(viewModel, MediaView.ViewModel.Action.preview)
         }
         .contextMenu(contextMenuContentPreviewProvider: {
             let viewModel = viewModels[index]
@@ -224,19 +214,54 @@ extension MediaGridContainerView {
             return previewProvider
             
         }, contextMenuActionProvider: { _ in
-            let children: [UIAction] = [
+            let viewModel = viewModels[index]
+            let shareChildren: [UIAction] = [
                 UIAction(
-                    title: L10n.Common.Controls.Actions.copy,
-                    image: UIImage(systemName: "doc.on.doc"),
+                    title: MediaView.ViewModel.Action.shareLink.title,
+                    image: MediaView.ViewModel.Action.shareLink.image,
                     attributes: [],
                     state: .off
                 ) { _ in
-                    print("Hi copy")
-                }
+                    handler(viewModel, .shareLink)
+                },
+                UIAction(
+                    title: MediaView.ViewModel.Action.shareMedia.title,
+                    image: MediaView.ViewModel.Action.shareMedia.image,
+                    attributes: [],
+                    state: .off
+                ) { _ in
+                    handler(viewModel, .shareMedia)
+                },
+            ]
+            let children: [UIMenuElement] = [
+                UIAction(
+                    title: MediaView.ViewModel.Action.save.title,
+                    image: MediaView.ViewModel.Action.save.image,
+                    attributes: [],
+                    state: .off
+                ) { _ in
+                    handler(viewModel, .save)
+                },
+                UIAction(
+                    title: MediaView.ViewModel.Action.copy.title,
+                    image: MediaView.ViewModel.Action.copy.image,
+                    attributes: [],
+                    state: .off
+                ) { _ in
+                    handler(viewModel, .copy)
+                },
+                UIMenu(
+                    title: L10n.Common.Controls.Actions.share,
+                    image: UIImage(systemName: "square.and.arrow.up"),
+                    identifier: nil,
+                    options: [],
+                    children: shareChildren
+                ),
             ]
             return UIMenu(title: "", image: nil, identifier: nil, options: [], children: children)
         }, previewActionWithContext: { context in
-            previewActionWithContext(viewModels[index], context)
+            let viewModel = viewModels[index]
+            handler(viewModel, MediaView.ViewModel.Action.previewWithContext(context))
         })
     }   // end func
     
@@ -356,10 +381,7 @@ struct MediaGridContainerView_Previews: PreviewProvider {
                     viewModels: Array(viewModels.prefix(i + 1)),
                     idealWidth: 300,
                     idealHeight: 280,
-                    previewAction: { _ in
-                        // do nothing
-                    },
-                    previewActionWithContext: { _, _ in
+                    handler: { _, _ in
                         // do nothing
                     }
                 )

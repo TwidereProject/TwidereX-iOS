@@ -12,63 +12,6 @@ import TwidereCore
 
 extension DataSourceFacade {
     
-    struct MediaPreviewContext {
-        // let statusView: StatusView
-        let containerView: ContainerView
-        let mediaView: MediaView
-        let index: Int
-        
-        enum ContainerView {
-            case mediaView(MediaView)
-            case mediaGridContainerView(MediaGridContainerView)
-        }
-        
-        func thumbnails() async -> [UIImage?] {
-            return []
-//            switch containerView {
-//            case .mediaView(let mediaView):
-//                let thumbnail = await mediaView.thumbnail()
-//                return [thumbnail]
-//            case .mediaGridContainerView(let mediaGridContainerView):
-//                let thumbnails = await mediaGridContainerView.mediaViews.parallelMap { mediaView in
-//                    return await mediaView.thumbnail()
-//                }
-//                return thumbnails
-//            }
-        }
-    }
-    
-    static func coordinateToMediaPreviewScene(
-        provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
-        target: StatusTarget,
-        status: StatusRecord,
-        mediaPreviewContext: MediaPreviewContext
-    ) async {
-//        let _redirectRecord = await DataSourceFacade.status(
-//            managedObjectContext: provider.context.managedObjectContext,
-//            status: status,
-//            target: target
-//        )
-//        guard let redirectRecord = _redirectRecord else { return }
-//
-//        await coordinateToMediaPreviewScene(
-//            provider: provider,
-//            status: redirectRecord,
-//            mediaPreviewContext: mediaPreviewContext
-//        )
-//
-//        Task {
-//            await recordStatusHistory(
-//                denpendency: provider,
-//                status: status
-//            )
-//        }   // end Task
-    }
-    
-}
-
-extension DataSourceFacade {
-    
     @MainActor
     static func coordinateToMediaPreviewScene(
         provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
@@ -83,42 +26,7 @@ extension DataSourceFacade {
             return
         }
         let thumbnails = statusViewModel.mediaViewModels.map { $0.thumbnail }
-        
-        // use standard video player
-//        if let first = attachments.first, first.kind == .video || first.kind == .audio {
-//            Task { @MainActor [weak provider] in
-//                guard let provider = provider else { return }
-//                // workaround Twitter Video assertURL missing from V2 API issue
-//                var assetURL: URL
-//                if let url = first.assetURL {
-//                    assetURL = url
-//                } else if case let .twitter(record) = status {
-//                    let _statusID: String? = await provider.context.managedObjectContext.perform {
-//                        let status = record.object(in: provider.context.managedObjectContext)
-//                        return status?.id
-//                    }
-//                    guard let statusID = _statusID,
-//                          case let .twitter(authenticationContext) = provider.authContext.authenticationContext
-//                    else { return }
-//
-//                    let _response = try? await provider.context.apiService.twitterStatusV1(statusIDs: [statusID], authenticationContext: authenticationContext)
-//                    guard let status = _response?.value.first,
-//                          let url = status.extendedEntities?.media?.first?.assetURL.flatMap({ URL(string: $0) })
-//                    else { return }
-//                    assetURL = url
-//                } else {
-//                    assertionFailure()
-//                    return
-//                }
-//                let playerViewController = AVPlayerViewController()
-//                playerViewController.player = AVPlayer(url: assetURL)
-//                playerViewController.player?.play()
-//                playerViewController.delegate = provider.context.playerService
-//                provider.present(playerViewController, animated: true, completion: nil)
-//            }   // end Task
-//            return
-//        }
-        
+
         // note:
         // previewActionContext will automatically dismiss with fade animation style
         previewActionContext?.animator.preferredCommitStyle = .dismiss
@@ -186,4 +94,164 @@ extension DataSourceFacade {
         )
     }
 
+}
+
+extension DataSourceFacade {
+    
+    @MainActor
+    static func responseToMediaViewAction(
+        provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
+        statusViewModel: StatusView.ViewModel,
+        mediaViewModel: MediaView.ViewModel,
+        action: MediaView.ViewModel.Action
+    ) {
+        switch action {
+        case .preview:
+            assert(Thread.isMainThread)
+            let status = statusViewModel.status.asRecord
+            DataSourceFacade.coordinateToMediaPreviewScene(
+                provider: provider,
+                status: status,
+                statusViewModel: statusViewModel,
+                mediaViewModel: mediaViewModel
+            )
+        case .previewWithContext(let previewActionContext):
+            assert(Thread.isMainThread)
+            let status = statusViewModel.status.asRecord
+            DataSourceFacade.coordinateToMediaPreviewScene(
+                provider: provider,
+                status: status,
+                statusViewModel: statusViewModel,
+                mediaViewModel: mediaViewModel,
+                previewActionContext: previewActionContext
+            )
+        case .save:
+            Task {
+                await responseToMediaViewSaveAction(
+                    provider: provider,
+                    mediaViewModel: mediaViewModel
+                )
+            }   // end Task
+        case .copy:
+            Task {
+                await responseToMediaViewCopyAction(
+                    provider: provider,
+                    mediaViewModel: mediaViewModel
+                )
+            }   // end Task
+        case .shareLink:
+            Task {
+                await responseToMediaViewShareLinkAction(
+                    provider: provider,
+                    mediaViewModel: mediaViewModel
+                )
+            }   // end Task
+        case .shareMedia:
+            Task {
+                await responseToMediaViewShareMediaAction(
+                    provider: provider,
+                    mediaViewModel: mediaViewModel
+                )
+            }   // end Task
+        }   // end switch
+    }
+    
+}
+
+extension DataSourceFacade {
+    
+    @MainActor
+    static func responseToMediaViewSaveAction(
+        provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
+        mediaViewModel: MediaView.ViewModel
+    ) async {
+        guard let assetURL = mediaViewModel.downloadURL else { return }
+        
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+        let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+        
+        do {
+            impactFeedbackGenerator.impactOccurred()
+            try await provider.context.photoLibraryService.save(
+                source: .remote(url: assetURL),
+                resourceType: mediaViewModel.mediaKind.resourceType
+            )
+            provider.context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoSaved.title)
+            notificationFeedbackGenerator.notificationOccurred(.success)
+        } catch {
+            provider.context.photoLibraryService.presentFailureNotification(
+                error: error,
+                title: L10n.Common.Alerts.PhotoSaveFail.title,
+                message: L10n.Common.Alerts.PhotoSaveFail.message
+            )
+            notificationFeedbackGenerator.notificationOccurred(.error)
+        }
+    }
+    
+    @MainActor
+    static func responseToMediaViewCopyAction(
+        provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
+        mediaViewModel: MediaView.ViewModel
+    ) async {
+        guard let assetURL = mediaViewModel.downloadURL else { return }
+        
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+        let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+        
+        do {
+            impactFeedbackGenerator.impactOccurred()
+            try await provider.context.photoLibraryService.copy(
+                source: .remote(url: assetURL),
+                resourceType: mediaViewModel.mediaKind.resourceType
+            )
+            provider.context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoCopied.title)
+            notificationFeedbackGenerator.notificationOccurred(.success)
+        } catch {
+            provider.context.photoLibraryService.presentFailureNotification(
+                error: error,
+                title: L10n.Common.Alerts.PhotoCopied.title,
+                message: L10n.Common.Alerts.PhotoCopyFail.message
+            )
+            notificationFeedbackGenerator.notificationOccurred(.error)
+        }
+    }
+    
+    @MainActor
+    static func responseToMediaViewShareLinkAction(
+        provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
+        mediaViewModel: MediaView.ViewModel
+    ) async {
+        guard let assetURL = mediaViewModel.downloadURL else { return }
+        
+        let applicationActivities: [UIActivity] = [
+            SafariActivity(sceneCoordinator: provider.coordinator)
+        ]
+        let activityViewController = UIActivityViewController(
+            activityItems: [assetURL],
+            applicationActivities: applicationActivities
+        )
+        activityViewController.popoverPresentationController?.sourceRect = mediaViewModel.frameInWindow
+        provider.present(activityViewController, animated: true, completion: nil)
+    }
+    
+    @MainActor
+    static func responseToMediaViewShareMediaAction(
+        provider: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController,
+        mediaViewModel: MediaView.ViewModel
+    ) async {
+        guard let assetURL = mediaViewModel.downloadURL else { return }
+        guard let url = try? await provider.context.photoLibraryService.file(from: .remote(url: assetURL)) else {
+            return
+        }
+        
+        let applicationActivities: [UIActivity] = [
+            SafariActivity(sceneCoordinator: provider.coordinator)
+        ]
+        let activityViewController = UIActivityViewController(
+            activityItems: [url],
+            applicationActivities: applicationActivities
+        )
+        activityViewController.popoverPresentationController?.sourceRect = mediaViewModel.frameInWindow
+        provider.present(activityViewController, animated: true, completion: nil)
+    }
 }
