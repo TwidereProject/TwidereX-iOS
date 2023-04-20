@@ -169,7 +169,7 @@ public struct StatusView: View {
                         if let location = viewModel.location {
                             HStack {
                                 Image(uiImage: Asset.ObjectTools.mappinMini.image.withRenderingMode(.alwaysTemplate))
-                                Text(location + location + location + location)
+                                Text(location)
                                 Spacer()
                             }
                             .foregroundColor(.secondary)
@@ -348,27 +348,38 @@ extension StatusView {
         }   // end HStack
     }
     
+    var avatarButtonClipShape: any Shape {
+        switch viewModel.avatarStyle {
+        case .circle:
+            return Circle()
+        case .roundedSquare:
+            return RoundedRectangle(cornerRadius: avatarButtonDimension / 4)
+        }
+    }
+    
+    var avatarButtonDimension: CGFloat {
+        switch viewModel.kind {
+        case .quote:
+            return inlineAvatarButtonDimension
+        default:
+            return StatusView.hangingAvatarButtonDimension
+        }
+    }
+    
     var avatarButton: some View {
         Button {
             guard let author = viewModel.author?.asRecord else { return }
             viewModel.delegate?.statusView(viewModel, userAvatarButtonDidPressed: author)
         } label: {
-            let dimension: CGFloat = {
-                switch viewModel.kind {
-                case .quote:
-                    return inlineAvatarButtonDimension
-                default:
-                    return StatusView.hangingAvatarButtonDimension
-                }
-            }()
             KFImage(viewModel.avatarURL)
                 .placeholder { progress in
                     Color(uiColor: .placeholderText)
                 }
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: dimension, height: dimension)
-                .clipShape(Circle())
+                .frame(width: avatarButtonDimension, height: avatarButtonDimension)
+                .clipShape(AvatarClipShape(avatarStyle: viewModel.avatarStyle))
+                .animation(.easeInOut, value: viewModel.avatarStyle)
         }
         .buttonStyle(.borderless)
     }

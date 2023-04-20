@@ -35,6 +35,8 @@ extension UserView {
         
         // user
         @Published public var avatarURL: URL?
+        @Published public var avatarStyle = UserDefaults.shared.avatarStyle
+        
         @Published public var name: MetaContent = PlaintextMetaContent(string: "")
         @Published public var username: String = ""
         
@@ -114,6 +116,10 @@ extension UserView {
             default:
                 break
             }
+            
+            // avatar style
+            UserDefaults.shared.publisher(for: \.avatarStyle)
+                .assign(to: &$avatarStyle)
 //            // isMyList
 //            Publishers.CombineLatest(
 //                $authenticationContext,

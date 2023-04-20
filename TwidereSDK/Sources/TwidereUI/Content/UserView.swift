@@ -81,7 +81,8 @@ extension UserView {
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: dimension, height: dimension)
-                .clipShape(Circle())
+                .clipShape(AvatarClipShape(avatarStyle: viewModel.avatarStyle))
+                .animation(.easeInOut, value: viewModel.avatarStyle)
         }
         .buttonStyle(.borderless)
         .allowsHitTesting(allowsAvatarButtonHitTesting)

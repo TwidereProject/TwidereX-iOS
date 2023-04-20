@@ -51,6 +51,8 @@ extension StatusView {
 
         // author
         @Published public var avatarURL: URL?
+        @Published public var avatarStyle = UserDefaults.shared.avatarStyle
+        
         @Published public var authorName: MetaContent = PlaintextMetaContent(string: "")
         @Published public var authorUsernme = ""
         @Published public var authorUserIdentifier: UserIdentifier?
@@ -253,12 +255,8 @@ extension StatusView {
 //                }
 //            }
 //            .assign(to: &$isRepostEnabled)
-            
-            toolbarViewModel.style = kind == .conversationRoot ? .plain : .inline
-            
-            UserDefaults.shared.publisher(for: \.translateButtonPreference)
-                .map { $0 }
-                .assign(to: &$translateButtonPreference)
+
+            setupBinding()
         }
         
         private init(
@@ -271,6 +269,22 @@ extension StatusView {
             // end init
             
             viewLayoutFramePublisher?.assign(to: &$viewLayoutFrame)
+            
+            setupBinding()
+        }
+        
+        private func setupBinding() {
+            // avatar style
+            UserDefaults.shared.publisher(for: \.avatarStyle)
+                .assign(to: &$avatarStyle)
+            
+            // translate button
+            UserDefaults.shared.publisher(for: \.translateButtonPreference)
+                .map { $0 }
+                .assign(to: &$translateButtonPreference)
+
+            // toolbar
+            toolbarViewModel.style = kind == .conversationRoot ? .plain : .inline
         }
     }
 }
