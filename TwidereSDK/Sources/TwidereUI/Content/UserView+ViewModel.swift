@@ -181,6 +181,16 @@ extension UserView.ViewModel {
         // subheadline: follower count
         // accessory: membership button
         case addListMember
+        
+        // headline: name | lock
+        // subheadline: username
+        // accessory: disclosureIndicator
+        case settingAccountSection
+        
+        // headline: name | lock
+        // subheadline: username
+        // accessory: none
+        case plain
     }
     
     public enum AvatarBadge {
@@ -205,8 +215,10 @@ extension UserView.ViewModel {
     
     var isSeparateLineDisplay: Bool {
         switch kind {
-        case .notification:     return false
-        default:                return true
+        case .notification:             return false
+        case .settingAccountSection:    return false
+        case .plain:                    return false
+        default:                        return true
         }
     }
 }

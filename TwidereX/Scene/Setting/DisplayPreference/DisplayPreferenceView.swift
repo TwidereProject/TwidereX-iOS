@@ -14,12 +14,14 @@ struct DisplayPreferenceView: View {
     
     @ObservedObject var viewModel: DisplayPreferenceViewModel
     
-    @State var timelineStatusViewHeight: CGFloat = .zero
     @State var threadStatusViewHeight: CGFloat = .zero
     
     var body: some View {
         List {
             Section {
+                StatusView(viewModel: StatusView.ViewModel.prototype(
+                    viewLayoutFramePublisher: viewModel.$viewLayoutFrame
+                ))
 //                PrototypeStatusViewRepresentable(
 //                    style: .timeline,
 //                    configurationContext: StatusView.ConfigurationContext(
@@ -29,7 +31,6 @@ struct DisplayPreferenceView: View {
 //                    ),
 //                    height: $timelineStatusViewHeight
 //                )
-//                .frame(height: timelineStatusViewHeight)
             } header: {
                 Text(verbatim: L10n.Scene.Settings.Display.SectionHeader.preview)
                     .textCase(nil)

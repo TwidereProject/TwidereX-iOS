@@ -100,7 +100,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
     
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool) {
         Task { @MainActor in
-            let status = viewModel.status.asRecord
+            guard let status = viewModel.status?.asRecord else { return }
 
             try await DataSourceFacade.responseToToggleContentSensitiveAction(
                 provider: self,
@@ -112,7 +112,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
     
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta) {
         Task { @MainActor in
-            let status = viewModel.status.asRecord
+            guard let status = viewModel.status?.asRecord else { return }
             
             await DataSourceFacade.responseToMetaText(
                 provider: self,
@@ -150,7 +150,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         toggleContentWarningOverlayDisplay isReveal: Bool
     ) {
         Task {
-            let status = viewModel.status.asRecord
+            guard let status = viewModel.status?.asRecord else { return }
             try await DataSourceFacade.responseToToggleMediaSensitiveAction(
                 provider: self,
                 target: .status,
@@ -188,8 +188,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         pollVoteActionForViewModel pollViewModel: PollView.ViewModel
     ) {
         Task {
-            let status = viewModel.status.asRecord
-            
+            guard let status = viewModel.status?.asRecord else { return }
             try await DataSourceFacade.responseToStatusPollVote(
                 provider: self,
                 status: status
@@ -207,8 +206,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Poll] not needs update. skip")
                 return
             }
-            let status = viewModel.status.asRecord
-            
+            guard let status = viewModel.status?.asRecord else { return }
             try await DataSourceFacade.responseToStatusPollUpdate(
                 provider: self,
                 status: status
@@ -224,8 +222,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel
     ) {
         Task {
-            let status = viewModel.status.asRecord
-            
+            guard let status = viewModel.status?.asRecord else { return }
             await DataSourceFacade.responseToStatusPollOption(
                 provider: self,
                 target: .status,
@@ -307,7 +304,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         statusMetricButtonDidPressed action: StatusMetricView.Action
     ) {
         Task {
-            let status = viewModel.status.asRecord
+            guard let status = viewModel.status?.asRecord else { return }
             // TODO:
         }   // end Task
     }
@@ -322,7 +319,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         statusToolbarButtonDidPressed action: StatusToolbarView.Action
     ) {
         Task {
-            let status = viewModel.status.asRecord
+            guard let status = viewModel.status?.asRecord else { return }
             await DataSourceFacade.responseToStatusToolbar(
                 provider: self,
                 viewModel: viewModel,

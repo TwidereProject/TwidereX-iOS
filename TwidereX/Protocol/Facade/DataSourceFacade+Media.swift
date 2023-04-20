@@ -108,7 +108,7 @@ extension DataSourceFacade {
         switch action {
         case .preview:
             assert(Thread.isMainThread)
-            let status = statusViewModel.status.asRecord
+            guard let status = statusViewModel.status?.asRecord else { return }
             DataSourceFacade.coordinateToMediaPreviewScene(
                 provider: provider,
                 status: status,
@@ -117,7 +117,7 @@ extension DataSourceFacade {
             )
         case .previewWithContext(let previewActionContext):
             assert(Thread.isMainThread)
-            let status = statusViewModel.status.asRecord
+            guard let status = statusViewModel.status?.asRecord else { return }
             DataSourceFacade.coordinateToMediaPreviewScene(
                 provider: provider,
                 status: status,

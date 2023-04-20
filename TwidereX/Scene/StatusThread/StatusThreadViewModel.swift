@@ -313,7 +313,7 @@ extension StatusThreadViewModel {
         isLoadTop = true
         defer { isLoadTop = false }
         
-        guard let status = self.statusViewModel?.status.asRecord else { return }
+        guard let status = self.statusViewModel?.status?.asRecord else { return }
         guard case .value(let cursor) = topCursor else { return }
         try await fetchConversation(status: status, cursor: .value(cursor))
     }
@@ -324,7 +324,7 @@ extension StatusThreadViewModel {
         isLoadBottom = true
         defer { isLoadBottom = false }
         
-        guard let status = self.statusViewModel?.status.asRecord else { return }
+        guard let status = self.statusViewModel?.status?.asRecord else { return }
         guard case .value(let cursor) = bottomCursor else { return }
         try await fetchConversation(status: status, cursor: .value(cursor))
     }

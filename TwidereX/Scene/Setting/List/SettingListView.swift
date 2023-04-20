@@ -85,11 +85,8 @@ struct SettingListView: View {
     
     @ViewBuilder
     var accountView: some View {
-        if let user = viewModel.user {
-            UserContentView(viewModel: .init(
-                user: user,
-                accessoryType: .disclosureIndicator
-            ))
+        if let userViewModel = viewModel.userViewModel {
+            UserView(viewModel: userViewModel)
         } else {
             EmptyView()
         }

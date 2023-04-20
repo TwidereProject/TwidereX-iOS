@@ -28,7 +28,7 @@ final class SettingListViewModel: ObservableObject {
     let settingListEntryPublisher = PassthroughSubject<SettingListEntry, Never>()
     
     // account
-    @Published var user: UserObject?
+    @Published var userViewModel: UserView.ViewModel?
     
     // App Icon
     @Published var alternateIconNamePreference = UserDefaults.shared.alternateIconNamePreference
@@ -55,6 +55,12 @@ final class SettingListViewModel: ObservableObject {
 extension SettingListViewModel {
     @MainActor
     func setupAccountSource() async {
-        user = authContext.authenticationContext.user(in: context.managedObjectContext)
+        guard let user = authContext.authenticationContext.user(in: context.managedObjectContext) else { return }
+        userViewModel = UserView.ViewModel(
+            user: user,
+            authContext: authContext,
+            kind: .settingAccountSection,
+            delegate: nil
+        )
     }
 }

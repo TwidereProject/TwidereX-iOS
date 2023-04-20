@@ -29,6 +29,7 @@ final class AccountPreferenceViewModel: ObservableObject {
     @Published var isMentionEnabled = true
 
     // output
+    @Published var userViewModel: UserView.ViewModel?
     let listEntryPublisher = PassthroughSubject<AccountPreferenceListEntry, Never>()
     
     init(
@@ -42,6 +43,12 @@ final class AccountPreferenceViewModel: ObservableObject {
         // end init
         
         setupNotificationSource()
+        userViewModel = UserView.ViewModel(
+            user: user,
+            authContext: authContext,
+            kind: .plain,
+            delegate: nil
+        )
     }
     
     deinit {

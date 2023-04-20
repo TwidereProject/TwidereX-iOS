@@ -212,7 +212,7 @@ extension StatusThreadViewModel {
     }
     
     private func updateConversationRootLink(viewModel: StatusView.ViewModel) {
-        let record = viewModel.status.asRecord
+        guard let record = viewModel.status?.asRecord else { return }
         guard let linkConfiguration = conversationLinkConfiguration[record] else { return }
         
         viewModel.isTopConversationLinkLineViewDisplay = linkConfiguration.isTopLinkDisplay

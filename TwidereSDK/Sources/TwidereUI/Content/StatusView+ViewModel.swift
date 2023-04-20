@@ -34,13 +34,15 @@ extension StatusView {
         @Published public var quoteViewModel: StatusView.ViewModel?
         
         // input
-        public let status: StatusObject
-        public let author: UserObject
+        public let status: StatusObject?
+        public let author: UserObject?
         public let authContext: AuthContext?
         public let kind: Kind
         public weak var delegate: StatusViewDelegate?
         
         weak var parentViewModel: StatusView.ViewModel?
+        
+        @Published public var addtionalHorizontalMargin: CGFloat = 0.0
         
         // output
         
@@ -257,6 +259,18 @@ extension StatusView {
             UserDefaults.shared.publisher(for: \.translateButtonPreference)
                 .map { $0 }
                 .assign(to: &$translateButtonPreference)
+        }
+        
+        private init(
+             viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
+        ) {
+            self.status = nil
+            self.author = nil
+            self.authContext = nil
+            self.kind = .timeline
+            // end init
+            
+            viewLayoutFramePublisher?.assign(to: &$viewLayoutFrame)
         }
     }
 }
@@ -891,7 +905,7 @@ extension StatusView.ViewModel {
     
     var containerWidth: CGFloat {
         let width: CGFloat = {
-            var width = parentViewModel?.containerWidth ?? viewLayoutFrame.readableContentLayoutFrame.width
+            var width = parentViewModel?.containerWidth ?? (viewLayoutFrame.readableContentLayoutFrame.width - addtionalHorizontalMargin)
             width -= containerMargin
             return width
         }()
@@ -1329,5 +1343,173 @@ extension StatusView.ViewModel {
         default:
             break
         }
+    }
+}
+
+extension StatusView.ViewModel {
+    public static func prototype(
+        viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
+    ) -> StatusView.ViewModel {
+        let viewModel = StatusView.ViewModel(viewLayoutFramePublisher: viewLayoutFramePublisher)
+        
+        viewModel.addtionalHorizontalMargin = 20
+        
+        viewModel.avatarURL = URL(string: "https://pbs.twimg.com/profile_images/809741368134234112/htSiXXAU_400x400.jpg")
+        viewModel.authorName = PlaintextMetaContent(string: "Twidere")
+        viewModel.authorUsernme = "TwidereProject"
+        viewModel.content = TwitterMetaContent.convert(
+            document: TwitterContent(content: L10n.Scene.Settings.Display.Preview.thankForUsingTwidereX, urlEntities: []),
+            urlMaximumLength: 16,
+            twitterTextProvider: SwiftTwitterTextProvider()
+        )
+        
+        return viewModel
+//
+//        if let repost = status.repost {
+//            let _repostViewModel = StatusView.ViewModel(
+//                status: repost,
+//                authContext: authContext,
+//                kind: kind,
+//                delegate: delegate,
+//                parentViewModel: self,
+//                viewLayoutFramePublisher: viewLayoutFramePublisher
+//            )
+//            repostViewModel = _repostViewModel
+//
+//            // header - repost
+//            let _statusHeaderViewModel = StatusHeaderView.ViewModel(
+//                image: Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate),
+//                label: {
+//                    let name = status.author.name
+//                    let userRepostText = L10n.Common.Controls.Status.userBoosted(name)
+//                    let text = MastodonContent(content: userRepostText, emojis: status.author.emojis.asDictionary)
+//                    let label = MastodonMetaContent.convert(text: text)
+//                    return label
+//                }()
+//            )
+//            _statusHeaderViewModel.hasHangingAvatar = _repostViewModel.hasHangingAvatar
+//            _repostViewModel.statusHeaderViewModel = _statusHeaderViewModel
+//        }
+//
+//        // author
+//        status.author.publisher(for: \.avatar)
+//            .compactMap { $0.flatMap { URL(string: $0) } }
+//            .assign(to: &$avatarURL)
+//        status.author.publisher(for: \.displayName)
+//            .compactMap { _ in status.author.nameMetaContent }
+//            .assign(to: &$authorName)
+//        status.author.publisher(for: \.username)
+//            .map { _ in status.author.acct }
+//            .assign(to: &$authorUsernme)
+//        authorUserIdentifier = .mastodon(.init(domain: status.author.domain, id: status.author.id))
+//
+//        // visibility
+//        visibility = status.visibility
+//
+//        // timestamp
+//        switch kind {
+//        case .conversationRoot:
+//            break
+//        default:
+//            timestampLabelViewModel = TimestampLabelView.ViewModel(timestamp: status.createdAt)
+//        }
+//
+//        // spoiler content
+//        if let spoilerText = status.spoilerText, !spoilerText.isEmpty {
+//            do {
+//                let content = MastodonContent(content: spoilerText, emojis: status.emojis.asDictionary)
+//                let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
+//                self.spoilerContent = metaContent
+//            } catch {
+//                assertionFailure(error.localizedDescription)
+//                self.spoilerContent = nil
+//            }
+//        }
+//
+//        // content
+//        do {
+//            let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
+//            let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
+//            self.content = metaContent
+//        } catch {
+//            assertionFailure(error.localizedDescription)
+//            self.content = PlaintextMetaContent(string: "")
+//        }
+//
+//        // language
+//        status.publisher(for: \.language)
+//            .assign(to: &$language)
+//
+//        // content warning
+//        isContentSensitiveToggled = status.isContentSensitiveToggled
+//        status.publisher(for: \.isContentSensitiveToggled)
+//            .receive(on: DispatchQueue.main)
+//            .assign(to: \.isContentSensitiveToggled, on: self)
+//            .store(in: &disposeBag)
+//
+//        // media
+//        mediaViewModels = MediaView.ViewModel.viewModels(from: status)
+//
+//        // poll
+//        if let poll = status.poll {
+//            self.pollViewModel = PollView.ViewModel(
+//                authContext: authContext,
+//                poll: .mastodon(object: poll)
+//            )
+//        }
+//
+//        // media content warning
+//        isMediaSensitive = status.isMediaSensitive
+//        isMediaSensitiveToggled = status.isMediaSensitiveToggled
+//        status.publisher(for: \.isMediaSensitiveToggled)
+//            .receive(on: DispatchQueue.main)
+//            .assign(to: \.isMediaSensitiveToggled, on: self)
+//            .store(in: &disposeBag)
+//
+//        // toolbar
+//        toolbarViewModel.platform = .mastodon
+//        status.publisher(for: \.replyCount)
+//            .map { Int($0) }
+//            .assign(to: &toolbarViewModel.$replyCount)
+//        status.publisher(for: \.repostCount)
+//            .map { Int($0) }
+//            .assign(to: &toolbarViewModel.$repostCount)
+//        status.publisher(for: \.likeCount)
+//            .map { Int($0) }
+//            .assign(to: &toolbarViewModel.$likeCount)
+//        if case let .mastodon(authenticationContext) = authContext?.authenticationContext {
+//            status.publisher(for: \.likeBy)
+//                .map { users -> Bool in
+//                    let ids = users.map { $0.id }
+//                    return ids.contains(authenticationContext.userID)
+//                }
+//                .assign(to: &toolbarViewModel.$isLiked)
+//            status.publisher(for: \.repostBy)
+//                .map { users -> Bool in
+//                    let ids = users.map { $0.id }
+//                    return ids.contains(authenticationContext.userID)
+//                }
+//                .assign(to: &toolbarViewModel.$isReposted)
+//        } else {
+//            // do nothing
+//        }
+//
+//        // metric
+//        switch kind {
+//        case .conversationRoot:
+//            let _metricViewModel = StatusMetricView.ViewModel(platform: .mastodon, timestamp: status.createdAt)
+//            metricViewModel = _metricViewModel
+//            status.publisher(for: \.replyCount)
+//                .map { Int($0) }
+//                .assign(to: &_metricViewModel.$replyCount)
+//            status.publisher(for: \.repostCount)
+//                .map { Int($0) }
+//                .assign(to: &_metricViewModel.$repostCount)
+//            status.publisher(for: \.likeCount)
+//                .map { Int($0) }
+//                .assign(to: &_metricViewModel.$likeCount)
+//        default:
+//            break
+//        }
     }
 }

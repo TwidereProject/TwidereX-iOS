@@ -350,7 +350,8 @@ extension StatusView {
     
     var avatarButton: some View {
         Button {
-            viewModel.delegate?.statusView(viewModel, userAvatarButtonDidPressed: viewModel.author.asRecord)
+            guard let author = viewModel.author?.asRecord else { return }
+            viewModel.delegate?.statusView(viewModel, userAvatarButtonDidPressed: author)
         } label: {
             let dimension: CGFloat = {
                 switch viewModel.kind {

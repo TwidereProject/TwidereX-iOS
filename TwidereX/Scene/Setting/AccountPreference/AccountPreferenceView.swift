@@ -52,10 +52,9 @@ struct AccountPreferenceView: View {
         List {
             // user header section
             Section {
-                UserContentView(viewModel: .init(
-                    user: viewModel.user,
-                    accessoryType: .none
-                ))
+                if let userViewModel = viewModel.userViewModel {
+                    UserView(viewModel: userViewModel)
+                }
             }
             // notification section
             if let viewModel = viewModel.mastodonNotificationSectionViewModel {

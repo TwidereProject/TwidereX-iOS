@@ -193,6 +193,10 @@ extension UserView {
                 nameLabel
             case .addListMember:
                 nameLabel
+            case .settingAccountSection:
+                nameLabel
+            case .plain:
+                nameLabel
             }
         }   // end Group
     }
@@ -213,6 +217,10 @@ extension UserView {
             case .listMember:
                 usernameLabel
             case .addListMember:
+                usernameLabel
+            case .settingAccountSection:
+                usernameLabel
+            case .plain:
                 usernameLabel
             }
         }   // end Group
@@ -237,6 +245,11 @@ extension UserView {
             case .listMember:
                 EmptyView()
             case .addListMember:
+                EmptyView()
+            case .settingAccountSection:
+                Image(systemName: "chevron.right")
+                    .foregroundColor(Color(.secondaryLabel))
+            case .plain:
                 EmptyView()
             }
         }   // end Group

@@ -17,10 +17,12 @@ final class DisplayPreferenceViewModel: ObservableObject {
     
     // MARK: - layout
     @Published var viewSize: CGSize = .zero
+    @Published public var viewLayoutFrame = ViewLayoutFrame()    
 
     // input
     let authContext: AuthContext
-    
+    lazy var statusViewModel = StatusView.ViewModel.prototype(viewLayoutFramePublisher: $viewLayoutFrame)
+
     // avatar
     @Published var avatarStyle = UserDefaults.shared.avatarStyle
     
@@ -30,6 +32,7 @@ final class DisplayPreferenceViewModel: ObservableObject {
 
     // output
     @Published var authenticationContext: AuthenticationContext?
+    
 
     init(authContext: AuthContext) {
         self.authContext = authContext

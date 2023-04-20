@@ -49,7 +49,8 @@ extension SettingListViewController {
                 guard let self = self else { return }                
                 switch entry.type {
                 case .account:
-                    guard let user = self.viewModel.user else { return }
+                    let authContext = self.viewModel.authContext
+                    guard let user = authContext.authenticationContext.user(in: self.context.managedObjectContext) else { return }
 
                     let accountPreferenceViewModel = AccountPreferenceViewModel(
                         context: self.context,
