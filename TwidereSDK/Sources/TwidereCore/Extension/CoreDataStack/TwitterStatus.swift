@@ -38,8 +38,6 @@ extension TwitterStatus {
                     continue
                 }
             }
-            
-            text = text.replacingOccurrences(of: shortURL, with: expandedURL)
         }
         return text
     }

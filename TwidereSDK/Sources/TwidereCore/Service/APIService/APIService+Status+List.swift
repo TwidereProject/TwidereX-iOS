@@ -56,13 +56,7 @@ extension APIService {
             query: query,
             authorization: authenticationContext.authorization
         )
-        
-        let statusIDs: [Twitter.Entity.V2.Tweet.ID] = response.value.map { $0.idStr }
-        let _lookupResponse = try? await twitterBatchLookupV2(
-            statusIDs: statusIDs,
-            authenticationContext: authenticationContext
-        )
-                
+
         #if DEBUG
         // log time cost
         let start = CACurrentMediaTime()
@@ -93,11 +87,6 @@ extension APIService {
                 )
                 statusArray.append(result.status)
             }   // end for in
-            
-            // amend the v2 only properties
-            if let lookupResponse = _lookupResponse, let me = me {
-                lookupResponse.update(statuses: statusArray, me: me)
-            }
         }
         
         return response

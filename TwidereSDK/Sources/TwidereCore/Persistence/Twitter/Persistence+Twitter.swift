@@ -62,7 +62,10 @@ extension Persistence.Twitter {
         for status in context.dictionary.tweetDict.values {
             guard let authorID = status.authorID,
                   let author = context.dictionary.userDict[authorID]
-            else { continue }
+            else {
+                assertionFailure()
+                continue
+            }
             
             var repost: Persistence.TwitterStatus.PersistContextV2.Entity?
             var replyTo: Persistence.TwitterStatus.PersistContextV2.Entity?
@@ -71,7 +74,10 @@ extension Persistence.Twitter {
             for referencedTweet in status.referencedTweets ?? [] {
                 guard let type = referencedTweet.type,
                       let statusID = referencedTweet.id
-                else { continue }
+                else {
+                    assertionFailure()
+                    continue
+                }
                 guard let status = context.dictionary.tweetDict[statusID],
                       let authorID = status.authorID,
                       let author = context.dictionary.userDict[authorID]

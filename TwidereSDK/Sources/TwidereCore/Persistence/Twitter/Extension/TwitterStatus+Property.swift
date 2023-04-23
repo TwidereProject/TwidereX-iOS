@@ -196,7 +196,10 @@ extension Twitter.Entity.V2.Media {
         guard let kind = attachmentKind else { return nil }
         guard let width = width,
             let height = height
-        else { return nil }
+        else {
+            assertionFailure()
+            return nil
+        }
         return TwitterAttachment(
             kind: kind,
             size: CGSize(width: width, height: height),

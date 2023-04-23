@@ -165,7 +165,8 @@ extension StatusFetchViewModel.Timeline.User {
                                 sinceID: nil,
                                 untilID: nil,
                                 paginationToken: fetchContext.paginationToken,
-                                maxResults: fetchContext.maxResults ?? 20
+                                maxResults: fetchContext.maxResults ?? 20,
+                                onlyMedia: fetchContext.filter.rule.contains(.onlyMedia)
                             ),
                             authenticationContext: fetchContext.authenticationContext
                         )
@@ -199,7 +200,8 @@ extension StatusFetchViewModel.Timeline.User {
                                 sinceID: nil,
                                 untilID: nil,
                                 paginationToken: fetchContext.paginationToken,
-                                maxResults: fetchContext.maxResults ?? 20
+                                maxResults: fetchContext.maxResults ?? 20,
+                                onlyMedia: fetchContext.filter.rule.contains(.onlyMedia)
                             ),
                             authenticationContext: fetchContext.authenticationContext
                         )

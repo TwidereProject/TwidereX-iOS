@@ -118,7 +118,8 @@ extension APIService {
                                     sinceID: sinceID,
                                     untilID: nil,
                                     paginationToken: nextToken,
-                                    maxResults: query.maxResults
+                                    maxResults: query.maxResults,
+                                    onlyMedia: query.onlyMedia
                                 ),
                                 authorization: authenticationContext.authorization
                             )
@@ -127,18 +128,6 @@ extension APIService {
                             #endif
                             return TwitterHomeTimelineTaskResult.content(response)
                         }
-                    }
-                    // fetch lookup
-                    group.addTask {
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch lookup")
-                        let responses = await self.twitterBatchLookupResponses(
-                            content: response.value,
-                            authenticationContext: authenticationContext
-                        )
-                        #if DEBUG
-                        response.logRateLimit(category: "HomeLookup")
-                        #endif
-                        return TwitterHomeTimelineTaskResult.lookup(responses)
                     }
                 case .lookup:
                     break
@@ -169,27 +158,16 @@ extension APIService {
 
             let statusArray = statusRecords.compactMap { $0.object(in: managedObjectContext) }
             assert(statusArray.count == statusRecords.count)
+
+            // locate anchor status
+            let anchorStatus: TwitterStatus? = {
+                guard let untilID = query.untilID else { return nil }
+                let request = TwitterStatus.sortedFetchRequest
+                request.predicate = TwitterStatus.predicate(id: untilID)
+                request.fetchLimit = 1
+                return try? managedObjectContext.fetch(request).first
+            }()
             
-            // amend the v2 missing properties
-            if let me = me {
-                var batchLookupResponse = TwitterBatchLookupResponse()
-                for lookupResult in lookupResults {
-                    for status in lookupResult.value {
-                        batchLookupResponse.lookupDict[status.idStr] = status
-                    }
-                }
-                batchLookupResponse.update(statuses: statusArray, me: me)
-            }
-
-             // locate anchor status
-             let anchorStatus: TwitterStatus? = {
-                 guard let untilID = query.untilID else { return nil }
-                 let request = TwitterStatus.sortedFetchRequest
-                 request.predicate = TwitterStatus.predicate(id: untilID)
-                 request.fetchLimit = 1
-                 return try? managedObjectContext.fetch(request).first
-             }()
-
             // update hasMore flag for anchor status
             let acct = Feed.Acct.twitter(userID: authenticationContext.userID)
             if let anchorStatus = anchorStatus,
