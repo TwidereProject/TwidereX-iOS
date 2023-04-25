@@ -40,7 +40,6 @@ extension StatusMediaGallerySection {
                     MediaStackContainerView(viewModel: viewModel)
                 }
                 .margins(.vertical, 0)  // remove vertical margins
-                
             }
         }
         

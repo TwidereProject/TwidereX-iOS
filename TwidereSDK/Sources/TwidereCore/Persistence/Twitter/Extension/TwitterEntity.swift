@@ -102,7 +102,7 @@ extension TwitterEntity.URLEntity {
         )
     }
     
-    public init(entity: Twitter.Entity.V2.Entities.URL) {
+    public init(entity: Twitter.Entity.V2.Entities.URLNode) {
         self.init(
             start: entity.start,
             end: entity.end,

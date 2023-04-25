@@ -193,8 +193,6 @@ extension MediaGridContainerView {
         })
         .overlay(alignment: .bottom) {
             MediaMetaIndicatorView(viewModel: viewModels[index])
-                .padding(EdgeInsets(top: 0, leading: 11, bottom: 8, trailing: 11))
-                .allowsHitTesting(false)
         }
         .overlay(
             RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius)

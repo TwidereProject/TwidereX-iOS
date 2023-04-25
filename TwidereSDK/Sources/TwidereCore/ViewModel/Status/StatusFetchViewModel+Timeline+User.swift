@@ -137,6 +137,7 @@ extension StatusFetchViewModel.Timeline.User {
             switch self {
             case .v2(let response):
                 guard let nextToken = response.value.meta.nextToken else { return nil }
+                guard nextToken != fetchContext.paginationToken else { return nil }
                 let fetchContext = fetchContext.map(paginationToken: nextToken)
                 return .twitter(fetchContext)
             case .v1(let response):

@@ -134,6 +134,9 @@ extension StatusFetchViewModel.Timeline.Search {
             switch self {
             case .v2(let response):
                 guard let nextToken = response.value.meta.nextToken else { return nil }
+                guard fetchContext.nextToken != nextToken else { return nil }
+                guard let data = response.value.data, data.count > 1 else { return nil }
+                
                 let fetchContext = fetchContext.map(untilID: response.value.meta.oldestID, nextToken: nextToken)
                 return .twitter(fetchContext)
             case .v1(let response):
@@ -177,6 +180,7 @@ extension StatusFetchViewModel.Timeline.Search {
                         startTime: nil,
                         nextToken: fetchContext.nextToken
                     )
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Search] Searching…")
                     let response = try await api.searchTwitterStatus(
                         query: query,
                         authenticationContext: fetchContext.authenticationContext

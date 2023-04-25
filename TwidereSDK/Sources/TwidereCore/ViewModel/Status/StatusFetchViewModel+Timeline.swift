@@ -7,6 +7,7 @@
 
 import os.log
 import CoreData
+import Combine
 import Foundation
 import TwitterSDK
 import MastodonSDK

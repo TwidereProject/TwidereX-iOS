@@ -5,10 +5,12 @@
 //  Created by MainasuK on 2023/2/28.
 //
 
+import os.log
 import UIKit
 import SwiftUI
 import Combine
 import AVKit
+import AVFoundation
 
 public struct GIFVideoPlayerRepresentable: UIViewRepresentable {
     
@@ -78,6 +80,19 @@ public struct GIFVideoPlayerRepresentable: UIViewRepresentable {
                 }
                 .store(in: &disposeBag)
         }   // end func
+        
+        deinit {
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+            disposeBag.removeAll()
+            
+            player?.pause()
+            player = nil
+            playerLooper?.disableLooping()
+            playerLooper = nil
+            representable.controller.player = nil
+            representable.controller.removeFromParent()
+            representable.controller.view.removeFromSuperview()
+        }
     }   // end Coordinator
     
 }

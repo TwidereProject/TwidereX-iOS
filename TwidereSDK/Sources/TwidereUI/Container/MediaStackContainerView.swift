@@ -34,8 +34,6 @@ public struct MediaStackContainerView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .overlay(alignment: .bottom) {
                                     MediaMetaIndicatorView(viewModel: item)
-                                        .padding(EdgeInsets(top: 0, leading: 11, bottom: 8, trailing: 11))
-                                        .allowsHitTesting(false)
                                 }
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)

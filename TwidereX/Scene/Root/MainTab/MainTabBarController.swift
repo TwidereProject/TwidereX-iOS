@@ -27,13 +27,8 @@ final class MainTabBarController: UITabBarController, NeedsDependency {
     
     private let doubleTapGestureRecognizer = UITapGestureRecognizer.doubleTapGestureRecognizer
     
-    @Published var tabs: [TabBarItem] = [
-        .home,
-        .notification,
-        .search,
-        .me,
-    ]
-    @Published var currentTab: TabBarItem = .home
+    @Published var tabs: [TabBarItem]
+    @Published var currentTab: TabBarItem
     
     static var popToRootAfterActionTolerance: TimeInterval { 0.5 }
     var lastPopToRootTime = CACurrentMediaTime()
@@ -47,6 +42,24 @@ final class MainTabBarController: UITabBarController, NeedsDependency {
         self.context = context
         self.coordinator = coordinator
         self.authContext = authContext
+        let tabs: [TabBarItem] = {
+            switch authContext.authenticationContext {
+            case .twitter:
+                return [
+                    .search,
+                    .me,
+                ]
+            case .mastodon:
+                return [
+                    .home,
+                    .notification,
+                    .search,
+                    .me,
+                ]
+            }   // end switch
+        }()
+        self.tabs = tabs
+        self.currentTab = tabs.first ?? .me
         super.init(nibName: nil, bundle: nil)
         
         UserDefaults.shared.publisher(for: \.tabBarTapScrollPreference)

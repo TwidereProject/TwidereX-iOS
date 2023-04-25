@@ -52,51 +52,12 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
     }()
     private(set) lazy var profilePagingViewController: ProfilePagingViewController = {
         let profilePagingViewController = ProfilePagingViewController()
-        
-        let userTimelineViewModel = UserTimelineViewModel(
+        profilePagingViewController.viewModel = ProfilePagingViewModel(
             context: context,
             authContext: authContext,
-            timelineContext: .init(
-                timelineKind: .status,
-                userIdentifier: viewModel.$userIdentifier
-            )
+            coordinator: coordinator,
+            userIdentifier: viewModel.$userIdentifier
         )
-        userTimelineViewModel.isFloatyButtonDisplay = false
-        
-        let userMediaTimelineViewModel = UserMediaTimelineViewModel(
-            context: context,
-            authContext: authContext,
-            timelineContext: .init(
-                timelineKind: .media,
-                userIdentifier: viewModel.$userIdentifier
-            )
-        )
-        userMediaTimelineViewModel.isFloatyButtonDisplay = false
-        
-        let userLikeTimelineViewModel = UserTimelineViewModel(
-            context: context,
-            authContext: authContext,
-            timelineContext: .init(
-                timelineKind: .like,
-                userIdentifier: viewModel.$userIdentifier
-            )
-        )
-        userLikeTimelineViewModel.isFloatyButtonDisplay = false
-
-        profilePagingViewController.viewModel = {
-            let profilePagingViewModel = ProfilePagingViewModel(
-                userTimelineViewModel: userTimelineViewModel,
-                userMediaTimelineViewModel: userMediaTimelineViewModel,
-                userLikeTimelineViewModel: userLikeTimelineViewModel
-            )
-            profilePagingViewModel.viewControllers.forEach { viewController in
-                if let viewController = viewController as? NeedsDependency {
-                    viewController.context = context
-                    viewController.coordinator = coordinator
-                }
-            }
-            return profilePagingViewModel
-        }()
         return profilePagingViewController
     }()
     

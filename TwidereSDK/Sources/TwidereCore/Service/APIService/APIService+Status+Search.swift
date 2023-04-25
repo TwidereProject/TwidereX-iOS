@@ -180,35 +180,7 @@ extension APIService {
                 )
             )
         }   // end .performChanges { … }
-        
-        // query and update entity video/GIF attribute from V1 API
-        do {
-            let statusIDs: [Twitter.Entity.Tweet.ID] = {
-                var statusIDs: Set<Twitter.Entity.Tweet.ID> = Set()
-                for status in response.value.data ?? [] {
-                    guard let mediaKeys = status.attachments?.mediaKeys else { continue }
-                    for mediaKey in mediaKeys {
-                        guard let media = dictionary.mediaDict[mediaKey],
-                              media.attachmentKind == .video || media.attachmentKind == .animatedGIF
-                        else { continue }
-                        
-                        statusIDs.insert(status.id)
-                    }
-                }
-                return Array(statusIDs)
-            }()
-            if !statusIDs.isEmpty {
-                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(statusIDs.count) missing assetURL from V1 API…")
-                _ = try await twitterStatusV1(
-                    statusIDs: statusIDs,
-                    authenticationContext: authenticationContext
-                )
-                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch missing assetURL from V1 API success")
-            }
-        } catch {
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch missing assetURL from V1 API fail: \(error.localizedDescription)")
-        }
-        
+
         return response
     }
     

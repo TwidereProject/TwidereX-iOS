@@ -580,7 +580,6 @@
 		DB47AB1F27CCC18500CD73C7 /* ListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
 		DB47AB2027CCC18500CD73C7 /* ListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListSection.swift; sourceTree = "<group>"; };
 		DB47AB2C27CE085800CD73C7 /* ListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ListViewModel+Diffable.swift"; sourceTree = "<group>"; };
-		DB49977E29F25E83001C0843 /* TwitterSDK */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TwitterSDK; path = ../TwitterSDK; sourceTree = "<group>"; };
 		DB51DC192715581E00A0D8FB /* ProfileDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDashboardView.swift; sourceTree = "<group>"; };
 		DB51DC1B2715588E00A0D8FB /* ProfileDashboardMeterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDashboardMeterView.swift; sourceTree = "<group>"; };
 		DB51DC372716AEF000A0D8FB /* TabBarPager */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TabBarPager; sourceTree = "<group>"; };
@@ -2038,7 +2037,6 @@
 		DBDA8E1524FCF8A3006750DC = {
 			isa = PBXGroup;
 			children = (
-				DB49977E29F25E83001C0843 /* TwitterSDK */,
 				DBE399D829EFE3A7008FA278 /* CoverFlowStackLayout */,
 				DB51DC372716AEF000A0D8FB /* TabBarPager */,
 				DB43239D251491EB004FAAEC /* TwidereSDK */,

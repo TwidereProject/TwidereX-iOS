@@ -72,7 +72,7 @@ extension SearchResultViewModel {
         case .twitter(let authenticationContext):
             scopes = [
                 .status(title: L10n.Scene.Search.Tabs.tweets),
-                .media(title: L10n.Scene.Search.Tabs.media),
+                // .media(title: L10n.Scene.Search.Tabs.media),
                 .user(title: L10n.Scene.Search.Tabs.users),
             ]
             userIdentifier = UserIdentifier.twitter(.init(id: authenticationContext.userID))

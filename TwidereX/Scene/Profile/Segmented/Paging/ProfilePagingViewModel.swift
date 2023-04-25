@@ -13,30 +13,88 @@ import TabBarPager
 final class ProfilePagingViewModel: NSObject {
     
     // input
+    let context: AppContext
+    let authContext: AuthContext
     @Published var displayLikeTimeline: Bool = true
     
     // output
-    let homeTimelineViewController = UserTimelineViewController()
-    let mediaTimelineViewController = UserMediaTimelineViewController()
-    let likeTimelineViewController = UserLikeTimelineViewController()
+    let userTimelineViewController: UserTimelineViewController
+    let mediaTimelineViewController: UserMediaTimelineViewController
+    let likeTimelineViewController: UserLikeTimelineViewController?
     
     init(
-        userTimelineViewModel: UserTimelineViewModel,
-        userMediaTimelineViewModel: UserMediaTimelineViewModel,
-        userLikeTimelineViewModel: UserTimelineViewModel
+        context: AppContext,
+        authContext: AuthContext,
+        coordinator: SceneCoordinator,
+        userIdentifier: Published<UserIdentifier?>.Publisher?
     ) {
-        homeTimelineViewController.viewModel = userTimelineViewModel
-        mediaTimelineViewController.viewModel = userMediaTimelineViewModel
-        likeTimelineViewController.viewModel = userLikeTimelineViewModel
+        self.context = context
+        self.authContext = authContext
+        self.userTimelineViewController = {
+            let viewController = UserTimelineViewController()
+            let viewModel = UserTimelineViewModel(
+                context: context,
+                authContext: authContext,
+                timelineContext: .init(
+                    timelineKind: .status,
+                    userIdentifier: userIdentifier
+                )
+            )
+            viewModel.isFloatyButtonDisplay = false
+            viewController.context = context
+            viewController.coordinator = coordinator
+            viewController.viewModel = viewModel
+            return viewController
+        }()
+        self.mediaTimelineViewController = {
+            let viewController = UserMediaTimelineViewController()
+            let viewModel = UserMediaTimelineViewModel(
+                context: context,
+                authContext: authContext,
+                timelineContext: .init(
+                    timelineKind: .media,
+                    userIdentifier: userIdentifier
+                )
+            )
+            viewModel.isFloatyButtonDisplay = false
+            viewController.context = context
+            viewController.coordinator = coordinator
+            viewController.viewModel = viewModel
+            return viewController
+        }()
+        self.likeTimelineViewController = {
+            switch authContext.authenticationContext {
+            case .twitter:  return nil
+            default:        break
+            }
+            let viewController = UserTimelineViewController()
+            let viewModel = UserTimelineViewModel(
+                context: context,
+                authContext: authContext,
+                timelineContext: .init(
+                    timelineKind: .like,
+                    userIdentifier: userIdentifier
+                )
+            )
+            viewModel.isFloatyButtonDisplay = false
+            viewController.context = context
+            viewController.coordinator = coordinator
+            viewController.viewModel = viewModel
+            return viewController
+        }()
         super.init()
+        // end init
     }
     
     var viewControllers: [UIViewController & TabBarPage] {
-        return [
-            homeTimelineViewController,
+        var viewControllers: [UIViewController & TabBarPage] = [
+            userTimelineViewController,
             mediaTimelineViewController,
-            likeTimelineViewController,
         ]
+        if let likeTimelineViewController = likeTimelineViewController {
+            viewControllers.append(likeTimelineViewController)
+        }
+        return viewControllers
     }
     
     deinit {
