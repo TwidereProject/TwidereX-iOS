@@ -3431,7 +3431,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3440,7 +3440,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3458,7 +3458,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3467,7 +3467,6 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereXTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -3482,7 +3481,7 @@
 			baseConfigurationReference = BC377CE93F0DE1E07208F697 /* Pods-TwidereX-TwidereXUITests.profile.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3491,7 +3490,6 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereXUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -3507,7 +3505,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3518,7 +3516,6 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -3535,9 +3532,8 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TwidereXIntent;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
@@ -3547,7 +3543,6 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.TwidereXIntent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -3566,10 +3561,9 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationService/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3578,7 +3572,6 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.NotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -3597,9 +3590,8 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationService/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3608,7 +3600,6 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.NotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -3627,9 +3618,8 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationService/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3638,7 +3628,6 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.NotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -3655,7 +3644,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3666,7 +3655,6 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -3683,7 +3671,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3694,7 +3682,6 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -3838,7 +3825,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3847,7 +3834,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3870,7 +3857,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3879,7 +3866,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3897,7 +3884,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3906,7 +3893,6 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereXTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -3923,7 +3909,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3932,7 +3918,6 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereXTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -3947,7 +3932,7 @@
 			baseConfigurationReference = 2E41729E598B3379FC09BC03 /* Pods-TwidereX-TwidereXUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3956,7 +3941,6 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereXUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -3971,7 +3955,7 @@
 			baseConfigurationReference = 44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3980,7 +3964,6 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereXUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -3996,9 +3979,8 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TwidereXIntent;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
@@ -4008,7 +3990,6 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.TwidereXIntent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4025,9 +4006,8 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 118;
+				CURRENT_PROJECT_VERSION = 123;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TwidereXIntent;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
@@ -4037,7 +4017,6 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.TwidereXIntent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
