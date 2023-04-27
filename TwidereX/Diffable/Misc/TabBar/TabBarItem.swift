@@ -12,6 +12,7 @@ import TwidereLocalization
 
 enum TabBarItem: Int, Hashable {
     case home
+    case homeList
     case notification
     case search
     case me
@@ -34,25 +35,27 @@ extension TabBarItem {
     
     var title: String {
         switch self {
-        case .home:         return L10n.Scene.Timeline.title
-        case .notification: return L10n.Scene.Notification.title
-        case .search:       return L10n.Scene.Search.title
-        case .me:           return L10n.Scene.Profile.title
-        case .local:        return L10n.Scene.Local.title
-        case .federated:    return L10n.Scene.Federated.title
-        case .messages:     return L10n.Scene.Messages.title
-        case .likes:        return L10n.Scene.Likes.title
-        case .history:      return L10n.Scene.History.title
-        case .lists:        return L10n.Scene.Lists.title
-        case .trends:       return L10n.Scene.Trends.title
-        case .drafts:       return L10n.Scene.Drafts.title
-        case .settings:     return L10n.Scene.Settings.title
+        case .home:             return L10n.Scene.Timeline.title
+        case .homeList:         return L10n.Scene.Timeline.title
+        case .notification:     return L10n.Scene.Notification.title
+        case .search:           return L10n.Scene.Search.title
+        case .me:               return L10n.Scene.Profile.title
+        case .local:            return L10n.Scene.Local.title
+        case .federated:        return L10n.Scene.Federated.title
+        case .messages:         return L10n.Scene.Messages.title
+        case .likes:            return L10n.Scene.Likes.title
+        case .history:          return L10n.Scene.History.title
+        case .lists:            return L10n.Scene.Lists.title
+        case .trends:           return L10n.Scene.Trends.title
+        case .drafts:           return L10n.Scene.Drafts.title
+        case .settings:         return L10n.Scene.Settings.title
         }
     }
     
     var image: UIImage {
         switch self {
         case .home:             return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
+        case .homeList:         return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
         case .notification:     return Asset.ObjectTools.bell.image.withRenderingMode(.alwaysTemplate)
         case .search:           return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
         case .me:               return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
@@ -88,6 +91,10 @@ extension TabBarItem {
         case .home:
             let _viewController = HomeTimelineViewController()
             _viewController.viewModel = HomeTimelineViewModel(context: context, authContext: authContext)
+            viewController = _viewController
+        case .homeList:
+            let _viewController = HomeListStatusTimelineViewController()
+            _viewController.viewModel = HomeListStatusTimelineViewModel(context: context, authContext: authContext)
             viewController = _viewController
         case .notification:
             let _viewController = NotificationViewController()

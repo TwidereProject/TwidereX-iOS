@@ -134,7 +134,9 @@ extension MediaPreviewViewController {
             pageControl.bottomAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor),
         ])
         
-        if let status = viewModel.status {
+        mediaInfoDescriptionView.isHidden = true
+        
+//        if let status = viewModel.status {
 //            mediaInfoDescriptionView.configure(
 //                statusObject: status,
 //                configurationContext: .init(
@@ -143,9 +145,9 @@ extension MediaPreviewViewController {
 //                    viewLayoutFramePublisher: viewModel.$viewLayoutFrame
 //                )
 //            )
-        } else {
-            mediaInfoDescriptionView.isHidden = true
-        }
+//        } else {
+//            mediaInfoDescriptionView.isHidden = true
+//        }
         
         pageControl.numberOfPages = viewModel.viewControllers.count
         pageControl.isHidden = viewModel.viewControllers.count == 1

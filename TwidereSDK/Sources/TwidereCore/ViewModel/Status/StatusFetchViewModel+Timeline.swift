@@ -381,6 +381,7 @@ extension StatusFetchViewModel.Timeline {
                     throw AppError.implicit(.internal(reason: "Use invalid list record for Twitter list status lookup"))
                 }
                 return .list(.twitter(.init(
+                    managedObjectContext: fetchContext.managedObjectContext,
                     authenticationContext: authenticationContext,
                     list: record,
                     paginationToken: nil,

@@ -46,6 +46,7 @@ final class MainTabBarController: UITabBarController, NeedsDependency {
             switch authContext.authenticationContext {
             case .twitter:
                 return [
+                    .homeList,
                     .search,
                     .me,
                 ]

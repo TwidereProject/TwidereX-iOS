@@ -100,7 +100,7 @@ extension APIService {
         searchText: String,
         nextToken: String?,
         authenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Search.Content> {
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.V2.TimelineContent> {
         let query = Twitter.API.V2.Search.RecentTweetQuery(
             query: searchText,
             maxResults: APIService.defaultSearchCount,
@@ -122,7 +122,7 @@ extension APIService {
         startTime: Date?,
         nextToken: String?,
         authenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Search.Content> {
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.V2.TimelineContent> {
         let query = Twitter.API.V2.Search.RecentTweetQuery(
             query: "conversation_id:\(conversationID) (to:\(authorID) OR from:\(authorID))",
             maxResults: APIService.conversationSearchCount,
@@ -139,7 +139,7 @@ extension APIService {
     public func searchTwitterStatus(
         query: Twitter.API.V2.Search.RecentTweetQuery,
         authenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Search.Content> {
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.V2.TimelineContent> {
         let response = try await Twitter.API.V2.Search.recentTweet(
             session: session,
             query: query,

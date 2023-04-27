@@ -13,50 +13,83 @@ public struct MediaStackContainerView: View {
     
     @ObservedObject public private(set) var viewModel: ViewModel
     
-    public init(viewModel: MediaStackContainerView.ViewModel) {
+    public let handler: (MediaView.ViewModel, MediaView.ViewModel.Action) -> Void
+
+    public init(
+        viewModel: MediaStackContainerView.ViewModel,
+        handler: @escaping (MediaView.ViewModel, MediaView.ViewModel.Action) -> Void
+    ) {
         self.viewModel = viewModel
+        self.handler = handler
     }
     
     public var body: some View {
         GeometryReader { root in
             let dimension = min(root.size.width, root.size.height)
-            CoverFlowStackScrollView {
-                HStack(spacing: .zero) {
-                    ForEach(Array(viewModel.items.enumerated()), id: \.0) { index, item in
-                        GeometryReader { geo in
-                            let transformAttribute = viewModel.transformAttribute(at: index)
-                            ZStack {
-                                MediaView(viewModel: item)
-                                .frame(
-                                    width: transformAttribute.transformFrame.width,
-                                    height: transformAttribute.transformFrame.height
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                                .overlay(alignment: .bottom) {
-                                    MediaMetaIndicatorView(viewModel: item)
-                                }
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color(uiColor: .placeholderText).opacity(0.5), lineWidth: 1)
-                                )
-                                .offset(
-                                    x: transformAttribute.offsetX,
-                                    y: transformAttribute.offsetY
-                                )
-                            }
-                            .frame(width: dimension, height: dimension)
-                        }
-                        .frame(width: dimension, height: dimension)
-                        .zIndex(Double(999 - index))
+            switch viewModel.items.count {
+            case 1:
+                MediaView(viewModel: viewModel.items[0])
+                    .frame(width: dimension, height: dimension)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(alignment: .bottom) {
+                        MediaMetaIndicatorView(viewModel: viewModel.items[0])
                     }
-                }   // HStack
-            } contentOffsetDidUpdate: { contentOffset in
-                viewModel.contentOffset = contentOffset
-            } contentSizeDidUpdate: { contentSize in
-                viewModel.contentSize = contentSize
-            }   // end ScrollView
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(uiColor: .placeholderText).opacity(0.5), lineWidth: 1)
+                    )
+                    .onTapGesture {
+                        handler(viewModel.items[0], .preview)
+                    }
+            default:
+                CoverFlowStackScrollView {
+                    HStack(spacing: .zero) {
+                        ForEach(Array(viewModel.items.enumerated()), id: \.0) { index, item in
+                            mediaView(viewModel: item, at: index, dimension: dimension)
+                        }   // end ForEach
+                    }   // HStack
+                } contentOffsetDidUpdate: { contentOffset in
+                    viewModel.contentOffset = contentOffset
+                } contentSizeDidUpdate: { contentSize in
+                    viewModel.contentSize = contentSize
+                }   // end CoverFlowStackScrollView
+            }   // end switch
         }   // end GeometryReader
     }
+}
+
+extension MediaStackContainerView {
+    private func mediaView(viewModel: MediaView.ViewModel, at index: Int, dimension: CGFloat) -> some View {
+        GeometryReader { geo in
+            let transformAttribute = self.viewModel.transformAttribute(at: index)
+            ZStack {
+                MediaView(viewModel: viewModel)
+                .frame(
+                    width: transformAttribute.transformFrame.width,
+                    height: transformAttribute.transformFrame.height
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(alignment: .bottom) {
+                    MediaMetaIndicatorView(viewModel: viewModel)
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color(uiColor: .placeholderText).opacity(0.5), lineWidth: 1)
+                )
+                .offset(
+                    x: transformAttribute.offsetX,
+                    y: transformAttribute.offsetY
+                )
+            }
+            .frame(width: dimension, height: dimension)
+            .onTapGesture {
+                handler(viewModel, .preview)
+            }
+        }
+        .frame(width: dimension, height: dimension)
+        .zIndex(Double(999 - index))
+    }   // GeometryReader
+    
 }
 
 extension MediaStackContainerView {

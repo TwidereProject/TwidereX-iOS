@@ -115,7 +115,7 @@ extension StatusFetchViewModel.Timeline.Search {
 extension StatusFetchViewModel.Timeline.Search {
     
     enum TwitterResponse {
-        case v2(Twitter.Response.Content<Twitter.API.V2.Search.Content>)
+        case v2(Twitter.Response.Content<Twitter.Entity.V2.TimelineContent>)
         case v1(Twitter.Response.Content<Twitter.API.Search.Content>)
         
         func filter(fetchContext: TwitterFetchContext) -> StatusFetchViewModel.Result {
@@ -186,7 +186,7 @@ extension StatusFetchViewModel.Timeline.Search {
                         authenticationContext: fetchContext.authenticationContext
                     )
                     return .v2(response)
-                } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded {
+                } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded || error.httpResponseStatus == .notFound {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Rate Limit] fallback to v1")
                     let queryText: String = try {
                         let searchText = fetchContext.searchText.trimmingCharacters(in: .whitespacesAndNewlines)
