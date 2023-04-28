@@ -19,7 +19,6 @@ extension UserSection {
     
     struct Configuration {
         weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
-        // let userViewConfigurationContext: UserView.ConfigurationContext
     }
     
     static func diffableDataSource(

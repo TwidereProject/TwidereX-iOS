@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import SwiftUI
 import Combine
 import CoreData
 import CoreDataStack
@@ -31,10 +32,11 @@ extension HistorySection {
     static func diffableDataSource(
         tableView: UITableView,
         context: AppContext,
+        authContext: AuthContext,
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<HistorySection, HistoryItem> {
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
-//        tableView.register(UserRelationshipStyleTableViewCell.self, forCellReuseIdentifier: String(describing: UserRelationshipStyleTableViewCell.self))
+        tableView.register(UserTableViewCell.self, forCellReuseIdentifier: String(describing: UserTableViewCell.self))
 
         let diffableDataSource = UITableViewDiffableDataSource<HistorySection, HistoryItem>(tableView: tableView) { tableView, indexPath, item in
             // data source should dispatch in main thread
@@ -48,39 +50,44 @@ extension HistorySection {
                         return UITableViewCell()
                     }
                     // status
-//                    if let status = history.statusObject {
-//                        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
-//                        StatusSection.setupStatusPollDataSource(
-//                            context: context,
-//                            statusView: cell.statusView,
-//                            configurationContext: configuration.statusViewConfigurationContext
-//                        )
-//                        configure(
-//                            tableView: tableView,
-//                            cell: cell,
-//                            viewModel: StatusTableViewCell.ViewModel(value: .statusObject(status)),
-//                            configuration: configuration
-//                        )
-//                        return cell
-//                    }
-//                    // user
-//                    if let user = history.userObject {
-//                        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserRelationshipStyleTableViewCell.self), for: indexPath) as! UserRelationshipStyleTableViewCell
-//                        let authenticationContext = configuration.userViewConfigurationContext.authContext.authenticationContext
-//                        let me = authenticationContext.user(in: context.managedObjectContext)
-//                        let viewModel = UserTableViewCell.ViewModel(
-//                            user: user,
-//                            me: me,
-//                            notification: nil
-//                        )
-//                        configure(
-//                            cell: cell,
-//                            viewModel: viewModel,
-//                            configuration: configuration
-//                        )
-//                        return cell
-//                    }
+                    if let status = history.statusObject {
+                        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                        cell.statusViewTableViewCellDelegate = configuration.statusViewTableViewCellDelegate
+                        
+                        let viewModel = StatusView.ViewModel(
+                            status: status,
+                            authContext: authContext,
+                            delegate: cell,
+                            viewLayoutFramePublisher: configuration.viewLayoutFramePublisher
+                        )
+                        cell.contentConfiguration = UIHostingConfiguration {
+                            StatusView(viewModel: viewModel)
+                        }
+                        .margins(.vertical, 0)  // remove vertical margins
+                        return cell
+                    }
+                    // user
+                    if let user = history.userObject {
+                        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserTableViewCell.self), for: indexPath) as! UserTableViewCell
+                        cell.userViewTableViewCellDelegate = configuration.userViewTableViewCellDelegate
 
+                        let _viewModel = UserView.ViewModel(
+                            user: user,
+                            authContext: authContext,
+                            kind: .history,
+                            delegate: cell
+                        )
+                        guard let viewModel = _viewModel else {
+                            return UITableViewCell()
+                        }
+                        cell.contentConfiguration = UIHostingConfiguration {
+                            UserView(viewModel: viewModel)
+                        }
+                        .margins(.vertical, 0)  // remove vertical margins
+                        return cell
+                    }
+
+                    assertionFailure()
                     return UITableViewCell()
                 }
                 return cell

@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import SwiftUI
 import Combine
 import MetaTextKit
 import MetaLabel
@@ -186,6 +187,8 @@ extension UserView {
                 nameLabel
             case .friend:
                 nameLabel
+            case .history:
+                nameLabel
             case .notification:
                 nameLabel
             case .mentionPick:
@@ -210,6 +213,8 @@ extension UserView {
             case .search:
                 usernameLabel
             case .friend:
+                usernameLabel
+            case .history:
                 usernameLabel
             case .notification:
                 usernameLabel
@@ -236,6 +241,8 @@ extension UserView {
                 // TODO: follow button
                 EmptyView()
             case .friend:
+                EmptyView()
+            case .history:
                 EmptyView()
             case .notification:
                 if viewModel.isFollowRequestActionDisplay {

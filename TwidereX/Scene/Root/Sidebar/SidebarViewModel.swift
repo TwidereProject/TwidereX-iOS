@@ -54,7 +54,7 @@ final class SidebarViewModel: ObservableObject {
                 var items: [TabBarItem] = []
                 switch self.authContext.authenticationContext {
                 case .twitter:
-                    items.append(contentsOf: [.likes])
+                    // items.append(contentsOf: [.likes])
                     if preferredEnableHistory {
                         items.append(contentsOf: [.history])
                     }

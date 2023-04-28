@@ -18,6 +18,7 @@ extension StatusHistoryViewModel {
         diffableDataSource = HistorySection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: .init(
                 statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
                 userViewTableViewCellDelegate: nil,
