@@ -14,11 +14,15 @@ import TwitterSDK
 
 final class MeProfileViewModel: ProfileViewModel {
     
-    override init(
+    convenience init(
         context: AppContext,
         authContext: AuthContext
     ) {
-        super.init(context: context,authContext: authContext)
+        self.init(
+            context: context,
+            authContext: authContext,
+            displayLikeTimeline: true
+        )
         // end init
         
         self.user = authContext.authenticationContext.user(in: context.managedObjectContext)

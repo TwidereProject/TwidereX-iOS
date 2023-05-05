@@ -955,18 +955,22 @@ extension StatusView.ViewModel {
     }
     
     var cellTopMargin: CGFloat {
-        return parentViewModel == nil ? 12 : 0
+        switch kind {
+        case .quote: return .zero
+        case _ where parentViewModel == nil: return 12
+        default: return .zero
+        }
     }
     
-    var topConversationLinkViewHeight: CGFloat {
-        var height: CGFloat = cellTopMargin
-        if let statusHeaderViewModel = statusHeaderViewModel {
-            height += statusHeaderViewModel.viewSize.height
-            height += StatusView.statusHeaderBottomSpacing
-            height += parentViewModel?.cellTopMargin ?? 0
-        }
-        return height
-    }
+//    var topConversationLinkViewHeight: CGFloat {
+//        var height: CGFloat = cellTopMargin
+//        if let statusHeaderViewModel = statusHeaderViewModel {
+//            height += statusHeaderViewModel.viewSize.height
+//            height += StatusView.statusHeaderBottomSpacing
+//            height += parentViewModel?.cellTopMargin ?? 0
+//        }
+//        return height
+//    }
     
     var hasToolbar: Bool {
         switch kind {

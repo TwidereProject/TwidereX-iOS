@@ -14,12 +14,20 @@ import MastodonSDK
 
 final class RemoteProfileViewModel: ProfileViewModel {
     
-    init(
+    convenience init(
         context: AppContext,
         authContext: AuthContext,
         profileContext: ProfileContext
     ) {
-        super.init(context: context, authContext: authContext)
+        self.init(
+            context: context,
+            authContext: authContext,
+            displayLikeTimeline: RemoteProfileViewModel.displayLikeTimeline(
+                context: context,
+                authContext: authContext,
+                profileContext: profileContext
+            )
+        )
         
         configure(profileContext: profileContext)
     }
@@ -165,4 +173,36 @@ extension RemoteProfileViewModel {
         return record
     }
     
+}
+
+extension RemoteProfileViewModel {
+    static func displayLikeTimeline(
+        context: AppContext,
+        authContext: AuthContext,
+        profileContext: ProfileContext
+    ) -> Bool {
+        switch profileContext {
+        case .record(let record):
+            let managedObjectContext = context.managedObjectContext
+            let result: Bool = managedObjectContext.performAndWait {
+                switch record {
+                case .twitter:
+                    return true
+                case .mastodon(let record):
+                    guard case let .mastodon(authenticationContext) = authContext.authenticationContext else { return false }
+                    guard let object = record.object(in: managedObjectContext) else { return false }
+                    return object.id == authenticationContext.userID
+                }
+            }
+            return result
+        case .twitter:
+            return true
+        case .mastodon(let mastodonContext):
+            guard case let .mastodon(authenticationContext) = authContext.authenticationContext else { return false }
+            switch mastodonContext {
+            case .userID(let userID):
+                return userID == authenticationContext.userID
+            }
+        }
+    }
 }

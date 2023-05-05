@@ -47,6 +47,7 @@ final class MainTabBarController: UITabBarController, NeedsDependency {
             case .twitter:
                 return [
                     .homeList,
+                    .notification,
                     .search,
                     .me,
                 ]

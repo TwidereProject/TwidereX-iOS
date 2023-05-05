@@ -10,14 +10,19 @@ import Foundation
 
 final class LocalProfileViewModel: ProfileViewModel {
     
-    init(
+    convenience init(
         context: AppContext,
         authContext: AuthContext,
         userRecord: UserRecord
     ) {
-        super.init(
+        self.init(
             context: context,
-            authContext: authContext
+            authContext: authContext,
+            displayLikeTimeline: Self.displayLikeTimeline(
+                context: context,
+                authContext: authContext,
+                userRecord: userRecord
+            )
         )
         
         setup(user: userRecord)
@@ -40,4 +45,25 @@ final class LocalProfileViewModel: ProfileViewModel {
         }
     }   // end func setup(user:)
     
+}
+
+extension LocalProfileViewModel {
+    static func displayLikeTimeline(
+        context: AppContext,
+        authContext: AuthContext,
+        userRecord: UserRecord
+    ) -> Bool {
+        let managedObjectContext = context.managedObjectContext
+        let result: Bool = managedObjectContext.performAndWait {
+            guard let object = userRecord.object(in: managedObjectContext) else { return false }
+            switch object {
+            case .twitter:
+                return true
+            case .mastodon(let user):
+                guard case let .mastodon(authenticationContext) = authContext.authenticationContext else { return false }
+                return user.id == authenticationContext.userID
+            }
+        }
+        return result
+    }
 }

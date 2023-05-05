@@ -3,6 +3,7 @@
     <entity name="AuthenticationIndex" representedClassName="CoreDataStack.AuthenticationIndex" syncable="YES">
         <attribute name="activeAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="homeTimelineActiveAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="platformRaw" attributeType="String"/>
         <relationship name="mastodonAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonAuthentication" inverseName="authenticationIndex" inverseEntity="MastodonAuthentication"/>

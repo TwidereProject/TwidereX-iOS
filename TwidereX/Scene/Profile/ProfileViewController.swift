@@ -56,6 +56,7 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
             context: context,
             authContext: authContext,
             coordinator: coordinator,
+            displayLikeTimeline: viewModel.displayLikeTimeline,
             userIdentifier: viewModel.$userIdentifier
         )
         return profilePagingViewController
@@ -142,24 +143,6 @@ extension ProfileViewController {
         
         tabBarPagerController.delegate = self
         tabBarPagerController.dataSource = self
-        Publishers.CombineLatest(
-            viewModel.$user,
-            viewModel.$me
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] user, me in
-            guard let self = self else { return }
-            guard let user = user, let me = me else { return }
-            
-            // set like timeline display
-            switch (user, me) {
-            case (.mastodon(let userObject), .mastodon(let meObject)):
-                self.profilePagingViewController.viewModel.displayLikeTimeline = userObject.objectID == meObject.objectID
-            default:
-                self.profilePagingViewController.viewModel.displayLikeTimeline = true
-            }
-        }
-        .store(in: &disposeBag)
         
         Publishers.CombineLatest(
             viewModel.relationshipViewModel.$optionSet,  // update trigger

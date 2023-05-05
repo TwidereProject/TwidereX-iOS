@@ -32,7 +32,7 @@ extension DrawerSidebarViewModel {
                 let authenticationContext = self.authContext.authenticationContext
                 switch authenticationContext {
                 case .twitter:
-                    // snapshot.appendItems([.likes], toSection: .main)
+                    snapshot.appendItems([.likes], toSection: .main)
                     if preferredEnableHistory {
                         snapshot.appendItems([.history], toSection: .main)
                     }

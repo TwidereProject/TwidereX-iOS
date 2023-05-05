@@ -29,7 +29,7 @@ final class HomeListStatusTimelineViewController: UIViewController, NeedsDepende
     public var viewModel: HomeListStatusTimelineViewModel!
     var disposeBag = Set<AnyCancellable>()
     
-    var listStatusTimelineViewController: ListStatusTimelineViewController?
+    var listStatusTimelineViewController: ListTimelineViewController?
 }
 
 extension HomeListStatusTimelineViewController {
@@ -70,6 +70,7 @@ extension HomeListStatusTimelineViewController {
             let menuContext = self.viewModel.createHomeListMenuContext()
             
             var children: [UIMenuElement] = [
+                menuContext.homeTimelineMenu,
                 menuContext.ownedListMenu,
                 menuContext.subscribedListMenu,
             ]
@@ -133,25 +134,46 @@ extension HomeListStatusTimelineViewController {
             return
         }
 
-        let newList = activeMenuActionViewModel.list.asRecord
-        var isSameList: Bool {
-            guard let viewModel = listStatusTimelineViewController?.viewModel as? ListStatusTimelineViewModel else { return false }
-            return viewModel.list == newList
+        var isSameTimeline: Bool {
+            switch activeMenuActionViewModel.timeline {
+            case .home:
+                guard let _ = listStatusTimelineViewController?.viewModel as? HomeTimelineViewModel else { return false }
+                return true
+            case .list(let list):
+                guard let viewModel = listStatusTimelineViewController?.viewModel as? ListStatusTimelineViewModel else { return false }
+                return viewModel.list == list.asRecord
+            }
         }
-        guard !isSameList else { return }
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): isSameTimeline: \(isSameTimeline)")
+        guard !isSameTimeline else { return }
         
         // detach
         detachTimeline()
         
         // attach
-        let viewController = ListStatusTimelineViewController()
-        viewController.context = context
-        viewController.coordinator = coordinator
-        viewController.viewModel = ListStatusTimelineViewModel(
-            context: context,
-            authContext: authContext,
-            list: activeMenuActionViewModel.list.asRecord
-        )
+        let viewController: ListTimelineViewController = {
+            switch activeMenuActionViewModel.timeline {
+            case .home:
+                let viewController = HomeTimelineViewController()
+                viewController.context = context
+                viewController.coordinator = coordinator
+                viewController.viewModel = HomeTimelineViewModel(
+                    context: context,
+                    authContext: authContext
+                )
+                return viewController
+            case .list(let list):
+                let viewController = ListStatusTimelineViewController()
+                viewController.context = context
+                viewController.coordinator = coordinator
+                viewController.viewModel = ListStatusTimelineViewModel(
+                    context: context,
+                    authContext: authContext,
+                    list: list.asRecord
+                )
+                return viewController
+            }
+        }()
         self.listStatusTimelineViewController = viewController
         self.title = activeMenuActionViewModel.title
         
@@ -192,19 +214,34 @@ extension HomeListStatusTimelineViewController: HomeListStatusTimelineViewModelD
         _ viewModel: HomeListStatusTimelineViewModel,
         menuActionDidSelect menuActionViewModel: HomeListStatusTimelineViewModel.HomeListMenuActionViewModel
     ) {
-        let list = menuActionViewModel.list.asRecord
-        let managedObjectContext = context.backgroundManagedObjectContext
-        Task {
-            try await managedObjectContext.performChanges {
-                guard let object = list.object(in: managedObjectContext) else { return }
-                switch object {
-                case .twitter(let object):
-                    object.update(activeAt: Date())
-                case .mastodon(let object):
-                    object.update(activeAt: Date())
-                }   // end switch
-            }
-            self.viewModel.createHomeListMenuContext()
-        }   // end Task
+        switch menuActionViewModel.timeline {
+        case .home(let authenticationIndex):
+            let authenticationIndex = authenticationIndex.asRecrod
+            let managedObjectContext = context.backgroundManagedObjectContext
+            Task {
+                let now = Date()
+                try await managedObjectContext.performChanges {
+                    guard let object = authenticationIndex.object(in: managedObjectContext) else { return }
+                    object.update(homeTimelineActiveAt: now)
+                }
+                self.viewModel.homeTimelineMenuActionViewModels.first?.activeAt = now
+                self.viewModel.createHomeListMenuContext()
+            }   // end Task
+        case .list(let list):
+            let list = list.asRecord
+            let managedObjectContext = context.backgroundManagedObjectContext
+            Task {
+                try await managedObjectContext.performChanges {
+                    guard let object = list.object(in: managedObjectContext) else { return }
+                    switch object {
+                    case .twitter(let object):
+                        object.update(activeAt: Date())
+                    case .mastodon(let object):
+                        object.update(activeAt: Date())
+                    }   // end switch
+                }
+                self.viewModel.createHomeListMenuContext()
+            }   // end Task
+        }
     }   // end func
 }

@@ -30,6 +30,7 @@ final class HomeListStatusTimelineViewModel: ObservableObject {
     weak var delegate: HomeListStatusTimelineViewModelDelegate?
     
     // output
+    @Published var homeTimelineMenuActionViewModels: [HomeListMenuActionViewModel]
     @Published var ownedListMenuActionViewModels: [HomeListMenuActionViewModel] = []
     @Published var subscribedListMenuActionViewModels: [HomeListMenuActionViewModel] = []
     @Published var homeListMenuContext: HomeListMenuContext?
@@ -47,6 +48,10 @@ final class HomeListStatusTimelineViewModel: ObservableObject {
             self.ownedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .none)
             self.subscribedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .none)
         }
+        self.homeTimelineMenuActionViewModels = {
+            guard let authenticationIndex = authContext.authenticationContext.authenticationIndex(in: context.managedObjectContext) else { return [] }
+            return [HomeListMenuActionViewModel(timeline: .home(authenticationIndex))]
+        }()
         // end init
         
         Publishers.CombineLatest(
@@ -56,7 +61,9 @@ final class HomeListStatusTimelineViewModel: ObservableObject {
         .receive(on: DispatchQueue.main)
         .sink { [weak self] _, _ in
             guard let self = self else { return }
-            _ = self.createHomeListMenuContext()
+            Task { @MainActor in
+                _ = self.createHomeListMenuContext()
+            }   // end Task
         }
         .store(in: &disposeBag)
         
@@ -66,7 +73,7 @@ final class HomeListStatusTimelineViewModel: ObservableObject {
                 guard let self = self else { return nil }
                 return records
                     .compactMap { record in record.object(in: self.context.managedObjectContext) }
-                    .map { object in HomeListMenuActionViewModel(list: object) }
+                    .map { object in HomeListMenuActionViewModel(timeline: .list(object)) }
             }
             .assign(to: &$ownedListMenuActionViewModels)
         subscribedListViewModel.fetchedResultController.$records
@@ -75,7 +82,7 @@ final class HomeListStatusTimelineViewModel: ObservableObject {
                 guard let self = self else { return nil }
                 return records
                     .compactMap { record in record.object(in: self.context.managedObjectContext) }
-                    .map { object in HomeListMenuActionViewModel(list: object) }
+                    .map { object in HomeListMenuActionViewModel(timeline: .list(object)) }
             }
             .assign(to: &$subscribedListMenuActionViewModels)
     }
@@ -87,21 +94,66 @@ extension HomeListStatusTimelineViewModel {
         var disposeBag = Set<AnyCancellable>()
         
         // input
-        let list: ListObject
+        let timeline: Timeline
         
         // output
         @Published var title: String = ""
         @Published var activeAt: Date? = nil
         
-        init(list: ListObject) {
-            self.list = list
+        init(timeline: Timeline) {
+            self.timeline = timeline
             // end init
             
-            setup(list: list)
+            setup(timeline: timeline)
+        }
+        
+        enum Timeline {
+            case home(AuthenticationIndex)
+            case list(ListObject)
+        }
+    }
+}
+
+extension HomeListStatusTimelineViewModel.HomeListMenuActionViewModel {
+    func setup(timeline: Timeline) {
+        switch timeline {
+        case .home(let authenticationIndex):
+            title = L10n.Scene.Timeline.title
+            authenticationIndex.publisher(for: \.homeTimelineActiveAt)
+                .assign(to: \.activeAt, on: self)
+                .store(in: &disposeBag)
+        case .list(let list):
+            switch list {
+            case .twitter(let object):
+                setup(list: object)
+            case .mastodon(let object):
+                setup(list: object)
+            }
         }
     }
     
+    func setup(list: TwitterList) {
+        list.publisher(for: \.name)
+            .assign(to: \.title, on: self)
+            .store(in: &disposeBag)
+        list.publisher(for: \.activeAt)
+            .assign(to: \.activeAt, on: self)
+            .store(in: &disposeBag)
+    }
+    
+    func setup(list: MastodonList) {
+        list.publisher(for: \.title)
+            .assign(to: \.title, on: self)
+            .store(in: &disposeBag)
+        list.publisher(for: \.activeAt)
+            .assign(to: \.activeAt, on: self)
+            .store(in: &disposeBag)
+    }
+}
+
+extension HomeListStatusTimelineViewModel {
     struct HomeListMenuContext {
+        let homeTimelineMenu: UIMenu
         let ownedListMenu: UIMenu
         let subscribedListMenu: UIMenu
         let isEmpty: Bool
@@ -110,14 +162,16 @@ extension HomeListStatusTimelineViewModel {
 }
 
 extension HomeListStatusTimelineViewModel {
+    @MainActor
     @discardableResult
     func createHomeListMenuContext() -> HomeListMenuContext {
+        let homeTimelineMenuActionViewModels = self.homeTimelineMenuActionViewModels
         let ownedListMenuActionViewModels = self.ownedListMenuActionViewModels
         let subscribedListMenuActionViewModels = self.subscribedListMenuActionViewModels
         
-        
         let latestActiveViewModel: HomeListMenuActionViewModel? = {
             var menuActionViewModels: [HomeListMenuActionViewModel] = []
+            menuActionViewModels.append(contentsOf: homeTimelineMenuActionViewModels)
             menuActionViewModels.append(contentsOf: ownedListMenuActionViewModels)
             menuActionViewModels.append(contentsOf: subscribedListMenuActionViewModels)
             
@@ -136,6 +190,16 @@ extension HomeListStatusTimelineViewModel {
             }
             return latestActiveViewModel
         }()
+        
+        // home timeline
+        let homeTimelineMenuActions: [UIMenuElement] = homeTimelineMenuActionViewModels.map { viewModel in
+            let state: UIMenuElement.State = viewModel === latestActiveViewModel ? .on : .off
+            return UIAction(title: viewModel.title, state: state) { [weak self] _ in
+                guard let self = self else { return }
+                self.delegate?.homeListStatusTimelineViewModel(self, menuActionDidSelect: viewModel)
+            }
+        }
+        let homeTimelineMenu = UIMenu(title: "", options: .displayInline, children: homeTimelineMenuActions)
         
         // owned lists
         let ownedListMenuActions: [UIMenuElement] = ownedListMenuActionViewModels.map { viewModel in
@@ -162,8 +226,8 @@ extension HomeListStatusTimelineViewModel {
             return true
         }()
         
-        
         let homeListMenuContext = HomeListMenuContext(
+            homeTimelineMenu: homeTimelineMenu,
             ownedListMenu: ownedListMenu,
             subscribedListMenu: subscribedListMenu,
             isEmpty: isEmpty,
@@ -175,31 +239,3 @@ extension HomeListStatusTimelineViewModel {
     }   // end func
 }
 
-extension HomeListStatusTimelineViewModel.HomeListMenuActionViewModel {
-    func setup(list: ListObject) {
-        switch list {
-        case .twitter(let object):
-            setup(list: object)
-        case .mastodon(let object):
-            setup(list: object)
-        }
-    }
-    
-    func setup(list: TwitterList) {
-        list.publisher(for: \.name)
-            .assign(to: \.title, on: self)
-            .store(in: &disposeBag)
-        list.publisher(for: \.activeAt)
-            .assign(to: \.activeAt, on: self)
-            .store(in: &disposeBag)
-    }
-    
-    func setup(list: MastodonList) {
-        list.publisher(for: \.title)
-            .assign(to: \.title, on: self)
-            .store(in: &disposeBag)
-        list.publisher(for: \.activeAt)
-            .assign(to: \.activeAt, on: self)
-            .store(in: &disposeBag)
-    }
-}
