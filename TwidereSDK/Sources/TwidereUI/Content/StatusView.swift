@@ -29,7 +29,7 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta)
 
     // media
-    func statusView(_ viewModel: StatusView.ViewModel, mediaViewModel mediaViewModel: MediaView.ViewModel, action: MediaView.ViewModel.Action)
+    func statusView(_ viewModel: StatusView.ViewModel, mediaViewModel: MediaView.ViewModel, action: MediaView.ViewModel.Action)
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
 
     // poll
@@ -73,23 +73,41 @@ public struct StatusView: View {
     public var body: some View {
         VStack(spacing: .zero) {
             if let repostViewModel = viewModel.repostViewModel {
+                // cell top margin
+                Color.clear.frame(height: viewModel.cellTopMargin)
                 // header
                 if let statusHeaderViewModel = repostViewModel.statusHeaderViewModel {
                     StatusHeaderView(viewModel: statusHeaderViewModel)
-                        .background(GeometryReader { proxy in
-                            Color.clear.preference(
-                                key: ViewFrameKey.self,
-                                value: proxy.frame(in: .local)
-                            )
-                            .onPreferenceChange(ViewFrameKey.self) { frame in
-                                statusHeaderViewModel.viewSize = frame.size
-                            }
-                        })
                     Color.clear.frame(height: StatusView.statusHeaderBottomSpacing)
                 }
                 // post
                 StatusView(viewModel: repostViewModel)
             } else {
+                // cell top margin
+                Color.clear.frame(height: viewModel.cellTopMargin)
+                    .overlay {
+                        Group {
+                            // top conversation link
+                            switch viewModel.kind {
+                            case .conversationThread, .conversationRoot:
+                                HStack(spacing: .zero) {
+                                    VStack(alignment: .center, spacing: .zero) {
+                                        Rectangle()
+                                            .foregroundColor(Color(uiColor: .separator))
+                                            .background(.clear)
+                                            .frame(width: 1)
+                                            .frame(maxHeight: .infinity)
+                                            .opacity(viewModel.isTopConversationLinkLineViewDisplay ? 1 : 0)
+                                    }
+                                    .frame(width: Self.hangingAvatarButtonDimension) // avatar button width
+                                    .frame(maxHeight: .infinity)
+                                    Spacer()
+                                }
+                            default:
+                                EmptyView()
+                            }
+                        }
+                    }
                 HStack(alignment: .top, spacing: .zero) {
                     if viewModel.hasHangingAvatar {
                         avatarButton
@@ -231,34 +249,22 @@ public struct StatusView: View {
                     }
                 }   // end HStack
                 .overlay {
+                    // bottom conversation link
                     HStack(alignment: .top, spacing: .zero) {
                         VStack(alignment: .center, spacing: 0) {
                             Color.clear
                                 .frame(width: StatusView.hangingAvatarButtonDimension, height: StatusView.hangingAvatarButtonDimension)
-                            // bottom conversation link
                             Rectangle()
                                 .foregroundColor(Color(uiColor: .separator))
                                 .background(.clear)
                                 .frame(width: 1)
                                 .opacity(viewModel.isBottomConversationLinkLineViewDisplay ? 1 : 0)
                         }
-                        .overlay(alignment: .top) {
-                            Group {
-                                // top conversation link
-                                Rectangle()
-                                    .foregroundColor(Color(uiColor: .separator))
-                                    .background(.clear)
-                                    .frame(width: 1, height: viewModel.topConversationLinkViewHeight)
-                                    .offset(y: -viewModel.topConversationLinkViewHeight)
-                                    .opacity(viewModel.isTopConversationLinkLineViewDisplay ? 1 : 0)
-                            }   // end Group
-                        }
                         Spacer()
                     }   // end HStack
                 }   // end overlay
             }   // end if … else …
         }   // end VStack
-        .padding(.top, viewModel.cellTopMargin)
         .onReceive(viewModel.$isContentSensitiveToggled) { _ in
             // trigger tableView reload to update the cell height
             viewModel.delegate?.statusView(viewModel, viewHeightDidChange: Void())

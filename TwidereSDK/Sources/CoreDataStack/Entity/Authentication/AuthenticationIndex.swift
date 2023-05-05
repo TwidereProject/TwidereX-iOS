@@ -26,6 +26,9 @@ final public class AuthenticationIndex: NSManagedObject {
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var activeAt: Date
     
+    // Record the home timeline latest active date
+    @NSManaged public private(set) var homeTimelineActiveAt: Date?
+    
     // one-to-one relationship
     @NSManaged public private(set) var twitterAuthentication: TwitterAuthentication?
     @NSManaged public private(set) var mastodonAuthentication: MastodonAuthentication?
@@ -57,6 +60,12 @@ extension AuthenticationIndex {
     public func update(activeAt: Date) {
         if self.activeAt != activeAt {
             self.activeAt = activeAt
+        }
+    }
+    
+    public func update(homeTimelineActiveAt: Date) {
+        if self.homeTimelineActiveAt != homeTimelineActiveAt {
+            self.homeTimelineActiveAt = homeTimelineActiveAt
         }
     }
     

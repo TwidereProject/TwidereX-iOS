@@ -375,32 +375,29 @@ extension StatusThreadViewModel {
             return
         }
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch conversation for \(conversationRootStatusID), cursor: \(cursor.value ?? "<nil>")")
-        let guestAuthorization = try await authContext.twitterGuestAuthorization()
         let response = try await context.apiService.twitterStatusConversation(
             conversationRootStatusID: conversationRootStatusID,
             query: .init(cursor: cursor.value),
-            guestAuthentication: guestAuthorization,
             authenticationContext: authenticationContext
         )
         
         // update cursor
-        if let cursor = response.value.timeline.topCursor {
+        if let cursor = response.value.topCursor {
             self.topCursor = .value(cursor)
         } else {
             self.topCursor = .noMore
         }
-        if let cursor = response.value.timeline.bottomCursor {
+        if let cursor = response.value.bottomCursor {
             self.bottomCursor = .value(cursor)
         } else {
             self.bottomCursor = .noMore
         }
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch conversation: \(response.value.globalObjects.tweets.count) tweets, \(response.value.globalObjects.users.count) users, top cursor: \(response.value.timeline.topCursor ?? "<nil>"), bottom cursor: \(response.value.timeline.bottomCursor ?? "<nil>"), timeline entries \(response.value.timeline.entries.count)")
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch conversation success, top cursor: \(response.value.topCursor ?? "<nil>"), bottom cursor: \(response.value.bottomCursor ?? "<nil>")")
         
-        let timeline = response.value.timeline
         let statusDict: [Twitter.Entity.V2.Tweet.ID: ManagedObjectRecord<TwitterStatus>] = {
             var dict: [TwitterStatus.ID: ManagedObjectRecord<TwitterStatus>] = [:]
             let request = TwitterStatus.sortedFetchRequest
-            let statusIDs = response.value.globalObjects.tweets.map { $0.idStr }
+            let statusIDs = response.value.statusIDs
             request.predicate = TwitterStatus.predicate(ids: statusIDs)
             let result = try? context.managedObjectContext.fetch(request)
             for status in result ?? [] {
@@ -411,35 +408,25 @@ extension StatusThreadViewModel {
         }()
         let topThreads: [Thread] = {
             var threads: [Thread] = []
-            for entry in timeline.entries {
-                switch entry {
-                case .tweet(let statusID):
-                    guard let status = statusDict[statusID] else {
-                        continue
-                    }
-                    threads.append(.selfThread(status: .twitter(record: status)))
-                default:
+            for statusID in response.value.data.thread {
+                guard let status = statusDict[statusID] else {
                     continue
                 }
+                threads.append(.selfThread(status: .twitter(record: status)))
             }
             return threads
         }()
         let bottomThreads: [Thread] = {
             var threads: [Thread] = []
-            for entry in timeline.entries {
-                switch entry {
-                case .conversationThread(let componentIDs):
-                    let components = componentIDs
-                        .compactMap { statusDict[$0] }
-                        .map { StatusRecord.twitter(record: $0) }
-                    guard !components.isEmpty else {
-                        assertionFailure()
-                        continue
-                    }
-                    threads.append(.conversationThread(components: components))
-                default:
+            for array in response.value.data.consersation {
+                let components = array
+                    .compactMap { statusDict[$0] }
+                    .map { StatusRecord.twitter(record: $0) }
+                guard !components.isEmpty else {
+                    assertionFailure()
                     continue
                 }
+                threads.append(.conversationThread(components: components))
             }
             return threads
         }()

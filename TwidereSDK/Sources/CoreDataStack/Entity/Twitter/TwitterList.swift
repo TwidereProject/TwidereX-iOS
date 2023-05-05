@@ -32,6 +32,9 @@ final public class TwitterList: NSManagedObject {
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var updatedAt: Date
     
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var activeAt: Date?
+    
     // many-to-one relationship
     // sourcery: autoGenerateRelationship
     @NSManaged public private(set) var owner: TwitterUser
@@ -165,6 +168,11 @@ extension TwitterList: AutoUpdatableObject {
     public func update(updatedAt: Date) {
     	if self.updatedAt != updatedAt {
     		self.updatedAt = updatedAt
+    	}
+    }
+    public func update(activeAt: Date?) {
+    	if self.activeAt != activeAt {
+    		self.activeAt = activeAt
     	}
     }
     // sourcery:end

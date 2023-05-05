@@ -167,6 +167,11 @@ extension UserView.ViewModel {
         // accessory: none
         case friend
         
+        // headline: name | lock
+        // subheadline: username
+        // accessory: none
+        case history
+        
         // header: notification
         // headline: name | lock | username
         // subheadline: follower count

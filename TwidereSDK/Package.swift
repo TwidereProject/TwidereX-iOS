@@ -14,7 +14,6 @@ let package = Package(
         .library(
             name: "TwidereSDK",
             targets: [
-                "TwitterSDK",
                 "MastodonSDK",
                 "CoreDataStack",
                 "TwidereAsset",
@@ -52,6 +51,7 @@ let package = Package(
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.6.0"),
         .package(url: "https://github.com/tid-kijyun/Kanna.git", from: "5.2.7"),
         .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", from: "0.2.0"),
+        .package(url: "https://github.com/TwidereProject/TwitterSDK.git", exact: "0.4.0"),
         .package(name: "ArkanaKeys", path: "../dependencies/ArkanaKeys"),
         .package(name: "CoverFlowStackLayout", path: "../CoverFlowStackLayout"),
     ],
@@ -65,20 +65,6 @@ let package = Package(
             ],
             exclude: [
                 "Template/Stencil"
-            ]
-        ),
-        .target(
-            name: "TwitterSDK",
-            dependencies: [
-                .product(name: "SwiftyJSON", package: "SwiftyJSON"),
-                .product(name: "NIOHTTP1", package: "swift-nio"),
-            ]
-        ),
-        .testTarget(
-            name: "TwitterSDKTests",
-            dependencies: [
-                "TwitterSDK",
-                .product(name: "CommonOSLog", package: "CommonOSLog"),
             ]
         ),
         .target(
@@ -96,10 +82,10 @@ let package = Package(
         .target(
             name: "TwidereCommon",
             dependencies: [
-                "TwitterSDK",
                 "MastodonSDK",
                 .product(name: "KeychainAccess", package: "KeychainAccess"),
                 .product(name: "ArkanaKeys", package: "ArkanaKeys"),
+                .product(name: "TwitterSDK", package: "TwitterSDK"),
             ],
             exclude: [
                 "Template/AutoGenerateProtocolDelegate.swifttemplate",
@@ -113,7 +99,6 @@ let package = Package(
                 "TwidereAsset",
                 "TwidereCommon",
                 "TwidereLocalization",
-                "TwitterSDK",
                 "MastodonSDK",
                 "CoreDataStack",
                 .product(name: "CommonOSLog", package: "CommonOSLog"),
@@ -125,6 +110,7 @@ let package = Package(
                 .product(name: "DateToolsSwift", package: "DateTools"),
                 .product(name: "CryptoSwift", package: "CryptoSwift"),
                 .product(name: "Kanna", package: "Kanna"),
+                .product(name: "TwitterSDK", package: "TwitterSDK"),
                 .product(name: "CollectionConcurrencyKit", package: "CollectionConcurrencyKit"),
             ]
         ),

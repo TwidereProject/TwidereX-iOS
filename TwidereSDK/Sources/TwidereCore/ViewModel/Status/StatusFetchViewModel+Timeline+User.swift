@@ -137,6 +137,7 @@ extension StatusFetchViewModel.Timeline.User {
             switch self {
             case .v2(let response):
                 guard let nextToken = response.value.meta.nextToken else { return nil }
+                guard nextToken != fetchContext.paginationToken else { return nil }
                 let fetchContext = fetchContext.map(paginationToken: nextToken)
                 return .twitter(fetchContext)
             case .v1(let response):
@@ -165,7 +166,8 @@ extension StatusFetchViewModel.Timeline.User {
                                 sinceID: nil,
                                 untilID: nil,
                                 paginationToken: fetchContext.paginationToken,
-                                maxResults: fetchContext.maxResults ?? 20
+                                maxResults: fetchContext.maxResults ?? 20,
+                                onlyMedia: fetchContext.filter.rule.contains(.onlyMedia)
                             ),
                             authenticationContext: fetchContext.authenticationContext
                         )
@@ -199,7 +201,8 @@ extension StatusFetchViewModel.Timeline.User {
                                 sinceID: nil,
                                 untilID: nil,
                                 paginationToken: fetchContext.paginationToken,
-                                maxResults: fetchContext.maxResults ?? 20
+                                maxResults: fetchContext.maxResults ?? 20,
+                                onlyMedia: fetchContext.filter.rule.contains(.onlyMedia)
                             ),
                             authenticationContext: fetchContext.authenticationContext
                         )

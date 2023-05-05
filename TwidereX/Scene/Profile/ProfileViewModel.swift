@@ -27,6 +27,7 @@ class ProfileViewModel: ObservableObject {
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
         
     // output
+    let displayLikeTimeline: Bool
     @Published var userRecord: UserRecord?
     @Published var userIdentifier: UserIdentifier? = nil
     let relationshipViewModel = RelationshipViewModel()
@@ -35,10 +36,12 @@ class ProfileViewModel: ObservableObject {
     
     init(
         context: AppContext,
-        authContext: AuthContext
+        authContext: AuthContext,
+        displayLikeTimeline: Bool
     ) {
         self.context = context
         self.authContext = authContext
+        self.displayLikeTimeline = displayLikeTimeline
         // end init
         
         // bind data after publisher setup

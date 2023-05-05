@@ -29,6 +29,7 @@ extension StatusMediaGallerySection {
     ) -> UICollectionViewDiffableDataSource<StatusSection, StatusItem> {
         
         let statusRecordCell = UICollectionView.CellRegistration<StatusMediaGalleryCollectionCell, StatusRecord> { cell, indexPath, record in
+            cell.delegate = configuration.statusMediaGalleryCollectionCellDelegate
             context.managedObjectContext.performAndWait {
                 guard let status = record.object(in: context.managedObjectContext) else {
                     assertionFailure()
@@ -37,10 +38,15 @@ extension StatusMediaGallerySection {
                 let items = MediaView.ViewModel.viewModels(from: status)
                 let viewModel = MediaStackContainerView.ViewModel(items: items)
                 cell.contentConfiguration = UIHostingConfiguration {
-                    MediaStackContainerView(viewModel: viewModel)
+                    MediaStackContainerView(
+                        viewModel: viewModel,
+                        handler: { [weak cell]  mediaViewModel, _ in
+                            guard let cell = cell else { return }
+                            configuration.statusMediaGalleryCollectionCellDelegate?.statusMediaGalleryCollectionCell(cell, mediaStackContainerViewModel: viewModel, didSelectMediaView: mediaViewModel)
+                        }
+                    )
                 }
                 .margins(.vertical, 0)  // remove vertical margins
-                
             }
         }
         

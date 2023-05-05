@@ -59,9 +59,6 @@ extension StatusHeaderView {
         @Published public var hasHangingAvatar: Bool = false
         @Published public var avatarDimension: CGFloat = StatusView.hangingAvatarButtonDimension
         
-        // output
-        public var viewSize: CGSize = .zero
-        
         public init(
             image: UIImage,
             label: MetaContent

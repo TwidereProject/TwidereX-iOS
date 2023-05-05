@@ -71,6 +71,8 @@ extension TimelineViewModel.LoadOldestState {
     class Loading: TimelineViewModel.LoadOldestState {
         
         var nextInput: StatusFetchViewModel.Timeline.Input?
+        var failCount = 0
+        var nonce = UUID()
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             switch stateClass {
@@ -90,15 +92,24 @@ extension TimelineViewModel.LoadOldestState {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
 
-            // reset when reloading
+            // reset nextInput when reloading
             switch previousState {
             case is Reloading:
                 nextInput = nil
             default:
                 break
             }
+            
+            // reset fail count if needs
+            switch previousState {
+            case is Fail:
+                failCount += 1
+            default:
+                failCount = 0
+            }
 
             guard let viewModel = viewModel, let _ = stateMachine else { return }
+            let nonce = self.nonce
             
             Task {
                 let managedObjectContext = viewModel.context.managedObjectContext
@@ -114,7 +125,12 @@ extension TimelineViewModel.LoadOldestState {
                         return status
                     }
                 }
-
+                
+                let failCount = UInt64(min(failCount, 60))
+                if failCount > 0 {
+                    try? await Task.sleep(nanoseconds: failCount * .second)                    
+                }
+                guard nonce == self.nonce else { return }
                 await fetch(anchor: _anchorRecord)
             }   // end Task
         }   // end func

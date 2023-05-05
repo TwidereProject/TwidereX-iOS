@@ -81,34 +81,35 @@ extension ComposeContentViewController {
         hostingViewController.didMove(toParent: self)
         
         // mention - pick action
-        viewModel.mentionPickPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                guard let authContext = self.viewModel.authContext else { return }
-                guard let primaryItem = self.viewModel.primaryMentionPickItem else { return }
-                
-                let mentionPickViewModel = MentionPickViewModel(
-                    context: self.viewModel.context,
-                    authContext: authContext,
-                    primaryItem: primaryItem,
-                    secondaryItems: self.viewModel.secondaryMentionPickItems
-                )
-                let mentionPickViewController = MentionPickViewController()
-                mentionPickViewController.viewModel = mentionPickViewModel
-                mentionPickViewController.delegate = self
-                
-                let navigationController = AdaptiveStatusBarStyleNavigationController(rootViewController: mentionPickViewController)
-                navigationController.modalPresentationStyle = .pageSheet
-                if let sheetPresentationController = navigationController.sheetPresentationController {
-                    sheetPresentationController.detents = [.medium(), .large()]
-                    sheetPresentationController.selectedDetentIdentifier = .medium
-                    sheetPresentationController.prefersScrollingExpandsWhenScrolledToEdge = false
-                    sheetPresentationController.prefersGrabberVisible = true
-                }
-                self.present(navigationController, animated: true, completion: nil)
-            }
-            .store(in: &disposeBag)
+        // FIXME: TODO
+//        viewModel.mentionPickPublisher
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] _ in
+//                guard let self = self else { return }
+//                guard let authContext = self.viewModel.authContext else { return }
+//                guard let primaryItem = self.viewModel.primaryMentionPickItem else { return }
+//
+//                let mentionPickViewModel = MentionPickViewModel(
+//                    context: self.viewModel.context,
+//                    authContext: authContext,
+//                    primaryItem: primaryItem,
+//                    secondaryItems: self.viewModel.secondaryMentionPickItems
+//                )
+//                let mentionPickViewController = MentionPickViewController()
+//                mentionPickViewController.viewModel = mentionPickViewModel
+//                mentionPickViewController.delegate = self
+//
+//                let navigationController = AdaptiveStatusBarStyleNavigationController(rootViewController: mentionPickViewController)
+//                navigationController.modalPresentationStyle = .pageSheet
+//                if let sheetPresentationController = navigationController.sheetPresentationController {
+//                    sheetPresentationController.detents = [.medium(), .large()]
+//                    sheetPresentationController.selectedDetentIdentifier = .medium
+//                    sheetPresentationController.prefersScrollingExpandsWhenScrolledToEdge = false
+//                    sheetPresentationController.prefersGrabberVisible = true
+//                }
+//                self.present(navigationController, animated: true, completion: nil)
+//            }
+//            .store(in: &disposeBag)
         
         // attachment - preview action
         viewModel.mediaPreviewPublisher

@@ -22,10 +22,18 @@ extension ListViewModel {
         
         fetchedResultController.$records
             .receive(on: DispatchQueue.main)
-            .asyncMap { records -> NSDiffableDataSourceSnapshot<ListSection, ListItem>? in
+            .asyncMap { [weak self] records -> NSDiffableDataSourceSnapshot<ListSection, ListItem>? in
+                guard let self = self else { return nil }
                 var snapshot = NSDiffableDataSourceSnapshot<ListSection, ListItem>()
                 
-                let section = ListSection.twitter(kind: .owned)
+                let section: ListSection = {
+                    switch self.kind {
+                    case .none:             return ListSection.twitter(kind: .owned)
+                    case .owned:            return ListSection.twitter(kind: .owned)
+                    case .subscribed:       return ListSection.twitter(kind: .subscribed)
+                    case .listed:           return ListSection.twitter(kind: .listed)
+                    }
+                }()
                 snapshot.appendSections([section])
                 
                 let items = records.map { ListItem.list(record: $0, style: .plain) }
