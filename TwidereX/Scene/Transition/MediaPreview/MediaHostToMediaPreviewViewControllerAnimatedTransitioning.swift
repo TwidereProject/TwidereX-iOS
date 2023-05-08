@@ -187,7 +187,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         animator.addCompletion { position in
             if position == .end {
                 // reset appearance
-                self.transitionItem.source.updateAppearance(position: position, index: nil)
+                self.transitionItem.source.updateAppearance(position: position, index: fromVC.viewModel.currentPage)
             }
         }
         

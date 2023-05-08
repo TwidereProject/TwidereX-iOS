@@ -45,7 +45,7 @@ extension DataSourceFacade {
                 preloadThumbnails: thumbnails
             )),
             mediaPreviewTransitionItem: {
-                let source = MediaPreviewTransitionItem.Source.mediaView(mediaViewModel)
+                let source = MediaPreviewTransitionItem.Source.mediaView(mediaViewModel, viewModels: statusViewModel.mediaViewModels)
                 let item = MediaPreviewTransitionItem(
                     source: source,
                     previewableViewController: provider

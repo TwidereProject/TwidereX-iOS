@@ -172,7 +172,7 @@ extension MediaGridContainerView {
                     )
             default:
                 Rectangle()
-                    .fill(Color(uiColor: .placeholderText))
+                    .fill(.clear)
                     .frame(width: width, height: height)
                     .overlay(
                         MediaView(viewModel: viewModel)
@@ -180,16 +180,18 @@ extension MediaGridContainerView {
                     )
             }
         }
+        .background(Color(uiColor: .placeholderText).opacity(0.3))
         .cornerRadius(MediaGridContainerView.cornerRadius)
         .clipped()
         .background(GeometryReader { proxy in
-            Color.clear.preference(
-                key: ViewFrameKey.self,
-                value: proxy.frame(in: .global)
-            )
-            .onPreferenceChange(ViewFrameKey.self) { frame in
-                viewModels[index].frameInWindow = frame
-            }
+            Color.clear
+                .preference(
+                    key: ViewFrameKey.self,
+                    value: proxy.frame(in: .global)
+                )
+                .onPreferenceChange(ViewFrameKey.self) { frame in
+                    viewModels[index].frameInWindow = frame
+                }
         })
         .overlay(alignment: .bottom) {
             MediaMetaIndicatorView(viewModel: viewModels[index])

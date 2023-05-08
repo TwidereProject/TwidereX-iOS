@@ -46,7 +46,7 @@ class MediaPreviewTransitionItem: Identifiable {
 extension MediaPreviewTransitionItem {
     enum Source {
         case none
-        case mediaView(MediaView.ViewModel)
+        case mediaView(MediaView.ViewModel, viewModels: [MediaView.ViewModel])
         case profileAvatar(ProfileHeaderView)
         case profileBanner(ProfileHeaderView)
         
@@ -57,8 +57,14 @@ extension MediaPreviewTransitionItem {
             switch self {
             case .none:
                 break
-            case .mediaView(let viewModel):
-                viewModel.shouldHideForTransitioning = position != .end
+            case .mediaView(let viewModel, let viewModels):
+                let shouldHideForTransitioning = position != .end
+                viewModels.forEach { $0.shouldHideForTransitioning = false }
+                if let index = index, let viewModel = viewModels[safe: index] {
+                    viewModel.shouldHideForTransitioning = shouldHideForTransitioning
+                } else {
+                    viewModel.shouldHideForTransitioning = shouldHideForTransitioning
+                }
             case .profileAvatar(let view):
                 // TODO:
                 break

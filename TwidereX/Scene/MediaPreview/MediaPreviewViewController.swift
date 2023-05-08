@@ -122,7 +122,8 @@ extension MediaPreviewViewController {
         visualEffectView.contentView.addSubview(pageControlBackgroundVisualEffectView)
         NSLayoutConstraint.activate([
             pageControlBackgroundVisualEffectView.centerXAnchor.constraint(equalTo: mediaInfoDescriptionView.centerXAnchor),
-            mediaInfoDescriptionView.topAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor, constant: 8),
+            view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor, constant: 16),
+            // mediaInfoDescriptionView.topAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor, constant: 8),
         ])
 
         pageControl.translatesAutoresizingMaskIntoConstraints = false
@@ -165,29 +166,24 @@ extension MediaPreviewViewController {
         closeButton.addTarget(self, action: #selector(MediaPreviewViewController.closeButtonPressed(_:)), for: .touchUpInside)
         
         // bind view model
-//        viewModel.$currentPage
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] index in
-//                guard let self = self else { return }
-//                // update page control
-//                self.pageControl.currentPage = index
-//                
-//                // update mediaGridContainerView
-//                switch self.viewModel.transitionItem.source {
-//                case .none:
-//                    break
-//                case .attachment:
-//                    break
-//                case .attachments(let mediaGridContainerView):
-//                    UIView.animate(withDuration: 0.3) {
-//                        mediaGridContainerView.setAlpha(1)
-//                        mediaGridContainerView.setAlpha(0, index: index)
-//                    }
-//                case .profileAvatar, .profileBanner:
-//                    break
-//                }
-//            }
-//            .store(in: &disposeBag)
+        viewModel.$currentPage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] index in
+                guard let self = self else { return }
+                // update page control
+                self.pageControl.currentPage = index
+                
+                 // update mediaGridContainerView
+                 switch self.viewModel.transitionItem.source {
+                 case .none:
+                     break
+                 case .mediaView:
+                     self.viewModel.transitionItem.source.updateAppearance(position: .current, index: index)
+                 case .profileAvatar, .profileBanner:
+                     break
+                 }
+            }
+            .store(in: &disposeBag)
         
         viewModel.$currentPage
             .receive(on: DispatchQueue.main)
