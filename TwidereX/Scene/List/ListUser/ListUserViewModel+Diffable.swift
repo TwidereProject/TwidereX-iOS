@@ -32,7 +32,9 @@ extension ListUserViewModel {
 
                 snapshot.appendSections([.main])
 
-                let items = records.map { UserItem.user(record: $0, kind: .listMember) }
+                let items = records.map {
+                    UserItem.user(record: $0, kind: .listMember(self.listMembershipViewModel))
+                }
                 snapshot.appendItems(items, toSection: .main)
 
                 let currentState = await self.stateMachine.currentState

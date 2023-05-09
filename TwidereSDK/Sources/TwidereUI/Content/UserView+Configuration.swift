@@ -15,21 +15,6 @@ import Meta
 import MastodonSDK
 
 //extension UserView {
-//    public struct ConfigurationContext {
-//        public let authContext: AuthContext
-//        public let listMembershipViewModel: ListMembershipViewModel?
-//        
-//        public init(
-//            authContext: AuthContext,
-//            listMembershipViewModel: ListMembershipViewModel?
-//        ) {
-//            self.authContext = authContext
-//            self.listMembershipViewModel = listMembershipViewModel
-//        }
-//    }
-//}
-//
-//extension UserView {
 //    public func configure(
 //        user: UserObject,
 //        me: UserObject?,
@@ -49,30 +34,6 @@ import MastodonSDK
 //        
 //        viewModel.relationshipViewModel.user = user
 //        viewModel.relationshipViewModel.me = me
-//        
-//        viewModel.listMembershipViewModel = configurationContext.listMembershipViewModel
-//        if let listMembershipViewModel = configurationContext.listMembershipViewModel {
-//            listMembershipViewModel.$ownerUserIdentifier
-//                .assign(to: \.listOwnerUserIdentifier, on: viewModel)
-//                .store(in: &disposeBag)
-//        }
-//        
-//        // accessory
-//        switch style {
-//        case .addListMember:
-//            guard let listMembershipViewModel = configurationContext.listMembershipViewModel else {
-//                assertionFailure()
-//                break
-//            }
-//            let userRecord = user.asRecord
-//            listMembershipViewModel.$members
-//                .map { members in members.contains(userRecord) }
-//                .assign(to: \.isListMember, on: viewModel)
-//                .store(in: &disposeBag)
-//            listMembershipViewModel.$workingMembers
-//                .map { members in members.contains(userRecord) }
-//                .assign(to: \.isListMemberCandidate, on: viewModel)
-//                .store(in: &disposeBag)
 //        default:
 //            break
 //        }
