@@ -322,6 +322,7 @@
 "Scene.Compose.Vote.PlaceholderIndex" = "%d 고르기";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "해시태그 찾기";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "사용자 찾기";
+"Scene.Detail.Title" = "Detail";
 "Scene.Drafts.Actions.DeleteDraft" = "지우기";
 "Scene.Drafts.Actions.EditDraft" = "다시 쓰기";
 "Scene.Drafts.Title" = "임시 보관함";

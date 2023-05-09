@@ -322,6 +322,7 @@
 "Scene.Compose.Vote.PlaceholderIndex" = "选项 %d";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "搜索标签";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "搜索用户";
+"Scene.Detail.Title" = "Detail";
 "Scene.Drafts.Actions.DeleteDraft" = "删除草稿";
 "Scene.Drafts.Actions.EditDraft" = "编辑草稿";
 "Scene.Drafts.Title" = "草稿";
