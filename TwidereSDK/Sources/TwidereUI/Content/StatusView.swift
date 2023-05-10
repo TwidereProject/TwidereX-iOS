@@ -145,6 +145,10 @@ public struct StatusView: View {
                         // content
                         if viewModel.isContentReveal {
                             contentView
+                            
+                            if viewModel.isTranslateButtonDisplay {
+                                translateButton
+                            }
                         }
                         // media
                         if !viewModel.mediaViewModels.isEmpty {
@@ -423,6 +427,20 @@ extension StatusView {
                 }
             )
             .frame(width: viewModel.contentWidth)
+        }
+    }
+    
+    var translateButton: some View {
+        Button {
+            viewModel.delegate?.statusView(viewModel, statusToolbarViewModel: viewModel.toolbarViewModel, statusToolbarButtonDidPressed: .translate)
+        } label: {
+            HStack {
+                Text(L10n.Common.Controls.Status.Actions.translate)
+                    .font(Font(TextStyle.statusTranslateButton.font))
+                    .foregroundColor(Color(uiColor: TextStyle.statusTranslateButton.textColor))
+                Spacer()
+            }
+            .padding(.vertical)
         }
     }
     
