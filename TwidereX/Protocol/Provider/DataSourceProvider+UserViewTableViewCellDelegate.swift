@@ -75,37 +75,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
                 }
             }   // end Task
         }   // end switch
-    }
-
-//    func tableViewCell(
-//        _ cell: UITableViewCell,
-//        userView: UserView,
-//        menuActionDidPressed action: UserView.MenuAction,
-//        menuButton button: UIButton
-//    ) {
-//        switch action {
-//        case .signOut:
-//            // TODO: move to view controller
-//            Task {
-//                let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-//                guard let item = await item(from: source) else {
-//                    assertionFailure()
-//                    return
-//                }
-//                guard case let .user(user) = item else {
-//                    assertionFailure("only works for user data")
-//                    return
-//                }
-//                try await DataSourceFacade.responseToUserSignOut(
-//                            dependency: self,
-//                    user: user
-//                )
-//            }   // end Task
-//        case .remove:
-//            assertionFailure("Override in view controller")
-//        }   // end swtich
-//    }
-    
+    }    
 }
 
 // MARK: - friendship button

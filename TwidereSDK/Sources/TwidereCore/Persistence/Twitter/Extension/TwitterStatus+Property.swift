@@ -37,6 +37,7 @@ extension TwitterStatus.Property {
             },
             replyToStatusID: entity.inReplyToStatusIDStr,
             replyToUserID: entity.inReplyToUserIDStr,
+            isMediaSensitive: entity.possiblySensitive ?? false,
             createdAt: entity.createdAt,
             updatedAt: networkDate
         )
@@ -135,6 +136,7 @@ extension TwitterStatus.Property {
             source: status.source,
             replyToStatusID: status.repliedToID,
             replyToUserID: status.inReplyToUserID,
+            isMediaSensitive: status.possiblySensitive ?? false,
             createdAt: status.createdAt,
             updatedAt: networkDate
         )

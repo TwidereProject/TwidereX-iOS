@@ -170,6 +170,7 @@ extension TwitterUser {
     
     public static func predicate(username: String) -> NSPredicate {
         return NSPredicate(format: "%K == %@", #keyPath(TwitterUser.username), username)
+        
     }
     
 }

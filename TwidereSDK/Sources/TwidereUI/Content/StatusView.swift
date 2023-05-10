@@ -36,7 +36,10 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ viewModel: StatusView.ViewModel, pollVoteActionForViewModel pollViewModel: PollView.ViewModel)
     func statusView(_ viewModel: StatusView.ViewModel, pollUpdateIfNeedsForViewModel pollViewModel: PollView.ViewModel)
     func statusView(_ viewModel: StatusView.ViewModel, pollViewModel: PollView.ViewModel, pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel)
-
+    
+    // repost
+    func statusView(_ viewModel: StatusView.ViewModel, quoteStatusViewDidPressed quoteViewModel: StatusView.ViewModel)
+    
     // metric
     func statusView(_ viewModel: StatusView.ViewModel, statusMetricViewModel: StatusMetricView.ViewModel, statusMetricButtonDidPressed action: StatusMetricView.Action)
 
@@ -182,6 +185,9 @@ public struct StatusView: View {
                                     Color(uiColor: .label.withAlphaComponent(0.04))
                                 }
                                 .cornerRadius(12)
+                                .onTapGesture {
+                                    viewModel.delegate?.statusView(viewModel, quoteStatusViewDidPressed: quoteViewModel)
+                                }
                         }
                         // location (inline)
                         if let location = viewModel.location {

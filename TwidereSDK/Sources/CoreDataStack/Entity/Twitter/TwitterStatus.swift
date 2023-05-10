@@ -42,7 +42,12 @@ final public class TwitterStatus: NSManagedObject {
     @NSManaged public private(set) var replyToStatusID: TwitterStatus.ID?
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var replyToUserID: TwitterUser.ID?
-
+    
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var isMediaSensitive: Bool
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var isMediaSensitiveToggled: Bool
+    
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
     // sourcery: autoUpdatableObject, autoGenerateProperty
@@ -238,6 +243,7 @@ extension TwitterStatus: AutoGenerateProperty {
         public let source: String?
         public let replyToStatusID: TwitterStatus.ID?
         public let replyToUserID: TwitterUser.ID?
+        public let isMediaSensitive: Bool
         public let createdAt: Date
         public let updatedAt: Date
 
@@ -252,6 +258,7 @@ extension TwitterStatus: AutoGenerateProperty {
     		source: String?,
     		replyToStatusID: TwitterStatus.ID?,
     		replyToUserID: TwitterUser.ID?,
+    		isMediaSensitive: Bool,
     		createdAt: Date,
     		updatedAt: Date
     	) {
@@ -265,6 +272,7 @@ extension TwitterStatus: AutoGenerateProperty {
     		self.source = source
     		self.replyToStatusID = replyToStatusID
     		self.replyToUserID = replyToUserID
+    		self.isMediaSensitive = isMediaSensitive
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
     	}
@@ -281,6 +289,7 @@ extension TwitterStatus: AutoGenerateProperty {
     	self.source = property.source
     	self.replyToStatusID = property.replyToStatusID
     	self.replyToUserID = property.replyToUserID
+    	self.isMediaSensitive = property.isMediaSensitive
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
     }
@@ -292,6 +301,7 @@ extension TwitterStatus: AutoGenerateProperty {
     	update(source: property.source)
     	update(replyToStatusID: property.replyToStatusID)
     	update(replyToUserID: property.replyToUserID)
+    	update(isMediaSensitive: property.isMediaSensitive)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
     }
@@ -375,6 +385,16 @@ extension TwitterStatus: AutoUpdatableObject {
     public func update(replyToUserID: TwitterUser.ID?) {
     	if self.replyToUserID != replyToUserID {
     		self.replyToUserID = replyToUserID
+    	}
+    }
+    public func update(isMediaSensitive: Bool) {
+    	if self.isMediaSensitive != isMediaSensitive {
+    		self.isMediaSensitive = isMediaSensitive
+    	}
+    }
+    public func update(isMediaSensitiveToggled: Bool) {
+    	if self.isMediaSensitiveToggled != isMediaSensitiveToggled {
+    		self.isMediaSensitiveToggled = isMediaSensitiveToggled
     	}
     }
     public func update(createdAt: Date) {

@@ -1135,6 +1135,14 @@ extension StatusView.ViewModel {
         // media
         mediaViewModels = MediaView.ViewModel.viewModels(from: status)
         
+        // media content warning
+        isMediaSensitive = status.isMediaSensitive
+        isMediaSensitiveToggled = status.isMediaSensitiveToggled
+        status.publisher(for: \.isMediaSensitiveToggled)
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isMediaSensitiveToggled, on: self)
+            .store(in: &disposeBag)
+        
         // poll
         if let poll = status.poll {
             self.pollViewModel = PollView.ViewModel(
