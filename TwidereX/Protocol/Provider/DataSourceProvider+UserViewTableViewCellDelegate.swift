@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import CoreData
+import CoreDataStack
 import SwiftMessages
 
 // MARK: - avatar button
@@ -34,6 +36,17 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
         menuActionDidPressed action: UserView.ViewModel.MenuAction
     ) {
         switch action {
+        case .openInNewWindowForAccount:
+            guard let userRecord = viewModel.user?.asRecord else { return }
+            guard let requestingScene = self.view.window?.windowScene else { return }
+            Task { @MainActor in
+                let _record: ManagedObjectRecord<AuthenticationIndex>? = await context.managedObjectContext.perform {
+                    guard let user = userRecord.object(in: self.context.managedObjectContext) else { return nil }
+                    return user.authenticationIndex?.asRecrod
+                }
+                guard let record = _record else { return }
+                try SceneDelegate.openSceneSessionForAccount(record, fromRequestingScene: requestingScene)
+            }   // end Task
         case .signOut:
             Task {
                 guard let user = viewModel.user?.asRecord else {

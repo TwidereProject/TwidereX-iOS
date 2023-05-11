@@ -11,6 +11,7 @@ import Combine
 import Intents
 import FPSIndicator
 import CoreDataStack
+import CoreData
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -58,7 +59,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let sceneCoordinator = SceneCoordinator(scene: scene, sceneDelegate: self, context: AppContext.shared)
         self.coordinator = sceneCoordinator
         
-        sceneCoordinator.setup()
+        let userActivity = connectionOptions.userActivities.first ?? session.stateRestorationActivity
+        if userActivity?.activityType == UserActivity.openNewWindowActivityType,
+           let objectIDURI = userActivity?.userInfo?[UserActivity.sessionUserInfoAuthenticationIndexObjectIDKey] as? URL,
+           let objectID = AppContext.shared.managedObjectContext.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: objectIDURI)
+        {
+            sceneCoordinator.setup(authentication: ManagedObjectRecord(objectID: objectID))
+        } else {
+            sceneCoordinator.setup()
+        }
         
         window.makeKeyAndVisible()
 
@@ -211,6 +220,62 @@ extension SceneDelegate {
         }
     }
     
+}
+
+extension SceneDelegate {
+    
+    public class func openSceneSessionForAccount(
+        _ record: ManagedObjectRecord<AuthenticationIndex>,
+        fromRequestingScene requestingScene: UIWindowScene
+    ) throws {
+        let options = UIWindowScene.ActivationRequestOptions()
+        options.preferredPresentationStyle = .prominent
+        options.requestingScene = requestingScene
+        
+        if let activeSceneSession = Self.activeSceneSessionForAccount(record) {
+            UIApplication.shared.requestSceneSessionActivation(
+                activeSceneSession,     // reuse old one
+                userActivity: nil,      // ignore for actived session
+                options: options
+            )
+        } else {
+            let userActivity = record.openNewWindowUserActivity
+            UIApplication.shared.requestSceneSessionActivation(
+                nil,                    // create new one
+                userActivity: userActivity,
+                options: options
+            )
+        }
+    }
+    
+    class func activeSceneSessionForAccount(_ record: ManagedObjectRecord<AuthenticationIndex>) -> UISceneSession? {
+        for openSession in UIApplication.shared.openSessions where openSession.configuration.delegateClass == SceneDelegate.self {
+            guard let userInfo = openSession.userInfo,
+                  let objectIDURI = userInfo[UserActivity.sessionUserInfoAuthenticationIndexObjectIDKey] as? URL,
+                  objectIDURI == record.objectID.uriRepresentation()
+            else { continue }
+            return openSession
+        }   // end for … in
+        
+        return nil
+    }
+}
+
+struct UserActivity {
+    static var openNewWindowActivityType: String { "com.twidere.TwidereX.openNewWindow" }
+    
+    static var sessionUserInfoAuthenticationIndexObjectIDKey: String { "authenticationIndex.objectID" }
+}
+
+extension ManagedObjectRecord where T: AuthenticationIndex {
+    var openNewWindowUserActivity: NSUserActivity {
+        let userActivity = NSUserActivity(activityType: UserActivity.openNewWindowActivityType)
+        userActivity.userInfo = [
+            UserActivity.sessionUserInfoAuthenticationIndexObjectIDKey: objectID.uriRepresentation()
+        ]
+        userActivity.targetContentIdentifier = "\(UserActivity.openNewWindowActivityType)-\(objectID)"
+        return userActivity
+    }
 }
 
 #if DEBUG

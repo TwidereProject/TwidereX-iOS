@@ -41,6 +41,9 @@ extension UserView {
         @Published public var username: String = ""
         
         @Published public var platform: Platform = .none
+        
+        @Published public var isMyself: Bool = false
+        
 //        @Published public var authenticationContext: AuthenticationContext?       // me
 //        @Published public var userAuthenticationContext: AuthenticationContext?
 //
@@ -113,6 +116,14 @@ extension UserView {
             default:
                 break
             }
+            
+            // isMyself
+            isMyself = {
+                guard let authContext = self.authContext,
+                      let user = self.user
+                else { return false }
+                return authContext.authenticationContext.userIdentifier == user.userIdentifer
+            }()
             
             // follow request
             switch notification {
@@ -227,6 +238,7 @@ extension UserView.ViewModel {
     }
     
     public enum MenuAction: Hashable {
+        case openInNewWindowForAccount
         case signOut
         case removeListMember
     }

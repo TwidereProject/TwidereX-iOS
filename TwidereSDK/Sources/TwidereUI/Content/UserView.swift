@@ -146,6 +146,18 @@ extension UserView {
         Menu {
             switch viewModel.kind {
             case .account:
+                // open in new window
+                if !viewModel.isMyself, UIApplication.shared.supportsMultipleScenes {
+                    Button {
+                        viewModel.delegate?.userView(viewModel, menuActionDidPressed: .openInNewWindowForAccount)
+                    } label: {
+                        Label {
+                            Text("Open in new window")
+                        } icon: {
+                            Image(systemName: "macwindow.badge.plus")
+                        }
+                    }
+                }
                 // sign out
                 Button(role: .destructive) {
                     viewModel.delegate?.userView(viewModel, menuActionDidPressed: .signOut)
