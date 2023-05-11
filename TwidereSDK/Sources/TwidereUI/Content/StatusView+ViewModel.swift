@@ -115,7 +115,12 @@ extension StatusView {
         public var isMediaContentWarningOverlayReveal: Bool {
             return isMediaSensitiveToggled ? isMediaSensitive : !isMediaSensitive
         }
-
+        public var isMediaContentWarningOverlayToggleButtonDisplay: Bool {
+            switch status {
+            case .twitter:      return isMediaSensitive
+            default:            return true
+            }
+        }
 
 //        @Published public var isRepost = false
 //        @Published public var isRepostEnabled = true

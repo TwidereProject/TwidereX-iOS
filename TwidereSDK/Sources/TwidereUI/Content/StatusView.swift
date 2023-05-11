@@ -160,12 +160,13 @@ public struct StatusView: View {
                                     viewModel.delegate?.statusView(viewModel, mediaViewModel: mediaViewModel, action: action)
                                 }
                             )
-                            // .clipShape(RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius))
                             .overlay {
-                                ContentWarningOverlayView(isReveal: viewModel.isMediaContentWarningOverlayReveal) {
-                                    viewModel.delegate?.statusView(viewModel, toggleContentWarningOverlayDisplay: !viewModel.isMediaContentWarningOverlayReveal)
+                                if viewModel.isMediaContentWarningOverlayToggleButtonDisplay {
+                                    ContentWarningOverlayView(isReveal: viewModel.isMediaContentWarningOverlayReveal) {
+                                        viewModel.delegate?.statusView(viewModel, toggleContentWarningOverlayDisplay: !viewModel.isMediaContentWarningOverlayReveal)
+                                    }
+                                    .cornerRadius(MediaGridContainerView.cornerRadius)
                                 }
-                                .cornerRadius(MediaGridContainerView.cornerRadius)
                             }
                         }
                         // poll
