@@ -19,7 +19,11 @@ final class TwitterPinBasedAuthenticationViewController: UIViewController, Needs
     var disposeBag = Set<AnyCancellable>()
     var viewModel: TwitterPinBasedAuthenticationViewModel!
     
-    let webView = WKWebView()
+    lazy var webView: WKWebView = {
+        let configuration = WKWebViewConfiguration()
+        configuration.websiteDataStore = .nonPersistent()
+        return WKWebView(frame: view.bounds, configuration: configuration)
+    }()
     
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)

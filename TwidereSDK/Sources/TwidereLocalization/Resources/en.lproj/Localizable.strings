@@ -322,6 +322,7 @@
 "Scene.Compose.Vote.PlaceholderIndex" = "Choice %d";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "Search hashtag";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "Search users";
+"Scene.Detail.Title" = "Detail";
 "Scene.Drafts.Actions.DeleteDraft" = "Delete draft";
 "Scene.Drafts.Actions.EditDraft" = "Edit draft";
 "Scene.Drafts.Title" = "Drafts";

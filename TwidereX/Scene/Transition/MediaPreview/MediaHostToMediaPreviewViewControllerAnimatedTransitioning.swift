@@ -187,7 +187,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         animator.addCompletion { position in
             if position == .end {
                 // reset appearance
-                self.transitionItem.source.updateAppearance(position: position, index: nil)
+                self.transitionItem.source.updateAppearance(position: position, index: fromVC.viewModel.currentPage)
             }
         }
         
@@ -244,44 +244,9 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
             }
             
             // calculate transition mask
-//            let maskLayerToRect: CGRect? = {
-//                guard case .attachments = transitionItem.source else { return nil }
-//                guard let navigationBar = toVC.navigationController?.navigationBar, let navigationBarSuperView = navigationBar.superview else { return nil }
-//                let navigationBarFrameInWindow = navigationBarSuperView.convert(navigationBar.frame, to: nil)
-//                
-//                // crop rect top edge
-//                var rect = transitionMaskView.frame
-//                let _toViewFrameInWindow = toVC.view.superview.flatMap { $0.convert(toVC.view.frame, to: nil) }
-//                if let toViewFrameInWindow = _toViewFrameInWindow, toViewFrameInWindow.minY > navigationBarFrameInWindow.maxY {
-//                    rect.origin.y = toViewFrameInWindow.minY
-//                } else {
-//                    rect.origin.y = navigationBarFrameInWindow.maxY + UIView.separatorLineHeight(of: toVC.view)     // extra hairline
-//                }
-//                
-//                return rect
-//            }()
-//            let maskLayerToPath = maskLayerToRect.flatMap { UIBezierPath(rect: $0) }?.cgPath
-//            let maskLayerToFinalRect: CGRect? = {
-//                guard case .attachments = transitionItem.source else { return nil }
-//                var rect = maskLayerToRect ?? transitionMaskView.frame
-//                // clip tabBar when bar visible
-//                guard let tabBarController = toVC.tabBarController,
-//                      !tabBarController.tabBar.isHidden,
-//                      let tabBarSuperView = tabBarController.tabBar.superview
-//                else { return rect }
-//                let tabBarFrameInWindow = tabBarSuperView.convert(tabBarController.tabBar.frame, to: nil)
-//                let offset = rect.maxY - tabBarFrameInWindow.minY
-//                guard offset > 0 else { return rect }
-//                rect.size.height -= offset
-//                return rect
-//            }()
-//            
-//            // FIXME:
-//            let maskLayerToFinalPath = maskLayerToFinalRect.flatMap { UIBezierPath(rect: $0) }?.cgPath
-//            
-//            if let maskLayerToPath = maskLayerToPath {
-//                maskLayer.path = maskLayerToPath
-//            }
+            if let path = createTransitionItemMaskLayerPath(transitionContext: transitionContext) {
+                transitionItem.interactiveTransitionMaskLayer?.path = path
+            }
         }
         
         mediaPreviewTransitionContext.transitionView.isHidden = true
@@ -413,60 +378,16 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         let velocity = convert(gestureVelocity, for: transitionItem)
         let itemAnimator = MediaHostToMediaPreviewViewControllerAnimatedTransitioning.animator(initialVelocity: velocity)
         
-        var maskLayerToFinalPath: CGPath?
-        if toPosition == .end,
-           let transitionMaskView = transitionItem.interactiveTransitionMaskView,
-           let snapshot = transitionItem.snapshotTransitioning {
-            let toVC = transitionItem.previewableViewController
-            
-            var needsMaskWithAnimation = true
-//            let maskLayerToRect: CGRect? = {
-//                guard case .attachments = transitionItem.source else { return nil }
-//                guard let navigationBar = toVC.navigationController?.navigationBar, let navigationBarSuperView = navigationBar.superview else { return nil }
-//                let navigationBarFrameInWindow = navigationBarSuperView.convert(navigationBar.frame, to: nil)
-//                
-//                // crop rect top edge
-//                var rect = transitionMaskView.frame
-//                let _toViewFrameInWindow = toVC.view.superview.flatMap { $0.convert(toVC.view.frame, to: nil) }
-//                if let toViewFrameInWindow = _toViewFrameInWindow, toViewFrameInWindow.minY > navigationBarFrameInWindow.maxY {
-//                    rect.origin.y = toViewFrameInWindow.minY
-//                } else {
-//                    rect.origin.y = navigationBarFrameInWindow.maxY + UIView.separatorLineHeight(of: toVC.view)     // extra hairline
-//                }
-//
-//                if rect.minY < snapshot.frame.minY {
-//                    needsMaskWithAnimation = false
-//                }
-//                
-//                return rect
-//            }()
-//            let maskLayerToPath = maskLayerToRect.flatMap { UIBezierPath(rect: $0) }?.cgPath
-//
-//            if let maskLayer = transitionItem.interactiveTransitionMaskLayer, !needsMaskWithAnimation {
-//                maskLayer.path = maskLayerToPath
-//            }
-//            
-//            let maskLayerToFinalRect: CGRect? = {
-//                guard case .attachments = transitionItem.source else { return nil }
-//                var rect = maskLayerToRect ?? transitionMaskView.frame
-//                // clip rect bottom when tabBar visible
-//                guard let tabBarController = toVC.tabBarController,
-//                      !tabBarController.tabBar.isHidden,
-//                      let tabBarSuperView = tabBarController.tabBar.superview
-//                else { return rect }
-//                let tabBarFrameInWindow = tabBarSuperView.convert(tabBarController.tabBar.frame, to: nil)
-//                let offset = rect.maxY - tabBarFrameInWindow.minY
-//                guard offset > 0 else { return rect }
-//                rect.size.height -= offset
-//                return rect
-//            }()
-//            maskLayerToFinalPath = maskLayerToFinalRect.flatMap { UIBezierPath(rect: $0) }?.cgPath
-        }
+        // create the mask path and apply it in the to .end animation
+        let maskLayerPath: CGPath? = {
+            guard toPosition == .end else { return nil }
+            let path = createTransitionItemMaskLayerPath(transitionContext: transitionContext)
+            return path
+        }()
 
         itemAnimator.addAnimations {
-            if let maskLayer = self.transitionItem.interactiveTransitionMaskLayer,
-               let maskLayerToFinalPath = maskLayerToFinalPath {
-                maskLayer.path = maskLayerToFinalPath
+            if let path = maskLayerPath {
+                self.transitionItem.interactiveTransitionMaskLayer?.path = path
             }
             if toPosition == .end {
                 switch self.transitionItem.source {
@@ -539,4 +460,67 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         transitionItem.touchOffset = scaledOffset
     }
     
+}
+
+extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
+    private func createTransitionItemMaskLayerPath(transitionContext: UIViewControllerContextTransitioning) -> CGPath? {
+        guard let interactiveTransitionMaskView = transitionItem.interactiveTransitionMaskView else { return nil }
+        guard let snapshotTransitioning = transitionItem.snapshotTransitioning else { return nil }
+        
+        switch transitionItem.source {
+        case .mediaView:        break
+        case .profileAvatar:    return nil
+        case .profileBanner:    return nil
+        case .none:             return nil
+        }
+        
+        // cutoff top navigation bar
+        let navigationBarCutoffMaskRect: CGRect? = {
+            let toVC = transitionItem.previewableViewController
+            guard let navigationBar = toVC.navigationController?.navigationBar,
+                  let navigationBarSuperView = navigationBar.superview
+            else { return nil }
+            let navigationBarFrameInWindow = navigationBarSuperView.convert(navigationBar.frame, to: nil)
+
+            var rect = interactiveTransitionMaskView.frame
+            let _toViewFrameInWindow = toVC.view.superview.flatMap { $0.convert(toVC.view.frame, to: nil) }
+            if let toViewFrameInWindow = _toViewFrameInWindow, toViewFrameInWindow.minY > navigationBarFrameInWindow.maxY {
+                rect.origin.y = toViewFrameInWindow.minY
+            } else {
+                rect.origin.y = navigationBarFrameInWindow.maxY + UIView.separatorLineHeight(of: toVC.view)     // extra hairline
+            }
+            
+            guard snapshotTransitioning.frame.minY > rect.minY else {
+                return nil
+            }
+            return rect
+        }()
+        
+        // cutoff tabBar when bar visible
+        let tabBarCutoffMaskRect: CGRect? = {
+            let toVC = transitionItem.previewableViewController
+            guard let tabBarController = toVC.tabBarController,
+                  !tabBarController.tabBar.isHidden,
+                  let tabBarSuperView = tabBarController.tabBar.superview
+            else { return nil }
+            let tabBarFrameInWindow = tabBarSuperView.convert(tabBarController.tabBar.frame, to: nil)
+
+            var rect = interactiveTransitionMaskView.frame
+            let offset = rect.maxY - tabBarFrameInWindow.minY
+            guard offset > 0 else { return nil }
+            rect.size.height -= offset
+            return rect
+        }()
+
+        var rect = interactiveTransitionMaskView.frame
+        let cutoffRects: [CGRect] = [
+            navigationBarCutoffMaskRect ?? interactiveTransitionMaskView.frame,
+            tabBarCutoffMaskRect ?? interactiveTransitionMaskView.frame
+        ]
+        for cutoffRect in cutoffRects {
+            rect = rect.intersection(cutoffRect)
+        }
+        
+        return UIBezierPath(rect: rect).cgPath
+    }
 }

@@ -25,6 +25,7 @@ public enum TextStyle {
     case statusTimestamp
     case statusLocation
     case statusContent
+    case statusTranslateButton
     case statusMetrics
     case userAuthorName
     case pollOptionTitle
@@ -73,6 +74,7 @@ extension TextStyle {
         case .statusTimestamp:              return 1
         case .statusLocation:               return 1
         case .statusContent:                return 0
+        case .statusTranslateButton:        return 1
         case .statusMetrics:                return 1
         case .pollOptionTitle:              return 1
         case .pollOptionPercentage:         return 1
@@ -116,6 +118,8 @@ extension TextStyle {
             return .preferredFont(forTextStyle: .caption1)
         case .statusContent:
             return .preferredFont(forTextStyle: .body)
+        case .statusTranslateButton:
+            return .preferredFont(forTextStyle: .headline)
         case .statusMetrics:
             return .preferredFont(forTextStyle: .footnote)
         case .pollOptionTitle:
@@ -181,6 +185,8 @@ extension TextStyle {
             return .secondaryLabel
         case .statusContent:
             return .label.withAlphaComponent(0.8)
+        case .statusTranslateButton:
+            return .tintColor
         case .statusMetrics:
             return .secondaryLabel
         case .userAuthorName:

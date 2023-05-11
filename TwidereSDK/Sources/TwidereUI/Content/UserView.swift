@@ -18,8 +18,7 @@ import Kingfisher
 public protocol UserViewDelegate: AnyObject {
     func userView(_ viewModel: UserView.ViewModel, userAvatarButtonDidPressed user: UserRecord)
     func userView(_ viewModel: UserView.ViewModel, menuActionDidPressed action: UserView.ViewModel.MenuAction)
-//    func userView(_ userView: UserView, friendshipButtonDidPressed button: UIButton)
-//    func userView(_ userView: UserView, membershipButtonDidPressed button: UIButton)
+    func userView(_ viewModel: UserView.ViewModel, listMembershipButtonDidPressed user: UserRecord)
     func userView(_ viewModel: UserView.ViewModel, followReqeustButtonDidPressed user: UserRecord, accept: Bool)
 }
 
@@ -72,8 +71,37 @@ extension UserView {
     
     var avatarButton: some View {
         Button {
-            viewModel.delegate?.userView(viewModel, userAvatarButtonDidPressed: viewModel.user.asRecord)
+            guard let user = viewModel.user?.asRecord else {
+                assertionFailure()
+                return
+            }
+            viewModel.delegate?.userView(viewModel, userAvatarButtonDidPressed: user)
         } label: {
+            switch viewModel.kind {
+            case .account:
+                BadgeClipContainer {
+                    avatarButtonContentView
+                } badge: {
+                    switch viewModel.platform {
+                    case .none:
+                        EmptyView()
+                    case .twitter:
+                        Image(uiImage: Asset.Badge.circleTwitter.image)
+                    case .mastodon:
+                        Image(uiImage: Asset.Badge.circleMastodon.image)
+                    }
+                }
+
+            default:
+                avatarButtonContentView
+            }
+        }
+        .buttonStyle(.borderless)
+        .allowsHitTesting(allowsAvatarButtonHitTesting)
+    }
+    
+    var avatarButtonContentView: some View {
+        Group {
             let dimension: CGFloat = StatusView.hangingAvatarButtonDimension
             KFImage(viewModel.avatarURL)
                 .placeholder { progress in
@@ -85,8 +113,6 @@ extension UserView {
                 .clipShape(AvatarClipShape(avatarStyle: viewModel.avatarStyle))
                 .animation(.easeInOut, value: viewModel.avatarStyle)
         }
-        .buttonStyle(.borderless)
-        .allowsHitTesting(allowsAvatarButtonHitTesting)
     }
     
     var nameLabel: some View {
@@ -120,6 +146,18 @@ extension UserView {
         Menu {
             switch viewModel.kind {
             case .account:
+                // open in new window
+                if !viewModel.isMyself, UIApplication.shared.supportsMultipleScenes {
+                    Button {
+                        viewModel.delegate?.userView(viewModel, menuActionDidPressed: .openInNewWindowForAccount)
+                    } label: {
+                        Label {
+                            Text("Open in new window")
+                        } icon: {
+                            Image(systemName: "macwindow.badge.plus")
+                        }
+                    }
+                }
                 // sign out
                 Button(role: .destructive) {
                     viewModel.delegate?.userView(viewModel, menuActionDidPressed: .signOut)
@@ -130,7 +168,17 @@ extension UserView {
                         Image(systemName: "person.crop.circle.badge.minus")
                     }
                 }
-
+            case .listMember:
+                // remove
+                Button(role: .destructive) {
+                    viewModel.delegate?.userView(viewModel, menuActionDidPressed: .removeListMember)
+                } label: {
+                    Label {
+                        Text(L10n.Common.Controls.Actions.remove)
+                    } icon: {
+                        Image(systemName: "minus.circle")
+                    }
+                }
             default:
                 EmptyView()
             }
@@ -142,10 +190,24 @@ extension UserView {
     
     var membershipButton: some View {
         Button {
-//            switch
+            guard !viewModel.isListMemberCandidate else { return }
+            guard let user = viewModel.user?.asRecord else { return }
+            viewModel.delegate?.userView(viewModel, listMembershipButtonDidPressed: user)
         } label: {
-//            let systemName =
-//            Image(systemName: "ellipsis.circle")
+            let tintColor = viewModel.isListMember ? UIColor.systemRed : Asset.Colors.hightLight.color
+            let systemName = viewModel.isListMember ? "minus.circle" : "plus.circle"
+            Image(systemName: systemName)
+                .foregroundColor(Color(uiColor: tintColor))
+                .padding()
+                .opacity(viewModel.isListMemberCandidate ? 0 : 1)
+                .overlay {
+                    Group {
+                        if viewModel.isListMemberCandidate {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                        }
+                    }
+                }   // end overlay
         }
     }
     
@@ -153,14 +215,22 @@ extension UserView {
         HStack(spacing: .zero) {
             Button {
                 guard !viewModel.isFollowRequestBusy else { return }
-                viewModel.delegate?.userView(viewModel, followReqeustButtonDidPressed: viewModel.user.asRecord, accept: true)
+                guard let user = viewModel.user?.asRecord else {
+                    assertionFailure()
+                    return
+                }
+                viewModel.delegate?.userView(viewModel, followReqeustButtonDidPressed: user, accept: true)
             } label: {
                 Image(uiImage: Asset.Indices.checkmarkCircle.image.withRenderingMode(.alwaysTemplate))
                     .padding()
             }
             Button {
                 guard !viewModel.isFollowRequestBusy else { return }
-                viewModel.delegate?.userView(viewModel, followReqeustButtonDidPressed: viewModel.user.asRecord, accept: false)
+                guard let user = viewModel.user?.asRecord else {
+                    assertionFailure()
+                    return
+                }
+                viewModel.delegate?.userView(viewModel, followReqeustButtonDidPressed: user, accept: false)
             } label: {
                 Image(uiImage: Asset.Indices.xmarkCircle.image.withRenderingMode(.alwaysTemplate))
                     .padding()
@@ -173,6 +243,13 @@ extension UserView {
                 ProgressView()
                     .progressViewStyle(.circular)
             }
+        }
+    }
+    
+    var notificationBadgeCountView: some View {
+        Group {
+            let count = max(0, min(viewModel.notificationBadgeCount, 50))
+            Image(systemName: "\(count).circle.fill")
         }
     }
 }
@@ -236,7 +313,12 @@ extension UserView {
         Group {
             switch viewModel.kind {
             case .account:
-                menuView
+                HStack {
+                    if viewModel.notificationBadgeCount > 0 {
+                        notificationBadgeCountView
+                    }
+                    menuView
+                }
             case .search:
                 // TODO: follow button
                 EmptyView()
@@ -251,9 +333,11 @@ extension UserView {
             case .mentionPick:
                 EmptyView()
             case .listMember:
-                EmptyView()
+                if viewModel.isMyList {
+                    menuView
+                }
             case .addListMember:
-                EmptyView()
+                membershipButton
             case .settingAccountSection:
                 Image(systemName: "chevron.right")
                     .foregroundColor(Color(.secondaryLabel))
@@ -367,14 +451,6 @@ extension UserView {
 //        let button = HitTestExpandedButton()
 //        button.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
 //        button.tintColor = Asset.Colors.hightLight.color
-//        return button
-//    }()
-//
-//    // add/remove control
-//    public let membershipButton: HitTestExpandedButton = {
-//        let button = HitTestExpandedButton()
-//        button.setImage(UIImage(systemName: "plus.circle"), for: .normal)
-//        button.tintColor = Asset.Colors.hightLight.color    // FIXME: tint color
 //        return button
 //    }()
 //
@@ -779,54 +855,36 @@ extension UserView {
 
 
 #if DEBUG
-import SwiftUI
+import CoreData
+import CoreDataStack
+
 struct UserView_Preview: PreviewProvider {
+    
+    static var kinds: [UserView.ViewModel.Kind] = [
+        .account,
+        .search,
+        .friend,
+        .history,
+        // .notification,
+        .mentionPick,
+        // .listMember,
+        // .addListMember,
+        .settingAccountSection,
+        .plain
+    ]
+    
     static var previews: some View {
-        EmptyView()
-//        Group {
-//            UIViewPreview {
-//                let userView = UserView()
-//                userView.setup(style: .account)
-//                return userView
-//            }
-//            .previewLayout(.fixed(width: 375, height: 48))
-//        .previewDisplayName("Account")
-//            UIViewPreview {
-//                let userView = UserView()
-//                userView.setup(style: .relationship)
-//                return userView
-//            }
-//            .previewLayout(.fixed(width: 375, height: 48))
-//            .previewDisplayName("Relationship")
-//            UIViewPreview {
-//                let userView = UserView()
-//                userView.setup(style: .friendship)
-//                return userView
-//            }
-//            .previewLayout(.fixed(width: 375, height: 48))
-//            .previewDisplayName("Friendship")
-//            UIViewPreview {
-//                let userView = UserView()
-//                userView.setup(style: .notification)
-//                return userView
-//            }
-//            .previewLayout(.fixed(width: 375, height: 48))
-//            .previewDisplayName("Notification")
-//            UIViewPreview {
-//                let userView = UserView()
-//                userView.setup(style: .mentionPick)
-//                return userView
-//            }
-//            .previewLayout(.fixed(width: 375, height: 48))
-//            .previewDisplayName("MentionPick")
-//            UIViewPreview {
-//                let userView = UserView()
-//                userView.setup(style: .addListMember)
-//                return userView
-//            }
-//            .previewLayout(.fixed(width: 375, height: 48))
-//            .previewDisplayName("AddListMember")
-//        }
+        List {
+            ForEach(kinds, id: \.self) { kind in
+                Section(content: {
+                    UserView(viewModel: .init(kind: kind))
+                        .padding(.horizontal)
+                }, header: {
+                    Text("\(String(describing: kind).localizedCapitalized)")
+                })
+                .textCase(nil)
+            }
+        }
     }
 }
 #endif

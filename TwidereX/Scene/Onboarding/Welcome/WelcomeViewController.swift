@@ -202,7 +202,7 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
             .sink { [weak self] authenticationSession in
                 guard let self = self else { return }
                 guard let authenticationSession = authenticationSession else { return }
-                authenticationSession.prefersEphemeralWebBrowserSession = false
+                authenticationSession.prefersEphemeralWebBrowserSession = true
                 authenticationSession.presentationContextProvider = self
                 authenticationSession.start()
             }

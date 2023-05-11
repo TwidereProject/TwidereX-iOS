@@ -322,6 +322,7 @@
 "Scene.Compose.Vote.PlaceholderIndex" = "Opción %d";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "Buscar cancelo";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "Buscar usuarias";
+"Scene.Detail.Title" = "Detail";
 "Scene.Drafts.Actions.DeleteDraft" = "Eliminar borrador";
 "Scene.Drafts.Actions.EditDraft" = "Editar borrador";
 "Scene.Drafts.Title" = "Borradores";

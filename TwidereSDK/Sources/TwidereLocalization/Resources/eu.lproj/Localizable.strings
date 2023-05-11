@@ -322,6 +322,7 @@
 "Scene.Compose.Vote.PlaceholderIndex" = "%d aukera";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "Bilatu traola";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "Erabiltzaileak bilatu";
+"Scene.Detail.Title" = "Detail";
 "Scene.Drafts.Actions.DeleteDraft" = "Ezabatu zirriborroa";
 "Scene.Drafts.Actions.EditDraft" = "Editatu zirriborroa";
 "Scene.Drafts.Title" = "Zirriborroak";

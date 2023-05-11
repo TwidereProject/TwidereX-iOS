@@ -1043,6 +1043,10 @@ public enum L10n {
       /// Search users
       public static let searchPlaceholder = L10n.tr("Localizable", "Scene.ComposeUserSearch.SearchPlaceholder", fallback: "Search users")
     }
+    public enum Detail {
+      /// Detail
+      public static let title = L10n.tr("Localizable", "Scene.Detail.Title", fallback: "Detail")
+    }
     public enum Drafts {
       /// Drafts
       public static let title = L10n.tr("Localizable", "Scene.Drafts.Title", fallback: "Drafts")

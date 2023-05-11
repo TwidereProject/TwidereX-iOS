@@ -322,6 +322,7 @@
 "Scene.Compose.Vote.PlaceholderIndex" = "اختر %d";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "ابحث عن وسم";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "ابحث عن مستخدم";
+"Scene.Detail.Title" = "Detail";
 "Scene.Drafts.Actions.DeleteDraft" = "احذف المسودة";
 "Scene.Drafts.Actions.EditDraft" = "عدّل المسودة";
 "Scene.Drafts.Title" = "المسودات";

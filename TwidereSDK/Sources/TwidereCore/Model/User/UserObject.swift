@@ -47,6 +47,19 @@ extension UserObject {
         }
     }
     
+    public var authenticationIndex: AuthenticationIndex? {
+        switch self {
+        case .twitter(let object):
+            return object.twitterAuthentication.flatMap {
+                $0.authenticationIndex
+            }
+        case .mastodon(let object):
+            return object.mastodonAuthentication.flatMap {
+                $0.authenticationIndex
+            }
+        }
+    }
+    
     public var notifications: Set<MastodonNotification> {
         switch self {
         case .twitter:

@@ -266,8 +266,8 @@ extension DataSourceFacade {
         try await managedObjectContext.performChanges {
             guard let object = status.object(in: managedObjectContext) else { return }
             switch object {
-            case .twitter:
-                break
+            case .twitter(let status):
+                status.update(isMediaSensitiveToggled: !status.isMediaSensitiveToggled)
             case .mastodon(let status):
                 status.update(isMediaSensitiveToggled: !status.isMediaSensitiveToggled)
             }

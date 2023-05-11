@@ -127,7 +127,6 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
 
 // MARK: - media
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController {
-
     @MainActor
     func tableViewCell(
         _ cell: UITableViewCell,
@@ -158,26 +157,6 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
             )
         }   // end Task
     }
-
-    
-//    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView) {
-//        Task {
-//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-//            guard let item = await item(from: source) else {
-//                assertionFailure()
-//                return
-//            }
-//            guard let status = await item.status(in: self.context.managedObjectContext) else {
-//                assertionFailure("only works for status data provider")
-//                return
-//            }
-//            try await DataSourceFacade.responseToToggleMediaSensitiveAction(
-//                provider: self,
-//                target: .status,
-//                status: status
-//            )
-//        }
-//    }
 }
 
 // MARK: - poll
@@ -275,24 +254,19 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
 
 // MARK: - quote
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
-//    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView) {
-//        Task {
-//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-//            guard let item = await item(from: source) else {
-//                return
-//            }
-//            guard let status = await item.status(in: self.context.managedObjectContext) else {
-//                assertionFailure("only works for status data provider")
-//                return
-//            }
-//
-//            await DataSourceFacade.coordinateToStatusThreadScene(
-//                provider: self,
-//                target: .quote,
-//                status: status
-//            )
-//        }
-//    }
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        viewModel: StatusView.ViewModel,
+        quoteStatusViewDidPressed quoteViewModel: StatusView.ViewModel
+    ) {
+        guard let status = quoteViewModel.status?.asRecord else { return }
+        Task {
+            await DataSourceFacade.coordinateToStatusThreadScene(
+                provider: self,
+                kind: .status(status)
+            )
+        }   // end Task
+    }
 }
 
 // MARK: - metric

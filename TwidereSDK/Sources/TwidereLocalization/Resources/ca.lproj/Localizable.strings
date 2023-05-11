@@ -322,6 +322,7 @@
 "Scene.Compose.Vote.PlaceholderIndex" = "Elecció d";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "Cerca etiquetes";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "Cerca usuaris";
+"Scene.Detail.Title" = "Detail";
 "Scene.Drafts.Actions.DeleteDraft" = "Suprimeix l'esborrany";
 "Scene.Drafts.Actions.EditDraft" = "Edita l'esborrany";
 "Scene.Drafts.Title" = "Esborranys";

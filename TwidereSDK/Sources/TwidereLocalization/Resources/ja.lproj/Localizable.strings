@@ -322,6 +322,7 @@
 "Scene.Compose.Vote.PlaceholderIndex" = "選択肢 %d";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "ハッシュタグを検索";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "ユーザーを検索";
+"Scene.Detail.Title" = "Detail";
 "Scene.Drafts.Actions.DeleteDraft" = "下書きを削除";
 "Scene.Drafts.Actions.EditDraft" = "下書きを編集";
 "Scene.Drafts.Title" = "下書き";

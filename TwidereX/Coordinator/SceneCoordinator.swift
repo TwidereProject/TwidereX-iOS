@@ -22,6 +22,8 @@ final public class SceneCoordinator {
     private(set) weak var sceneDelegate: SceneDelegate!
     private(set) weak var context: AppContext!
     
+    private(set) var authContext: AuthContext?
+    
     let id = UUID().uuidString
     
     // output
@@ -147,8 +149,11 @@ extension SceneCoordinator {
                         transition: .modal(animated: false)
                     )                                                                       // entry #1: Welcome
                 }
+                self.authContext = nil
                 return
             }
+            
+            self.authContext = authContext
         
             switch UIDevice.current.userInterfaceIdiom {
             case .phone:
@@ -169,6 +174,7 @@ extension SceneCoordinator {
             
         } catch {
             assertionFailure(error.localizedDescription)
+            self.authContext = nil
             Task {
                 try? await Task.sleep(nanoseconds: .second * 2)
                 setup()                                                                     // entry #3: retry

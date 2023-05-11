@@ -94,8 +94,6 @@ extension StatusFetchViewModel.Timeline.Home {
     public static func fetch(api: APIService, input: Input) async throws -> StatusFetchViewModel.Timeline.Output {
         switch input {
         case .twitter(let fetchContext):
-            throw AppError.implicit(.badRequest)
-            
             let responses = try await api.twitterHomeTimeline(
                 query: .init(
                     sinceID: fetchContext.sinceID,

@@ -24,9 +24,13 @@ extension MediaPreviewableViewController {
                 height: 44
             )
             return frame
-        case .mediaView(let mediaViewModel):
-            guard mediaViewModel.frameInWindow != .zero else { return nil }
-            return mediaViewModel.frameInWindow
+        case .mediaView(let mediaViewModel, let viewModels):
+            guard let _viewModel = viewModels[safe: index] else {
+                guard mediaViewModel.frameInWindow != .zero else { return nil }
+                return mediaViewModel.frameInWindow
+            }
+            guard _viewModel.frameInWindow != .zero else { return nil }
+            return _viewModel.frameInWindow
         case .profileAvatar:
             return nil      // TODO:
         case .profileBanner:

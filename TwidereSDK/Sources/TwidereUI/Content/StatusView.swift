@@ -36,7 +36,10 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ viewModel: StatusView.ViewModel, pollVoteActionForViewModel pollViewModel: PollView.ViewModel)
     func statusView(_ viewModel: StatusView.ViewModel, pollUpdateIfNeedsForViewModel pollViewModel: PollView.ViewModel)
     func statusView(_ viewModel: StatusView.ViewModel, pollViewModel: PollView.ViewModel, pollOptionDidSelectForViewModel optionViewModel: PollOptionView.ViewModel)
-
+    
+    // repost
+    func statusView(_ viewModel: StatusView.ViewModel, quoteStatusViewDidPressed quoteViewModel: StatusView.ViewModel)
+    
     // metric
     func statusView(_ viewModel: StatusView.ViewModel, statusMetricViewModel: StatusMetricView.ViewModel, statusMetricButtonDidPressed action: StatusMetricView.Action)
 
@@ -142,6 +145,10 @@ public struct StatusView: View {
                         // content
                         if viewModel.isContentReveal {
                             contentView
+                            
+                            if viewModel.isTranslateButtonDisplay {
+                                translateButton
+                            }
                         }
                         // media
                         if !viewModel.mediaViewModels.isEmpty {
@@ -153,12 +160,13 @@ public struct StatusView: View {
                                     viewModel.delegate?.statusView(viewModel, mediaViewModel: mediaViewModel, action: action)
                                 }
                             )
-                            // .clipShape(RoundedRectangle(cornerRadius: MediaGridContainerView.cornerRadius))
                             .overlay {
-                                ContentWarningOverlayView(isReveal: viewModel.isMediaContentWarningOverlayReveal) {
-                                    viewModel.delegate?.statusView(viewModel, toggleContentWarningOverlayDisplay: !viewModel.isMediaContentWarningOverlayReveal)
+                                if viewModel.isMediaContentWarningOverlayToggleButtonDisplay {
+                                    ContentWarningOverlayView(isReveal: viewModel.isMediaContentWarningOverlayReveal) {
+                                        viewModel.delegate?.statusView(viewModel, toggleContentWarningOverlayDisplay: !viewModel.isMediaContentWarningOverlayReveal)
+                                    }
+                                    .cornerRadius(MediaGridContainerView.cornerRadius)
                                 }
-                                .cornerRadius(MediaGridContainerView.cornerRadius)
                             }
                         }
                         // poll
@@ -182,6 +190,9 @@ public struct StatusView: View {
                                     Color(uiColor: .label.withAlphaComponent(0.04))
                                 }
                                 .cornerRadius(12)
+                                .onTapGesture {
+                                    viewModel.delegate?.statusView(viewModel, quoteStatusViewDidPressed: quoteViewModel)
+                                }
                         }
                         // location (inline)
                         if let location = viewModel.location {
@@ -417,6 +428,20 @@ extension StatusView {
                 }
             )
             .frame(width: viewModel.contentWidth)
+        }
+    }
+    
+    var translateButton: some View {
+        Button {
+            viewModel.delegate?.statusView(viewModel, statusToolbarViewModel: viewModel.toolbarViewModel, statusToolbarButtonDidPressed: .translate)
+        } label: {
+            HStack {
+                Text(L10n.Common.Controls.Status.Actions.translate)
+                    .font(Font(TextStyle.statusTranslateButton.font))
+                    .foregroundColor(Color(uiColor: TextStyle.statusTranslateButton.textColor))
+                Spacer()
+            }
+            .padding(.vertical)
         }
     }
     

@@ -55,7 +55,7 @@ extension SearchUserViewModel {
                             case .search:
                                 return .user(record: record, kind: .search)
                             case .listMember:
-                                return .user(record: record, kind: .addListMember)
+                                return .user(record: record, kind: .addListMember(self.listMembershipViewModel))
                             }   // end switch
                         }
                         snapshot.appendItems(newItems, toSection: .main)

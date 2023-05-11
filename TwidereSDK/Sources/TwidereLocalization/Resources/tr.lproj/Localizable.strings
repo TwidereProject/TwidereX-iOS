@@ -322,6 +322,7 @@
 "Scene.Compose.Vote.PlaceholderIndex" = "Seçim %d";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "Hashtag ara";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "Kullanıcıları ara";
+"Scene.Detail.Title" = "Detail";
 "Scene.Drafts.Actions.DeleteDraft" = "Taslağı sil";
 "Scene.Drafts.Actions.EditDraft" = "Taslağı düzenle";
 "Scene.Drafts.Title" = "Taslaklar";
