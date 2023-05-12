@@ -209,28 +209,50 @@ public struct StatusView: View {
                         // metric
                         if let metricViewModel = viewModel.metricViewModel {
                             StatusMetricView(viewModel: metricViewModel) { action in
-
+                                // TODO:
                             }
                             .padding(.vertical, 8)
                         }
                         // toolbar
                         if viewModel.hasToolbar {
-                            toolbarView
-                                .overlay(alignment: .top) {
-                                    switch viewModel.kind {
-                                    case .conversationRoot:
-                                        VStack(spacing: .zero) {
-                                            Color.clear
-                                                .frame(height: 1)
-                                            Divider()
-                                                .frame(width: viewModel.viewLayoutFrame.safeAreaLayoutFrame.width)
-                                                .fixedSize()
-                                            Spacer()
+                            VStack(spacing: .zero) {
+                                toolbarView
+                                    .overlay(alignment: .top) {
+                                        switch viewModel.kind {
+                                        case .conversationRoot:
+                                            // toolbar top divider
+                                            VStack(spacing: .zero) {
+                                                Color.clear
+                                                    .frame(height: 1)
+                                                Divider()
+                                                    .frame(width: viewModel.viewLayoutFrame.safeAreaLayoutFrame.width)
+                                                    .fixedSize()
+                                                Spacer()
+                                            }
+                                        default:
+                                            EmptyView()
                                         }
-                                    default:
-                                        EmptyView()
+                                    }
+                                if viewModel.kind == .conversationRoot,
+                                   let replySettingBannerViewModel = viewModel.replySettingBannerViewModel,
+                                   !replySettingBannerViewModel.shouldHidden
+                                {
+                                    HStack {
+                                        ReplySettingBannerView(viewModel: replySettingBannerViewModel)
+                                        Spacer()
+                                    }
+                                    .background {
+                                        Color(uiColor: Asset.Colors.hightLight.color.withAlphaComponent(0.6))
+                                            .frame(width: viewModel.viewLayoutFrame.safeAreaLayoutFrame.width)
+                                            .overlay(alignment: .top) {
+                                                // reply settings banner top divider
+                                                VStack(spacing: .zero) {
+                                                    Divider()
+                                                }
+                                            }
                                     }
                                 }
+                            }   // end VStack
                         }
                     }   // end VStack
                     .padding(.top, viewModel.margin)                                    // container margin
@@ -247,13 +269,12 @@ public struct StatusView: View {
                                     .frame(height: 1)
                             }
                         case .conversationRoot:
+                            // cell bottom divider
                             VStack(spacing: .zero) {
                                 Spacer()
                                 Divider()
                                     .frame(width: viewModel.viewLayoutFrame.safeAreaLayoutFrame.width)
                                     .fixedSize()
-                                Color.clear
-                                    .frame(height: 1)
                             }
                         default:
                             EmptyView()
@@ -314,7 +335,7 @@ extension StatusView {
                     }
                 }()
                 nameLayout {
-                    HStack {
+                    HStack(spacing: 4) {
                         // name
                         LabelRepresentable(
                             metaContent: viewModel.authorName,
