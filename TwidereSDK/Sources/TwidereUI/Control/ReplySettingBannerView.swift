@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 import TwitterSDK
 import TwidereAsset
 import TwidereLocalization
