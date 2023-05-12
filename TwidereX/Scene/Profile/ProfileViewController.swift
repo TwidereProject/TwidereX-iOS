@@ -57,6 +57,7 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
             authContext: authContext,
             coordinator: coordinator,
             displayLikeTimeline: viewModel.displayLikeTimeline,
+            protected: viewModel.$protected,
             userIdentifier: viewModel.$userIdentifier
         )
         return profilePagingViewController

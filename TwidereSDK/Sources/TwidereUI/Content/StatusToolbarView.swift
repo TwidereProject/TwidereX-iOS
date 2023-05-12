@@ -68,9 +68,9 @@ extension StatusToolbarView {
             image: {
                 switch viewModel.style {
                 case .inline:
-                    return Asset.Arrows.arrowTurnUpLeftMini.image.withRenderingMode(.alwaysTemplate)
+                    return Asset.Communication.textBubbleMini.image.withRenderingMode(.alwaysTemplate)
                 case .plain:
-                    return Asset.Arrows.arrowTurnUpLeft.image.withRenderingMode(.alwaysTemplate)
+                    return Asset.Communication.textBubble.image.withRenderingMode(.alwaysTemplate)
                 }
             }(),
             count: isMetricCountDisplay ? viewModel.replyCount : nil,
@@ -78,50 +78,99 @@ extension StatusToolbarView {
         )
     }
     
+    enum RepostButtonImage {
+        case repost
+        case repostOff
+        case repostLock
+        
+        func image(style: StatusToolbarView.Style) -> UIImage {
+            switch self {
+            case .repost:
+                switch style {
+                case .inline:   return Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain:    return Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
+                }
+            case .repostOff:
+                switch style {
+                case .inline:   return Asset.Media.repeatOffMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain:    return Asset.Media.repeatOff.image.withRenderingMode(.alwaysTemplate)
+                }
+            case .repostLock:
+                switch style {
+                case .inline:   return Asset.Media.repeatLockMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain:    return Asset.Media.repeatLock.image.withRenderingMode(.alwaysTemplate)
+                }
+            }   // end switch
+        }   // end func
+        
+        static func kind(
+            platform: Platform,
+            isReposeRestricted: Bool,
+            isMyself: Bool
+        ) -> Self {
+            switch platform {
+            case .twitter:
+                if isMyself { return .repost }
+                if isReposeRestricted { return .repostOff }
+                return .repost
+            case .mastodon:
+                if isReposeRestricted {
+                    return isMyself ? .repostLock : .repostOff
+                }
+                return .repost
+            case .none:
+                return .repost
+            }   // end switch
+        }
+    }
+    
     public var repostButton: some View {
         ToolbarButton(
             handler: { action in
+                guard viewModel.isRepostable else { return }
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): repost")
                 handler(action)
             },
             action: .repost,
             image: {
-                switch viewModel.style {
-                case .inline:
-                    return Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate)
-                case .plain:
-                    return Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
-                }
+                return RepostButtonImage.kind(
+                    platform: viewModel.platform,
+                    isReposeRestricted: viewModel.isReposeRestricted,
+                    isMyself: viewModel.isMyself
+                ).image(style: viewModel.style)
             }(),
             count: isMetricCountDisplay ? viewModel.repostCount : nil,
             tintColor: viewModel.isReposted ? Asset.Scene.Status.Toolbar.repost.color : nil
         )
+        .opacity(viewModel.isRepostable ? 1 : 0.5)
     }
     
     public var repostMenu: some View {
         Menu {
-            // repost
-            Button {
-                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): repost")
-                handler(.repost)
-            } label: {
-                Label {
-                    let text = viewModel.isReposted ? L10n.Common.Controls.Status.Actions.undoRetweet : L10n.Common.Controls.Status.Actions.retweet
-                    Text(text)
-                } icon: {
-                    let image = viewModel.isReposted ? Asset.Media.repeatOff.image.withRenderingMode(.alwaysTemplate) : Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
-                    Image(uiImage: image)
+            if viewModel.isRepostable {
+                // repost
+                Button {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): repost")
+                    handler(.repost)
+                } label: {
+                    Label {
+                        let text = viewModel.isReposted ? L10n.Common.Controls.Status.Actions.undoRetweet : L10n.Common.Controls.Status.Actions.retweet
+                        Text(text)
+                    } icon: {
+                        let image = viewModel.isReposted ? Asset.Media.repeatOff.image.withRenderingMode(.alwaysTemplate) : Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
+                        Image(uiImage: image)
+                    }
                 }
-            }
-            // quote
-            Button {
-                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): quote")
-                handler(.quote)
-            } label: {
-                Label {
-                    Text(L10n.Common.Controls.Status.Actions.quote)
-                } icon: {
-                    Image(uiImage: Asset.TextFormatting.textQuote.image.withRenderingMode(.alwaysTemplate))
+                // quote
+                Button {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): quote")
+                    handler(.quote)
+                } label: {
+                    Label {
+                        Text(L10n.Common.Controls.Status.Actions.quote)
+                    } icon: {
+                        Image(uiImage: Asset.TextFormatting.textQuote.image.withRenderingMode(.alwaysTemplate))
+                    }
                 }
             }
         } label: {
@@ -190,12 +239,20 @@ extension StatusToolbarView {
         // input
         @Published var platform: Platform = .none
         @Published var style: Style = .inline
+        
         @Published var replyCount: Int?
         @Published var repostCount: Int?
         @Published var likeCount: Int?
         
         @Published var isReposted: Bool = false
         @Published var isLiked: Bool = false
+        
+        @Published var isReposeRestricted: Bool = false
+        @Published var isMyself: Bool = false
+        
+        var isRepostable: Bool {
+            return isMyself || !isReposeRestricted
+        }
         
         public init() {
             // end init
@@ -208,6 +265,7 @@ extension StatusToolbarView {
         case inline
         case plain
     }
+
     public enum Action: Hashable, CaseIterable {
         case reply
         case repost

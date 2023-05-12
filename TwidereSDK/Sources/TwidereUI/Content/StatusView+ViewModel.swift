@@ -55,20 +55,22 @@ extension StatusView {
         
         @Published public var authorName: MetaContent = PlaintextMetaContent(string: "")
         @Published public var authorUsernme = ""
-        @Published public var authorUserIdentifier: UserIdentifier?
-        
+        public let authorUserIdentifier: UserIdentifier?
+
+        @Published public var protected: Bool = false
+        public let isMyself: Bool
+
 //        static let pollOptionOrdinalNumberFormatter: NumberFormatter = {
 //            let formatter = NumberFormatter()
 //            formatter.numberStyle = .ordinal
 //            return formatter
 //        }()
 //
-//        @Published public var userIdentifier: UserIdentifier?
 //        @Published public var authorAvatarImage: UIImage?
 //        @Published public var authorAvatarImageURL: URL?
 //        @Published public var authorUsername: String?
 //        
-//        @Published public var protected: Bool = false
+        
 
         // content
         @Published public var spoilerContent: MetaContent?
@@ -121,9 +123,6 @@ extension StatusView {
             default:            return true
             }
         }
-
-//        @Published public var isRepost = false
-//        @Published public var isRepostEnabled = true
         
         // poll
         @Published public var pollViewModel: PollView.ViewModel?
@@ -147,9 +146,7 @@ extension StatusView {
                 return nil
             }
         }
-//        @Published public var replySettings: Twitter.Entity.V2.Tweet.ReplySettings?
 
-//////
 //        @Published public var groupedAccessibilityLabel = ""
 
         // timestamp
@@ -168,6 +165,9 @@ extension StatusView {
             guard let authorUserIdentifier = self.authorUserIdentifier else { return false }
             return authContext.authenticationContext.userIdentifier == authorUserIdentifier
         }
+        
+        // reply settings banner
+        @Published public var replySettingBannerViewModel: ReplySettingBannerView.ViewModel?
 
         // conversation link
         @Published public var isTopConversationLinkLineViewDisplay = false
@@ -186,22 +186,23 @@ extension StatusView {
             self.authContext = authContext
             self.kind = kind
             self.delegate = delegate
+            let _authorUserIdentifier: UserIdentifier = {
+                switch author {
+                case .twitter(let author):
+                    return .twitter(.init(id: author.id))
+                case .mastodon(let author):
+                    return .mastodon(.init(domain: author.domain, id: author.id))
+                }
+            }()
+            self.authorUserIdentifier = _authorUserIdentifier
+            self.isMyself = {
+                guard let myUserIdentifier = authContext?.authenticationContext.userIdentifier else { return false }
+                return myUserIdentifier == _authorUserIdentifier
+            }()
             // end init
             
             viewLayoutFramePublisher?.assign(to: &$viewLayoutFrame)
             
-//            // isMyself
-//            Publishers.CombineLatest(
-//                $authenticationContext,
-//                $userIdentifier
-//            )
-//            .map { authenticationContext, userIdentifier in
-//                guard let authenticationContext = authenticationContext,
-//                      let userIdentifier = userIdentifier
-//                else { return false }
-//                return authenticationContext.userIdentifier == userIdentifier
-//            }
-//            .assign(to: &$isMyself)
 //            // isContentSensitive
 //            Publishers.CombineLatest(
 //                $platform,
@@ -271,6 +272,8 @@ extension StatusView {
             self.author = nil
             self.authContext = nil
             self.kind = .timeline
+            self.authorUserIdentifier = nil
+            self.isMyself = false
             // end init
             
             viewLayoutFramePublisher?.assign(to: &$viewLayoutFrame)
@@ -1095,6 +1098,16 @@ extension StatusView.ViewModel {
                 viewLayoutFramePublisher: viewLayoutFramePublisher
             )
         }
+        
+        // reply settings
+        replySettingBannerViewModel = status.replySettings
+            .flatMap { object in Twitter.Entity.V2.Tweet.ReplySettings(rawValue: object.value) }
+            .flatMap { replaySettings in
+                ReplySettingBannerView.ViewModel(
+                    replaySettings: replaySettings,
+                    authorUsername: status.author.username
+                )
+            }
 
         // author
         status.author.publisher(for: \.profileImageURL)
@@ -1105,7 +1118,8 @@ extension StatusView.ViewModel {
             .assign(to: &$authorName)
         status.author.publisher(for: \.username)
             .assign(to: &$authorUsernme)
-        authorUserIdentifier = .twitter(.init(id: status.author.id))
+        status.author.publisher(for: \.protected)
+            .assign(to: &$protected)
         
         // timestamp
         switch kind {
@@ -1181,6 +1195,7 @@ extension StatusView.ViewModel {
 
         // toolbar
         toolbarViewModel.platform = .twitter
+        toolbarViewModel.isMyself = isMyself
         status.publisher(for: \.replyCount)
             .map { Int($0) }
             .assign(to: &toolbarViewModel.$replyCount)
@@ -1190,6 +1205,8 @@ extension StatusView.ViewModel {
         status.publisher(for: \.likeCount)
             .map { Int($0) }
             .assign(to: &toolbarViewModel.$likeCount)
+        status.author.publisher(for: \.protected)
+            .assign(to: &toolbarViewModel.$isReposeRestricted)
         if case let .twitter(authenticationContext) = authContext?.authenticationContext {
             status.publisher(for: \.likeBy)
                 .map { users -> Bool in
@@ -1264,8 +1281,9 @@ extension StatusView.ViewModel {
         status.author.publisher(for: \.username)
             .map { _ in status.author.acct }
             .assign(to: &$authorUsernme)
-        authorUserIdentifier = .mastodon(.init(domain: status.author.domain, id: status.author.id))
-        
+        status.author.publisher(for: \.locked)
+            .assign(to: &$protected)
+
         // visibility
         visibility = status.visibility
         
@@ -1331,6 +1349,7 @@ extension StatusView.ViewModel {
             
         // toolbar
         toolbarViewModel.platform = .mastodon
+        toolbarViewModel.isMyself = isMyself
         status.publisher(for: \.replyCount)
             .map { Int($0) }
             .assign(to: &toolbarViewModel.$replyCount)
@@ -1340,6 +1359,17 @@ extension StatusView.ViewModel {
         status.publisher(for: \.likeCount)
             .map { Int($0) }
             .assign(to: &toolbarViewModel.$likeCount)
+        toolbarViewModel.isReposeRestricted = {
+            switch status.visibility {
+            case .public:       return false
+            case .unlisted:     return false
+            case .direct:       return true
+            case .private:      return true
+            case ._other:
+                assertionFailure()
+                return false
+            }
+        }()
         if case let .mastodon(authenticationContext) = authContext?.authenticationContext {
             status.publisher(for: \.likeBy)
                 .map { users -> Bool in

@@ -43,6 +43,7 @@ extension UserView {
         @Published public var platform: Platform = .none
         
         @Published public var isMyself: Bool = false
+        @Published public var protected: Bool = false
         
 //        @Published public var authenticationContext: AuthenticationContext?       // me
 //        @Published public var userAuthenticationContext: AuthenticationContext?
@@ -55,10 +56,9 @@ extension UserView {
 //        @Published public var name: MetaContent? = PlaintextMetaContent(string: " ")
 //        @Published public var username: String?
 //
-//        @Published public var protected: Bool = false
-//
+
 //        @Published public var followerCount: Int?
-//
+
         // follow request
         @Published public var isFollowRequestActionDisplay = false
         @Published public var isFollowRequestBusy = false
@@ -421,6 +421,8 @@ extension UserView.ViewModel {
             .assign(to: &$name)
         user.publisher(for: \.username)
             .assign(to: &$username)
+        user.publisher(for: \.protected)
+            .assign(to: &$protected)
     }
     
     public convenience init(
@@ -448,6 +450,8 @@ extension UserView.ViewModel {
         user.publisher(for: \.username)
             .map { _ in user.acctWithDomain }
             .assign(to: &$username)
+        user.publisher(for: \.locked)
+            .assign(to: &$protected)
     }
 }
 
@@ -467,6 +471,7 @@ extension UserView.ViewModel {
         username = "username"
         platform = .twitter
         notificationBadgeCount = 10
+        protected = true
     }
 }
 #endif

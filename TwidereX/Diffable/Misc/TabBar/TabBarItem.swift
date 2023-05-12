@@ -121,7 +121,18 @@ extension TabBarItem {
             fatalError()
         case .likes:
             let _viewController = UserLikeTimelineViewController()
-            _viewController.viewModel = UserLikeTimelineViewModel(context: context, authContext: authContext, timelineContext: .init(timelineKind: .like, userIdentifier: authContext.authenticationContext.userIdentifier))
+            _viewController.viewModel = UserLikeTimelineViewModel(
+                context: context,
+                authContext: authContext,
+                timelineContext: .init(
+                    timelineKind: .like,
+                    protected: {
+                        guard let user = authContext.authenticationContext.user(in: context.managedObjectContext) else { return false }
+                        return user.protected
+                    }(),
+                    userIdentifier: authContext.authenticationContext.userIdentifier
+                )
+            )
             viewController = _viewController
         case .history:
             let _viewController = HistoryViewController()

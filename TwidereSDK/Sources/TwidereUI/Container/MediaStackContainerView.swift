@@ -28,19 +28,23 @@ public struct MediaStackContainerView: View {
             let dimension = min(root.size.width, root.size.height)
             switch viewModel.items.count {
             case 1:
-                MediaView(viewModel: viewModel.items[0])
-                    .frame(width: dimension, height: dimension)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .overlay(alignment: .bottom) {
-                        MediaMetaIndicatorView(viewModel: viewModel.items[0])
-                    }
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color(uiColor: .placeholderText).opacity(0.5), lineWidth: 1)
-                    )
-                    .onTapGesture {
-                        handler(viewModel.items[0], .preview)
-                    }
+                VStack {
+                    Spacer()
+                    MediaView(viewModel: viewModel.items[0])
+                        .frame(width: dimension, height: dimension)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(alignment: .bottom) {
+                            MediaMetaIndicatorView(viewModel: viewModel.items[0])
+                        }
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(uiColor: .placeholderText).opacity(0.5), lineWidth: 1)
+                        )
+                        .onTapGesture {
+                            handler(viewModel.items[0], .preview)
+                        }
+                    Spacer()
+                }
             default:
                 CoverFlowStackScrollView {
                     HStack(spacing: .zero) {

@@ -87,6 +87,8 @@ public enum Asset {
     public static let ellipsisBubblePlus = ImageAsset(name: "Communication/ellipsis.bubble.plus")
     public static let mail = ImageAsset(name: "Communication/mail")
     public static let mailMiniInline = ImageAsset(name: "Communication/mail.mini.inline")
+    public static let textBubble = ImageAsset(name: "Communication/text.bubble")
+    public static let textBubbleMini = ImageAsset(name: "Communication/text.bubble.mini")
     public static let textBubbleSmall = ImageAsset(name: "Communication/text.bubble.small")
   }
   public enum Editing {
@@ -148,9 +150,12 @@ public enum Asset {
     public static let altRectangle = ImageAsset(name: "Media/alt.rectangle")
     public static let gifRectangle = ImageAsset(name: "Media/gif.rectangle")
     public static let playerRectangle = ImageAsset(name: "Media/player.rectangle")
-    public static let repeatOff = ImageAsset(name: "Media/repeat-off")
     public static let `repeat` = ImageAsset(name: "Media/repeat")
+    public static let repeatLock = ImageAsset(name: "Media/repeat.lock")
+    public static let repeatLockMini = ImageAsset(name: "Media/repeat.lock.mini")
     public static let repeatMini = ImageAsset(name: "Media/repeat.mini")
+    public static let repeatOff = ImageAsset(name: "Media/repeat.off")
+    public static let repeatOffMini = ImageAsset(name: "Media/repeat.off.mini")
   }
   public enum ObjectTools {
     public static let bell = ImageAsset(name: "Object&Tools/bell")

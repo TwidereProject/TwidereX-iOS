@@ -210,7 +210,18 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
                 let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, authContext: viewModel.authContext, isLocal: false)
                 coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: presentingViewController, transition: .show)
             case .likes:
-                let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context, authContext: viewModel.authContext, timelineContext: .init(timelineKind: .like, userIdentifier: viewModel.authContext.authenticationContext.userIdentifier))
+                let userLikeTimelineViewModel = UserLikeTimelineViewModel(
+                    context: context,
+                    authContext: viewModel.authContext,
+                    timelineContext: .init(
+                        timelineKind: .like,
+                        protected: {
+                            guard let user = viewModel.authContext.authenticationContext.user(in: context.managedObjectContext) else { return false }
+                            return user.protected
+                        }(),
+                        userIdentifier: viewModel.authContext.authenticationContext.userIdentifier
+                    )
+                )
                 coordinator.present(scene: .userLikeTimeline(viewModel: userLikeTimelineViewModel), from: presentingViewController, transition: .show)
             case .history:
                 let historyViewModel = HistoryViewModel(context: context, coordinator: coordinator, authContext: viewModel.authContext)

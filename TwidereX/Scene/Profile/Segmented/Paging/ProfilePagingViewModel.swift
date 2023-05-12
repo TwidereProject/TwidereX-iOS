@@ -27,6 +27,7 @@ final class ProfilePagingViewModel: NSObject {
         authContext: AuthContext,
         coordinator: SceneCoordinator,
         displayLikeTimeline: Bool,
+        protected: Published<Bool?>.Publisher?,
         userIdentifier: Published<UserIdentifier?>.Publisher?
     ) {
         self.context = context
@@ -39,6 +40,7 @@ final class ProfilePagingViewModel: NSObject {
                 authContext: authContext,
                 timelineContext: .init(
                     timelineKind: .status,
+                    protected: protected,
                     userIdentifier: userIdentifier
                 )
             )
@@ -55,6 +57,7 @@ final class ProfilePagingViewModel: NSObject {
                 authContext: authContext,
                 timelineContext: .init(
                     timelineKind: .media,
+                    protected: protected,
                     userIdentifier: userIdentifier
                 )
             )
@@ -75,6 +78,7 @@ final class ProfilePagingViewModel: NSObject {
                 authContext: authContext,
                 timelineContext: .init(
                     timelineKind: .like,
+                    protected: protected,
                     userIdentifier: userIdentifier
                 )
             )

@@ -30,6 +30,7 @@ class ProfileViewModel: ObservableObject {
     let displayLikeTimeline: Bool
     @Published var userRecord: UserRecord?
     @Published var userIdentifier: UserIdentifier? = nil
+    @Published var protected: Bool? = nil
     let relationshipViewModel = RelationshipViewModel()
 
 //    let suspended = CurrentValueSubject<Bool, Never>(false)
@@ -52,7 +53,7 @@ class ProfileViewModel: ObservableObject {
         }
 
         $user
-            .map { user in user.flatMap { UserRecord(object: $0) } }
+            .map { $0?.asRecord }
             .assign(to: &$userRecord)
             
         $user
@@ -67,6 +68,10 @@ class ProfileViewModel: ObservableObject {
                 }
             }
             .assign(to: &$userIdentifier)
+        
+        $user
+            .map { $0?.protected }
+            .assign(to: &$protected)
             
         // bind active authentication
         Task {
