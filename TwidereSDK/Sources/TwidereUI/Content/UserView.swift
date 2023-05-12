@@ -26,38 +26,74 @@ public struct UserView: View {
     
     @ObservedObject public private(set) var viewModel: ViewModel
     
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @ScaledMetric(relativeTo: .headline) private var lockImageDimension: CGFloat = 16
+
     public init(viewModel: UserView.ViewModel) {
         self.viewModel = viewModel
     }
     
     public var body: some View {
-        HStack(alignment: .center, spacing: .zero) {
-            // avatar
-            avatarButton
-                .padding(.trailing, StatusView.hangingAvatarButtonTrailingSpacing)
-            // info
-            VStackLayout(alignment: .leading, spacing: .zero) {
-                headlineView
-                subheadlineView
-            }
-            .frame(alignment: .leading)
-            Spacer()
-            // accessory view
-            accessoryView
-        }   // end HStack
-        .padding(.vertical, viewModel.verticalMargin)
-        .overlay {
-            if viewModel.isSeparateLineDisplay {
-                HStack(spacing: .zero) {
-                    Color.clear.frame(width: StatusView.hangingAvatarButtonDimension + StatusView.hangingAvatarButtonTrailingSpacing)
-                    VStack(spacing: .zero) {
-                        Spacer()
-                        Divider()
-                        Color.clear.frame(height: 1)
+        Group {
+            if dynamicTypeSize < .accessibility1 {
+                HStack(alignment: .center, spacing: .zero) {
+                    // avatar
+                    avatarButton
+                        .padding(.trailing, StatusView.hangingAvatarButtonTrailingSpacing)
+                    // info
+                    VStackLayout(alignment: .leading, spacing: .zero) {
+                        headlineView
+                        subheadlineView
                     }
+                    .frame(alignment: .leading)
+                    Spacer()
+                    // accessory view
+                    accessoryView
                 }   // end HStack
-            }   // end if
-        }   // end .overlay
+                .padding(.vertical, viewModel.verticalMargin)
+                .overlay {
+                    if viewModel.isSeparateLineDisplay {
+                        HStack(spacing: .zero) {
+                            Color.clear.frame(width: StatusView.hangingAvatarButtonDimension + StatusView.hangingAvatarButtonTrailingSpacing)
+                            VStack(spacing: .zero) {
+                                Spacer()
+                                Divider()
+                                Color.clear.frame(height: 1)
+                            }
+                        }   // end HStack
+                    }   // end if
+                }   // end .overlay
+            } else {
+                VStack(spacing: .zero) {
+                    HStack {
+                        // avatar
+                        avatarButton
+                            .padding(.trailing, StatusView.hangingAvatarButtonTrailingSpacing)
+                        Spacer()
+                        // accessory view
+                        accessoryView
+                    }
+                    // info
+                    VStackLayout(alignment: .leading, spacing: .zero) {
+                        headlineView
+                        subheadlineView
+                    }
+                    .frame(alignment: .leading)
+                }   // end HStack
+                .padding(.vertical, viewModel.verticalMargin)
+                .overlay {
+                    if viewModel.isSeparateLineDisplay {
+                        HStack(spacing: .zero) {
+                            VStack(spacing: .zero) {
+                                Spacer()
+                                Divider()
+                                Color.clear.frame(height: 1)
+                            }
+                        }   // end HStack
+                    }   // end if
+                }   // end .overlay
+            }
+        }   // Group
     }
 }
 
@@ -258,26 +294,17 @@ extension UserView {
     var headlineView: some View {
         Group {
             switch viewModel.kind {
-            case .account:
-                nameLabel
-            case .search:
-                nameLabel
-            case .friend:
-                nameLabel
-            case .history:
-                nameLabel
-            case .notification:
-                nameLabel
-            case .mentionPick:
-                nameLabel
-            case .listMember:
-                nameLabel
-            case .addListMember:
-                nameLabel
-            case .settingAccountSection:
-                nameLabel
-            case .plain:
-                nameLabel
+            default:
+                HStack(spacing: 6) {
+                    nameLabel
+                    if viewModel.protected {
+                        Image(uiImage: Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate))
+                            .resizable()
+                            .frame(width: lockImageDimension, height: lockImageDimension)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                }
             }
         }   // end Group
     }

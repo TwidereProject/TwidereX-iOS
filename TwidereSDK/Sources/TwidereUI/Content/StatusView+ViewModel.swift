@@ -56,7 +56,9 @@ extension StatusView {
         @Published public var authorName: MetaContent = PlaintextMetaContent(string: "")
         @Published public var authorUsernme = ""
         @Published public var authorUserIdentifier: UserIdentifier?
-        
+
+        @Published public var protected: Bool = false
+
 //        static let pollOptionOrdinalNumberFormatter: NumberFormatter = {
 //            let formatter = NumberFormatter()
 //            formatter.numberStyle = .ordinal
@@ -68,7 +70,7 @@ extension StatusView {
 //        @Published public var authorAvatarImageURL: URL?
 //        @Published public var authorUsername: String?
 //        
-//        @Published public var protected: Bool = false
+        
 
         // content
         @Published public var spoilerContent: MetaContent?
@@ -1105,6 +1107,8 @@ extension StatusView.ViewModel {
             .assign(to: &$authorName)
         status.author.publisher(for: \.username)
             .assign(to: &$authorUsernme)
+        status.author.publisher(for: \.protected)
+            .assign(to: &$protected)
         authorUserIdentifier = .twitter(.init(id: status.author.id))
         
         // timestamp
@@ -1264,6 +1268,8 @@ extension StatusView.ViewModel {
         status.author.publisher(for: \.username)
             .map { _ in status.author.acct }
             .assign(to: &$authorUsernme)
+        status.author.publisher(for: \.locked)
+            .assign(to: &$protected)
         authorUserIdentifier = .mastodon(.init(domain: status.author.domain, id: status.author.id))
         
         // visibility

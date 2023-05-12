@@ -99,6 +99,15 @@ extension UserObject {
             return object.avatar.flatMap { URL(string: $0) }
         }
     }
+    
+    public var protected: Bool {
+        switch self {
+        case .twitter(let object):
+            return object.protected
+        case .mastodon(let object):
+            return object.locked
+        }
+    }
 }
 
 extension UserObject {

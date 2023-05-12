@@ -68,6 +68,7 @@ public struct StatusView: View {
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @ScaledMetric(relativeTo: .subheadline) private var visibilityIconImageDimension: CGFloat = 16
     @ScaledMetric(relativeTo: .headline) private var inlineAvatarButtonDimension: CGFloat = 20
+    @ScaledMetric(relativeTo: .headline) private var lockImageDimension: CGFloat = 16
 
     public init(viewModel: StatusView.ViewModel) {
         self.viewModel = viewModel
@@ -313,16 +314,25 @@ extension StatusView {
                     }
                 }()
                 nameLayout {
-                    // name
-                    LabelRepresentable(
-                        metaContent: viewModel.authorName,
-                        textStyle: .statusAuthorName,
-                        setupLabel: { label in
-                            label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-                            label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+                    HStack {
+                        // name
+                        LabelRepresentable(
+                            metaContent: viewModel.authorName,
+                            textStyle: .statusAuthorName,
+                            setupLabel: { label in
+                                label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+                                label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+                            }
+                        )
+                        .fixedSize(horizontal: false, vertical: true)
+                        // lock
+                        if viewModel.protected {
+                            Image(uiImage: Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate))
+                                .resizable()
+                                .frame(width: lockImageDimension, height: lockImageDimension)
+                                .foregroundColor(.secondary)
                         }
-                    )
-                    .fixedSize(horizontal: false, vertical: true)
+                    }
                     .layoutPriority(0.618)
                     // username
                     LabelRepresentable(
