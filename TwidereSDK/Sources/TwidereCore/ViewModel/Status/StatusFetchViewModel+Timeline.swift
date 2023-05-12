@@ -50,25 +50,26 @@ extension StatusFetchViewModel.Timeline.Kind {
 
     public class UserTimelineContext {
         public let timelineKind: TimelineKind
+        @Published public var protected: Bool?
         @Published public var userIdentifier: UserIdentifier?
         
         public init(
             timelineKind: TimelineKind,
-            userIdentifier: Published<UserIdentifier?>.Publisher?
+            protected protectedPublisher: Published<Bool?>.Publisher?,
+            userIdentifier userIdentifierPublisher: Published<UserIdentifier?>.Publisher?
         ) {
             self.timelineKind = timelineKind
-            
-            if let userIdentifier = userIdentifier {
-                userIdentifier.assign(to: &self.$userIdentifier)
-                
-            }
+            protectedPublisher?.assign(to: &$protected)
+            userIdentifierPublisher?.assign(to: &$userIdentifier)
         }
         
         public init(
             timelineKind: TimelineKind,
+            protected: Bool,
             userIdentifier: UserIdentifier?
         ) {
             self.timelineKind = timelineKind
+            self.protected = protected
             self.userIdentifier = userIdentifier
         }
         
@@ -450,6 +451,7 @@ extension StatusFetchViewModel.Timeline {
                 return .user(.twitter(.init(
                     authenticationContext: authenticationContext,
                     userID: userIdentifier.id,
+                    protected: userTimelineContext.protected ?? false,
                     paginationToken: nil,
                     maxID: nil,
                     maxResults: nil,

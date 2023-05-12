@@ -26,6 +26,7 @@ extension StatusFetchViewModel.Timeline.User {
     public struct TwitterFetchContext: Hashable {
         public let authenticationContext: TwitterAuthenticationContext
         public let userID: Twitter.Entity.V2.User.ID
+        public let protected: Bool
         public let paginationToken: String?
         public let maxID: Twitter.Entity.V2.Tweet.ID?
         public let maxResults: Int?
@@ -37,6 +38,7 @@ extension StatusFetchViewModel.Timeline.User {
         public init(
             authenticationContext: TwitterAuthenticationContext,
             userID: Twitter.Entity.V2.User.ID,
+            protected: Bool,
             paginationToken: String?,
             maxID: Twitter.Entity.V2.Tweet.ID?,
             maxResults: Int?,
@@ -45,6 +47,7 @@ extension StatusFetchViewModel.Timeline.User {
         ) {
             self.authenticationContext = authenticationContext
             self.userID = userID
+            self.protected = protected
             self.paginationToken = paginationToken
             self.maxID = maxID
             self.maxResults = maxResults
@@ -56,6 +59,7 @@ extension StatusFetchViewModel.Timeline.User {
             return TwitterFetchContext(
                 authenticationContext: authenticationContext,
                 userID: userID,
+                protected: protected,
                 paginationToken: paginationToken,
                 maxID: maxID,
                 maxResults: maxResults,
@@ -68,6 +72,7 @@ extension StatusFetchViewModel.Timeline.User {
             return TwitterFetchContext(
                 authenticationContext: authenticationContext,
                 userID: userID,
+                protected: protected,
                 paginationToken: paginationToken,
                 maxID: maxID,
                 maxResults: maxResults,
@@ -157,6 +162,9 @@ extension StatusFetchViewModel.Timeline.User {
                 switch fetchContext.timelineKind {
                 case .status, .media:
                     do {
+                        guard !fetchContext.protected else {
+                            throw Twitter.API.Error.ResponseError(httpResponseStatus: .ok, twitterAPIError: .rateLimitExceeded)
+                        }
                         guard !fetchContext.needsAPIFallback else {
                             throw Twitter.API.Error.ResponseError(httpResponseStatus: .ok, twitterAPIError: .rateLimitExceeded)
                         }

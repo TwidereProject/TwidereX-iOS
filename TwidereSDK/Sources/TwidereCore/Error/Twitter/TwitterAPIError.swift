@@ -13,6 +13,8 @@ extension Twitter.API.Error.TwitterAPIError: LocalizedError {
     
     public var errorDescription: String? {
         switch self {
+        case .notAuthorizedToViewTheSpecifiedUser:
+            return L10n.Common.Alerts.PermissionDeniedNotAuthorized.title
         case .userHasBeenSuspended:
             return L10n.Common.Alerts.AccountSuspended.title
         case .rateLimitExceeded:
@@ -32,6 +34,8 @@ extension Twitter.API.Error.TwitterAPIError: LocalizedError {
     
     public var failureReason: String? {
         switch self {
+        case .notAuthorizedToViewTheSpecifiedUser:
+            return L10n.Common.Alerts.PermissionDeniedNotAuthorized.message
         case .userHasBeenSuspended:
             let twitterRules = L10n.Common.Alerts.AccountSuspended.twitterRules
             return L10n.Common.Alerts.AccountSuspended.message(twitterRules)
