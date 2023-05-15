@@ -31,7 +31,9 @@ extension TrendViewModel {
         .map { trendGroupRecords, trendGroupIndex in
             let trendItems: [SearchItem] = trendGroupRecords[trendGroupIndex]
                 .flatMap { group in
-                    return group.trends.map { .trend(trend: $0) }
+                    return group.trends
+                        .removingDuplicates()
+                        .map { .trend(trend: $0) }
                 } ?? []
             return trendItems
         }

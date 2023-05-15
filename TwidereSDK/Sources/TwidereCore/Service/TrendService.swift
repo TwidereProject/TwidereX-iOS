@@ -87,7 +87,7 @@ extension TrendService {
                 for data in response.value {
                     guard let location = data.locations.first else { continue }
                     trendGroupRecords[.twitter(placeID: location.woeid)] = TrendGroup(
-                        trends: data.trends.map { TrendObject.twitter(trend: $0) },
+                        trends: data.trends.map { TrendObject.twitter(trend: $0) }.removingDuplicates(),
                         timestamp: data.asOf
                     )
                 }
@@ -97,7 +97,7 @@ extension TrendService {
                     authenticationContext: authenticationContext
                 )
                 trendGroupRecords[.mastodon(domain: domain)] = TrendGroup(
-                    trends: response.value.map { TrendObject.mastodon(tag: $0) },
+                    trends: response.value.map { TrendObject.mastodon(tag: $0) }.removingDuplicates(),
                     timestamp: response.networkDate
                 )
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch trends \(response.value.count) ")
