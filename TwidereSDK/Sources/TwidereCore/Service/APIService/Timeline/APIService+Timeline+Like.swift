@@ -55,7 +55,7 @@ extension APIService {
             let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             
             // persist [TwitterStatus]
-            _ = Persistence.Twitter.persist(
+            let results = Persistence.Twitter.persist(
                 in: managedObjectContext,
                 context: Persistence.Twitter.PersistContextV2(
                     dictionary: dictionary,
@@ -63,6 +63,11 @@ extension APIService {
                     networkDate: response.networkDate
                 )
             )
+            if let me = me, userID == me.id {
+                for result in results {
+                    result.update(isLike: true, by: me)
+                }
+            }
         }   // end try await managedObjectContext.performChanges
         
         return response
