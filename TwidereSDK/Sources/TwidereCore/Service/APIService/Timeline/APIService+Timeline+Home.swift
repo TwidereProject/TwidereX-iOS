@@ -129,6 +129,18 @@ extension APIService {
                             return TwitterHomeTimelineTaskResult.content(response)
                         }
                     }
+                    // fetch lookup
+                    group.addTask {
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch lookup")
+                        let responses = await self.twitterBatchLookupResponses(
+                            content: response.value,
+                            authenticationContext: authenticationContext
+                        )
+                        #if DEBUG
+                        response.logRateLimit(category: "HomeLookup")
+                        #endif
+                        return TwitterHomeTimelineTaskResult.lookup(responses)
+                    }
                 case .lookup:
                     break
                 case .persist:
@@ -158,6 +170,17 @@ extension APIService {
 
             let statusArray = statusRecords.compactMap { $0.object(in: managedObjectContext) }
             assert(statusArray.count == statusRecords.count)
+
+            // amend the v2 missing properties
+            if let me = me {
+                var batchLookupResponse = TwitterBatchLookupResponse()
+                for lookupResult in lookupResults {
+                    for status in lookupResult.value {
+                        batchLookupResponse.lookupDict[status.idStr] = status
+                    }
+                }
+                batchLookupResponse.update(statuses: statusArray, me: me)
+            }
 
             // locate anchor status
             let anchorStatus: TwitterStatus? = {
