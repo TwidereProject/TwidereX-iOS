@@ -21,5 +21,11 @@ extension Mastodon.Entity {
         public let day: Date
         public let uses: String
         public let accounts: String
+        
+        public init(day: Date, uses: String, accounts: String) {
+            self.day = day
+            self.uses = uses
+            self.accounts = accounts
+        }
     }
 }

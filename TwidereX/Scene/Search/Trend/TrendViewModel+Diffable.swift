@@ -16,7 +16,9 @@ extension TrendViewModel {
         diffableDataSource = SearchSection.diffableDataSource(
             tableView: tableView,
             context: context,
-            configuration: SearchSection.Configuration()
+            configuration: SearchSection.Configuration(
+                viewLayoutFramePublisher: $viewLayoutFrame
+            )
         )
         
         var snapshot = NSDiffableDataSourceSnapshot<SearchSection, SearchItem>()

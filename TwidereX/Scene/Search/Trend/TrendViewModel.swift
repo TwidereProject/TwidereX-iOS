@@ -24,6 +24,8 @@ final class TrendViewModel: ObservableObject {
     let trendService: TrendService
     @Published var trendGroupIndex: TrendService.TrendGroupIndex = .none
     @Published var searchText = ""
+    
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
 
     // output
     var diffableDataSource: UITableViewDiffableDataSource<SearchSection, SearchItem>?

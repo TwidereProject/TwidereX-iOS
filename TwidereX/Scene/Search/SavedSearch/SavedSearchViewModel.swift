@@ -22,6 +22,8 @@ final class SavedSearchViewModel {
     let authContext: AuthContext
     let savedSearchService: SavedSearchService
     let savedSearchFetchedResultController: SavedSearchFetchedResultController
+    
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
 
     // output
     var diffableDataSource: UITableViewDiffableDataSource<SearchSection, SearchItem>?
