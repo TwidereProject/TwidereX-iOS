@@ -65,7 +65,7 @@ extension StatusObject {
         switch self {
         case .twitter(let status):
             let status = status.repost ?? status
-            return status.attachments.map { .twitter($0) }
+            return status.attachmentsTransient.map { .twitter($0) }
         case .mastodon(let status):
             return status.attachments.map { .mastodon($0) }
         }

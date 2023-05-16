@@ -1100,7 +1100,7 @@ extension StatusView.ViewModel {
         }
         
         // reply settings
-        replySettingBannerViewModel = status.replySettings
+        replySettingBannerViewModel = status.replySettingsTransient
             .flatMap { object in Twitter.Entity.V2.Tweet.ReplySettings(rawValue: object.value) }
             .flatMap { replaySettings in
                 ReplySettingBannerView.ViewModel(
@@ -1171,7 +1171,7 @@ extension StatusView.ViewModel {
         }
 
         // location
-        location = status.location?.fullName
+        location = status.locationTransient?.fullName
 
         // metric
         switch kind {

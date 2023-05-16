@@ -72,7 +72,7 @@ extension DataSourceFacade {
             switch object {
             case .twitter(let status):
                 let status = status.repost ?? status
-                let mentions = status.entities?.mentions ?? []
+                let mentions = status.entitiesTransient?.mentions ?? []
                 let _userID: TwitterUser.ID? = mentions.first(where: { $0.username == mention })?.id
 
                 if let userID = _userID {

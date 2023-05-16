@@ -274,14 +274,14 @@ extension Persistence.TwitterStatus {
         context: PersistContextV2
     ) {
         // entities
-        status.update(entities: TwitterEntity(entity: context.entity.status.entities))
+        status.update(entitiesTransient: TwitterEntity(entity: context.entity.status.entities))
         
         // replySettings (v2 only)
         let _replySettings = context.entity.status.replySettings.flatMap {
             TwitterReplySettings(value: $0.rawValue)
         }
         if let replySettings = _replySettings {
-            status.update(replySettings: replySettings)            
+            status.update(replySettingsTransient: replySettings)            
         }
         
         // conversationID (v2 only)
@@ -301,20 +301,20 @@ extension Persistence.TwitterStatus {
                 // do not update video & GIFV attachments except isEmpty
                 let isVideo = media.contains(where: { $0.type == TwitterAttachment.Kind.animatedGIF.rawValue || $0.type == TwitterAttachment.Kind.video.rawValue })
                 if isVideo {
-                    let isEmpty = status.attachments.isEmpty
+                    let isEmpty = status.attachmentsTransient.isEmpty
                     if !isEmpty {
                         return
                     }
                 }
                 
                 let attachments = media.compactMap { $0.twitterAttachment }
-                status.update(attachments: attachments)
+                status.update(attachmentsTransient: attachments)
             }
         
         // place (not stable: geo may erased)
         context.dictionary.place(for: context.entity.status)
             .flatMap { place in
-                status.update(location: place.twitterLocation)
+                status.update(locationTransient: place.twitterLocation)
             }
     }
     
