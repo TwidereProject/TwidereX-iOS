@@ -169,30 +169,4 @@ extension MastodonList: AutoUpdatableObject {
     	}
     }
     // sourcery:end
-    
-//    public func update(`private`: Bool) {
-//        if self.`private` != `private` {
-//            self.`private` = `private`
-//        }
-//    }
-//    public func update(memberCount: Int64) {
-//        if self.memberCount != memberCount {
-//            self.memberCount = memberCount
-//        }
-//    }
-//    public func update(followerCount: Int64) {
-//        if self.followerCount != followerCount {
-//            self.followerCount = followerCount
-//        }
-//    }
-//    public func update(theDescription: String?) {
-//        if self.theDescription != theDescription {
-//            self.theDescription = theDescription
-//        }
-//    }
-//    public func update(createdAt: Date?) {
-//        if self.createdAt != createdAt {
-//            self.createdAt = createdAt
-//        }
-//    }
 }

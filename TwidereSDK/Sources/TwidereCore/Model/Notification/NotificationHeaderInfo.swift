@@ -101,7 +101,7 @@ extension NotificationHeaderInfo {
             // assertionFailure()
             return nil
         }
-        let content = MastodonContent(content: text, emojis: user.emojis.asDictionary)
+        let content = MastodonContent(content: text, emojis: user.emojisTransient.asDictionary)
         return Meta.convert(document: .mastodon(content: content))
     }
 }

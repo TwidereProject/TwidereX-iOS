@@ -97,7 +97,7 @@ extension TwitterStatus {
             } else {
                 do {
                     let _data = self.attachments
-                    guard let data = _data else {
+                    guard let data = _data, !data.isEmpty else {
                         primitiveAttachmentsTransient = []
                         return []
                     }
@@ -113,11 +113,15 @@ extension TwitterStatus {
         set {
             let keyPath = #keyPath(attachmentsTransient)
             do {
-                let data = try JSONEncoder().encode(newValue)
+                if newValue.isEmpty {
+                    attachments = nil
+                } else {
+                    let data = try JSONEncoder().encode(newValue)
+                    attachments = data
+                }
                 willChangeValue(forKey: keyPath)
                 primitiveAttachmentsTransient = newValue
                 didChangeValue(forKey: keyPath)
-                attachments = data
             } catch {
                 assertionFailure()
             }
@@ -138,7 +142,7 @@ extension TwitterStatus {
             } else {
                 do {
                     let _data = self.location
-                    guard let data = _data else {
+                    guard let data = _data, !data.isEmpty else {
                         primitiveLocationTransient = nil
                         return nil
                     }
@@ -155,10 +159,10 @@ extension TwitterStatus {
             let keyPath = #keyPath(locationTransient)
             do {
                 let data = try newValue.flatMap { try JSONEncoder().encode($0) }
+                location = data
                 willChangeValue(forKey: keyPath)
                 primitiveLocationTransient = newValue
                 didChangeValue(forKey: keyPath)
-                location = data
             } catch {
                 assertionFailure()
             }
@@ -179,7 +183,7 @@ extension TwitterStatus {
             } else {
                 do {
                     let _data = self.entities
-                    guard let data = _data else {
+                    guard let data = _data, !data.isEmpty else {
                         primitiveEntitiesTransient = nil
                         return nil
                     }
@@ -196,10 +200,10 @@ extension TwitterStatus {
             let keyPath = #keyPath(entitiesTransient)
             do {
                 let data = try newValue.flatMap { try JSONEncoder().encode($0) }
+                entities = data
                 willChangeValue(forKey: keyPath)
                 primitiveEntitiesTransient = newValue
                 didChangeValue(forKey: keyPath)
-                entities = data
             } catch {
                 assertionFailure()
             }
@@ -220,7 +224,7 @@ extension TwitterStatus {
             } else {
                 do {
                     let _data = self.replySettings
-                    guard let data = _data else {
+                    guard let data = _data, !data.isEmpty else {
                         primitiveReplySettingsTransient = nil
                         return nil
                     }
@@ -237,10 +241,10 @@ extension TwitterStatus {
             let keyPath = #keyPath(replySettingsTransient)
             do {
                 let data = try newValue.flatMap { try JSONEncoder().encode($0) }
+                replySettings = data
                 willChangeValue(forKey: keyPath)
                 primitiveReplySettingsTransient = newValue
                 didChangeValue(forKey: keyPath)
-                replySettings = data
             } catch {
                 assertionFailure()
             }

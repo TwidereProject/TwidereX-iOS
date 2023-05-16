@@ -80,6 +80,7 @@
         <attribute name="isActive" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="mention" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="mentionPreference" optional="YES" attributeType="Binary"/>
+        <attribute name="mentionPreferenceTransient" optional="YES" transient="YES"/>
         <attribute name="poll" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="reblog" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="serverKey" optional="YES" attributeType="String"/>
@@ -119,10 +120,12 @@
     </entity>
     <entity name="MastodonStatus" representedClassName="CoreDataStack.MastodonStatus" syncable="YES">
         <attribute name="attachments" optional="YES" attributeType="Binary"/>
+        <attribute name="attachmentsTransient" optional="YES" transient="YES"/>
         <attribute name="content" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="domain" attributeType="String"/>
         <attribute name="emojis" optional="YES" attributeType="Binary"/>
+        <attribute name="emojisTransient" optional="YES" transient="YES"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="isContentSensitiveToggled" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isMediaSensitive" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
@@ -130,6 +133,7 @@
         <attribute name="language" optional="YES" attributeType="String"/>
         <attribute name="likeCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="mentions" optional="YES" attributeType="Binary"/>
+        <attribute name="mentionsTransient" optional="YES" transient="YES"/>
         <attribute name="replyCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="replyToStatusID" optional="YES" attributeType="String"/>
         <attribute name="replyToUserID" optional="YES" attributeType="String"/>
@@ -160,7 +164,9 @@
         <attribute name="displayName" optional="YES" attributeType="String"/>
         <attribute name="domain" attributeType="String"/>
         <attribute name="emojis" optional="YES" attributeType="Binary"/>
+        <attribute name="emojisTransient" optional="YES" transient="YES"/>
         <attribute name="fields" optional="YES" attributeType="Binary"/>
+        <attribute name="fieldsTransient" optional="YES" transient="YES"/>
         <attribute name="followersCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="followingCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="header" optional="YES" attributeType="String"/>
@@ -286,6 +292,7 @@
     <entity name="TwitterUser" representedClassName="CoreDataStack.TwitterUser" syncable="YES">
         <attribute name="bio" optional="YES" attributeType="String"/>
         <attribute name="bioEntities" optional="YES" attributeType="Binary"/>
+        <attribute name="bioEntitiesTransient" optional="YES" transient="YES"/>
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="followersCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="followingCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -301,6 +308,7 @@
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="url" optional="YES" attributeType="String"/>
         <attribute name="urlEntities" optional="YES" attributeType="Binary"/>
+        <attribute name="urlEntitiesTransient" optional="YES" transient="YES"/>
         <attribute name="username" attributeType="String"/>
         <attribute name="verified" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="blocking" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="blockingBy" inverseEntity="TwitterUser"/>

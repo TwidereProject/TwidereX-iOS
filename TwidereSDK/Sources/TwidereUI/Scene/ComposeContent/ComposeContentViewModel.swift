@@ -248,7 +248,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 if _authorUserIdentifier?.id != status.author.id {
                     mentionAccts.append("@" + status.author.acct)
                 }
-                for mention in status.mentions {
+                for mention in status.mentionsTransient {
                     let acct = "@" + mention.acct
                     guard !mentionAccts.contains(acct) else { continue }
                     guard mention.id != _authorUserIdentifier?.id else { continue }

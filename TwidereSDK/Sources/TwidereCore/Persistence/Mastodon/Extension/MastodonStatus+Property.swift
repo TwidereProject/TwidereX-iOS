@@ -37,9 +37,9 @@ extension MastodonStatus.Property {
             replyToUserID: entity.inReplyToAccountID,
             createdAt: entity.createdAt,
             updatedAt: networkDate,
-            attachments: entity.mastodonAttachments,
-            emojis: entity.mastodonEmojis,
-            mentions: entity.mastodonMentions
+            attachmentsTransient: entity.mastodonAttachments,
+            emojisTransient: entity.mastodonEmojis,
+            mentionsTransient: entity.mastodonMentions
         )
     }
 }

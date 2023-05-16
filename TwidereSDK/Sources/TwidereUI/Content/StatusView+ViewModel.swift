@@ -1262,7 +1262,7 @@ extension StatusView.ViewModel {
                 label: {
                     let name = status.author.name
                     let userRepostText = L10n.Common.Controls.Status.userBoosted(name)
-                    let text = MastodonContent(content: userRepostText, emojis: status.author.emojis.asDictionary)
+                    let text = MastodonContent(content: userRepostText, emojis: status.author.emojisTransient.asDictionary)
                     let label = MastodonMetaContent.convert(text: text)
                     return label
                 }()
@@ -1298,7 +1298,7 @@ extension StatusView.ViewModel {
         // spoiler content
         if let spoilerText = status.spoilerText, !spoilerText.isEmpty {
             do {
-                let content = MastodonContent(content: spoilerText, emojis: status.emojis.asDictionary)
+                let content = MastodonContent(content: spoilerText, emojis: status.emojisTransient.asDictionary)
                 let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
                 self.spoilerContent = metaContent
             } catch {
@@ -1309,7 +1309,7 @@ extension StatusView.ViewModel {
         
         // content
         do {
-            let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
+            let content = MastodonContent(content: status.content, emojis: status.emojisTransient.asDictionary)
             let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
             self.content = metaContent
         } catch {

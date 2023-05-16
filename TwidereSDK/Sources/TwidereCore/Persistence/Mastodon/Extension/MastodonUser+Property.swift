@@ -32,8 +32,8 @@ extension MastodonUser.Property {
             suspended: entity.suspended ?? false,
             createdAt: entity.createdAt,
             updatedAt: networkDate,
-            emojis: entity.mastodonEmojis,
-            fields: entity.mastodonFields
+            emojisTransient: entity.mastodonEmojis,
+            fieldsTransient: entity.mastodonFields
         )
     }
 }

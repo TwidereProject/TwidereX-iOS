@@ -81,7 +81,7 @@ extension String {
 
 extension TwitterUser {
     public var bioURLEntities: [TwitterContent.URLEntity] {
-        let results = bioEntities?.urls?.map { entity in
+        let results = bioEntitiesTransient?.urls?.map { entity in
             TwitterContent.URLEntity(url: entity.url, expandedURL: entity.expandedURL, displayURL: entity.displayURL)
         }
         return results ?? []
@@ -99,7 +99,7 @@ extension TwitterUser {
     }
     
     public var urlEntity: [TwitterContent.URLEntity] {
-        let results = urlEntities?.urls?.map { entity in
+        let results = urlEntitiesTransient?.urls?.map { entity in
             TwitterContent.URLEntity(url: entity.url, expandedURL: entity.expandedURL, displayURL: entity.displayURL)
         }
         return results ?? []

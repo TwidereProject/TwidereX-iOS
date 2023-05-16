@@ -92,7 +92,7 @@ extension DataSourceFacade {
 
             case .mastodon(let status):
                 let status = status.repost ?? status
-                guard let mention = status.mentions.first(where: { mention == $0.username }) else {
+                guard let mention = status.mentionsTransient.first(where: { mention == $0.username }) else {
                     return nil
                 }
 
@@ -138,7 +138,7 @@ extension DataSourceFacade {
             guard let object = user.object(in: provider.context.managedObjectContext) else { return nil }
             switch object {
             case .twitter(let user):
-                let mentions = user.bioEntities?.mentions ?? []
+                let mentions = user.bioEntitiesTransient?.mentions ?? []
                 let _userID = mentions.first(where: { $0.username == mention })?.id
         
                 if let userID = _userID {

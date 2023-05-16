@@ -271,7 +271,7 @@ extension MediaView.ViewModel {
     }
     
     public static func viewModels(from status: MastodonStatus) -> [MediaView.ViewModel] {
-        return status.attachments.map { attachment -> MediaView.ViewModel in
+        return status.attachmentsTransient.map { attachment -> MediaView.ViewModel in
             MediaView.ViewModel(
                 mediaKind: {
                     switch attachment.kind {

@@ -32,7 +32,7 @@ extension MastodonUser {
 extension MastodonUser {
     public var nameMetaContent: MastodonMetaContent? {
         do {
-            let content = MastodonContent(content: name, emojis: emojis.asDictionary)
+            let content = MastodonContent(content: name, emojis: emojisTransient.asDictionary)
             let metaContent = try MastodonMetaContent.convert(document: content)
             return metaContent
         } catch {
@@ -44,7 +44,7 @@ extension MastodonUser {
     public var bioMetaContent: MastodonMetaContent? {
         guard let note = note else { return nil }
         do {
-            let content = MastodonContent(content: note, emojis: emojis.asDictionary)
+            let content = MastodonContent(content: note, emojis: emojisTransient.asDictionary)
             let metaContent = try MastodonMetaContent.convert(document: content)
             return metaContent
         } catch {

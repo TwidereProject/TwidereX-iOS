@@ -12,6 +12,7 @@ import CoreDataStack
 import TwitterMeta
 import MastodonMeta
 import AlamofireImage
+import TwidereCore
 
 extension ProfileHeaderView {
     class ViewModel: ObservableObject {
@@ -36,7 +37,7 @@ extension ProfileHeaderView {
         @Published var username: String = ""
         
         @Published var isFollowsYou: Bool = false
-        @Published var relationship: Relationship?
+        @Published var relationship: TwidereCore.Relationship?
         
         @Published var bioMetaContent: MetaContent?
         @Published var fields: [ProfileFieldListView.Item]?
@@ -265,7 +266,7 @@ extension ProfileHeaderView {
     private func configureContent(twitterUser user: TwitterUser) {
         Publishers.CombineLatest3(
             user.publisher(for: \.bio),
-            user.publisher(for: \.bioEntities),
+            user.publisher(for: \.bioEntitiesTransient),
             UIContentSizeCategory.publisher
         )
         .map { _, _, _ in user.bioMetaContent(provider: SwiftTwitterTextProvider()) }
@@ -349,7 +350,7 @@ extension ProfileHeaderView {
         // name
         Publishers.CombineLatest3(
             user.publisher(for: \.displayName),
-            user.publisher(for: \.emojis),
+            user.publisher(for: \.emojisTransient),
             UIContentSizeCategory.publisher
         )
         .map { _, emojis, _ -> MetaContent in
@@ -382,7 +383,7 @@ extension ProfileHeaderView {
     private func configureContent(mastodonUser user: MastodonUser) {
         Publishers.CombineLatest3(
             user.publisher(for: \.note),
-            user.publisher(for: \.emojis),
+            user.publisher(for: \.emojisTransient),
             UIContentSizeCategory.publisher
         )
         .map { _, _, _ in user.bioMetaContent }
@@ -392,8 +393,8 @@ extension ProfileHeaderView {
     
     private func configureField(mastodonUser user: MastodonUser) {
         Publishers.CombineLatest3(
-            user.publisher(for: \.fields),
-            user.publisher(for: \.emojis),
+            user.publisher(for: \.fieldsTransient),
+            user.publisher(for: \.emojisTransient),
             UIContentSizeCategory.publisher
         )
         .map { fields, emojis, _ -> [ProfileFieldListView.Item]? in

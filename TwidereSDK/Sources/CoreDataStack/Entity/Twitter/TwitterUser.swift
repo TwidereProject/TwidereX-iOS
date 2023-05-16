@@ -79,61 +79,93 @@ public final class TwitterUser: NSManagedObject {
 }
 
 extension TwitterUser {
+    @NSManaged private var bioEntities: Data?
+    @NSManaged private var primitiveBioEntitiesTransient: TwitterEntity?
     // sourcery: autoUpdatableObject
-    @objc public var bioEntities: TwitterEntity? {
+    @objc public private(set) var bioEntitiesTransient: TwitterEntity? {
         get {
-            let keyPath = #keyPath(TwitterUser.bioEntities)
+            let keyPath = #keyPath(bioEntitiesTransient)
             willAccessValue(forKey: keyPath)
-            let _data = primitiveValue(forKey: keyPath) as? Data
+            let bioEntities = primitiveBioEntitiesTransient
             didAccessValue(forKey: keyPath)
-            do {
-                guard let data = _data else { return nil }
-                let entities = try JSONDecoder().decode(TwitterEntity.self, from: data)
-                return entities
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return nil
+            if let bioEntities = bioEntities {
+                return bioEntities
+            } else {
+                do {
+                    let _data = self.bioEntities
+                    guard let data = _data, !data.isEmpty else {
+                        primitiveBioEntitiesTransient = nil
+                        return nil
+                    }
+                    let entities = try JSONDecoder().decode(TwitterEntity.self, from: data)
+                    primitiveBioEntitiesTransient = entities
+                    return entities
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return nil
+                }
             }
         }
         set {
-            let keyPath = #keyPath(TwitterUser.bioEntities)
-            willChangeValue(forKey: keyPath)
-            if let newValue = newValue {
-                let data = try? JSONEncoder().encode(newValue)
-                setPrimitiveValue(data, forKey: keyPath)
-            } else {
-                setPrimitiveValue(nil, forKey: keyPath)
+            let keyPath = #keyPath(bioEntitiesTransient)
+            do {
+                if let newValue = newValue {
+                    let data = try JSONEncoder().encode(newValue)
+                    bioEntities = data
+                } else {
+                    bioEntities = nil
+                }
+                willChangeValue(forKey: keyPath)
+                primitiveBioEntitiesTransient = newValue
+                didChangeValue(forKey: keyPath)
+            } catch {
+                assertionFailure()
             }
-            didChangeValue(forKey: keyPath)
         }
     }
     
+    @NSManaged private var urlEntities: Data?
+    @NSManaged private var primitiveUrlEntitiesTransient: TwitterEntity?
     // sourcery: autoUpdatableObject
-    @objc public var urlEntities: TwitterEntity? {
+    @objc public private(set) var urlEntitiesTransient: TwitterEntity? {
         get {
-            let keyPath = #keyPath(TwitterUser.urlEntities)
+            let keyPath = #keyPath(urlEntitiesTransient)
             willAccessValue(forKey: keyPath)
-            let _data = primitiveValue(forKey: keyPath) as? Data
+            let urlEntities = primitiveUrlEntitiesTransient
             didAccessValue(forKey: keyPath)
-            do {
-                guard let data = _data else { return nil }
-                let entities = try JSONDecoder().decode(TwitterEntity.self, from: data)
-                return entities
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return nil
+            if let urlEntities = urlEntities {
+                return urlEntities
+            } else {
+                do {
+                    let _data = self.urlEntities
+                    guard let data = _data, !data.isEmpty else {
+                        primitiveUrlEntitiesTransient = nil
+                        return nil
+                    }
+                    let entities = try JSONDecoder().decode(TwitterEntity.self, from: data)
+                    primitiveUrlEntitiesTransient = entities
+                    return entities
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return nil
+                }
             }
         }
         set {
-            let keyPath = #keyPath(TwitterUser.urlEntities)
-            willChangeValue(forKey: keyPath)
-            if let newValue = newValue {
-                let data = try? JSONEncoder().encode(newValue)
-                setPrimitiveValue(data, forKey: keyPath)
-            } else {
-                setPrimitiveValue(nil, forKey: keyPath)
+            let keyPath = #keyPath(urlEntitiesTransient)
+            do {
+                if let newValue = newValue {
+                    let data = try JSONEncoder().encode(newValue)
+                    urlEntities = data
+                } else {
+                    urlEntities = nil
+                }
+                willChangeValue(forKey: keyPath)
+                primitiveUrlEntitiesTransient = newValue
+                didChangeValue(forKey: keyPath)
+            } catch {
+                assertionFailure()
             }
-            didChangeValue(forKey: keyPath)
         }
     }
 }
@@ -357,14 +389,14 @@ extension TwitterUser: AutoUpdatableObject {
     		self.updatedAt = updatedAt
     	}
     }
-    public func update(bioEntities: TwitterEntity?) {
-    	if self.bioEntities != bioEntities {
-    		self.bioEntities = bioEntities
+    public func update(bioEntitiesTransient: TwitterEntity?) {
+    	if self.bioEntitiesTransient != bioEntitiesTransient {
+    		self.bioEntitiesTransient = bioEntitiesTransient
     	}
     }
-    public func update(urlEntities: TwitterEntity?) {
-    	if self.urlEntities != urlEntities {
-    		self.urlEntities = urlEntities
+    public func update(urlEntitiesTransient: TwitterEntity?) {
+    	if self.urlEntitiesTransient != urlEntitiesTransient {
+    		self.urlEntitiesTransient = urlEntitiesTransient
     	}
     }
     // sourcery:end

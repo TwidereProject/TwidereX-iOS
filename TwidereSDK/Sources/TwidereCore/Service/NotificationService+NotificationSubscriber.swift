@@ -204,7 +204,7 @@ extension NotificationService.MastodonNotificationSubscriber {
                         poll: true,
                         createdAt: now,
                         updatedAt: now,
-                        mentionPreference: MastodonNotificationSubscription.MentionPreference()
+                        mentionPreferenceTransient: MastodonNotificationSubscription.MentionPreference()
                     ),
                     relationship: .init(authentication: authentication)
                 )
