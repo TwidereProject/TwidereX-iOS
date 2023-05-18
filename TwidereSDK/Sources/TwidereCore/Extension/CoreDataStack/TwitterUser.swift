@@ -51,7 +51,6 @@ extension TwitterUser {
 }
 
 extension TwitterUser {
-    
     public enum SizeKind: String {
         case small
         case medium

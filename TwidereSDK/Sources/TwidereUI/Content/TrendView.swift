@@ -11,6 +11,7 @@ import Meta
 import MetaTextKit
 import TwitterSDK
 import MastodonSDK
+import Charts
 
 public struct TrendView: View {
     
@@ -21,15 +22,33 @@ public struct TrendView: View {
     }
     
     public var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: .zero) {
-                titleLabel
-                descriptionLabel
-            }
-            Spacer()
+        switch viewModel.kind {
+        case .twitter:
             HStack {
-                chartDescriptionLabel
-                chartView
+                VStack(alignment: .leading, spacing: .zero) {
+                    titleLabel
+                }
+                .alignmentGuide(.listRowSeparatorLeading) { viewDimensions in
+                    viewDimensions[.leading]
+                }
+                Spacer()
+            }
+
+        case .mastodon:
+            HStack {
+                VStack(alignment: .leading, spacing: .zero) {
+                    titleLabel
+                    descriptionLabel
+                }
+                .alignmentGuide(.listRowSeparatorLeading) { viewDimensions in
+                    viewDimensions[.leading]
+                }
+                Spacer()
+                HStack {
+                    chartDescriptionLabel
+                    chartView
+                        .frame(width: 66, height: 40)
+                }
             }
         }
     }
@@ -66,11 +85,41 @@ extension TrendView {
             .foregroundColor(.secondary)
     }
     
+    var chartLineGradient: LinearGradient {
+        LinearGradient(
+            gradient: Gradient (
+                colors: [
+                    Color(uiColor: Asset.Colors.hightLight.color).opacity(0.5),
+                    Color(uiColor: Asset.Colors.hightLight.color).opacity(0.0),
+                ]
+            ),
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+    
     var chartView: some View {
-        EmptyView()
-//        Chart {
-//
-//        }
+        Group {
+            if let historyData = viewModel.historyData {
+                Chart(historyData, id: \.self) { data in
+                    LineMark(
+                        x: .value("Day", data.day),
+                        y: .value("Accounts", Int(data.accounts) ?? 0)
+                    )
+                    .interpolationMethod(.catmullRom)
+                    
+                    AreaMark(
+                        x: .value("Day", data.day),
+                        y: .value("Accounts", Int(data.accounts) ?? 0)
+                    )
+                    .interpolationMethod(.catmullRom)
+                    .foregroundStyle(chartLineGradient)
+                }
+                .chartLegend(.hidden)
+                .chartXAxis(.hidden)
+                .chartYAxis(.hidden)
+            }
+        }   // Group
     }
 }
 
@@ -169,13 +218,13 @@ extension TrendView.ViewModel {
         )
         
         historyData = [
-            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 1), uses: "123", accounts: "123"),
-            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 2), uses: "123", accounts: "123"),
-            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 3), uses: "123", accounts: "123"),
-            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 4), uses: "123", accounts: "123"),
-            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 5), uses: "123", accounts: "123"),
-            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 6), uses: "123", accounts: "123"),
-            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 7), uses: "123", accounts: "123"),
+            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 1), uses: "123", accounts: "12"),
+            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 2), uses: "123", accounts: "23"),
+            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 3), uses: "123", accounts: "33"),
+            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 4), uses: "123", accounts: "23"),
+            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 5), uses: "123", accounts: "13"),
+            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 6), uses: "123", accounts: "23"),
+            Mastodon.Entity.History(day: Date(year: 2020, month: 5, day: 7), uses: "123", accounts: "53"),
         ]
     }
 }
@@ -185,7 +234,11 @@ extension TrendView.ViewModel {
 struct TrendView_Previews: PreviewProvider {
     static var previews: some View {
         TrendView(viewModel: .init(kind: .twitter))
+            .previewDisplayName("Twitter")
+            .previewLayout(.fixed(width: 475, height: 88))
         TrendView(viewModel: .init(kind: .mastodon))
+            .previewDisplayName("Mastodon")
+            .previewLayout(.fixed(width: 475, height: 88))
     }
 }
 #endif
