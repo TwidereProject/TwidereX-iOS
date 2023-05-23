@@ -104,6 +104,12 @@ extension ProfileViewController {
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] needsSetupAvatarBarButtonItem in
                     guard let self = self else { return }
+                    if let leftBarButtonItem = self.navigationItem.leftBarButtonItem,
+                       leftBarButtonItem !== self.avatarBarButtonItem
+                    {
+                        // allow override
+                        return
+                    }
                     self.navigationItem.leftBarButtonItem = needsSetupAvatarBarButtonItem ? self.avatarBarButtonItem : nil
                 }
                 .store(in: &disposeBag)

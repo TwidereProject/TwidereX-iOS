@@ -13,3 +13,10 @@ extension NSLayoutConstraint {
         return self
     }
 }
+
+extension NSLayoutConstraint {
+    public func identifier(_ identifier: String) -> Self {
+        self.identifier = identifier
+        return self
+    }
+}

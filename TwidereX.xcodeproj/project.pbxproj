@@ -25,6 +25,8 @@
 		DB02C77527351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77427351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift */; };
 		DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */; };
 		DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */; };
+		DB0455B62A1CA2F3009A00EF /* NewColumnViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0455B52A1CA2F3009A00EF /* NewColumnViewModel.swift */; };
+		DB0455B82A1CA510009A00EF /* NewColumnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0455B72A1CA510009A00EF /* NewColumnView.swift */; };
 		DB05E13729C318530055BF3F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB05E13629C318530055BF3F /* TwidereSDK */; };
 		DB05E13929C318590055BF3F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB05E13829C318590055BF3F /* TwidereSDK */; };
 		DB05E13B29C3185E0055BF3F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB05E13A29C3185E0055BF3F /* TwidereSDK */; };
@@ -331,6 +333,9 @@
 		DBE6357D2885557C001C114B /* PushNotificationScratchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE6357C2885557C001C114B /* PushNotificationScratchViewModel.swift */; };
 		DBE6357F288555AE001C114B /* PushNotificationScratchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE6357E288555AE001C114B /* PushNotificationScratchView.swift */; };
 		DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */; };
+		DBEA97632A1B556C00C8B75B /* SecondaryContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEA97622A1B556C00C8B75B /* SecondaryContainerViewController.swift */; };
+		DBEA97662A1B58E200C8B75B /* SecondaryContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEA97652A1B58E200C8B75B /* SecondaryContainerViewModel.swift */; };
+		DBEA97682A1B6D2300C8B75B /* NewColumnViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEA97672A1B6D2300C8B75B /* NewColumnViewController.swift */; };
 		DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D7253F5D7800C5383A /* NamingState.swift */; };
 		DBF167FD27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF167FC27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift */; };
 		DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF3309025B96E0B00A678FB /* WKNavigationDelegateShim.swift */; };
@@ -487,6 +492,8 @@
 		DB02C77427351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HashtagTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHashtagViewModel+State.swift"; sourceTree = "<group>"; };
 		DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHashtagViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB0455B52A1CA2F3009A00EF /* NewColumnViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewColumnViewModel.swift; sourceTree = "<group>"; };
+		DB0455B72A1CA510009A00EF /* NewColumnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewColumnView.swift; sourceTree = "<group>"; };
 		DB06180F2786EC870030EE79 /* LineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineChartView.swift; sourceTree = "<group>"; };
 		DB0AD4DE285872BE0002ABDB /* UserMediaTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewController.swift; sourceTree = "<group>"; };
 		DB0AD4E12858734A0002ABDB /* UserMediaTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewModel.swift; sourceTree = "<group>"; };
@@ -828,6 +835,9 @@
 		DBE76CF82500B29500DEB0FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DBE76CFE2500B43300DEB0FC /* StubMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubMixer.swift; sourceTree = "<group>"; };
 		DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineViewModel.swift; sourceTree = "<group>"; };
+		DBEA97622A1B556C00C8B75B /* SecondaryContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryContainerViewController.swift; sourceTree = "<group>"; };
+		DBEA97652A1B58E200C8B75B /* SecondaryContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryContainerViewModel.swift; sourceTree = "<group>"; };
+		DBEA97672A1B6D2300C8B75B /* NewColumnViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewColumnViewController.swift; sourceTree = "<group>"; };
 		DBED2A7125B8006400BE6941 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBED96D7253F5D7800C5383A /* NamingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingState.swift; sourceTree = "<group>"; };
 		DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewController.swift; sourceTree = "<group>"; };
@@ -1062,6 +1072,8 @@
 				DB148B01281A729600B596C7 /* Sidebar */,
 				DBDA8E9624FE075E006750DC /* MainTab */,
 				DB66DB8E2823A7CC0071F5F3 /* SecondaryTab */,
+				DBEA97642A1B557100C8B75B /* SecondaryContainer */,
+				DBEA97692A1B6D2C00C8B75B /* NewColumn */,
 				DB148B02281A7AB300B596C7 /* ContentSplitViewController.swift */,
 			);
 			path = Root;
@@ -2245,6 +2257,25 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		DBEA97642A1B557100C8B75B /* SecondaryContainer */ = {
+			isa = PBXGroup;
+			children = (
+				DBEA97622A1B556C00C8B75B /* SecondaryContainerViewController.swift */,
+				DBEA97652A1B58E200C8B75B /* SecondaryContainerViewModel.swift */,
+			);
+			path = SecondaryContainer;
+			sourceTree = "<group>";
+		};
+		DBEA97692A1B6D2C00C8B75B /* NewColumn */ = {
+			isa = PBXGroup;
+			children = (
+				DBEA97672A1B6D2300C8B75B /* NewColumnViewController.swift */,
+				DB0455B52A1CA2F3009A00EF /* NewColumnViewModel.swift */,
+				DB0455B72A1CA510009A00EF /* NewColumnView.swift */,
+			);
+			path = NewColumn;
+			sourceTree = "<group>";
+		};
 		DBED96DC253F5D7B00C5383A /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
@@ -2888,6 +2919,7 @@
 				DBA7DD74256B96450008A95A /* UIFont.swift in Sources */,
 				DB1D3DF228938CDF008F0BD0 /* StatusHistoryViewModel.swift in Sources */,
 				DB76A652275F1C3200A50673 /* MediaPreviewTransitionItem.swift in Sources */,
+				DBEA97632A1B556C00C8B75B /* SecondaryContainerViewController.swift in Sources */,
 				DB697DF3278FDDF7004EF2F7 /* TimelineViewModel.swift in Sources */,
 				DB235EF42834DD0900398FCA /* SettingListViewModel.swift in Sources */,
 				DB83020D273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift in Sources */,
@@ -2900,6 +2932,7 @@
 				DB71C7D3271EB71800BE3819 /* ProfileViewController+DataSourceProvider.swift in Sources */,
 				DB8301FA273CED2E00BF5224 /* NotificationTimelineViewModel.swift in Sources */,
 				DB36F35E257F74C10028F81E /* ScrollViewContainer.swift in Sources */,
+				DBEA97662A1B58E200C8B75B /* SecondaryContainerViewModel.swift in Sources */,
 				DB76A65D275F52D500A50673 /* MediaInfoDescriptionView+ViewModel.swift in Sources */,
 				DB66DB902823AC3C0071F5F3 /* TabBarItem.swift in Sources */,
 				DB697E0927904BFB004EF2F7 /* FederatedTimelineViewController.swift in Sources */,
@@ -2981,7 +3014,9 @@
 				DB1D3DED28938ACD008F0BD0 /* HistoryViewModel.swift in Sources */,
 				DB522F172886A08F0088017C /* UIStatusBarManager+HandleTapAction.m in Sources */,
 				DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */,
+				DB0455B62A1CA2F3009A00EF /* NewColumnViewModel.swift in Sources */,
 				DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */,
+				DBEA97682A1B6D2300C8B75B /* NewColumnViewController.swift in Sources */,
 				DBADCDC82826658700D1CA4E /* MediaPreviewableViewController.swift in Sources */,
 				DBF167FD27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift in Sources */,
 				DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */,
@@ -3186,6 +3221,7 @@
 				DB76A64D275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift in Sources */,
 				DBF87AD92892A67D0029A7C7 /* TranslateButtonPreferenceView.swift in Sources */,
 				DB76A66A27606F6900A50673 /* MediaPreviewVideoViewController.swift in Sources */,
+				DB0455B82A1CA510009A00EF /* NewColumnView.swift in Sources */,
 				DB148B0C281A837E00B596C7 /* SidebarView.swift in Sources */,
 				DB88E6292890DF67009A01F5 /* BehaviorsPreferenceViewController.swift in Sources */,
 				DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */,

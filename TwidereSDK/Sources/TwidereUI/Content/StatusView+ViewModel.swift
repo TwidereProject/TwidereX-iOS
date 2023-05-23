@@ -940,6 +940,7 @@ extension StatusView.ViewModel {
         case .timeline, .referenceReplyTo:
             width += StatusView.hangingAvatarButtonDimension
             width += StatusView.hangingAvatarButtonTrailingSpacing
+            width += 2 * 16 // cell margin
         default:
             break
         }
