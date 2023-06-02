@@ -124,7 +124,6 @@ extension ProfileViewController {
                     self.avatarBarButtonItem.configure(user: user)
                 }
                 .store(in: &disposeBag)
-            
         }
         
         addChild(tabBarPagerController)

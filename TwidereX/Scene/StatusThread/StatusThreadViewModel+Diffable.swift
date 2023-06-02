@@ -34,6 +34,7 @@ extension StatusThreadViewModel {
                     let viewModel = StatusView.ViewModel(
                         status: status,
                         authContext: self.authContext,
+                        kind: .conversationThread,
                         delegate: cell,
                         viewLayoutFramePublisher: self.$viewLayoutFrame
                     )

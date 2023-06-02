@@ -28,15 +28,15 @@ extension TwitterStatus {
                 continue
             }
 
-            // drop quote URL
-            if let quote = quote {
-                let quoteID = quote.id
-                guard !displayURL.hasPrefix("twitter.com"),
-                      !expandedURL.hasPrefix(quoteID)
-                else {
-                    text = text.replacingOccurrences(of: shortURL, with: "")
-                    continue
+            // drop twitter URL
+            // - quote URL: remove URL
+            // - long tweet self URL suffix: replace "… URL" with "…"
+            if displayURL.hasPrefix("twitter.com") && expandedURL.localizedCaseInsensitiveContains("/status/") {
+                if expandedURL.localizedCaseInsensitiveContains(self.id) {
+                    text = text.replacingOccurrences(of: "… " + shortURL, with: "…")
                 }
+                text = text.replacingOccurrences(of: shortURL, with: "")
+                continue
             }
         }
         return text
