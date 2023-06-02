@@ -34,8 +34,11 @@ class SecondaryContainerViewModel: ObservableObject {
 extension SecondaryContainerViewModel {
     func addColumn(
         in stack: UIStackView,
+        at index: Int? = nil,
+        tab: TabBarItem?,
         viewController: UIViewController,
-        setupColumnMenu: Bool = true
+        setupColumnMenu: Bool = true,
+        newColumnViewModel: NewColumnViewModel? = nil
     ) {
         let navigationController = UINavigationController(rootViewController: viewController)
         viewControllers.append(navigationController)
@@ -44,7 +47,8 @@ extension SecondaryContainerViewModel {
         if count == 0 {
             stack.addArrangedSubview(navigationController.view)
         } else {
-            stack.insertArrangedSubview(navigationController.view, at: count - 1)
+            let at = min(count - 1, index ?? count - 1)
+            stack.insertArrangedSubview(navigationController.view, at: at)
         }
         
         navigationController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -56,8 +60,10 @@ extension SecondaryContainerViewModel {
         if setupColumnMenu {
             setupColumnMenuBarButtonItem(
                 in: stack,
+                tab: tab,
                 viewController: viewController,
-                navigationController: navigationController
+                navigationController: navigationController,
+                newColumnViewModel: newColumnViewModel
             )
         }
     }
@@ -72,13 +78,32 @@ extension SecondaryContainerViewModel {
         
         self.width = width
     }
+    
+    func removeColumn(
+        in stack: UIStackView,
+        navigationController: UINavigationController
+    ) -> Int? {
+        let _index: Int? = stack.arrangedSubviews.firstIndex(where: { view in
+            navigationController.view === view
+        })
+        guard let index = _index else { return nil }
+        
+        stack.removeArrangedSubview(navigationController.view)
+        navigationController.view.removeFromSuperview()
+        navigationController.view.isHidden = true
+        self.viewControllers.removeAll(where: { $0 === navigationController })
+        
+        return index
+    }
 }
 
 extension SecondaryContainerViewModel {
     private func setupColumnMenuBarButtonItem(
         in stack: UIStackView,
+        tab: TabBarItem?,
         viewController: UIViewController,
-        navigationController: UINavigationController
+        navigationController: UINavigationController,
+        newColumnViewModel: NewColumnViewModel? = nil
     ) {
         let barButtonItem = UIBarButtonItem()
         barButtonItem.image = UIImage(systemName: "slider.horizontal.3")
@@ -140,7 +165,23 @@ extension SecondaryContainerViewModel {
             let menu = UIMenu(title: "", options: .displayInline, children: menuElements)
             handler([menu])
         }
-        barButtonItem.menu = UIMenu(title: "", options: .displayInline, children: [deferredMenuElement])
+        
+        var children: [UIMenuElement] = [deferredMenuElement]
+        
+        if let newColumnViewModel = newColumnViewModel, let tab = tab {
+            var tabs = newColumnViewModel.tabs
+            tabs.removeAll(where: { $0 == tab })
+            if !tabs.isEmpty {
+                let openTabsMenu: UIMenu = NewColumnView.menu(
+                    tabs: tabs,
+                    viewModel: newColumnViewModel,
+                    source: navigationController
+                )
+                children.append(openTabsMenu)
+            }
+        }
+        
+        barButtonItem.menu = UIMenu(title: "", options: .displayInline, children: children)
         viewController.navigationItem.leftBarButtonItem = barButtonItem
     }
 }

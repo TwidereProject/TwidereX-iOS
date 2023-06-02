@@ -11,6 +11,7 @@ import SwiftUI
 
 protocol NewColumnViewDelegate: AnyObject {
     func newColumnView(_ viewModel: NewColumnViewModel, tabBarItemDidPressed tab: TabBarItem)
+    func newColumnView(_ viewModel: NewColumnViewModel, source: UINavigationController, openTabMenuAction tab: TabBarItem)
 }
 
 struct NewColumnView: View {
@@ -38,3 +39,20 @@ struct NewColumnView: View {
     }   // end body
 }
 
+extension NewColumnView {
+    static func menu(
+        tabs: [TabBarItem],
+        viewModel: NewColumnViewModel,
+        source: UINavigationController
+    ) -> UIMenu {
+        let actions: [UIAction] = tabs.map { tab in
+            UIAction(title: tab.title, image: tab.image) { [weak viewModel, weak source] _ in
+                guard let source = source,
+                      let viewModel = viewModel
+                else { return }
+                viewModel.delegate?.newColumnView(viewModel, source: source, openTabMenuAction: tab)
+            }
+        }
+        return UIMenu(options: .displayInline, children: actions)
+    }
+}

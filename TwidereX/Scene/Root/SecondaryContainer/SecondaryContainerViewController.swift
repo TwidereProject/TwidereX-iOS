@@ -78,13 +78,43 @@ extension SecondaryContainerViewController {
             authContext: authContext
         )
         newColumnViewController.viewModel.delegate = self
-        viewModel.addColumn(in: stack, viewController: newColumnViewController, setupColumnMenu: false)
+        viewModel.addColumn(
+            in: stack,
+            tab: nil,
+            viewController: newColumnViewController,
+            setupColumnMenu: false
+        )
     }
 }
 
 // MARK: - NewColumnViewDelegate
 extension SecondaryContainerViewController: NewColumnViewDelegate {
     func newColumnView(_ viewModel: NewColumnViewModel, tabBarItemDidPressed tab: TabBarItem) {
+        guard let viewController = self.viewController(for: tab) else {
+            assertionFailure()
+            return
+        }
+        
+        self.viewModel.addColumn(
+            in: stack,
+            tab: tab,
+            viewController: viewController,
+            newColumnViewModel: viewModel
+        )
+    }
+    
+    private func menuActionForOpenTabs(tabs: [TabBarItem], exclude: TabBarItem) -> [TabBarItem] {
+        var tabs = tabs
+        tabs.removeAll(where: { $0 == exclude })
+        return tabs
+    }
+    
+    private func configure(viewController: NeedsDependency) {
+        viewController.context = context
+        viewController.coordinator = coordinator
+    }
+    
+    private func viewController(for tab: TabBarItem) -> UIViewController? {
         switch tab {
         case .home:
             let homeTimelineViewController = HomeTimelineViewController()
@@ -93,12 +123,10 @@ extension SecondaryContainerViewController: NewColumnViewDelegate {
                 context: context,
                 authContext: authContext
             )
-            self.viewModel.addColumn(
-                in: stack,
-                viewController: homeTimelineViewController
-            )
+            return homeTimelineViewController
         case .homeList:
             assertionFailure()
+            return nil
         case .notification:
             let notificationViewController = NotificationViewController()
             configure(viewController: notificationViewController)
@@ -107,10 +135,7 @@ extension SecondaryContainerViewController: NewColumnViewDelegate {
                 authContext: authContext,
                 coordinator: coordinator
             )
-            self.viewModel.addColumn(
-                in: stack,
-                viewController: notificationViewController
-            )
+            return notificationViewController
         case .search:
             let searchViewController = SearchViewController()
             configure(viewController: searchViewController)
@@ -118,10 +143,7 @@ extension SecondaryContainerViewController: NewColumnViewDelegate {
                 context: context,
                 authContext: authContext
             )
-            self.viewModel.addColumn(
-                in: stack,
-                viewController: searchViewController
-            )
+            return searchViewController
         case .me:
             let profileViewController = ProfileViewController()
             configure(viewController: profileViewController)
@@ -129,34 +151,26 @@ extension SecondaryContainerViewController: NewColumnViewDelegate {
                 context: context,
                 authContext: authContext
             )
-            self.viewModel.addColumn(
-                in: stack,
-                viewController: profileViewController
-            )
+            return profileViewController
         case .local:
             let federatedTimelineViewModel = FederatedTimelineViewModel(
                 context: context,
                 authContext: authContext,
                 isLocal: true
             )
-            guard let rootViewController = coordinator.get(scene: .federatedTimeline(viewModel: federatedTimelineViewModel)) else { return }
-            self.viewModel.addColumn(
-                in: stack,
-                viewController: rootViewController
-            )
+            guard let rootViewController = coordinator.get(scene: .federatedTimeline(viewModel: federatedTimelineViewModel)) else { return nil }
+            return rootViewController
         case .federated:
             let federatedTimelineViewModel = FederatedTimelineViewModel(
                 context: context,
                 authContext: authContext,
                 isLocal: false
             )
-            guard let rootViewController = coordinator.get(scene: .federatedTimeline(viewModel: federatedTimelineViewModel)) else { return }
-            self.viewModel.addColumn(
-                in: stack,
-                viewController: rootViewController
-            )
+            guard let rootViewController = coordinator.get(scene: .federatedTimeline(viewModel: federatedTimelineViewModel)) else { return nil }
+            return rootViewController
         case .messages:
             assertionFailure()
+            return nil
         case .likes:
             let userLikeTimelineViewModel = UserLikeTimelineViewModel(
                 context: context,
@@ -171,54 +185,55 @@ extension SecondaryContainerViewController: NewColumnViewDelegate {
                 )
             )
             userLikeTimelineViewModel.isFloatyButtonDisplay = false
-            guard let rootViewController = coordinator.get(scene: .userLikeTimeline(viewModel: userLikeTimelineViewModel)) else { return }
-            self.viewModel.addColumn(
-                in: stack,
-                viewController: rootViewController
-            )
+            guard let rootViewController = coordinator.get(scene: .userLikeTimeline(viewModel: userLikeTimelineViewModel)) else { return nil }
+            return rootViewController
         case .history:
             let historyViewModel = HistoryViewModel(
                 context: context,
                 coordinator: coordinator,
                 authContext: authContext
             )
-            guard let rootViewController = coordinator.get(scene: .history(viewModel: historyViewModel)) else { return }
-            self.viewModel.addColumn(
-                in: stack,
-                viewController: rootViewController
-            )
+            guard let rootViewController = coordinator.get(scene: .history(viewModel: historyViewModel)) else { return nil }
+            return rootViewController
         case .lists:
-            guard let me = authContext.authenticationContext.user(in: context.managedObjectContext)?.asRecord else { return }
+            guard let me = authContext.authenticationContext.user(in: context.managedObjectContext)?.asRecord else { return nil }
 
             let compositeListViewModel = CompositeListViewModel(
                 context: context,
                 authContext: authContext,
                 kind: .lists(me)
             )
-            guard let rootViewController = coordinator.get(scene: .compositeList(viewModel: compositeListViewModel)) else { return }
-            self.viewModel.addColumn(
-                in: stack,
-                viewController: rootViewController
-            )
+            guard let rootViewController = coordinator.get(scene: .compositeList(viewModel: compositeListViewModel)) else { return nil }
+            return rootViewController
         case .trends:
             let trendViewModel = TrendViewModel(
                 context: context,
                 authContext: authContext
             )
-            guard let rootViewController = coordinator.get(scene: .trend(viewModel: trendViewModel)) else { return }
-            self.viewModel.addColumn(
-                in: stack,
-                viewController: rootViewController
-            )
+            guard let rootViewController = coordinator.get(scene: .trend(viewModel: trendViewModel)) else { return nil }
+            return rootViewController
         case .drafts:
             assertionFailure()
+            return nil
         case .settings:
             assertionFailure()
+            return nil
         }
     }
     
-    private func configure(viewController: NeedsDependency) {
-        viewController.context = context
-        viewController.coordinator = coordinator
+    func newColumnView(
+        _ viewModel: NewColumnViewModel,
+        source: UINavigationController,
+        openTabMenuAction tab: TabBarItem
+    ) {
+        guard let index = self.viewModel.removeColumn(in: stack, navigationController: source) else { return }
+        guard let viewController = self.viewController(for: tab) else { return }
+        self.viewModel.addColumn(
+            in: stack,
+            at: index,
+            tab: tab,
+            viewController: viewController,
+            newColumnViewModel: viewModel
+        )
     }
 }
