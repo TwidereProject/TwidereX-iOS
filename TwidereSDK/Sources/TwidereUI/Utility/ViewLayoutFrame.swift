@@ -37,21 +37,19 @@ extension ViewLayoutFrame {
         let layoutFrame = view.frame
         if self.layoutFrame != layoutFrame {
             self.layoutFrame = layoutFrame
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): layoutFrame: \(layoutFrame.debugDescription)")
         }
         
         let safeAreaLayoutFrame = view.safeAreaLayoutGuide.layoutFrame
         if self.safeAreaLayoutFrame != safeAreaLayoutFrame {
             self.safeAreaLayoutFrame = safeAreaLayoutFrame
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): safeAreaLayoutFrame: \(safeAreaLayoutFrame.debugDescription)")
         }
         
         let readableContentLayoutFrame = view.readableContentGuide.layoutFrame
         if self.readableContentLayoutFrame != readableContentLayoutFrame {
             self.readableContentLayoutFrame = readableContentLayoutFrame
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): readableContentLayoutFrame: \(readableContentLayoutFrame.debugDescription)")
         }
-        
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): layoutFrame: \(layoutFrame.debugDescription)")
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): safeAreaLayoutFrame: \(safeAreaLayoutFrame.debugDescription)")
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): readableContentLayoutFrame: \(readableContentLayoutFrame.debugDescription)")
-
     }
 }

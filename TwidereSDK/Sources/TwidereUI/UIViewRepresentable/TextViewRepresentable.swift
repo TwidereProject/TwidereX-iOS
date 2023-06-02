@@ -107,7 +107,7 @@ public struct TextViewRepresentable: UIViewRepresentable {
             textView.frame.size.width = width
             needsLayout = true
         }
-        if textView.attributedText != attributedString {
+        if textView.attributedText.string != attributedString.string {
             textView.textStorage.setAttributedString(attributedString)
             needsLayout = true
             
