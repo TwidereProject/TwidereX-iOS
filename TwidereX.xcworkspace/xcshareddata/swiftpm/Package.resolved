@@ -141,8 +141,8 @@
         "repositoryURL": "https://github.com/TwidereProject/MetaTextKit.git",
         "state": {
           "branch": null,
-          "revision": "addb2b4875a2a5712e1c50add410c560a9cf42f2",
-          "version": "4.5.2"
+          "revision": "8877640bba088661e768fc531b5fc9c5976a6e48",
+          "version": "4.6.0"
         }
       },
       {
@@ -249,8 +249,8 @@
         "repositoryURL": "https://github.com/TwidereProject/twitter-text.git",
         "state": {
           "branch": null,
-          "revision": "c88fa4ed8dd7441f827942b83d0564101bbdc508",
-          "version": "0.0.3"
+          "revision": "aaa067a823a61f27780692a836ec78fd0c0706fc",
+          "version": "0.0.4"
         }
       },
       {
@@ -258,8 +258,8 @@
         "repositoryURL": "https://github.com/TwidereProject/TwitterSDK.git",
         "state": {
           "branch": null,
-          "revision": "1b2998a2fc5b7abc421e61b075ba3807ba694991",
-          "version": "0.8.0"
+          "revision": "8148362dbf900b6f6416e3d64b3332fc660bd844",
+          "version": "0.9.1"
         }
       },
       {

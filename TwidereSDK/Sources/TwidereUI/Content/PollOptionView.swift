@@ -178,7 +178,7 @@ extension PollOptionView {
                 index = Int(option.index)
                 content = {
                     do {
-                        let content = MastodonContent(content: option.title, emojis: option.poll.status.emojis.asDictionary)
+                        let content = MastodonContent(content: option.title, emojis: option.poll.status.emojisTransient.asDictionary)
                         let metaContent = try MastodonMetaContent.convert(document: content)
                         return metaContent
                     } catch {

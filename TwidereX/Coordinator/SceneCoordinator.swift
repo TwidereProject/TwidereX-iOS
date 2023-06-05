@@ -271,7 +271,7 @@ extension SceneCoordinator {
 
 }
 
-private extension SceneCoordinator {
+extension SceneCoordinator {
     
     func get(scene: Scene) -> UIViewController? {
         let viewController: UIViewController?

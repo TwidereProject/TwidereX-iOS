@@ -26,6 +26,8 @@ final class SearchViewModel {
     let trendViewModel: TrendViewModel
     let viewDidAppear = PassthroughSubject<Void, Never>()
     
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
+    
     // output
     var diffableDataSource: UITableViewDiffableDataSource<SearchSection, SearchItem>?
     @Published var savedSearchTexts = Set<String>()

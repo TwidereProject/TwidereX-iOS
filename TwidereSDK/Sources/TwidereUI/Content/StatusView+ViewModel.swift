@@ -297,6 +297,31 @@ extension StatusView {
     }
 }
 
+extension StatusView.ViewModel {
+    @MainActor
+    public func updateTwitterStatusContent(statusID: TwitterStatus.ID) async throws {
+        do {
+            guard case let .twitter(authenticationContext) = authContext?.authenticationContext else { return }
+            let response = try await Twitter.API.V2.Status.detail(
+                session: URLSession(configuration: .ephemeral),
+                query: .init(statusID: statusID),
+                authorization: authenticationContext.authorization
+            )
+            let metaContent = TwitterMetaContent.convert(
+                document: TwitterContent(content: response.value.text, urlEntities: response.value.urlEntities),
+                urlMaximumLength: .max,
+                twitterTextProvider: SwiftTwitterTextProvider(),
+                useParagraphMark: true
+            )
+            self.content = metaContent
+            // delegate?.statusView(self, translateContentDidChange: status)
+        } catch {
+            debugPrint(error.localizedDescription)
+            throw error
+        }
+    }
+}
+
 //extension StatusView.ViewModel {
 //    func bind(statusView: StatusView) {
 //        bindHeader(statusView: statusView)
@@ -936,13 +961,46 @@ extension StatusView.ViewModel {
     
     var containerMargin: CGFloat {
         var width: CGFloat = 0
+        
+        // container margin
         switch kind {
-        case .timeline, .referenceReplyTo:
+        case .conversationThread:
+            fallthrough
+        case .referenceReplyTo:
+            fallthrough
+        case .referenceQuote:
+            fallthrough
+        case .timeline:
             width += StatusView.hangingAvatarButtonDimension
             width += StatusView.hangingAvatarButtonTrailingSpacing
-        default:
+        case .repost:
+            break
+        case .quote:
+            break
+        case .conversationRoot:
             break
         }
+        
+        // manually readable margin (iPad multi-column layout)
+        switch kind {
+        case .timeline:
+            fallthrough
+        case .conversationThread:
+            fallthrough
+        case .conversationRoot:
+            if viewLayoutFrame.layoutFrame.width == viewLayoutFrame.readableContentLayoutFrame.width {
+                width += 2 * 16
+            }
+        case .referenceReplyTo:
+            break
+        case .referenceQuote:
+            break
+        case .repost:
+            break
+        case .quote:
+            break
+        }
+        
         return width
     }
     
@@ -1100,7 +1158,7 @@ extension StatusView.ViewModel {
         }
         
         // reply settings
-        replySettingBannerViewModel = status.replySettings
+        replySettingBannerViewModel = status.replySettingsTransient
             .flatMap { object in Twitter.Entity.V2.Tweet.ReplySettings(rawValue: object.value) }
             .flatMap { replaySettings in
                 ReplySettingBannerView.ViewModel(
@@ -1130,14 +1188,25 @@ extension StatusView.ViewModel {
         }
         
         // content
-        let content = TwitterContent(content: status.displayText, urlEntities: status.urlEntities)
-        let metaContent = TwitterMetaContent.convert(
-            document: content,
-            urlMaximumLength: .max,
-            twitterTextProvider: SwiftTwitterTextProvider(),
-            useParagraphMark: true
-        )
-        self.content = metaContent
+        switch kind {
+        case .conversationRoot where status.hasMore:
+            let statusID = status.id
+            defer {
+                Task {
+                    try? await self.updateTwitterStatusContent(statusID: statusID)
+                }
+            }
+            fallthrough
+        default:
+            let content = TwitterContent(content: status.displayText, urlEntities: status.urlEntities)
+            let metaContent = TwitterMetaContent.convert(
+                document: content,
+                urlMaximumLength: .max,
+                twitterTextProvider: SwiftTwitterTextProvider(),
+                useParagraphMark: true
+            )
+            self.content = metaContent
+        }
         
         // language
         status.publisher(for: \.language)
@@ -1171,7 +1240,7 @@ extension StatusView.ViewModel {
         }
 
         // location
-        location = status.location?.fullName
+        location = status.locationTransient?.fullName
 
         // metric
         switch kind {
@@ -1262,7 +1331,7 @@ extension StatusView.ViewModel {
                 label: {
                     let name = status.author.name
                     let userRepostText = L10n.Common.Controls.Status.userBoosted(name)
-                    let text = MastodonContent(content: userRepostText, emojis: status.author.emojis.asDictionary)
+                    let text = MastodonContent(content: userRepostText, emojis: status.author.emojisTransient.asDictionary)
                     let label = MastodonMetaContent.convert(text: text)
                     return label
                 }()
@@ -1298,7 +1367,7 @@ extension StatusView.ViewModel {
         // spoiler content
         if let spoilerText = status.spoilerText, !spoilerText.isEmpty {
             do {
-                let content = MastodonContent(content: spoilerText, emojis: status.emojis.asDictionary)
+                let content = MastodonContent(content: spoilerText, emojis: status.emojisTransient.asDictionary)
                 let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
                 self.spoilerContent = metaContent
             } catch {
@@ -1309,7 +1378,7 @@ extension StatusView.ViewModel {
         
         // content
         do {
-            let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
+            let content = MastodonContent(content: status.content, emojis: status.emojisTransient.asDictionary)
             let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
             self.content = metaContent
         } catch {
@@ -1425,152 +1494,5 @@ extension StatusView.ViewModel {
         )
         
         return viewModel
-//
-//        if let repost = status.repost {
-//            let _repostViewModel = StatusView.ViewModel(
-//                status: repost,
-//                authContext: authContext,
-//                kind: kind,
-//                delegate: delegate,
-//                parentViewModel: self,
-//                viewLayoutFramePublisher: viewLayoutFramePublisher
-//            )
-//            repostViewModel = _repostViewModel
-//
-//            // header - repost
-//            let _statusHeaderViewModel = StatusHeaderView.ViewModel(
-//                image: Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate),
-//                label: {
-//                    let name = status.author.name
-//                    let userRepostText = L10n.Common.Controls.Status.userBoosted(name)
-//                    let text = MastodonContent(content: userRepostText, emojis: status.author.emojis.asDictionary)
-//                    let label = MastodonMetaContent.convert(text: text)
-//                    return label
-//                }()
-//            )
-//            _statusHeaderViewModel.hasHangingAvatar = _repostViewModel.hasHangingAvatar
-//            _repostViewModel.statusHeaderViewModel = _statusHeaderViewModel
-//        }
-//
-//        // author
-//        status.author.publisher(for: \.avatar)
-//            .compactMap { $0.flatMap { URL(string: $0) } }
-//            .assign(to: &$avatarURL)
-//        status.author.publisher(for: \.displayName)
-//            .compactMap { _ in status.author.nameMetaContent }
-//            .assign(to: &$authorName)
-//        status.author.publisher(for: \.username)
-//            .map { _ in status.author.acct }
-//            .assign(to: &$authorUsernme)
-//        authorUserIdentifier = .mastodon(.init(domain: status.author.domain, id: status.author.id))
-//
-//        // visibility
-//        visibility = status.visibility
-//
-//        // timestamp
-//        switch kind {
-//        case .conversationRoot:
-//            break
-//        default:
-//            timestampLabelViewModel = TimestampLabelView.ViewModel(timestamp: status.createdAt)
-//        }
-//
-//        // spoiler content
-//        if let spoilerText = status.spoilerText, !spoilerText.isEmpty {
-//            do {
-//                let content = MastodonContent(content: spoilerText, emojis: status.emojis.asDictionary)
-//                let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
-//                self.spoilerContent = metaContent
-//            } catch {
-//                assertionFailure(error.localizedDescription)
-//                self.spoilerContent = nil
-//            }
-//        }
-//
-//        // content
-//        do {
-//            let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
-//            let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
-//            self.content = metaContent
-//        } catch {
-//            assertionFailure(error.localizedDescription)
-//            self.content = PlaintextMetaContent(string: "")
-//        }
-//
-//        // language
-//        status.publisher(for: \.language)
-//            .assign(to: &$language)
-//
-//        // content warning
-//        isContentSensitiveToggled = status.isContentSensitiveToggled
-//        status.publisher(for: \.isContentSensitiveToggled)
-//            .receive(on: DispatchQueue.main)
-//            .assign(to: \.isContentSensitiveToggled, on: self)
-//            .store(in: &disposeBag)
-//
-//        // media
-//        mediaViewModels = MediaView.ViewModel.viewModels(from: status)
-//
-//        // poll
-//        if let poll = status.poll {
-//            self.pollViewModel = PollView.ViewModel(
-//                authContext: authContext,
-//                poll: .mastodon(object: poll)
-//            )
-//        }
-//
-//        // media content warning
-//        isMediaSensitive = status.isMediaSensitive
-//        isMediaSensitiveToggled = status.isMediaSensitiveToggled
-//        status.publisher(for: \.isMediaSensitiveToggled)
-//            .receive(on: DispatchQueue.main)
-//            .assign(to: \.isMediaSensitiveToggled, on: self)
-//            .store(in: &disposeBag)
-//
-//        // toolbar
-//        toolbarViewModel.platform = .mastodon
-//        status.publisher(for: \.replyCount)
-//            .map { Int($0) }
-//            .assign(to: &toolbarViewModel.$replyCount)
-//        status.publisher(for: \.repostCount)
-//            .map { Int($0) }
-//            .assign(to: &toolbarViewModel.$repostCount)
-//        status.publisher(for: \.likeCount)
-//            .map { Int($0) }
-//            .assign(to: &toolbarViewModel.$likeCount)
-//        if case let .mastodon(authenticationContext) = authContext?.authenticationContext {
-//            status.publisher(for: \.likeBy)
-//                .map { users -> Bool in
-//                    let ids = users.map { $0.id }
-//                    return ids.contains(authenticationContext.userID)
-//                }
-//                .assign(to: &toolbarViewModel.$isLiked)
-//            status.publisher(for: \.repostBy)
-//                .map { users -> Bool in
-//                    let ids = users.map { $0.id }
-//                    return ids.contains(authenticationContext.userID)
-//                }
-//                .assign(to: &toolbarViewModel.$isReposted)
-//        } else {
-//            // do nothing
-//        }
-//
-//        // metric
-//        switch kind {
-//        case .conversationRoot:
-//            let _metricViewModel = StatusMetricView.ViewModel(platform: .mastodon, timestamp: status.createdAt)
-//            metricViewModel = _metricViewModel
-//            status.publisher(for: \.replyCount)
-//                .map { Int($0) }
-//                .assign(to: &_metricViewModel.$replyCount)
-//            status.publisher(for: \.repostCount)
-//                .map { Int($0) }
-//                .assign(to: &_metricViewModel.$repostCount)
-//            status.publisher(for: \.likeCount)
-//                .map { Int($0) }
-//                .assign(to: &_metricViewModel.$likeCount)
-//        default:
-//            break
-//        }
     }
 }

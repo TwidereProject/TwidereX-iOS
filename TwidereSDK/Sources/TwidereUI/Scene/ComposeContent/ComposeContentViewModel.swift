@@ -213,7 +213,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 )
                 self.secondaryMentionPickItems = {
                     var items: [MentionPickViewModel.Item] = []
-                    for mention in status.entities?.mentions ?? [] {
+                    for mention in status.entitiesTransient?.mentions ?? [] {
                         let username = mention.username
                         let item = MentionPickViewModel.Item.twitterUser(
                             username: username,
@@ -248,7 +248,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 if _authorUserIdentifier?.id != status.author.id {
                     mentionAccts.append("@" + status.author.acct)
                 }
-                for mention in status.mentions {
+                for mention in status.mentionsTransient {
                     let acct = "@" + mention.acct
                     guard !mentionAccts.contains(acct) else { continue }
                     guard mention.id != _authorUserIdentifier?.id else { continue }
@@ -376,7 +376,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 }
                 excludeUsernames.insert(author.username)
                 
-                for mention in status.entities?.mentions ?? [] {
+                for mention in status.entitiesTransient?.mentions ?? [] {
                     guard !excludeUsernames.contains(mention.username) else { continue }
                     usernames.append(mention.username)
                 }

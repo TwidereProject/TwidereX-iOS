@@ -102,8 +102,8 @@ extension Persistence.TwitterUser {
         twitterUser user: TwitterUser,
         context: PersistContextV2
     ) {
-        user.update(bioEntities: TwitterEntity(entity: context.entity.entities?.description))
-        user.update(urlEntities: TwitterEntity(entity: context.entity.entities?.url))
+        user.update(bioEntitiesTransient: TwitterEntity(entity: context.entity.entities?.description))
+        user.update(urlEntitiesTransient: TwitterEntity(entity: context.entity.entities?.url))
         
         // V2 entity not contains relationship flags
     }

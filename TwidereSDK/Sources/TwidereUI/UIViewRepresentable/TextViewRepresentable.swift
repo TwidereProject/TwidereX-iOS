@@ -13,19 +13,8 @@ import MetaTextKit
 import MetaTextArea
 
 public struct TextViewRepresentable: UIViewRepresentable {
-
-    let textView: WrappedTextView = {
-        let textView = WrappedTextView()
-        textView.backgroundColor = .clear
-        textView.isScrollEnabled = false
-        textView.isEditable = false
-        textView.isSelectable = false
-        textView.textContainerInset = .zero
-        textView.textContainer.lineFragmentPadding = 0
-        textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        textView.setContentHuggingPriority(.defaultHigh, for: .vertical)
-        return textView
-    }()
+    // let logger = Logger(subsystem: "TextViewRepresentable", category: "View")
+    let logger = Logger(.disabled)
     
     // input
     let metaContent: MetaContent
@@ -33,6 +22,9 @@ public struct TextViewRepresentable: UIViewRepresentable {
     let width: CGFloat
     let isSelectable: Bool
     let handler: (Meta) -> Void
+    
+    // output
+    let attributedString: NSAttributedString
     
     public init(
         metaContent: MetaContent,
@@ -46,53 +38,82 @@ public struct TextViewRepresentable: UIViewRepresentable {
         self.width = width
         self.isSelectable = isSelectable
         self.handler = handler
+        self.attributedString = {
+            let attributedString = NSMutableAttributedString(string: metaContent.string)
+            let textAttributes: [NSAttributedString.Key: Any] = [
+                .font: textStyle.font,
+                .foregroundColor: textStyle.textColor,
+            ]
+            let linkAttributes: [NSAttributedString.Key: Any] = [
+                .font: textStyle.font,
+                .foregroundColor: UIColor.tintColor,
+            ]
+            let paragraphStyle: NSMutableParagraphStyle = {
+                let style = NSMutableParagraphStyle()
+                style.lineSpacing = 3
+                style.paragraphSpacing = 8
+                return style
+            }()
+            
+            MetaText.setAttributes(
+                for: attributedString,
+                textAttributes: textAttributes,
+                linkAttributes: linkAttributes,
+                paragraphStyle: paragraphStyle,
+                content: metaContent
+            )
+            
+            return attributedString
+        }()
     }
     
     public func makeUIView(context: Context) -> UITextView {
-        let textView = self.textView
+        let textView: WrappedTextView = {
+            let textView = WrappedTextView()
+            textView.backgroundColor = .clear
+            textView.isScrollEnabled = false
+            textView.isEditable = false
+            textView.isSelectable = false
+            textView.textContainerInset = .zero
+            textView.textContainer.lineFragmentPadding = 0
+            textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            textView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+            return textView
+        }()
         textView.isSelectable = isSelectable
         textView.delegate = context.coordinator
         textView.textViewDelegate = context.coordinator
-         
-        let attributedString = NSMutableAttributedString(string: metaContent.string)
-        let textAttributes: [NSAttributedString.Key: Any] = [
-            .font: textStyle.font,
-            .foregroundColor: textStyle.textColor,
-        ]
-        let linkAttributes: [NSAttributedString.Key: Any] = [
-            .font: textStyle.font,
-            .foregroundColor: UIColor.tintColor,
-        ]
-        let paragraphStyle: NSMutableParagraphStyle = {
-            let style = NSMutableParagraphStyle()
-            style.lineSpacing = 3
-            style.paragraphSpacing = 8
-            return style
-        }()
-        
-        MetaText.setAttributes(
-            for: attributedString,
-            textAttributes: textAttributes,
-            linkAttributes: linkAttributes,
-            paragraphStyle: paragraphStyle,
-            content: metaContent
-        )
-        
         textView.frame.size.width = width
         textView.textStorage.setAttributedString(attributedString)
         textView.invalidateIntrinsicContentSize()
         textView.setNeedsLayout()
         textView.layoutIfNeeded()
-        
         return textView
     }
     
     public func updateUIView(_ view: UITextView, context: Context) {
+        let textView = view
+        
+        var needsLayout = false
+        defer {
+            if needsLayout {
+                textView.invalidateIntrinsicContentSize()
+                textView.setNeedsLayout()
+                textView.layoutIfNeeded()
+            }
+        }
+        
         if textView.frame.size.width != width {
             textView.frame.size.width = width
-            textView.invalidateIntrinsicContentSize()
-            textView.setNeedsLayout()
-            textView.layoutIfNeeded()
+            needsLayout = true
+        }
+        if textView.attributedText.string != attributedString.string {
+            textView.textStorage.setAttributedString(attributedString)
+            needsLayout = true
+            
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update textView \(view.hashValue): \(metaContent.string)")
+        } else {
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): reuse textView content")
         }
     }
     

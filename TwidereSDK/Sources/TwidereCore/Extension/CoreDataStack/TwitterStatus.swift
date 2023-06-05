@@ -16,7 +16,7 @@ extension TwitterStatus {
     
     public var displayText: String {
         var text = self.text
-        for url in entities?.urls ?? [] {
+        for url in entitiesTransient?.urls ?? [] {
             let shortURL = url.url
             guard let displayURL = url.displayURL,
                   let expandedURL = url.expandedURL
@@ -28,22 +28,22 @@ extension TwitterStatus {
                 continue
             }
 
-            // drop quote URL
-            if let quote = quote {
-                let quoteID = quote.id
-                guard !displayURL.hasPrefix("twitter.com"),
-                      !expandedURL.hasPrefix(quoteID)
-                else {
-                    text = text.replacingOccurrences(of: shortURL, with: "")
-                    continue
+            // drop twitter URL
+            // - quote URL: remove URL
+            // - long tweet self URL suffix: replace "… URL" with "…"
+            if displayURL.hasPrefix("twitter.com") && expandedURL.localizedCaseInsensitiveContains("/status/") {
+                if expandedURL.localizedCaseInsensitiveContains(self.id) {
+                    text = text.replacingOccurrences(of: "… " + shortURL, with: "…")
                 }
+                text = text.replacingOccurrences(of: shortURL, with: "")
+                continue
             }
         }
         return text
     }
     
     public var urlEntities: [TwitterContent.URLEntity] {
-        let results = entities?.urls?.map { entity in
+        let results = entitiesTransient?.urls?.map { entity in
             TwitterContent.URLEntity(url: entity.url, expandedURL: entity.expandedURL, displayURL: entity.displayURL)
         }
         return results ?? []
@@ -53,7 +53,7 @@ extension TwitterStatus {
 extension TwitterStatus {
     /// The tweet more then 240 characters
     public var hasMore: Bool {
-        for url in entities?.urls ?? [] {
+        for url in entitiesTransient?.urls ?? [] {
             guard text.localizedCaseInsensitiveContains("… " + url.url) else { continue }
             guard let expandedURL = url.expandedURL else { continue }
             guard expandedURL.hasPrefix("https://twitter.com/") else { continue }

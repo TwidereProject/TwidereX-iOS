@@ -37,12 +37,19 @@ final class ContentSplitViewController: UIViewController, NeedsDependency {
         return mainTabBarController
     }()
     
+    private(set) lazy var secondaryContainerViewController: SecondaryContainerViewController = {
+        let viewController = SecondaryContainerViewController(context: context, coordinator: coordinator, authContext: authContext)
+        return viewController
+    }()
+    
     private(set) lazy var secondaryTabBarController: SecondaryTabBarController = {
         let secondaryTabBarController = SecondaryTabBarController(context: context, coordinator: coordinator, authContext: authContext)
         return secondaryTabBarController
     }()
     
     var mainTabBarViewLeadingLayoutConstraint: NSLayoutConstraint!
+    var mainTabBarViewTrailingLayoutConstraint: NSLayoutConstraint!
+    var mainTabBarViewWidthLayoutConstraint: NSLayoutConstraint!
     
     @Published var isSidebarDisplay = false
     @Published var isSecondaryTabBarControllerActive = false
@@ -101,12 +108,25 @@ extension ContentSplitViewController {
         view.addSubview(mainTabBarController.view)
         mainTabBarController.didMove(toParent: self)
         mainTabBarViewLeadingLayoutConstraint = mainTabBarController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+        mainTabBarViewTrailingLayoutConstraint = mainTabBarController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        mainTabBarViewWidthLayoutConstraint = mainTabBarController.view.widthAnchor.constraint(equalToConstant: 428).priority(.required - 1)
         NSLayoutConstraint.activate([
             mainTabBarController.view.topAnchor.constraint(equalTo: view.topAnchor),
             mainTabBarViewLeadingLayoutConstraint,
             mainTabBarController.view.leadingAnchor.constraint(equalTo: sidebarViewController.view.trailingAnchor, constant: UIView.separatorLineHeight(of: view)).priority(.required - 1),
-            mainTabBarController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mainTabBarViewTrailingLayoutConstraint,
             mainTabBarController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        
+        addChild(secondaryContainerViewController)
+        secondaryContainerViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(secondaryContainerViewController.view)
+        secondaryContainerViewController.didMove(toParent: self)
+        NSLayoutConstraint.activate([
+            secondaryContainerViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            secondaryContainerViewController.view.leadingAnchor.constraint(equalTo: mainTabBarController.view.trailingAnchor, constant: UIView.separatorLineHeight(of: view)), // 1pt for divider
+            secondaryContainerViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            secondaryContainerViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
         addChild(secondaryTabBarController)
@@ -163,9 +183,28 @@ extension ContentSplitViewController {
         case .regular:
             isSidebarDisplay = true
             mainTabBarViewLeadingLayoutConstraint.isActive = false
+            let width: CGFloat = {
+                var minWidth = UIScreen.main.bounds.width
+                if UIScreen.main.bounds.height < minWidth {
+                    minWidth = UIScreen.main.bounds.height
+                }
+                if let window = view.window, window.frame.width < minWidth {
+                    minWidth = window.frame.width
+                }
+                return minWidth - ContentSplitViewController.sidebarWidth
+            }()
+            let mainWidth = width / 100 * 55
+            let secondaryWidth = width / 100 * 45
+            secondaryContainerViewController.viewModel.update(width: floor(secondaryWidth))
+            mainTabBarViewTrailingLayoutConstraint.isActive = false
+            mainTabBarViewWidthLayoutConstraint.constant = floor(mainWidth)
+            mainTabBarViewWidthLayoutConstraint.isActive = true
+            
         default:
             isSidebarDisplay = false
             mainTabBarViewLeadingLayoutConstraint.isActive = true
+            mainTabBarViewWidthLayoutConstraint.isActive = false
+            mainTabBarViewTrailingLayoutConstraint.isActive = true
         }
         
         guard let previousTraitCollection = previousTraitCollection else { return }

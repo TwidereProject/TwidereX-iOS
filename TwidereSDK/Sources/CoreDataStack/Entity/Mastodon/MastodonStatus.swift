@@ -94,78 +94,138 @@ final public class MastodonStatus: NSManagedObject {
 }
 
 extension MastodonStatus {
+    @NSManaged private var attachments: Data?
+    @NSManaged private var primitiveAttachmentsTransient: [MastodonAttachment]?
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @objc public var attachments: [MastodonAttachment] {
+    @objc public private(set) var attachmentsTransient: [MastodonAttachment] {
         get {
-            let keyPath = #keyPath(MastodonStatus.attachments)
+            let keyPath = #keyPath(attachmentsTransient)
             willAccessValue(forKey: keyPath)
-            let _data = primitiveValue(forKey: keyPath) as? Data
+            let attachments = primitiveAttachmentsTransient
             didAccessValue(forKey: keyPath)
-            do {
-                guard let data = _data, !data.isEmpty else { return [] }
-                let attachments = try JSONDecoder().decode([MastodonAttachment].self, from: data)
+            if let attachments = attachments {
                 return attachments
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return []
+            } else {
+                do {
+                    let _data = self.attachments
+                    guard let data = _data, !data.isEmpty else {
+                        primitiveAttachmentsTransient = []
+                        return []
+                    }
+                    let attachments = try JSONDecoder().decode([MastodonAttachment].self, from: data)
+                    primitiveAttachmentsTransient = attachments
+                    return attachments
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return []
+                }
             }
         }
         set {
-            let keyPath = #keyPath(MastodonStatus.attachments)
-            let data = try? JSONEncoder().encode(newValue)
-            willChangeValue(forKey: keyPath)
-            setPrimitiveValue(data, forKey: keyPath)
-            didChangeValue(forKey: keyPath)
+            let keyPath = #keyPath(attachmentsTransient)
+            do {
+                if newValue.isEmpty {
+                    attachments = nil
+                } else {
+                    let data = try JSONEncoder().encode(newValue)
+                    attachments = data                    
+                }
+                willChangeValue(forKey: keyPath)
+                primitiveAttachmentsTransient = newValue
+                didChangeValue(forKey: keyPath)
+            } catch {
+                assertionFailure()
+            }
         }
     }
     
+    @NSManaged private var emojis: Data?
+    @NSManaged private var primitiveEmojisTransient: [MastodonEmoji]?
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @objc public var emojis: [MastodonEmoji] {
+    @objc public private(set) var emojisTransient: [MastodonEmoji] {
         get {
-            let keyPath = #keyPath(MastodonStatus.emojis)
+            let keyPath = #keyPath(emojisTransient)
             willAccessValue(forKey: keyPath)
-            let _data = primitiveValue(forKey: keyPath) as? Data
+            let emojis = primitiveEmojisTransient
             didAccessValue(forKey: keyPath)
-            do {
-                guard let data = _data else { return [] }
-                let emojis = try JSONDecoder().decode([MastodonEmoji].self, from: data)
+            if let emojis = emojis {
                 return emojis
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return []
+            } else {
+                do {
+                    let _data = self.emojis
+                    guard let data = _data, !data.isEmpty else {
+                        primitiveEmojisTransient = []
+                        return []
+                    }
+                    let emojis = try JSONDecoder().decode([MastodonEmoji].self, from: data)
+                    primitiveEmojisTransient = emojis
+                    return emojis
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return []
+                }
             }
         }
         set {
-            let keyPath = #keyPath(MastodonStatus.emojis)
-            let data = try? JSONEncoder().encode(newValue)
-            willChangeValue(forKey: keyPath)
-            setPrimitiveValue(data, forKey: keyPath)
-            didChangeValue(forKey: keyPath)
+            let keyPath = #keyPath(emojisTransient)
+            do {
+                if newValue.isEmpty {
+                    emojis = nil
+                } else {
+                    let data = try JSONEncoder().encode(newValue)
+                    emojis = data
+                }
+                willChangeValue(forKey: keyPath)
+                primitiveEmojisTransient = newValue
+                didChangeValue(forKey: keyPath)
+            } catch {
+                assertionFailure()
+            }
         }
     }
     
+    @NSManaged private var mentions: Data?
+    @NSManaged private var primitiveMentionsTransient: [MastodonMention]?
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @objc public var mentions: [MastodonMention] {
+    @objc public private(set) var mentionsTransient: [MastodonMention] {
         get {
-            let keyPath = #keyPath(MastodonStatus.mentions)
+            let keyPath = #keyPath(mentionsTransient)
             willAccessValue(forKey: keyPath)
-            let _data = primitiveValue(forKey: keyPath) as? Data
+            let mentions = primitiveMentionsTransient
             didAccessValue(forKey: keyPath)
-            do {
-                guard let data = _data else { return [] }
-                let emojis = try JSONDecoder().decode([MastodonMention].self, from: data)
-                return emojis
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return []
+            if let mentions = mentions {
+                return mentions
+            } else {
+                do {
+                    let _data = self.mentions
+                    guard let data = _data, !data.isEmpty else {
+                        primitiveMentionsTransient = []
+                        return []
+                    }
+                    let mentions = try JSONDecoder().decode([MastodonMention].self, from: data)
+                    primitiveMentionsTransient = mentions
+                    return mentions
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return []
+                }
             }
         }
         set {
-            let keyPath = #keyPath(MastodonStatus.mentions)
-            let data = try? JSONEncoder().encode(newValue)
-            willChangeValue(forKey: keyPath)
-            setPrimitiveValue(data, forKey: keyPath)
-            didChangeValue(forKey: keyPath)
+            let keyPath = #keyPath(mentionsTransient)
+            do {
+                if newValue.isEmpty {
+                    mentions = nil
+                } else {
+                    let data = try JSONEncoder().encode(newValue)
+                    mentions = data
+                }
+                willChangeValue(forKey: keyPath)
+                primitiveMentionsTransient = newValue
+                didChangeValue(forKey: keyPath)
+            } catch {
+                assertionFailure()
+            }
         }
     }
 }
@@ -249,9 +309,9 @@ extension MastodonStatus: AutoGenerateProperty {
         public let replyToUserID: MastodonStatus.ID?
         public let createdAt: Date
         public let updatedAt: Date
-        public let attachments: [MastodonAttachment]
-        public let emojis: [MastodonEmoji]
-        public let mentions: [MastodonMention]
+        public let attachmentsTransient: [MastodonAttachment]
+        public let emojisTransient: [MastodonEmoji]
+        public let mentionsTransient: [MastodonMention]
 
     	public init(
     		id: ID,
@@ -272,9 +332,9 @@ extension MastodonStatus: AutoGenerateProperty {
     		replyToUserID: MastodonStatus.ID?,
     		createdAt: Date,
     		updatedAt: Date,
-    		attachments: [MastodonAttachment],
-    		emojis: [MastodonEmoji],
-    		mentions: [MastodonMention]
+    		attachmentsTransient: [MastodonAttachment],
+    		emojisTransient: [MastodonEmoji],
+    		mentionsTransient: [MastodonMention]
     	) {
     		self.id = id
     		self.domain = domain
@@ -294,9 +354,9 @@ extension MastodonStatus: AutoGenerateProperty {
     		self.replyToUserID = replyToUserID
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
-    		self.attachments = attachments
-    		self.emojis = emojis
-    		self.mentions = mentions
+    		self.attachmentsTransient = attachmentsTransient
+    		self.emojisTransient = emojisTransient
+    		self.mentionsTransient = mentionsTransient
     	}
     }
 
@@ -319,9 +379,9 @@ extension MastodonStatus: AutoGenerateProperty {
     	self.replyToUserID = property.replyToUserID
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
-    	self.attachments = property.attachments
-    	self.emojis = property.emojis
-    	self.mentions = property.mentions
+    	self.attachmentsTransient = property.attachmentsTransient
+    	self.emojisTransient = property.emojisTransient
+    	self.mentionsTransient = property.mentionsTransient
     }
 
     public func update(property: Property) {
@@ -340,9 +400,9 @@ extension MastodonStatus: AutoGenerateProperty {
     	update(replyToUserID: property.replyToUserID)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
-    	update(attachments: property.attachments)
-    	update(emojis: property.emojis)
-    	update(mentions: property.mentions)
+    	update(attachmentsTransient: property.attachmentsTransient)
+    	update(emojisTransient: property.emojisTransient)
+    	update(mentionsTransient: property.mentionsTransient)
     }
     // sourcery:end
 }
@@ -468,19 +528,19 @@ extension MastodonStatus: AutoUpdatableObject {
     		self.updatedAt = updatedAt
     	}
     }
-    public func update(attachments: [MastodonAttachment]) {
-    	if self.attachments != attachments {
-    		self.attachments = attachments
+    public func update(attachmentsTransient: [MastodonAttachment]) {
+    	if self.attachmentsTransient != attachmentsTransient {
+    		self.attachmentsTransient = attachmentsTransient
     	}
     }
-    public func update(emojis: [MastodonEmoji]) {
-    	if self.emojis != emojis {
-    		self.emojis = emojis
+    public func update(emojisTransient: [MastodonEmoji]) {
+    	if self.emojisTransient != emojisTransient {
+    		self.emojisTransient = emojisTransient
     	}
     }
-    public func update(mentions: [MastodonMention]) {
-    	if self.mentions != mentions {
-    		self.mentions = mentions
+    public func update(mentionsTransient: [MastodonMention]) {
+    	if self.mentionsTransient != mentionsTransient {
+    		self.mentionsTransient = mentionsTransient
     	}
     }
     // sourcery:end

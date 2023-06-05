@@ -335,13 +335,13 @@ extension HomeTimelineViewController {
                     case .quote:
                         return status.quote != nil
                     case .gif:
-                        return status.attachments.contains(where: { attachment in attachment.kind == .animatedGIF })
+                        return status.attachmentsTransient.contains(where: { attachment in attachment.kind == .animatedGIF })
                     case .video:
-                        return status.attachments.contains(where: { attachment in attachment.kind == .video })
+                        return status.attachmentsTransient.contains(where: { attachment in attachment.kind == .video })
                     case .poll:
                         return status.poll != nil
                     case .location:
-                        return status.location != nil
+                        return status.locationTransient != nil
                     case .followsYouAuthor:
                         guard case let .twitter(authenticationContext) = authenticationContext else { return false }
                         guard let me = authenticationContext.authenticationRecord.object(in: AppContext.shared.managedObjectContext)?.user else { return false }
