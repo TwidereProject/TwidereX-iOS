@@ -95,13 +95,6 @@ public struct TextViewRepresentable: UIViewRepresentable {
         let textView = view
         
         var needsLayout = false
-        defer {
-            if needsLayout {
-                textView.invalidateIntrinsicContentSize()
-                textView.setNeedsLayout()
-                textView.layoutIfNeeded()
-            }
-        }
         
         if textView.frame.size.width != width {
             textView.frame.size.width = width
@@ -114,6 +107,12 @@ public struct TextViewRepresentable: UIViewRepresentable {
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update textView \(view.hashValue): \(metaContent.string)")
         } else {
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): reuse textView content")
+        }
+        
+        if needsLayout {
+            textView.invalidateIntrinsicContentSize()
+            textView.setNeedsLayout()
+            textView.layoutIfNeeded()
         }
     }
     
