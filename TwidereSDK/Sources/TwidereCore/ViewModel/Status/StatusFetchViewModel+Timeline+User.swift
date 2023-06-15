@@ -9,6 +9,8 @@ import os.log
 import Foundation
 import TwitterSDK
 import MastodonSDK
+import CoreData
+import CoreDataStack
 
 extension StatusFetchViewModel.Timeline {
     public enum User { }
@@ -125,6 +127,7 @@ extension StatusFetchViewModel.Timeline.User {
     enum TwitterResponse {
         case v2(Twitter.Response.Content<Twitter.API.V2.User.Timeline.TweetsContent>)
         case v1(Twitter.Response.Content<[Twitter.Entity.Tweet]>)
+        case local([TwitterStatus.ID])
         
         func filter(fetchContext: TwitterFetchContext) -> StatusFetchViewModel.Result {
             switch self {
@@ -135,6 +138,8 @@ extension StatusFetchViewModel.Timeline.User {
             case .v1(let response):
                 let result = response.value.filter(fetchContext.filter.isIncluded)
                 return .twitter(result)
+            case .local(let statusIDs):
+                return .twitterIDs(statusIDs)
             }
         }
         
@@ -151,6 +156,8 @@ extension StatusFetchViewModel.Timeline.User {
                 var fetchContext = fetchContext.map(maxID: maxID)
                 fetchContext.needsAPIFallback = true
                 return .twitter(fetchContext)
+            case .local:
+                return nil
             }
         }
     }
@@ -200,35 +207,24 @@ extension StatusFetchViewModel.Timeline.User {
                     }
                 case .like:
                     do {
-                        guard !fetchContext.needsAPIFallback else {
-                            throw Twitter.API.Error.ResponseError(httpResponseStatus: .ok, twitterAPIError: .rateLimitExceeded)
+                        if fetchContext.paginationToken != nil {
+                            throw AppError.implicit(.badRequest)
                         }
-                        let response = try await api.twitterLikeTimeline(
-                            userID: fetchContext.userID,
-                            query: .init(
-                                sinceID: nil,
-                                untilID: nil,
-                                paginationToken: fetchContext.paginationToken,
-                                maxResults: fetchContext.maxResults ?? 20,
-                                onlyMedia: fetchContext.filter.rule.contains(.onlyMedia)
-                            ),
-                            authenticationContext: fetchContext.authenticationContext
-                        )
-                        return .v2(response)
-                    } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded {
-                        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Rate Limit] fallback to v1")
-                        let response = try await api.twitterLikeTimelineV1(
-                            query: .init(
-                                count: fetchContext.maxResults ?? 20,
-                                userID: fetchContext.userID,
-                                maxID: fetchContext.maxID,
-                                sinceID: nil,
-                                excludeReplies: false,
-                                query: nil
-                            ),
-                            authenticationContext: fetchContext.authenticationContext
-                        )
-                        return .v1(response)
+                        
+                        let managedObjectContext = api.coreDataStack.persistentContainer.viewContext
+                        let statusIDs: [TwitterStatus.ID] = try await managedObjectContext.perform {
+                            let userRequest = TwitterUser.sortedFetchRequest
+                            userRequest.predicate = TwitterUser.predicate(id: fetchContext.userID)
+                            guard let user = try managedObjectContext.fetch(userRequest).first else {
+                                throw AppError.implicit(.badRequest)
+                            }
+                            let statusIDs = user.like.map { $0.id }
+                            let statusRequest = TwitterStatus.sortedFetchRequest
+                            statusRequest.predicate = TwitterStatus.predicate(ids: statusIDs)
+                            let results = try managedObjectContext.fetch(statusRequest)
+                            return results.map { $0.id }
+                        }
+                        return .local(statusIDs)
                     } catch {
                         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                         throw error

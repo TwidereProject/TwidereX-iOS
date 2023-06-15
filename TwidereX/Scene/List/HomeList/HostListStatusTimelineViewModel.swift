@@ -50,7 +50,14 @@ final class HomeListStatusTimelineViewModel: ObservableObject {
         }
         self.homeTimelineMenuActionViewModels = {
             guard let authenticationIndex = authContext.authenticationContext.authenticationIndex(in: context.managedObjectContext) else { return [] }
-            return [HomeListMenuActionViewModel(timeline: .home(authenticationIndex))]
+            switch authContext.authenticationContext.platform {
+            case .twitter:
+                return []
+            case .mastodon:
+                return [HomeListMenuActionViewModel(timeline: .home(authenticationIndex))]
+            case .none:
+                return []
+            }
         }()
         // end init
         

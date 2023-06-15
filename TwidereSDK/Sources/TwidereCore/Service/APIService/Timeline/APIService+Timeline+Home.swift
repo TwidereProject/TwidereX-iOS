@@ -26,10 +26,14 @@ extension APIService {
         case persist([ManagedObjectRecord<TwitterStatus>])
     }
     
+    @available(*, deprecated, message: "")
     public func twitterHomeTimeline(
         query: Twitter.API.V2.User.Timeline.HomeQuery,
         authenticationContext: TwitterAuthenticationContext
     ) async throws -> [Twitter.Response.Content<Twitter.API.V2.User.Timeline.HomeContent>] {
+        assertionFailure()
+        throw Twitter.API.Error.InternalError(message: "API Deprecated")
+        
         #if DEBUG
         // log time cost
         let start = CACurrentMediaTime()

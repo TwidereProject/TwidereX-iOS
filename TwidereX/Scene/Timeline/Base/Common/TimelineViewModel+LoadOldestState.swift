@@ -195,6 +195,8 @@ extension TimelineViewModel.LoadOldestState {
                     case .twitterV2(let statuses):
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
+                    case .twitterIDs(let statusIDs):
+                        viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
                     case .mastodon(let statuses):
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
