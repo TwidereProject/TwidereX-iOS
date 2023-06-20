@@ -54,50 +54,6 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
 
 // MARK: - content
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
-//    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
-//        Task {
-//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-//            guard let item = await item(from: source) else {
-//                assertionFailure()
-//                return
-//            }
-//            guard let status = await item.status(in: self.context.managedObjectContext) else {
-//                assertionFailure("only works for status data provider")
-//                return
-//            }
-//
-//            await DataSourceFacade.responseToMetaTextAreaView(
-//                provider: self,
-//                target: .status,
-//                status: status,
-//                metaTextAreaView: metaTextAreaView,
-//                didSelectMeta: meta
-//            )
-//        }
-//    }
-//
-//    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
-//        Task {
-//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-//            guard let item = await item(from: source) else {
-//                assertionFailure()
-//                return
-//            }
-//            guard let status = await item.status(in: self.context.managedObjectContext) else {
-//                assertionFailure("only works for status data provider")
-//                return
-//            }
-//
-//            await DataSourceFacade.responseToMetaTextAreaView(
-//                provider: self,
-//                target: .quote,
-//                status: status,
-//                metaTextAreaView: metaTextAreaView,
-//                didSelectMeta: meta
-//            )
-//        }
-//    }
-    
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool) {
         Task { @MainActor in
             guard let status = viewModel.status?.asRecord else { return }
@@ -110,9 +66,22 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
         }   // end Task
     }
     
-    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta) {
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta?) {
         Task { @MainActor in
             guard let status = viewModel.status?.asRecord else { return }
+            
+            guard let meta = meta else {
+                switch viewModel.kind {
+                case .conversationRoot:
+                    return
+                default:
+                    await DataSourceFacade.coordinateToStatusThreadScene(
+                        provider: self,
+                        kind: .status(status)
+                    )
+                    return
+                }
+            }
             
             await DataSourceFacade.responseToMetaText(
                 provider: self,
@@ -121,9 +90,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthC
             )
         }   // end Task
     }
-
 }
-
 
 // MARK: - media
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider & MediaPreviewableViewController {
