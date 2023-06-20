@@ -26,7 +26,7 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
 
     // meta
-    func statusView(_ viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta)
+    func statusView(_ viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta?)
 
     // media
     func statusView(_ viewModel: StatusView.ViewModel, mediaViewModel: MediaView.ViewModel, action: MediaView.ViewModel.Action)
@@ -191,6 +191,7 @@ public struct StatusView: View {
                                     Color(uiColor: .label.withAlphaComponent(0.04))
                                 }
                                 .cornerRadius(12)
+                                .contentShape(Rectangle())
                                 .onTapGesture {
                                     viewModel.delegate?.statusView(viewModel, quoteStatusViewDidPressed: quoteViewModel)
                                 }
@@ -444,6 +445,9 @@ extension StatusView {
                 }
             )
             .frame(width: viewModel.contentWidth)
+            .onTapGesture {
+                // ignore tap
+            }
         }
     }
     
@@ -459,6 +463,9 @@ extension StatusView {
                 }
             )
             .frame(width: viewModel.contentWidth)
+            .onTapGesture {
+                // ignore tap
+            }
         }
     }
     
