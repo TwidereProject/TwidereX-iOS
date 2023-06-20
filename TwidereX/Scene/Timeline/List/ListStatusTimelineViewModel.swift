@@ -34,7 +34,7 @@ final class ListStatusTimelineViewModel: ListTimelineViewModel {
         )
         // end init
         
-        isFloatyButtonDisplay = false
+        isFloatyButtonDisplay = true
         statusRecordFetchedResultController.userIdentifier = authContext.authenticationContext.userIdentifier
         
         // bind titile

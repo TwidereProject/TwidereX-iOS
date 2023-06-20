@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import Meta
 import MastodonSDK
+import TwidereCore
 
 extension HashtagTableViewCell {
     final class ViewModel: ObservableObject {
@@ -38,14 +39,14 @@ extension HashtagTableViewCell.ViewModel {
 }
 
 extension HashtagTableViewCell {
-    func configure(hashtagData: HashtagData) {
+    public func configure(hashtagData: HashtagData) {
         switch hashtagData {
         case .mastodon(let tag):
             configure(tag: tag)
         }
     }
     
-    func configure(tag: Mastodon.Entity.Tag) {
+    public func configure(tag: Mastodon.Entity.Tag) {
         // primary
         let primaryContent = Meta.convert(document: .plaintext(string: "#" + tag.name))
         viewModel.primaryContent = primaryContent

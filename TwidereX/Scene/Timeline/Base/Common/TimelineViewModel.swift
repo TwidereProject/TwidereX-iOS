@@ -46,6 +46,7 @@ class TimelineViewModel: TimelineViewModelDriver {
     
     // output
     let didLoadLatest = PassthroughSubject<Void, Never>()
+    @Published var emptyState: EmptyState?
     
     // auto fetch
     private var autoFetchLatestActionTime = CACurrentMediaTime()
@@ -191,6 +192,10 @@ extension TimelineViewModel {
             self.didLoadLatest.send()
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
             context.apiService.error.send(.explicit(.twitterResponseError(error)))
+        } catch let error as EmptyState {
+            self.didLoadLatest.send()
+            self.emptyState = error
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
         } catch {
             self.didLoadLatest.send()
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")

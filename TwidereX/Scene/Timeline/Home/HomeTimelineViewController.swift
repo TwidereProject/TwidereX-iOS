@@ -15,7 +15,8 @@ final class HomeTimelineViewController: ListTimelineViewController {
     
     static var unreadIndicatorViewTopMargin: CGFloat { 16 }
     let unreadIndicatorView = UnreadIndicatorView()
-
+    var unreadIndicatorViewTrailingLayoutConstraint: NSLayoutConstraint!
+    
     // ref: https://medium.com/@Mos6yCanSwift/swift-ios-determine-scroll-direction-d48a2327a004
     var lastVelocityYSign = 0
     var lastContentOffset: CGPoint?
@@ -36,12 +37,24 @@ extension HomeTimelineViewController {
         // setup unreadIndicatorView
         unreadIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(unreadIndicatorView)
+        unreadIndicatorViewTrailingLayoutConstraint = view.layoutMarginsGuide.trailingAnchor.constraint(equalTo: unreadIndicatorView.trailingAnchor)
         NSLayoutConstraint.activate([
             unreadIndicatorView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 16),
-            view.layoutMarginsGuide.trailingAnchor.constraint(equalTo: unreadIndicatorView.trailingAnchor),
+            unreadIndicatorViewTrailingLayoutConstraint,
             unreadIndicatorView.widthAnchor.constraint(greaterThanOrEqualToConstant: 36).priority(.required - 1),
             unreadIndicatorView.heightAnchor.constraint(greaterThanOrEqualToConstant: 36).priority(.required - 1),
         ])
+        viewModel.$viewLayoutFrame
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewLayoutFrame in
+                guard let self = self else { return }
+                if viewLayoutFrame.layoutFrame.width == viewLayoutFrame.readableContentLayoutFrame.width {
+                    self.unreadIndicatorViewTrailingLayoutConstraint.constant = 16
+                } else {
+                    self.unreadIndicatorViewTrailingLayoutConstraint.constant = 0
+                }
+            }
+            .store(in: &disposeBag)
         unreadIndicatorView.alpha = 0
         viewModel.didLoadLatest
             .receive(on: DispatchQueue.main)

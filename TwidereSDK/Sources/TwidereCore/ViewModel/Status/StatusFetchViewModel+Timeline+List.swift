@@ -190,25 +190,18 @@ extension StatusFetchViewModel.Timeline.List {
                         query: query,
                         authenticationContext: fetchContext.authenticationContext
                     )
+                    
+                    let data = response.value.data ?? []
+                    if data.isEmpty {
+                        try await fetchContext.managedObjectContext.perform {
+                            guard let list = fetchContext.list.object(in: fetchContext.managedObjectContext) else { return }
+                            if list.private {
+                                throw EmptyState.unableToAccess
+                            }
+                        }
+                    }
+                    
                     return .v2(response)
-                } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Rate Limit] fallback to v1")
-                    let managedObjectContext = api.backgroundManagedObjectContext
-                    let _listID: TwitterList.ID? = await managedObjectContext.perform {
-                        guard let list = fetchContext.list.object(in: managedObjectContext) else { return nil }
-                        return list.id
-                    }
-                    guard let listID = _listID else {
-                        throw AppError.implicit(.badRequest)
-                    }
-                    let response = try await api.twitterListStatusesV1(
-                        query: .init(
-                            id: listID,
-                            maxID: fetchContext.maxID
-                        ),
-                        authenticationContext: fetchContext.authenticationContext
-                    )
-                    return .v1(response)
                 } catch {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                     throw error

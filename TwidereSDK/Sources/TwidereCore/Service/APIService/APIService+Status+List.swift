@@ -23,6 +23,7 @@ extension APIService {
         
         let _listID: TwitterList.ID? = await managedObjectContext.perform {
             guard let list = list.object(in: managedObjectContext) else { return nil }
+            
             return list.id
         }
         guard let listID = _listID else {
