@@ -3435,7 +3435,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3466,7 +3466,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3489,7 +3489,7 @@
 			baseConfigurationReference = BC377CE93F0DE1E07208F697 /* Pods-TwidereX-TwidereXUITests.profile.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3513,7 +3513,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3540,7 +3540,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TwidereXIntent;
@@ -3569,7 +3569,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = NotificationService/Info.plist;
@@ -3598,7 +3598,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = NotificationService/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
@@ -3626,7 +3626,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationService/NotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = NotificationService/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
@@ -3652,7 +3652,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3679,7 +3679,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3833,7 +3833,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3869,7 +3869,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3900,7 +3900,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3925,7 +3925,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3948,7 +3948,7 @@
 			baseConfigurationReference = 2E41729E598B3379FC09BC03 /* Pods-TwidereX-TwidereXUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3971,7 +3971,7 @@
 			baseConfigurationReference = 44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -3995,7 +3995,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TwidereXIntent;
@@ -4022,7 +4022,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 136;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TwidereXIntent;
