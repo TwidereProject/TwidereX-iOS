@@ -68,4 +68,8 @@ extension StatusRecordFetchedResultController {
         twitterStatusFetchedResultController.statusIDs.value = []
         mastodonStatusFetchedResultController.statusIDs.value = []
     }
+    
+    public func reload() {
+        self.records = self.records
+    }
 }

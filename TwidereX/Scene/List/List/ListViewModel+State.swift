@@ -146,16 +146,16 @@ extension ListViewModel.State {
             }
 
             // The state machine needs guard the Task is re-entry issue-free
-            Task {
+            Task { @MainActor in
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
 
                     let output = try await ListFetchViewModel.List.list(api: viewModel.context.apiService, input: input)
                     nextInput = output.nextInput
                     if output.hasMore {
-                        await enter(state: Idle.self)
+                        enter(state: Idle.self)
                     } else {
-                        await enter(state: NoMore.self)
+                        enter(state: NoMore.self)
                     }
                     
                     switch output.result {
@@ -168,10 +168,12 @@ extension ListViewModel.State {
                     }
                     
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
+                    
+                    viewModel.retryCount = 0
 
                 } catch {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch user timeline fail: \(error.localizedDescription)")
-                    await enter(state: Fail.self)
+                    enter(state: Fail.self)
                 }
             }   // end Task
         }   // end func
@@ -190,13 +192,17 @@ extension ListViewModel.State {
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-            guard let _ = viewModel, let stateMachine = stateMachine else { return }
+            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: retry loading 3s later…", ((#file as NSString).lastPathComponent), #line, #function)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: retry loading", ((#file as NSString).lastPathComponent), #line, #function)
-                stateMachine.enter(Loading.self)
-            }
+            Task { @MainActor in
+                let delay = min(64.0, pow(2.0, Double(viewModel.retryCount)))
+                viewModel.retryCount += 1
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: retry loading %.2fs later…", ((#file as NSString).lastPathComponent), #line, #function, delay)
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: retry loading", ((#file as NSString).lastPathComponent), #line, #function)
+                    stateMachine.enter(Loading.self)
+                }
+            }   // end Task
         }
     }
     

@@ -61,13 +61,14 @@ extension APIService {
         try await managedObjectContext.performChanges {
             let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             
+            let contextV2 = Persistence.Twitter.PersistContextV2(
+                dictionary: dictionary,
+                me: me,
+                networkDate: response.networkDate
+            )
             _ = Persistence.Twitter.persist(
                 in: managedObjectContext,
-                context: Persistence.Twitter.PersistContextV2(
-                    dictionary: dictionary,
-                    me: me,
-                    networkDate: response.networkDate
-                )
+                context: contextV2
             )
         }   // end .performChanges { … }
 

@@ -146,6 +146,7 @@ extension StatusFetchViewModel.Timeline.User {
         func nextInput(fetchContext: TwitterFetchContext) -> Input? {
             switch self {
             case .v2(let response):
+                guard response.value.meta.resultCount > 0 else { return nil }
                 guard let nextToken = response.value.meta.nextToken else { return nil }
                 guard nextToken != fetchContext.paginationToken else { return nil }
                 let fetchContext = fetchContext.map(paginationToken: nextToken)
@@ -170,11 +171,9 @@ extension StatusFetchViewModel.Timeline.User {
                 case .status, .media:
                     do {
                         guard !fetchContext.protected else {
-                            throw Twitter.API.Error.ResponseError(httpResponseStatus: .ok, twitterAPIError: .rateLimitExceeded)
+                            throw EmptyState.unableToAccess
                         }
-                        guard !fetchContext.needsAPIFallback else {
-                            throw Twitter.API.Error.ResponseError(httpResponseStatus: .ok, twitterAPIError: .rateLimitExceeded)
-                        }
+                        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [UserTimeline] fetch user timeline: userID[\(fetchContext.userID)] cursor[\(fetchContext.paginationToken ?? "<nil>")]")
                         let response = try await api.twitterUserTimeline(
                             userID: fetchContext.userID,
                             query: .init(
@@ -187,22 +186,8 @@ extension StatusFetchViewModel.Timeline.User {
                             authenticationContext: fetchContext.authenticationContext
                         )
                         return .v2(response)
-                    } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded {
-                        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Rate Limit] fallback to v1")
-                        let response = try await api.twitterUserTimelineV1(
-                            query: .init(
-                                count: fetchContext.maxResults ?? 20,
-                                userID: fetchContext.userID,
-                                maxID: fetchContext.maxID,
-                                sinceID: nil,
-                                excludeReplies: false,
-                                query: nil
-                            ),
-                            authenticationContext: fetchContext.authenticationContext
-                        )
-                        return .v1(response)
                     } catch {
-                        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [UserTimeline] fetch failure: \(error.localizedDescription)")
                         throw error
                     }
                 case .like:

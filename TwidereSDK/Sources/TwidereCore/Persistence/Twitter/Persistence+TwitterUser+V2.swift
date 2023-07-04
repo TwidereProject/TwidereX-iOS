@@ -105,6 +105,11 @@ extension Persistence.TwitterUser {
         user.update(bioEntitiesTransient: TwitterEntity(entity: context.entity.entities?.description))
         user.update(urlEntitiesTransient: TwitterEntity(entity: context.entity.entities?.url))
         
+        // convertible properties
+        if let profileBannerURL = context.entity.profileBannerURL {
+            user.update(profileBannerURL: profileBannerURL)
+        }
+        
         // V2 entity not contains relationship flags
     }
     

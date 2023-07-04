@@ -39,6 +39,7 @@ class ListViewModel {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
+    @MainActor var retryCount = 0
     
     init(
         context: AppContext,

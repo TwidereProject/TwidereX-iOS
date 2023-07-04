@@ -101,7 +101,7 @@ extension UserFetchViewModel.Friendship {
         case .twitter(let fetchContext):
             let query = Twitter.API.V2.User.Follow.FriendshipListQuery(
                 userID: fetchContext.userID,
-                maxResults: fetchContext.maxResults ?? (fetchContext.paginationToken == nil ? 200 : 1000),
+                maxResults: fetchContext.maxResults ?? (fetchContext.paginationToken == nil ? 20 : 200),
                 paginationToken: fetchContext.paginationToken
             )
             let response = try await { () -> Twitter.Response.Content<Twitter.API.V2.User.Follow.FriendshipListContent> in

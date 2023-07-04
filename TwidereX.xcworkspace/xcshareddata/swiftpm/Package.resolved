@@ -258,8 +258,8 @@
         "repositoryURL": "https://github.com/TwidereProject/TwitterSDK.git",
         "state": {
           "branch": null,
-          "revision": "fdfc56029c530b76e93dc6ae052dcc1a64360c26",
-          "version": "0.11.0"
+          "revision": "e0e93420c9f6728f5c9a39e716100e6bd5a5d6b9",
+          "version": "0.13.0"
         }
       },
       {
