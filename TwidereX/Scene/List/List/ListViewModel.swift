@@ -23,6 +23,8 @@ class ListViewModel {
     let fetchedResultController: ListRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     
+    var needsResetBeforeReloading = true
+    
     // output
     var diffableDataSource: UITableViewDiffableDataSource<ListSection, ListItem>?
     

@@ -171,7 +171,7 @@ extension StatusFetchViewModel.Timeline.User {
                 case .status, .media:
                     do {
                         guard !fetchContext.protected else {
-                            throw EmptyState.unableToAccess
+                            throw EmptyState.unableToAccess()
                         }
                         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [UserTimeline] fetch user timeline: userID[\(fetchContext.userID)] cursor[\(fetchContext.paginationToken ?? "<nil>")]")
                         let response = try await api.twitterUserTimeline(

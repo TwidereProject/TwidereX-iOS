@@ -76,7 +76,7 @@ extension EmptyStateView {
 struct EmptyStateView_Previews: PreviewProvider {
     static var previews: some View {
         EmptyStateView(viewModel: .init(emptyState: .noResults))
-        EmptyStateView(viewModel: .init(emptyState: .unableToAccess))
+        EmptyStateView(viewModel: .init(emptyState: .unableToAccess()))
             
     }
 }

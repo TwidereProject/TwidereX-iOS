@@ -196,7 +196,7 @@ extension StatusFetchViewModel.Timeline.List {
                         try await fetchContext.managedObjectContext.perform {
                             guard let list = fetchContext.list.object(in: fetchContext.managedObjectContext) else { return }
                             if list.private {
-                                throw EmptyState.unableToAccess
+                                throw EmptyState.unableToAccess(reason: "The list is private")
                             }
                         }
                     }

@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import SwiftUI
 import Combine
 import Floaty
 import TabBarPager
@@ -22,6 +23,8 @@ class ListTimelineViewController: TimelineViewController {
             _viewModel = newValue
         }
     }
+    let emptyStateViewModel = EmptyStateView.ViewModel()
+    
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .systemBackground
@@ -96,6 +99,27 @@ extension ListTimelineViewController {
                 guard let self = self else { return }
                 self.autoFetchLatest()
             }
+            .store(in: &disposeBag)
+        
+        viewModel.$emptyState
+            .assign(to: \.emptyState, on: emptyStateViewModel)
+            .store(in: &disposeBag)
+        
+        let emptyStateViewHostingController = UIHostingController(rootView: EmptyStateView(viewModel: emptyStateViewModel))
+        addChild(emptyStateViewHostingController)
+        emptyStateViewHostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emptyStateViewHostingController.view)
+        NSLayoutConstraint.activate([
+            emptyStateViewHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            emptyStateViewHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emptyStateViewHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emptyStateViewHostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        emptyStateViewHostingController.view.isHidden = true
+        emptyStateViewModel.$emptyState
+            .map { $0 == nil }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isHidden, on: emptyStateViewHostingController.view)
             .store(in: &disposeBag)
         
         NotificationCenter.default

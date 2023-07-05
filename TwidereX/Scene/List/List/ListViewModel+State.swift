@@ -71,7 +71,9 @@ extension ListViewModel.State {
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
             // reset
-            viewModel.fetchedResultController.reset()
+            if viewModel.needsResetBeforeReloading {
+                viewModel.fetchedResultController.reset()
+            }
 
             stateMachine.enter(Loading.self)
         }
@@ -80,6 +82,7 @@ extension ListViewModel.State {
     class Loading: ListViewModel.State {
         
         var nextInput: ListFetchViewModel.List.Input?
+        var nonce = UUID()
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             switch stateClass {
@@ -97,12 +100,16 @@ extension ListViewModel.State {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            nonce = UUID()
+            let nonce = self.nonce
             
+            let isReloading: Bool
             switch previousState {
             case is Reloading:
                 nextInput = nil
+                isReloading = true
             default:
-                break
+                isReloading = false
             }
 
             guard let user = viewModel.kind.user else {
@@ -151,6 +158,12 @@ extension ListViewModel.State {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
 
                     let output = try await ListFetchViewModel.List.list(api: viewModel.context.apiService, input: input)
+                    
+                    // check nonce
+                    guard nonce == self.nonce else {
+                        return
+                    }
+                    
                     nextInput = output.nextInput
                     if output.hasMore {
                         enter(state: Idle.self)
@@ -161,10 +174,18 @@ extension ListViewModel.State {
                     switch output.result {
                     case .twitter(let lists):
                         let ids = lists.map { $0.id }
-                        viewModel.fetchedResultController.twitterListRecordFetchedResultController.append(ids: ids)
+                        if isReloading {
+                            viewModel.fetchedResultController.twitterListRecordFetchedResultController.update(ids: ids)
+                        } else {
+                            viewModel.fetchedResultController.twitterListRecordFetchedResultController.append(ids: ids)
+                        }
                     case .mastodon(let lists):
                         let ids = lists.map { $0.id }
-                        viewModel.fetchedResultController.mastodonListRecordFetchedResultController.append(ids: ids)
+                        if isReloading {
+                            viewModel.fetchedResultController.mastodonListRecordFetchedResultController.update(ids: ids)
+                        } else {
+                            viewModel.fetchedResultController.mastodonListRecordFetchedResultController.append(ids: ids)
+                        }
                     }
                     
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")

@@ -86,7 +86,7 @@ extension FollowingListViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isPermissionDenied in
                 guard let self = self else { return }
-                self.emptyStateViewModel.emptyState = isPermissionDenied ? .unableToAccess : nil
+                self.emptyStateViewModel.emptyState = isPermissionDenied ? .unableToAccess() : nil
                 emptyStateViewHostingController.view.isHidden = !isPermissionDenied
             }
             .store(in: &disposeBag)

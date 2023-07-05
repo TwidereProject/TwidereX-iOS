@@ -10,7 +10,7 @@ import TwidereLocalization
 
 public enum EmptyState: Swift.Error {
     case noResults
-    case unableToAccess
+    case unableToAccess(reason: String? = nil)
 }
 
 extension EmptyState {
@@ -36,8 +36,8 @@ extension EmptyState {
         switch self {
         case .noResults:
             return nil
-        case .unableToAccess:
-            return nil
+        case .unableToAccess(let reason):
+            return reason
         }
     }
 }
