@@ -594,6 +594,12 @@ public enum L10n {
           public static let media = L10n.tr("Localizable", "Common.Controls.Actions.ShareMediaMenu.Media", fallback: "Media")
         }
       }
+      public enum EmptyState {
+        /// No results
+        public static let noResults = L10n.tr("Localizable", "Common.Controls.EmptyState.NoResults", fallback: "No results")
+        /// Unable to access
+        public static let unableToAccess = L10n.tr("Localizable", "Common.Controls.EmptyState.UnableToAccess", fallback: "Unable to access")
+      }
       public enum Friendship {
         /// Block %@
         public static func blockUser(_ p1: Any) -> String {
@@ -937,6 +943,20 @@ public enum L10n {
       /// Bookmark
       public static let title = L10n.tr("Localizable", "Scene.Bookmark.Title", fallback: "Bookmark")
     }
+    public enum Column {
+      /// New Column
+      public static let title = L10n.tr("Localizable", "Scene.Column.Title", fallback: "New Column")
+      public enum Actions {
+        /// Close column
+        public static let closeColumn = L10n.tr("Localizable", "Scene.Column.Actions.CloseColumn", fallback: "Close column")
+        /// Move left
+        public static let moveLeft = L10n.tr("Localizable", "Scene.Column.Actions.MoveLeft", fallback: "Move left")
+        /// Move right
+        public static let moveRight = L10n.tr("Localizable", "Scene.Column.Actions.MoveRight", fallback: "Move right")
+        /// Open in new column
+        public static let openInNewColumn = L10n.tr("Localizable", "Scene.Column.Actions.OpenInNewColumn", fallback: "Open in new column")
+      }
+    }
     public enum Compose {
       /// , 
       public static let and = L10n.tr("Localizable", "Scene.Compose.And", fallback: ", ")
@@ -1206,6 +1226,8 @@ public enum L10n {
     public enum ManageAccounts {
       /// Delete account
       public static let deleteAccount = L10n.tr("Localizable", "Scene.ManageAccounts.DeleteAccount", fallback: "Delete account")
+      /// Open in new window
+      public static let openInNewWindow = L10n.tr("Localizable", "Scene.ManageAccounts.OpenInNewWindow", fallback: "Open in new window")
       /// Accounts
       public static let title = L10n.tr("Localizable", "Scene.ManageAccounts.Title", fallback: "Accounts")
     }

@@ -181,6 +181,8 @@
 "Common.Controls.Actions.SignOut" = "Pechar sesión";
 "Common.Controls.Actions.TakePhoto" = "Tirar foto";
 "Common.Controls.Actions.Yes" = "Si";
+"Common.Controls.EmptyState.NoResults" = "Sen resultados";
+"Common.Controls.EmptyState.UnableToAccess" = "Unable to access";
 "Common.Controls.Friendship.Actions.Block" = "Bloquear";
 "Common.Controls.Friendship.Actions.Blocked" = "Bloqueada";
 "Common.Controls.Friendship.Actions.Follow" = "Seguir";
@@ -282,6 +284,11 @@
 "Common.NotificationChannel.ContentMessages.Name" = "Mensaxes";
 "Scene.Authentication.Title" = "Autenticación";
 "Scene.Bookmark.Title" = "Marcador";
+"Scene.Column.Actions.CloseColumn" = "Close column";
+"Scene.Column.Actions.MoveLeft" = "Move left";
+"Scene.Column.Actions.MoveRight" = "Move right";
+"Scene.Column.Actions.OpenInNewColumn" = "Open in new column";
+"Scene.Column.Title" = "New Column";
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "Escribe aquí o teu aviso";
 "Scene.Compose.LastEnd" = " e ";
@@ -374,6 +381,7 @@
 "Scene.ListsUsers.MenuActions.Remove" = "Eliminar";
 "Scene.Local.Title" = "Local";
 "Scene.ManageAccounts.DeleteAccount" = "Eliminar conta";
+"Scene.ManageAccounts.OpenInNewWindow" = "Open in new window";
 "Scene.ManageAccounts.Title" = "Contas";
 "Scene.Mentions.Title" = "Mencións";
 "Scene.Messages.Action.CopyText" = "Copiar texto da mensaxe";

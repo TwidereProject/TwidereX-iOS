@@ -181,6 +181,8 @@
 "Common.Controls.Actions.SignOut" = "로그아웃 됐습니다.";
 "Common.Controls.Actions.TakePhoto" = "사진 찍기";
 "Common.Controls.Actions.Yes" = "네";
+"Common.Controls.EmptyState.NoResults" = "결과 없음";
+"Common.Controls.EmptyState.UnableToAccess" = "Unable to access";
 "Common.Controls.Friendship.Actions.Block" = "차단하기";
 "Common.Controls.Friendship.Actions.Blocked" = "차단됨";
 "Common.Controls.Friendship.Actions.Follow" = "팔로우하기";
@@ -282,6 +284,11 @@
 "Common.NotificationChannel.ContentMessages.Name" = "메시지";
 "Scene.Authentication.Title" = "인증";
 "Scene.Bookmark.Title" = "즐겨찾기";
+"Scene.Column.Actions.CloseColumn" = "Close column";
+"Scene.Column.Actions.MoveLeft" = "Move left";
+"Scene.Column.Actions.MoveRight" = "Move right";
+"Scene.Column.Actions.OpenInNewColumn" = "Open in new column";
+"Scene.Column.Title" = "New Column";
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "여기에 주의사항을 적어주세요";
 "Scene.Compose.LastEnd" = " 그리고 ";
@@ -374,6 +381,7 @@
 "Scene.ListsUsers.MenuActions.Remove" = "지우기";
 "Scene.Local.Title" = "로컬";
 "Scene.ManageAccounts.DeleteAccount" = "계정 지우기";
+"Scene.ManageAccounts.OpenInNewWindow" = "Open in new window";
 "Scene.ManageAccounts.Title" = "계정";
 "Scene.Mentions.Title" = "답글";
 "Scene.Messages.Action.CopyText" = "메시지 글자 복사";

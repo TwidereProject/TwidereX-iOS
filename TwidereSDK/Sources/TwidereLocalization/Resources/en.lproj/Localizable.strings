@@ -181,6 +181,8 @@
 "Common.Controls.Actions.SignOut" = "Sign out";
 "Common.Controls.Actions.TakePhoto" = "Take photo";
 "Common.Controls.Actions.Yes" = "Yes";
+"Common.Controls.EmptyState.NoResults" = "No results";
+"Common.Controls.EmptyState.UnableToAccess" = "Unable to access";
 "Common.Controls.Friendship.Actions.Block" = "Block";
 "Common.Controls.Friendship.Actions.Blocked" = "Blocked";
 "Common.Controls.Friendship.Actions.Follow" = "Follow";
@@ -282,6 +284,11 @@
 "Common.NotificationChannel.ContentMessages.Name" = "Messages";
 "Scene.Authentication.Title" = "Authentication";
 "Scene.Bookmark.Title" = "Bookmark";
+"Scene.Column.Actions.CloseColumn" = "Close column";
+"Scene.Column.Actions.MoveLeft" = "Move left";
+"Scene.Column.Actions.MoveRight" = "Move right";
+"Scene.Column.Actions.OpenInNewColumn" = "Open in new column";
+"Scene.Column.Title" = "New Column";
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "Write your warning here";
 "Scene.Compose.LastEnd" = " and ";
@@ -374,6 +381,7 @@
 "Scene.ListsUsers.MenuActions.Remove" = "Remove";
 "Scene.Local.Title" = "Local";
 "Scene.ManageAccounts.DeleteAccount" = "Delete account";
+"Scene.ManageAccounts.OpenInNewWindow" = "Open in new window";
 "Scene.ManageAccounts.Title" = "Accounts";
 "Scene.Mentions.Title" = "Mentions";
 "Scene.Messages.Action.CopyText" = "Copy message text";

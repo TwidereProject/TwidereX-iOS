@@ -181,6 +181,8 @@
 "Common.Controls.Actions.SignOut" = "Amaitu saioa";
 "Common.Controls.Actions.TakePhoto" = "Atera argazkia";
 "Common.Controls.Actions.Yes" = "Bai";
+"Common.Controls.EmptyState.NoResults" = "Emaitzarik ez";
+"Common.Controls.EmptyState.UnableToAccess" = "Unable to access";
 "Common.Controls.Friendship.Actions.Block" = "Blokeatu";
 "Common.Controls.Friendship.Actions.Blocked" = "Blokeatuta";
 "Common.Controls.Friendship.Actions.Follow" = "Jarraitu";
@@ -282,6 +284,11 @@
 "Common.NotificationChannel.ContentMessages.Name" = "Mezuak";
 "Scene.Authentication.Title" = "Autentifikazioa";
 "Scene.Bookmark.Title" = "Laster-markak";
+"Scene.Column.Actions.CloseColumn" = "Close column";
+"Scene.Column.Actions.MoveLeft" = "Move left";
+"Scene.Column.Actions.MoveRight" = "Move right";
+"Scene.Column.Actions.OpenInNewColumn" = "Open in new column";
+"Scene.Column.Title" = "New Column";
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "Idatz ezazu hemen zure ohartarazpena";
 "Scene.Compose.LastEnd" = " eta ";
@@ -374,6 +381,7 @@
 "Scene.ListsUsers.MenuActions.Remove" = "Ezabatu";
 "Scene.Local.Title" = "Lokala";
 "Scene.ManageAccounts.DeleteAccount" = "Ezabatu kontua";
+"Scene.ManageAccounts.OpenInNewWindow" = "Open in new window";
 "Scene.ManageAccounts.Title" = "Kontuak";
 "Scene.Mentions.Title" = "Aipamenak";
 "Scene.Messages.Action.CopyText" = "Mezuaren testua kopiatu";

@@ -181,6 +181,8 @@
 "Common.Controls.Actions.SignOut" = "サインアウト";
 "Common.Controls.Actions.TakePhoto" = "写真を撮影";
 "Common.Controls.Actions.Yes" = "はい";
+"Common.Controls.EmptyState.NoResults" = "該当なし";
+"Common.Controls.EmptyState.UnableToAccess" = "Unable to access";
 "Common.Controls.Friendship.Actions.Block" = "ブロック";
 "Common.Controls.Friendship.Actions.Blocked" = "ブロックしました";
 "Common.Controls.Friendship.Actions.Follow" = "フォロー";
@@ -282,6 +284,11 @@
 "Common.NotificationChannel.ContentMessages.Name" = "メッセージ";
 "Scene.Authentication.Title" = "認証";
 "Scene.Bookmark.Title" = "ブックマーク";
+"Scene.Column.Actions.CloseColumn" = "Close column";
+"Scene.Column.Actions.MoveLeft" = "Move left";
+"Scene.Column.Actions.MoveRight" = "Move right";
+"Scene.Column.Actions.OpenInNewColumn" = "Open in new column";
+"Scene.Column.Title" = "New Column";
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "ここに警告を書いてください";
 "Scene.Compose.LastEnd" = " と ";
@@ -374,6 +381,7 @@
 "Scene.ListsUsers.MenuActions.Remove" = "削除";
 "Scene.Local.Title" = "ローカル";
 "Scene.ManageAccounts.DeleteAccount" = "アカウントの削除";
+"Scene.ManageAccounts.OpenInNewWindow" = "Open in new window";
 "Scene.ManageAccounts.Title" = "アカウント";
 "Scene.Mentions.Title" = "メンション";
 "Scene.Messages.Action.CopyText" = "メッセージをコピー";

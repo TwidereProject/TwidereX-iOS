@@ -181,6 +181,8 @@
 "Common.Controls.Actions.SignOut" = "خروج";
 "Common.Controls.Actions.TakePhoto" = "التقط صورة";
 "Common.Controls.Actions.Yes" = "نعم";
+"Common.Controls.EmptyState.NoResults" = "لا نتائج";
+"Common.Controls.EmptyState.UnableToAccess" = "Unable to access";
 "Common.Controls.Friendship.Actions.Block" = "احجب";
 "Common.Controls.Friendship.Actions.Blocked" = "محجوب";
 "Common.Controls.Friendship.Actions.Follow" = "تابعه";
@@ -282,6 +284,11 @@
 "Common.NotificationChannel.ContentMessages.Name" = "الرسائل";
 "Scene.Authentication.Title" = "المصادقة";
 "Scene.Bookmark.Title" = "العلامات";
+"Scene.Column.Actions.CloseColumn" = "Close column";
+"Scene.Column.Actions.MoveLeft" = "Move left";
+"Scene.Column.Actions.MoveRight" = "Move right";
+"Scene.Column.Actions.OpenInNewColumn" = "Open in new column";
+"Scene.Column.Title" = "New Column";
 "Scene.Compose.And" = "، ";
 "Scene.Compose.CwPlaceholder" = "اكتب التحذير";
 "Scene.Compose.LastEnd" = " و ";
@@ -374,6 +381,7 @@
 "Scene.ListsUsers.MenuActions.Remove" = "أزِل";
 "Scene.Local.Title" = "محلي";
 "Scene.ManageAccounts.DeleteAccount" = "احذف الحساب";
+"Scene.ManageAccounts.OpenInNewWindow" = "Open in new window";
 "Scene.ManageAccounts.Title" = "الحسابات";
 "Scene.Mentions.Title" = "الذِكر";
 "Scene.Messages.Action.CopyText" = "انسخ نص الرسالة";
