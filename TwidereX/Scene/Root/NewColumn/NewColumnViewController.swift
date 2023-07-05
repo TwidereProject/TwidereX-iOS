@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftUI
+import TwidereLocalization
 
 final class NewColumnViewController: UIViewController {
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -38,7 +39,7 @@ extension NewColumnViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "New Column"
+        title = L10n.Scene.Column.title
 
         let hostingViewController = UIHostingController(rootView: contentView)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false

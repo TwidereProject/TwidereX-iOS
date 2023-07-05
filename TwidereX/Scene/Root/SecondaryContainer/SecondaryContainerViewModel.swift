@@ -119,7 +119,7 @@ extension SecondaryContainerViewModel {
                         
             var menuElements: [UIMenuElement] = []
             
-            let closeColumnAction = UIAction(title: "Close column", image: UIImage(systemName: "xmark.square"), attributes: .destructive) { [weak self, weak stack, weak navigationController] _ in
+            let closeColumnAction = UIAction(title: L10n.Scene.Column.Actions.closeColumn, image: UIImage(systemName: "xmark.square"), attributes: .destructive) { [weak self, weak stack, weak navigationController] _ in
                 guard let self = self else { return }
                 guard let stack = stack else { return }
                 guard let navigationController = navigationController else { return }
@@ -135,7 +135,7 @@ extension SecondaryContainerViewModel {
             })
             if let index = _index {
                 if index > 0 {
-                    let moveLeftMenuAction = UIAction(title: "Move left", image: UIImage(systemName: "arrow.left.square")) { [weak self, weak stack, weak navigationController] _ in
+                    let moveLeftMenuAction = UIAction(title: L10n.Scene.Column.Actions.moveLeft, image: UIImage(systemName: "arrow.left.square")) { [weak self, weak stack, weak navigationController] _ in
                         guard let self = self else { return }
                         guard let stack = stack else { return }
                         guard let navigationController = navigationController else { return }
@@ -145,7 +145,7 @@ extension SecondaryContainerViewModel {
                     menuElements.append(moveLeftMenuAction)
                 }
                 if index < stack.arrangedSubviews.count - 2 {
-                    let moveRightMenuAction = UIAction(title: "Move Right", image: UIImage(systemName: "arrow.right.square")) { [weak self, weak stack, weak navigationController] _ in
+                    let moveRightMenuAction = UIAction(title: L10n.Scene.Column.Actions.moveRight, image: UIImage(systemName: "arrow.right.square")) { [weak self, weak stack, weak navigationController] _ in
                         guard let self = self else { return }
                         guard let stack = stack else { return }
                         guard let navigationController = navigationController else { return }

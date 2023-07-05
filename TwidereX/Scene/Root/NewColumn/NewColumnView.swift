@@ -53,6 +53,6 @@ extension NewColumnView {
                 viewModel.delegate?.newColumnView(viewModel, source: source, openTabMenuAction: tab)
             }
         }
-        return UIMenu(title: "New Column", options: .displayInline, children: actions)
+        return UIMenu(title: "Open Column", options: .displayInline, children: actions)
     }
 }
