@@ -64,7 +64,9 @@ extension CompositeListViewModel {
             
             let _subscribedListSection: ListSection? = {
                 switch user {
-                case .twitter:          return ListSection.twitter(kind: .subscribed)
+                // Deprecated: hide due to API invalid
+                // case .twitter:          return ListSection.twitter(kind: .subscribed)
+                case .twitter:          return nil
                 case .mastodon:         return nil
                 }
             }()
