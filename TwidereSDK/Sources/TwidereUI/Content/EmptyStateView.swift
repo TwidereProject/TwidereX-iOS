@@ -31,22 +31,26 @@ public struct EmptyStateView: View {
                         .font(.title)
                         .opacity(0.5)
                 }
-                if let title = viewModel.title {
-                    Text(verbatim: title)
-                        .foregroundColor(.secondary)
-                        .font(.headline)
-                }
-                if let subtitle = viewModel.subtitle {
-                    Text(verbatim: subtitle)
-                        .foregroundColor(.secondary)
-                        .font(.subheadline)
-                }
-            }
+                VStack(spacing: 8) {
+                    if let title = viewModel.title {
+                        Text(verbatim: title)
+                            .foregroundColor(.secondary)
+                            .font(.headline)
+                    }
+                    if let subtitle = viewModel.subtitle {
+                        Text(verbatim: subtitle)
+                            .foregroundColor(.secondary)
+                            .font(.subheadline)
+                            .frame(maxWidth: 300)
+                            .multilineTextAlignment(.center)
+                    }
+                }   // end VStack
+            }   // end VStack
             Spacer()
             Spacer()
             Spacer()
             Spacer()
-        }
+        }   // end VStack
     }
 }
 
