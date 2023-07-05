@@ -821,14 +821,6 @@
 		DBE635832886940B001C114B /* UIStatusBarManager+HandleTapAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIStatusBarManager+HandleTapAction.m"; sourceTree = "<group>"; };
 		DBE6358528869441001C114B /* Notification+Name+HandleTapAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Name+HandleTapAction.swift"; sourceTree = "<group>"; };
 		DBE76CD2250095D900DEB0FC /* TwidereX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TwidereX.entitlements; sourceTree = "<group>"; };
-		DBE76CEA2500B29300DEB0FC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		DBE76CEC2500B29300DEB0FC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		DBE76CEE2500B29300DEB0FC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		DBE76CF12500B29300DEB0FC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		DBE76CF32500B29500DEB0FC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DBE76CF62500B29500DEB0FC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		DBE76CF82500B29500DEB0FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DBE76CFE2500B43300DEB0FC /* StubMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubMixer.swift; sourceTree = "<group>"; };
 		DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineViewModel.swift; sourceTree = "<group>"; };
 		DBEA97622A1B556C00C8B75B /* SecondaryContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryContainerViewController.swift; sourceTree = "<group>"; };
 		DBEA97652A1B58E200C8B75B /* SecondaryContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryContainerViewModel.swift; sourceTree = "<group>"; };
@@ -2042,7 +2034,6 @@
 				DBDA8E2024FCF8A3006750DC /* TwidereX */,
 				DBDA8E3724FCF8A7006750DC /* TwidereXTests */,
 				DBDA8E4224FCF8A7006750DC /* TwidereXUITests */,
-				DBE76CE92500B29300DEB0FC /* StubMixer */,
 				DBBBBE5F2744E8CC007ACB4B /* ShareExtension */,
 				DBFDCE4227F450FC00BE99E3 /* TwidereXIntent */,
 				DB7FF05F28853A7F00BFD55E /* NotificationService */,
@@ -2180,21 +2171,6 @@
 				DBE6357E288555AE001C114B /* PushNotificationScratchView.swift */,
 			);
 			path = PushNotificationScratch;
-			sourceTree = "<group>";
-		};
-		DBE76CE92500B29300DEB0FC /* StubMixer */ = {
-			isa = PBXGroup;
-			children = (
-				DBE76CEA2500B29300DEB0FC /* AppDelegate.swift */,
-				DBE76CEC2500B29300DEB0FC /* SceneDelegate.swift */,
-				DBE76CEE2500B29300DEB0FC /* ViewController.swift */,
-				DBE76CFE2500B43300DEB0FC /* StubMixer.swift */,
-				DBE76CF02500B29300DEB0FC /* Main.storyboard */,
-				DBE76CF32500B29500DEB0FC /* Assets.xcassets */,
-				DBE76CF52500B29500DEB0FC /* LaunchScreen.storyboard */,
-				DBE76CF82500B29500DEB0FC /* Info.plist */,
-			);
-			path = StubMixer;
 			sourceTree = "<group>";
 		};
 		DBE76D312502147200DEB0FC /* Extension */ = {
@@ -3338,22 +3314,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				DBDA8E2D24FCF8A6006750DC /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-		DBE76CF02500B29300DEB0FC /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DBE76CF12500B29300DEB0FC /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		DBE76CF52500B29500DEB0FC /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DBE76CF62500B29500DEB0FC /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
