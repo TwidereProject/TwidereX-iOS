@@ -51,126 +51,116 @@ final public actor NotificationService {
         self.api = apiService
         self.authenticationService = authenticationService
         self.appSecret = appSecret
+        // end init
+    }
+    
+}
+
+extension NotificationService {
+    func registerNotification() {
+        guard let authenticationService = authenticationService else { return }
         
         // request notification permission if needs
-        // register notification subscriber
-        // FIXME: add  logic for refresh all accounts
-//        authenticationService.$authenticationIndexes
-//            .sink { [weak self] authenticationIndexes in
-//                guard let self = self else { return }
-//
-//                let managedObjectContext = authenticationService.managedObjectContext
-//                // request permission when sign-in account
-//                Task {
-//                    let isEmpty = await managedObjectContext.perform {
-//                        return authenticationIndexes.isEmpty
-//                    }
-//                    if !isEmpty {
-//                        await self.requestNotificationPermission()
-//                    }
-//                }   // end Task
-//
-//                Task {
-//                    let authenticationContexts: [AuthenticationContext] = await managedObjectContext.perform {
-//                        let authenticationContexts = authenticationIndexes.compactMap { authenticationIndex in
-//                            AuthenticationContext(authenticationIndex: authenticationIndex, secret: self.appSecret.secret)
-//                        }
-//                        return authenticationContexts
-//                    }
-//                    await self.updateSubscribers(authenticationContexts)
-//                }   // end Task
-//            }
-//            .store(in: &disposeBag)         // FIXME: how to use disposeBag in actor under Swift 6 ??
+        Task {
+            let isEmpty = authenticationService.authenticationIndexes.isEmpty
+            if !isEmpty {
+                await self.requestNotificationPermission()
+            }
+        }   // end Task
         
-//        Publishers.CombineLatest(
-//            authenticationService.$authenticationIndexes,
-//            applicationIconBadgeNeedsUpdate
-//        )
-//        .receive(on: DispatchQueue.main)
-//        .sink { [weak self] authenticationIndexes, _ in
-//            guard let self = self else { return }
-//
-//            let authenticationContexts = authenticationIndexes.compactMap { authenticationIndex in
-//                AuthenticationContext(authenticationIndex: authenticationIndex, secret: self.appSecret.secret)
-//            }
-//
-//            var count = 0
-//            for authenticationContext in authenticationContexts {
-//                switch authenticationContext {
-//                case .twitter:
-//                    continue
-//                case .mastodon(let authenticationContext):
-//                    let accessToken = authenticationContext.authorization.accessToken
-//                    let _count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
-//                    count += _count
-//                }
-//            }
-//
-//            UserDefaults.shared.notificationBadgeCount = count
-//            let _count = count
-//            Task {
-//                await self.updateApplicationIconBadge(count: _count)
-//            }
-//            self.unreadNotificationCountDidUpdate.send()
-//        }
-//        .store(in: &disposeBag)
+        // register notification subscriber
+        Task {
+            let managedObjectContext = authenticationService.managedObjectContext
+            let authenticationContexts: [AuthenticationContext] = await managedObjectContext.perform {
+                let authenticationContexts = authenticationService.authenticationIndexes.compactMap { authenticationIndex in
+                    AuthenticationContext(authenticationIndex: authenticationIndex, secret: self.appSecret.secret)
+                }
+                return authenticationContexts
+            }
+            await self.updateSubscribers(authenticationContexts)
+        }   // end Task
     }
     
+    func updateApplicationIconBadge() async {
+        guard let authenticationService = authenticationService else { return }
+
+        let managedObjectContext = authenticationService.managedObjectContext
+        let authenticationContexts: [AuthenticationContext] = await managedObjectContext.perform {
+            let authenticationContexts = authenticationService.authenticationIndexes.compactMap { authenticationIndex in
+                AuthenticationContext(authenticationIndex: authenticationIndex, secret: self.appSecret.secret)
+            }
+            return authenticationContexts
+        }
+        
+        var count = 0
+        for authenticationContext in authenticationContexts {
+            switch authenticationContext {
+            case .twitter:
+                continue
+            case .mastodon(let authenticationContext):
+                let accessToken = authenticationContext.authorization.accessToken
+                let _count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
+                count += _count
+            }
+        }
+        
+        UserDefaults.shared.notificationBadgeCount = count
+        let _count = count
+        Task {
+            await self.updateApplicationIconBadge(count: _count)
+        }
+        self.unreadNotificationCountDidUpdate.send()
+    }
 }
 
 extension NotificationService {
-
     public nonisolated func unreadApplicationShortcutItems() async -> [UIApplicationShortcutItem] {
-        return []
-//        guard let authenticationService = await self.authenticationService else { return [] }
-//        let managedObjectContext = authenticationService.managedObjectContext
-//        return await managedObjectContext.perform {
-//            var items: [UIApplicationShortcutItem] = []
-//            for object in authenticationService.authenticationIndexes {
-//                guard let authenticationIndex = managedObjectContext.object(with: object.objectID) as? AuthenticationIndex else { continue }
-//                let _accessToken: String? = {
-//                    return authenticationIndex.mastodonAuthentication?.userAccessToken
-//                }()
-//                guard let accessToken = _accessToken else { continue}
-//
-//                let count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
-//                guard count > 0 else { continue }
-//
-//                guard let user = authenticationIndex.user else { continue}
-//                let title = "@\(user.username)"
-//                let subtitle = L10n.Count.notification(count)
-//
-//                let item = UIApplicationShortcutItem(
-//                    type: NotificationService.unreadShortcutItemIdentifier,
-//                    localizedTitle: title,
-//                    localizedSubtitle: subtitle,
-//                    icon: nil,
-//                    userInfo: [
-//                        "accessToken": accessToken as NSSecureCoding
-//                    ]
-//                )
-//                items.append(item)
-//            }
-//            return items
-//        }
+        guard let authenticationService = await self.authenticationService else { return [] }
+        let managedObjectContext = authenticationService.managedObjectContext
+        return await managedObjectContext.perform {
+            var items: [UIApplicationShortcutItem] = []
+            for object in authenticationService.authenticationIndexes {
+                guard let authenticationIndex = managedObjectContext.object(with: object.objectID) as? AuthenticationIndex else { continue }
+                let _accessToken: String? = {
+                    return authenticationIndex.mastodonAuthentication?.userAccessToken
+                }()
+                guard let accessToken = _accessToken else { continue}
+
+                let count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
+                guard count > 0 else { continue }
+
+                guard let user = authenticationIndex.user else { continue}
+                let title = "@\(user.username)"
+                let subtitle = L10n.Count.notification(count)
+
+                let item = UIApplicationShortcutItem(
+                    type: NotificationService.unreadShortcutItemIdentifier,
+                    localizedTitle: title,
+                    localizedSubtitle: subtitle,
+                    icon: nil,
+                    userInfo: [
+                        "accessToken": accessToken as NSSecureCoding
+                    ]
+                )
+                items.append(item)
+            }
+            return items
+        }
     }
-    
 }
 
 extension NotificationService {
     
-    public func clearNotificationCountForActiveUser() {
-//        guard let authenticationService = self.authenticationService else { return }
-//        guard let authenticationContext = authenticationService.activeAuthenticationContext else { return }
-//        switch authenticationContext {
-//        case .twitter:
-//            return
-//        case .mastodon(let authenticationContext):
-//            let accessToken = authenticationContext.authorization.accessToken
-//            UserDefaults.shared.setNotificationCountWithAccessToken(accessToken: accessToken, value: 0)
-//        }
-//        
-//        applicationIconBadgeNeedsUpdate.send()
+    public func clearNotificationCountForUser(authContext: AuthContext) {
+        switch authContext.authenticationContext {
+        case .twitter:
+            return
+        case .mastodon(let authenticationContext):
+            let accessToken = authenticationContext.authorization.accessToken
+            UserDefaults.shared.setNotificationCountWithAccessToken(accessToken: accessToken, value: 0)
+        }
+        
+        applicationIconBadgeNeedsUpdate.send()
     }
     
     public func updateToken(_ token: String?) {

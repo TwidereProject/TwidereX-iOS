@@ -23,12 +23,10 @@ public class AuthenticationService: NSObject {
     let appSecret: AppSecret
     let managedObjectContext: NSManagedObjectContext    // read-only
     let backgroundManagedObjectContext: NSManagedObjectContext
-    // let authenticationIndexFetchedResultsController: NSFetchedResultsController<AuthenticationIndex>
+    let authenticationIndexFetchedResultsController: NSFetchedResultsController<AuthenticationIndex>
 
     // output
-    // @Published public var authenticationIndexes: [AuthenticationIndex] = []
-    // public let activeAuthenticationIndex = CurrentValueSubject<AuthenticationIndex?, Never>(nil)
-    // @Published public var activeAuthenticationContext: AuthenticationContext? = nil
+    @Published public var authenticationIndexes: [AuthenticationIndex] = []
 
     public init(
         managedObjectContext: NSManagedObjectContext,
@@ -40,21 +38,21 @@ public class AuthenticationService: NSObject {
         self.backgroundManagedObjectContext = backgroundManagedObjectContext
         self.apiService = apiService
         self.appSecret = appSecret
-        // self.authenticationIndexFetchedResultsController = {
-        //     let fetchRequest = AuthenticationIndex.sortedFetchRequest
-        //     fetchRequest.returnsObjectsAsFaults = false
-        //     fetchRequest.fetchBatchSize = 20
-        //     let controller = NSFetchedResultsController(
-        //         fetchRequest: fetchRequest,
-        //         managedObjectContext: managedObjectContext,
-        //         sectionNameKeyPath: nil,
-        //         cacheName: nil
-        //     )
-        //     return controller
-        // }()
+        self.authenticationIndexFetchedResultsController = {
+            let fetchRequest = AuthenticationIndex.sortedFetchRequest
+            fetchRequest.returnsObjectsAsFaults = false
+            fetchRequest.fetchBatchSize = 20
+            let controller = NSFetchedResultsController(
+                fetchRequest: fetchRequest,
+                managedObjectContext: managedObjectContext,
+                sectionNameKeyPath: nil,
+                cacheName: nil
+            )
+            return controller
+        }()
         super.init()
 
-        //authenticationIndexFetchedResultsController.delegate = self
+        authenticationIndexFetchedResultsController.delegate = self
 
         // verify credentials for active authentication
         // FIXME:
@@ -184,19 +182,19 @@ extension AuthenticationService {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-//extension AuthenticationService: NSFetchedResultsControllerDelegate {
-//
-//    public func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-//         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//    }
-//
-//    public func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-//        switch controller {
-//        case authenticationIndexFetchedResultsController:
-//            authenticationIndexes = authenticationIndexFetchedResultsController.fetchedObjects ?? []
-//        default:
-//            assertionFailure()
-//        }
-//    }
-//
-//}
+extension AuthenticationService: NSFetchedResultsControllerDelegate {
+
+    public func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+
+    public func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        switch controller {
+        case authenticationIndexFetchedResultsController:
+            authenticationIndexes = authenticationIndexFetchedResultsController.fetchedObjects ?? []
+        default:
+            assertionFailure()
+        }
+    }
+
+}
