@@ -73,6 +73,10 @@ extension HomeListStatusTimelineViewController {
         navigationItem.titleMenuProvider = { [weak self] _ -> UIMenu? in
             guard let self = self else { return nil }
             
+            defer {
+                self.reloadList()
+            }
+            
             let menuContext = self.viewModel.createHomeListMenuContext()
             
             var children: [UIMenuElement] = [
@@ -202,6 +206,11 @@ extension HomeListStatusTimelineViewController {
         listStatusTimelineViewController?.didMove(toParent: nil)
         listStatusTimelineViewController?.removeFromParent()
         title = L10n.Scene.Timeline.title
+    }
+    
+    private func reloadList() {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): reload owned list")
+        viewModel.ownedListViewModel.stateMachine.enter(ListViewModel.State.Reloading.self)
     }
     
 }
