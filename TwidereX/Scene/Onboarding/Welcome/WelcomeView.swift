@@ -105,6 +105,10 @@ struct WelcomeView: View {
                     }
                 )
                 .disabled(viewModel.isBusy)
+                .transaction { transaction in
+                    // disable titile slide in animation
+                    transaction.disablesAnimations = true
+                }
             }
             .padding(.bottom, 20)
         }
