@@ -50,7 +50,7 @@ let package = Package(
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.6.0"),
         .package(url: "https://github.com/tid-kijyun/Kanna.git", from: "5.2.7"),
         .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", from: "0.2.0"),
-        .package(url: "https://github.com/TwidereProject/TwitterSDK.git", exact: "0.13.0"),
+        .package(url: "https://github.com/TwidereProject/TwitterSDK.git", exact: "0.14.0"),
         .package(name: "ArkanaKeys", path: "../dependencies/ArkanaKeys"),
         .package(name: "CoverFlowStackLayout", path: "../CoverFlowStackLayout"),
     ],

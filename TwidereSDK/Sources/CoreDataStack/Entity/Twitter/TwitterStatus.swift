@@ -64,11 +64,11 @@ final public class TwitterStatus: NSManagedObject {
     // many-to-one relationship
     // sourcery: autoGenerateRelationship
     @NSManaged public private(set) var author: TwitterUser
-    // sourcery: autoGenerateRelationship
+    // sourcery: autoUpdatableObject, autoGenerateRelationship
     @NSManaged public private(set) var repost: TwitterStatus?
-    // sourcery: autoGenerateRelationship
+    // sourcery: autoUpdatableObject, autoGenerateRelationship
     @NSManaged public private(set) var quote: TwitterStatus?
-    // sourcery: autoGenerateRelationship, autoUpdatableObject
+    // sourcery: autoUpdatableObject, autoGenerateRelationship
     @NSManaged public private(set) var replyTo: TwitterStatus?
     
     // one-to-many relationship
@@ -469,6 +469,16 @@ extension TwitterStatus: AutoUpdatableObject {
     public func update(updatedAt: Date) {
     	if self.updatedAt != updatedAt {
     		self.updatedAt = updatedAt
+    	}
+    }
+    public func update(repost: TwitterStatus?) {
+    	if self.repost != repost {
+    		self.repost = repost
+    	}
+    }
+    public func update(quote: TwitterStatus?) {
+    	if self.quote != quote {
+    		self.quote = quote
     	}
     }
     public func update(replyTo: TwitterStatus?) {

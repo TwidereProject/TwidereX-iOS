@@ -412,6 +412,9 @@ extension StatusThreadViewModel {
                 guard let status = statusDict[statusID] else {
                     continue
                 }
+                guard statusID != conversationRootStatusID else {
+                    continue
+                }
                 threads.append(.selfThread(status: .twitter(record: status)))
             }
             return threads

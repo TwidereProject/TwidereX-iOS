@@ -141,6 +141,9 @@ extension Persistence.TwitterStatus {
         
         if let old = fetch(in: managedObjectContext, context: context) {
             merge(twitterStatus: old, context: context)
+            if let repost = repost, old.repost == nil {
+                old.update(repost: repost)
+            }
             return .init(status: old, isNewInsertion: false, isNewInsertionAuthor: false)
         } else {
             let poll: TwitterPoll? = {
