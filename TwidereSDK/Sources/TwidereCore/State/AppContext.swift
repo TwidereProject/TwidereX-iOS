@@ -67,6 +67,42 @@ public class AppContext: ObservableObject {
             authenticationService: _authenticationService,
             appSecret: appSecret
         )
+        
+        setupNotification()
+        setupStoreReview()
+    }
+    
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
+}
+
+extension AppContext {
+    private func setupNotification() {
+        authenticationService.$authenticationIndexes
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                Task {
+                    await self.notificationService.registerNotification()
+                }   // end Task
+            }
+            .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            authenticationService.$authenticationIndexes,
+            notificationService.applicationIconBadgeNeedsUpdate
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] _, _ in
+            guard let self = self else { return }
+            Task {
+                await self.notificationService.updateApplicationIconBadge()
+            }   // end Task
+        }
+        .store(in: &disposeBag)
     }
     
     private func setupStoreReview() {
@@ -101,10 +137,6 @@ public class AppContext: ObservableObject {
             }
             .store(in: &disposeBag)
         
-    }
-    
-    deinit {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

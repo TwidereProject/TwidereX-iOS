@@ -13,6 +13,9 @@ import CoreDataStack
 import TwidereCore
 
 final class ListStatusTimelineViewModel: ListTimelineViewModel {
+    
+    // input
+    let list: ListRecord
 
     // output
     @Published var title: String?
@@ -20,18 +23,19 @@ final class ListStatusTimelineViewModel: ListTimelineViewModel {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         list: ListRecord
     ) {
+        self.list = list
         super.init(
             context: context,
+            authContext: authContext,
             kind: .list(list: list)
         )
+        // end init
         
-        isFloatyButtonDisplay = false
-        
-        context.authenticationService.$activeAuthenticationContext
-            .map { $0?.userIdentifier }
-            .assign(to: &statusRecordFetchedResultController.$userIdentifier)
+        isFloatyButtonDisplay = true
+        statusRecordFetchedResultController.userIdentifier = authContext.authenticationContext.userIdentifier
         
         // bind titile
         if let object = list.object(in: context.managedObjectContext) {

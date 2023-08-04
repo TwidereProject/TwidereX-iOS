@@ -21,7 +21,7 @@ final class NotificationViewController: TabmanViewController, NeedsDependency, D
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    private(set) lazy var viewModel = NotificationViewModel(context: context, coordinator: coordinator)
+    var viewModel: NotificationViewModel!
     
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     let avatarBarButtonItem = AvatarBarButtonItem()
@@ -51,6 +51,7 @@ final class NotificationViewController: TabmanViewController, NeedsDependency, D
 }
 
 extension NotificationViewController {
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -64,6 +65,12 @@ extension NotificationViewController {
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] needsSetupAvatarBarButtonItem in
                     guard let self = self else { return }
+                    if let leftBarButtonItem = self.navigationItem.leftBarButtonItem,
+                       leftBarButtonItem !== self.avatarBarButtonItem
+                    {
+                        // allow override
+                        return
+                    }
                     self.navigationItem.leftBarButtonItem = needsSetupAvatarBarButtonItem ? self.avatarBarButtonItem : nil
                 }
                 .store(in: &disposeBag)            
@@ -71,17 +78,14 @@ extension NotificationViewController {
         avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(NotificationViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         avatarBarButtonItem.delegate = self
         
-        Publishers.CombineLatest(
-            context.authenticationService.$activeAuthenticationContext,
-            viewModel.viewDidAppear
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] authenticationContext, _ in
-            guard let self = self else { return }
-            let user = authenticationContext?.user(in: self.context.managedObjectContext)
-            self.avatarBarButtonItem.configure(user: user)
-        }
-        .store(in: &disposeBag)
+        viewModel.viewDidAppear
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                let user = self.viewModel.authContext.authenticationContext.user(in: self.context.managedObjectContext)
+                self.avatarBarButtonItem.configure(user: user)
+            }
+            .store(in: &disposeBag)
         
         dataSource = viewModel
         viewModel.$viewControllers
@@ -124,7 +128,7 @@ extension NotificationViewController {
         
         // reset notification count
         Task {
-            await self.context.notificationService.clearNotificationCountForActiveUser()
+            await self.context.notificationService.clearNotificationCountForUser(authContext: viewModel.authContext)
         }   // end Task
     }
     
@@ -134,8 +138,8 @@ extension NotificationViewController {
 
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context)
-        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context, authContext: viewModel.authContext)
+        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(animated: true, transitioningDelegate: drawerSidebarTransitionController))
     }
     
 }
@@ -175,6 +179,11 @@ extension NotificationViewController {
         } else {
             pageSegmentedControl.selectedSegmentIndex = 0
         }
+        
+        pageSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pageSegmentedControl.widthAnchor.constraint(greaterThanOrEqualToConstant: 240)
+        ])
     }
 }
 
@@ -194,3 +203,7 @@ extension NotificationViewController {
 // MARK: - AvatarBarButtonItemDelegate
 extension NotificationViewController: AvatarBarButtonItemDelegate { }
 
+// MARK: - AuthContextProvider
+extension NotificationViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}

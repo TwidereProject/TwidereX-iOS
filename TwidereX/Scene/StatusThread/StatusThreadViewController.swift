@@ -44,7 +44,9 @@ extension StatusThreadViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = "Detail"
         view.backgroundColor = .systemBackground
+        viewModel.viewLayoutFrame.update(view: view)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
@@ -60,22 +62,22 @@ extension StatusThreadViewController {
             tableView: tableView,
             statusViewTableViewCellDelegate: self
         )
-        viewModel.topListBatchFetchViewModel.setup(scrollView: tableView)
-        viewModel.bottomListBatchFetchViewModel.setup(scrollView: tableView)
-        viewModel.topListBatchFetchViewModel.shouldFetch
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.viewModel.twitterStatusThreadReplyViewModel.stateMachine.enter(TwitterStatusThreadReplyViewModel.State.Loading.self)
-            }
-            .store(in: &disposeBag)
-        viewModel.bottomListBatchFetchViewModel.shouldFetch
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.viewModel.loadThreadStateMachine.enter(StatusThreadViewModel.LoadThreadState.Loading.self)
-            }
-            .store(in: &disposeBag)
+//        viewModel.topListBatchFetchViewModel.setup(scrollView: tableView)
+//        viewModel.bottomListBatchFetchViewModel.setup(scrollView: tableView)
+//        viewModel.topListBatchFetchViewModel.shouldFetch
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] _ in
+//                guard let self = self else { return }
+//                self.viewModel.twitterStatusThreadReplyViewModel.stateMachine.enter(TwitterStatusThreadReplyViewModel.State.Loading.self)
+//            }
+//            .store(in: &disposeBag)
+//        viewModel.bottomListBatchFetchViewModel.shouldFetch
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] _ in
+//                guard let self = self else { return }
+//                self.viewModel.loadThreadStateMachine.enter(StatusThreadViewModel.LoadThreadState.Loading.self)
+//            }
+//            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -87,7 +89,26 @@ extension StatusThreadViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        viewModel.viewDidAppear.send()
+//        viewModel.viewDidAppear.send()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        viewModel.viewLayoutFrame.update(view: view)
+    }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        viewModel.viewLayoutFrame.update(view: view)
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate { _ in
+            self.viewModel.viewLayoutFrame.update(view: self.view)
+        }
     }
 }
 
@@ -97,13 +118,31 @@ extension StatusThreadViewController: UITableViewDelegate, AutoGenerateTableView
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         guard let diffableDataSource = viewModel.diffableDataSource else { return indexPath }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return indexPath }
-        guard case let .thread(thread) = item else { return indexPath }
         
-        switch thread {
+        switch item {
         case .root:
+            // cancel textView selection
+            view.endEditing(true)
             return nil
-        case .reply, .leaf:
-            return indexPath
+        default:        return indexPath
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        switch item {
+        case .topLoader:
+            Task {
+                try await viewModel.loadTop()
+            }   // end Task
+        case .bottomLoader:
+            Task {
+                try await viewModel.loadBottom()
+            }   // end Task
+        default:
+            break
         }
     }
     
@@ -135,6 +174,10 @@ extension StatusThreadViewController: UITableViewDelegate, AutoGenerateTableView
     
 }
 
+// MARK: - AuthContextProvider
+extension StatusThreadViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
+}
 
 // MARK: - StatusViewTableViewCellDelegate
 extension StatusThreadViewController: StatusViewTableViewCellDelegate { }

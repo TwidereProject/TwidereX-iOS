@@ -7,6 +7,7 @@
 
 import os.log
 import Foundation
+import CoreData
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
@@ -25,6 +26,7 @@ extension StatusFetchViewModel.Timeline.List {
     }
     
     public struct TwitterFetchContext: Hashable {
+        public let managedObjectContext: NSManagedObjectContext
         public let authenticationContext: TwitterAuthenticationContext
         public let list: ManagedObjectRecord<TwitterList>
         public let paginationToken: String?
@@ -35,6 +37,7 @@ extension StatusFetchViewModel.Timeline.List {
         public var needsAPIFallback = false
         
         public init(
+            managedObjectContext: NSManagedObjectContext,
             authenticationContext: TwitterAuthenticationContext,
             list: ManagedObjectRecord<TwitterList>,
             paginationToken: String?,
@@ -42,6 +45,7 @@ extension StatusFetchViewModel.Timeline.List {
             maxResults: Int?,
             filter: StatusFetchViewModel.Timeline.Filter
         ) {
+            self.managedObjectContext = managedObjectContext
             self.authenticationContext = authenticationContext
             self.list = list
             self.paginationToken = paginationToken
@@ -52,6 +56,7 @@ extension StatusFetchViewModel.Timeline.List {
         
         func map(paginationToken: String) -> TwitterFetchContext {
             return TwitterFetchContext(
+                managedObjectContext: managedObjectContext,
                 authenticationContext: authenticationContext,
                 list: list,
                 paginationToken: paginationToken,
@@ -63,6 +68,7 @@ extension StatusFetchViewModel.Timeline.List {
         
         func map(maxID: Twitter.Entity.Tweet.ID) -> TwitterFetchContext {
             return TwitterFetchContext(
+                managedObjectContext: managedObjectContext,
                 authenticationContext: authenticationContext,
                 list: list,
                 paginationToken: paginationToken,
@@ -125,7 +131,7 @@ extension StatusFetchViewModel.Timeline.List {
 extension StatusFetchViewModel.Timeline.List {
     
     enum TwitterResponse {
-        case v2(Twitter.Response.Content<Twitter.API.V2.Status.List.StatusesContent>)
+        case v2(Twitter.Response.Content<Twitter.Entity.V2.TimelineContent>)
         case v1(Twitter.Response.Content<[Twitter.Entity.Tweet]>)
         
         func filter(fetchContext: TwitterFetchContext) -> StatusFetchViewModel.Result {
@@ -143,8 +149,8 @@ extension StatusFetchViewModel.Timeline.List {
         func backInput(fetchContext: TwitterFetchContext) -> Input? {
             switch self {
             case .v2(let response):
-                guard let nextToken = response.value.meta.previousToken else { return nil }
-                let fetchContext = fetchContext.map(paginationToken: nextToken)
+                guard let previousToken = response.value.meta.previousToken else { return nil }
+                let fetchContext = fetchContext.map(paginationToken: previousToken)
                 return .twitter(fetchContext)
             case .v1:
                 return nil
@@ -184,25 +190,18 @@ extension StatusFetchViewModel.Timeline.List {
                         query: query,
                         authenticationContext: fetchContext.authenticationContext
                     )
+                    
+                    let data = response.value.data ?? []
+                    if data.isEmpty {
+                        try await fetchContext.managedObjectContext.perform {
+                            guard let list = fetchContext.list.object(in: fetchContext.managedObjectContext) else { return }
+                            if list.private {
+                                throw EmptyState.unableToAccess(reason: "The list is private")
+                            }
+                        }
+                    }
+                    
                     return .v2(response)
-                } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Rate Limit] fallback to v1")
-                    let managedObjectContext = api.backgroundManagedObjectContext
-                    let _listID: TwitterList.ID? = await managedObjectContext.perform {
-                        guard let list = fetchContext.list.object(in: managedObjectContext) else { return nil }
-                        return list.id
-                    }
-                    guard let listID = _listID else {
-                        throw AppError.implicit(.badRequest)
-                    }
-                    let response = try await api.twitterListStatusesV1(
-                        query: .init(
-                            id: listID,
-                            maxID: fetchContext.maxID
-                        ),
-                        authenticationContext: fetchContext.authenticationContext
-                    )
-                    return .v1(response)
                 } catch {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                     throw error

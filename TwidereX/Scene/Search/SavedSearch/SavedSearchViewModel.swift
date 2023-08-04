@@ -19,22 +19,26 @@ final class SavedSearchViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let savedSearchService: SavedSearchService
     let savedSearchFetchedResultController: SavedSearchFetchedResultController
+    
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
 
     // output
     var diffableDataSource: UITableViewDiffableDataSource<SearchSection, SearchItem>?
     @Published var isSavedSearchFetched = false
 
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
         self.context = context
+        self.authContext = authContext
         self.savedSearchService = SavedSearchService(apiService: context.apiService)
         self.savedSearchFetchedResultController = SavedSearchFetchedResultController(managedObjectContext: context.managedObjectContext)
         // end init
 
-        context.authenticationService.$activeAuthenticationContext
-            .map { $0?.userIdentifier }
-            .assign(to: \.userIdentifier, on: savedSearchFetchedResultController)
-            .store(in: &disposeBag)
+        savedSearchFetchedResultController.userIdentifier = authContext.authenticationContext.userIdentifier
     }
 }

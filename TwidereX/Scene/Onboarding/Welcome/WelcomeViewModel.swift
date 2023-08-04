@@ -10,10 +10,8 @@ import os.log
 import Foundation
 import SwiftUI
 import Combine
-import AppShared
 import TwitterSDK
 import MastodonSDK
-import TwidereCommon
 
 protocol WelcomeViewModelDelegate: AnyObject {
     func presentTwitterAuthenticationOption()

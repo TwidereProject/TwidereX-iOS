@@ -8,7 +8,6 @@
 import os.log
 import UIKit
 import CoreDataStack
-import TwidereCommon
 import TwidereCore
 
 public protocol StatusMetricsDashboardViewDelegate: AnyObject {

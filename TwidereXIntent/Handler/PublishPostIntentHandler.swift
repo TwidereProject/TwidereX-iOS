@@ -13,7 +13,6 @@ import CoreData
 import CoreDataStack
 import TwidereCore
 import TwidereCommon
-import AppShared
 
 final class PublishPostIntentHandler: NSObject {
     

@@ -18,11 +18,12 @@ extension APIService {
         list: ManagedObjectRecord<TwitterList>,
         query: Twitter.API.V2.Status.List.StatusesQuery,
         authenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Status.List.StatusesContent> {
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.V2.TimelineContent> {
         let managedObjectContext = backgroundManagedObjectContext
         
         let _listID: TwitterList.ID? = await managedObjectContext.perform {
             guard let list = list.object(in: managedObjectContext) else { return nil }
+            
             return list.id
         }
         guard let listID = _listID else {
@@ -36,14 +37,41 @@ extension APIService {
             authorization: authenticationContext.authorization
         )
         
-        if let statusIDs = response.value.data?.compactMap({ $0.id }), !statusIDs.isEmpty {
-            assert(statusIDs.count <= 100)
-            _ = try await twitterStatus(
-                statusIDs: statusIDs,
-                authenticationContext: authenticationContext
-            )
+        #if DEBUG
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            // log rate limit
+            response.logRateLimit()
+            
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
         }
+        #endif
         
+        let content = response.value
+        let dictionary = Twitter.Response.V2.DictContent(
+            tweets: [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 },
+            users: content.includes?.users ?? [],
+            media: content.includes?.media ?? [],
+            places: content.includes?.places ?? [],
+            polls: content.includes?.polls ?? []
+        )
+        
+        try await managedObjectContext.performChanges {
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            
+            let contextV2 = Persistence.Twitter.PersistContextV2(
+                dictionary: dictionary,
+                me: me,
+                networkDate: response.networkDate
+            )
+            _ = Persistence.Twitter.persist(
+                in: managedObjectContext,
+                context: contextV2
+            )
+        }   // end .performChanges { … }
+
         return response
     }
     
@@ -56,13 +84,7 @@ extension APIService {
             query: query,
             authorization: authenticationContext.authorization
         )
-        
-        let statusIDs: [Twitter.Entity.V2.Tweet.ID] = response.value.map { $0.idStr }
-        let _lookupResponse = try? await twitterBatchLookupV2(
-            statusIDs: statusIDs,
-            authenticationContext: authenticationContext
-        )
-                
+
         #if DEBUG
         // log time cost
         let start = CACurrentMediaTime()
@@ -93,11 +115,6 @@ extension APIService {
                 )
                 statusArray.append(result.status)
             }   // end for in
-            
-            // amend the v2 only properties
-            if let lookupResponse = _lookupResponse, let me = me {
-                lookupResponse.update(statuses: statusArray, me: me)
-            }
         }
         
         return response

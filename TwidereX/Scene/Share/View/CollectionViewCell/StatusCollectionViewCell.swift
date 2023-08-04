@@ -13,12 +13,12 @@ final class StatusCollectionViewCell: UICollectionViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     
-    private(set) lazy var statusView = StatusView()
+//    private(set) lazy var statusView = StatusView()
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        statusView.prepareForReuse()
+//        statusView.prepareForReuse()
         disposeBag.removeAll()
     }
     
@@ -37,14 +37,14 @@ final class StatusCollectionViewCell: UICollectionViewCell {
 extension StatusCollectionViewCell {
     
     private func _init() {
-        statusView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(statusView)
-        NSLayoutConstraint.activate([
-            statusView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            statusView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
-            statusView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
-            statusView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-        ])
+//        statusView.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(statusView)
+//        NSLayoutConstraint.activate([
+//            statusView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+//            statusView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
+//            statusView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
+//            statusView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+//        ])
     }
     
 }

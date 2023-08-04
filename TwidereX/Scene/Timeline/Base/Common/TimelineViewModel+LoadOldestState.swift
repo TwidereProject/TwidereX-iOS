@@ -71,6 +71,8 @@ extension TimelineViewModel.LoadOldestState {
     class Loading: TimelineViewModel.LoadOldestState {
         
         var nextInput: StatusFetchViewModel.Timeline.Input?
+        var retryCount = 0
+        var nonce = UUID()
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             switch stateClass {
@@ -90,15 +92,24 @@ extension TimelineViewModel.LoadOldestState {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
 
-            // reset when reloading
+            // reset nextInput when reloading
             switch previousState {
             case is Reloading:
                 nextInput = nil
             default:
                 break
             }
+            
+            // reset fail count if needs
+            switch previousState {
+            case is Fail:
+                retryCount += 1
+            default:
+                retryCount = 0
+            }
 
             guard let viewModel = viewModel, let _ = stateMachine else { return }
+            let nonce = self.nonce
             
             Task {
                 let managedObjectContext = viewModel.context.managedObjectContext
@@ -107,13 +118,20 @@ extension TimelineViewModel.LoadOldestState {
                     case .home:
                         guard let record = viewModel.feedFetchedResultsController.records.last else { return nil }
                         guard let feed = record.object(in: managedObjectContext) else { return nil }
-                        return feed.statusObject?.asRecord
+                        guard case let .status(status) = feed.content else { return nil }
+                        return status.asRecord
                     case .public, .hashtag, .list, .search, .user:
                         guard let status = viewModel.statusRecordFetchedResultController.records.last else { return nil }
                         return status
                     }
                 }
-
+                
+                if retryCount > 0 {
+                    let delay = min(64.0, pow(2.0, Double(retryCount)))
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Loading] restore loading from fail case with delay: \(delay, format: .fixed(precision: 2))s")
+                    try? await Task.sleep(nanoseconds: UInt64(delay) * .second)
+                }
+                guard nonce == self.nonce else { return }
                 await fetch(anchor: _anchorRecord)
             }   // end Task
         }   // end func
@@ -121,10 +139,7 @@ extension TimelineViewModel.LoadOldestState {
         private func fetch(anchor record: StatusRecord?) async {
             guard let viewModel = viewModel, let _ = stateMachine else { return }
             
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else {
-                enter(state: Fail.self)
-                return
-            }
+            let authenticationContext = viewModel.authContext.authenticationContext
             
             if nextInput == nil {
                 let managedObjectContext = viewModel.context.managedObjectContext
@@ -133,10 +148,8 @@ extension TimelineViewModel.LoadOldestState {
                     authenticationContext: authenticationContext,
                     kind: viewModel.kind,
                     position: {
-                        guard let record = record else {
-                            return .top(anchor: nil)
-                        }
-                        return .bottom(anchor: record)
+                        // always reload at top when nextInput is nil
+                        return .top(anchor: nil)
                     }(),
                     filter: StatusFetchViewModel.Timeline.Filter(rule: .empty)
                 )
@@ -183,11 +196,19 @@ extension TimelineViewModel.LoadOldestState {
                     case .twitterV2(let statuses):
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
+                    case .twitterIDs(let statusIDs):
+                        viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
                     case .mastodon(let statuses):
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
                     }
                 }
+
+            } catch let error as EmptyState {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                enter(state: NoMore.self)
+                viewModel.emptyState = error
+                viewModel.statusRecordFetchedResultController.reload()
             } catch {
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                 enter(state: Fail.self)

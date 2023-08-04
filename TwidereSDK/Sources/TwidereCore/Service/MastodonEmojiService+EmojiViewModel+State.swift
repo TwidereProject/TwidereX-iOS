@@ -8,7 +8,6 @@
 import os.log
 import Foundation
 import GameplayKit
-import TwidereCommon
 import MastodonSDK
 
 extension MastodonEmojiService.EmojiViewModel {

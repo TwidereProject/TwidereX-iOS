@@ -13,30 +13,60 @@ import Combine
 import SafariServices
 import SwiftMessages
 import TwitterSDK
-import TwidereUI
-import TwidereCommon
+import func QuartzCore.CACurrentMediaTime
 
-final class MainTabBarController: UITabBarController {
+final class MainTabBarController: UITabBarController, NeedsDependency {
     
     let logger = Logger(subsystem: "MainTabBarController", category: "TabBar")
     
     var disposeBag = Set<AnyCancellable>()
         
-    weak var context: AppContext!
-    weak var coordinator: SceneCoordinator!
-
-    @Published var tabs: [TabBarItem] = [
-        .home,
-        .notification,
-        .search,
-        .me,
-    ]
-    @Published var currentTab: TabBarItem = .home
+    weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
+    weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
+    let authContext: AuthContext
     
-    init(context: AppContext, coordinator: SceneCoordinator) {
+    private let doubleTapGestureRecognizer = UITapGestureRecognizer.doubleTapGestureRecognizer
+    
+    @Published var tabs: [TabBarItem]
+    @Published var currentTab: TabBarItem
+    
+    static var popToRootAfterActionTolerance: TimeInterval { 0.5 }
+    var lastPopToRootTime = CACurrentMediaTime()
+    @Published var tabBarTapScrollPreference = UserDefaults.shared.tabBarTapScrollPreference
+    
+    init(
+        context: AppContext,
+        coordinator: SceneCoordinator,
+        authContext: AuthContext
+    ) {
         self.context = context
         self.coordinator = coordinator
+        self.authContext = authContext
+        let tabs: [TabBarItem] = {
+            switch authContext.authenticationContext {
+            case .twitter:
+                return [
+                    .homeList,
+                    // .notification,
+                    .search,
+                    .me,
+                ]
+            case .mastodon:
+                return [
+                    .home,
+                    .notification,
+                    .search,
+                    .me,
+                ]
+            }   // end switch
+        }()
+        self.tabs = tabs
+        self.currentTab = tabs.first ?? .me
         super.init(nibName: nil, bundle: nil)
+        
+        UserDefaults.shared.publisher(for: \.tabBarTapScrollPreference)
+            .removeDuplicates()
+            .assign(to: &$tabBarTapScrollPreference)
     }
     
     required init?(coder: NSCoder) {
@@ -62,18 +92,39 @@ extension MainTabBarController {
         view.backgroundColor = .systemBackground
         
         let viewControllers: [UIViewController] = tabs.map { tab in
-            let rootViewController = tab.viewController(context: context, coordinator: coordinator)
+            let rootViewController = tab.viewController(context: context, coordinator: coordinator, authContext: authContext)
             let viewController = AdaptiveStatusBarStyleNavigationController(rootViewController: rootViewController)
             viewController.tabBarItem.tag = tab.tag
             viewController.tabBarItem.title = tab.title
             viewController.tabBarItem.image = tab.image
             viewController.tabBarItem.accessibilityLabel = tab.title
             viewController.tabBarItem.largeContentSizeImage = tab.largeImage
-            viewController.tabBarItem.imageInsets = UIEdgeInsets(top: 6, left: 0, bottom: -6, right: 0)
             return viewController
         }
         setViewControllers(viewControllers, animated: false)
         selectedIndex = 0
+        
+        // TabBarItem appearance
+        configureTabBarItemAppearance()
+        UserDefaults.shared.publisher(for: \.preferredTabBarLabelDisplay)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] preferredTabBarLabelDisplay in
+                guard let self = self else { return }
+                self.configureTabBarItemAppearance()
+            }
+            .store(in: &disposeBag)
+        
+        // TabBar tap gesture
+        doubleTapGestureRecognizer.addTarget(self, action: #selector(MainTabBarController.doubleTapGestureRecognizerHandler(_:)))
+        doubleTapGestureRecognizer.delaysTouchesEnded = false
+        tabBar.addGestureRecognizer(doubleTapGestureRecognizer)
+        setupDoubleTapGestureEnabled()
+        UserDefaults.shared.publisher(for: \.tabBarTapScrollPreference)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.setupDoubleTapGestureEnabled()
+            }
+            .store(in: &disposeBag)
         
         let feedbackGenerator = UINotificationFeedbackGenerator()
 
@@ -81,7 +132,7 @@ extension MainTabBarController {
         context.publisherService.statusPublishResult
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
-                guard let _ = self else { return }
+                guard let self = self else { return }
                 switch result {
                 case .success(let result):
                     var config = SwiftMessages.defaultConfig
@@ -108,8 +159,18 @@ extension MainTabBarController {
                         return
                     }
                     
+                    if let error = error as? Twitter.API.Error.ResponseError, case .accountIsTemporarilyLocked = error.twitterAPIError {
+                        Task { @MainActor in
+                            DataSourceFacade.presentForbiddenBanner(
+                                error: error,
+                                dependency: self
+                            )
+                        }   // end Task
+                        return
+                    }
+                    
                     var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
+                    config.duration = .seconds(seconds: 10)
                     config.interactiveHide = true
                     
                     let bannerView = NotificationBannerView()
@@ -160,6 +221,27 @@ extension MainTabBarController {
         return viewController(of: NotificationViewController.self)
     }
     
+    private func configureTabBarItemAppearance() {
+        let preferredTabBarLabelDisplay = UserDefaults.shared.preferredTabBarLabelDisplay
+        
+        for item in tabBar.items ?? [] {
+            item.imageInsets = preferredTabBarLabelDisplay ? .zero : UIEdgeInsets(top: 6, left: 0, bottom: -6, right: 0)
+        }
+        
+        let tabBarAppearance = ThemeService.setupTabBarAppearance()
+        tabBar.standardAppearance = tabBarAppearance
+        tabBar.scrollEdgeAppearance = tabBarAppearance
+    }
+    
+    func setupDoubleTapGestureEnabled() {
+        doubleTapGestureRecognizer.isEnabled = {
+            switch UserDefaults.shared.tabBarTapScrollPreference {
+            case .single:       return false
+            case .double:       return true
+            }
+        }()
+    }
+    
     private func updateTabBarDisplay() {
         switch traitCollection.horizontalSizeClass {
         case .compact:
@@ -172,17 +254,16 @@ extension MainTabBarController {
     @MainActor
     private func setupNotificationTabIconUpdater() async {
         // notification tab bar icon updater
-        await Publishers.CombineLatest3(
-            context.authenticationService.$activeAuthenticationContext,
+        await Publishers.CombineLatest(
             context.notificationService.unreadNotificationCountDidUpdate,   // <-- actor property
             $currentTab
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] authenticationContext, _, currentTab in
+        .sink { [weak self] _, currentTab in
             guard let self = self else { return }
-            guard let authenticationContext = authenticationContext else { return }
             guard let notificationViewController = self.notificationViewController else { return }
 
+            let authenticationContext = self.authContext.authenticationContext
             let hasUnreadPushNotification: Bool = {
                 switch authenticationContext {
                 case .twitter:
@@ -209,18 +290,71 @@ extension MainTabBarController {
 
 extension MainTabBarController {
 
+    // A. trigger select by MainTabBarController.tabBarController(_:didSelect:)
+    //    The device is horizontal compact size class
+    //    and user tap on TabBar directly.
+    //    And navigation stack is already pop to root in
+    //    MainTabBarController.tabBarController(_:shouldSelect:)
+    // B. trigger select by ContentSplitViewController.sidebarViewModel(_:active:)
+    //    The device is horizontal regular size class and user tap on sidebar.
+    //    And there are two conditions (true/false) for `isMainTabBarControllerActive` value.
+    //    Only trigger pop and scroll action when main tab isActive (a.k.a secondary tab bar controller hidden)
+    // C. trigger select by SceneCoordinator.switchToTabBar(tab:)
+    //    The device idiom is phone.
+    //    Follows B. workflow with default true of `isMainTabBarControllerActive` value
+    //    And maybe force pop to root needs 
     func select(tab: TabBarItem, isMainTabBarControllerActive: Bool = true) {
         let _index = tabBar.items?.firstIndex(where: { $0.tag == tab.tag })
         guard let index = _index else {
             return
         }
-        
+
         defer {
             selectedIndex = index
             currentTab = tab
         }
         
-        // check if selected and scroll it to top or pop to top
+        guard popToRoot(tab: tab, isMainTabBarControllerActive: isMainTabBarControllerActive) else { return }
+
+        // check if preferred double tap for scrollToTop
+        switch tabBarTapScrollPreference {
+        case .single:       break
+        case .double:       return
+        }
+        
+        scrollToTop(tab: tab, isMainTabBarControllerActive: isMainTabBarControllerActive)
+    }
+    
+    func popToRoot(tab: TabBarItem, isMainTabBarControllerActive: Bool = true) -> Bool {
+        let _index = tabBar.items?.firstIndex(where: { $0.tag == tab.tag })
+        guard let index = _index else {
+            return false
+        }
+        
+        guard isMainTabBarControllerActive,
+              currentTab == tab,
+              let viewController = viewControllers?[safe: index],
+              let navigationController = viewController as? UINavigationController
+        else { return false }
+        
+        guard navigationController.viewControllers.count == 1 else {
+            navigationController.popToRootViewController(animated: true)
+            lastPopToRootTime = CACurrentMediaTime()
+            return false
+        }
+        
+        return true
+    }
+    
+    func scrollToTop(tab: TabBarItem, isMainTabBarControllerActive: Bool = true) {
+        let now = CACurrentMediaTime()
+        guard now - lastPopToRootTime > MainTabBarController.popToRootAfterActionTolerance else { return }
+        
+        let _index = tabBar.items?.firstIndex(where: { $0.tag == tab.tag })
+        guard let index = _index else {
+            return
+        }
+        
         guard isMainTabBarControllerActive,
               currentTab == tab,
               let viewController = viewControllers?[safe: index],
@@ -228,7 +362,6 @@ extension MainTabBarController {
         else { return }
         
         guard navigationController.viewControllers.count == 1 else {
-            navigationController.popToRootViewController(animated: true)
             return
         }
 
@@ -243,6 +376,18 @@ extension MainTabBarController {
 
 extension MainTabBarController {
     
+    @objc private func doubleTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        switch sender.state {
+        case .ended:
+            guard let scrollViewContainer = selectedViewController?.topMost as? ScrollViewContainer else { return }
+            scrollViewContainer.scrollToTop(animated: true)
+        default:
+            break
+        }
+    }
+
+    
     @objc private func tabBarLongPressGestureRecognizerHandler(_ sender: UILongPressGestureRecognizer) {
         guard sender.state == .began else { return }
 
@@ -251,7 +396,7 @@ extension MainTabBarController {
         for item in tabBar.items ?? [] {
             guard let tab = TabBarItem(rawValue: item.tag) else { continue }
             guard let view = item.value(forKey: "view") as? UIView else { continue }
-            guard view.frame.contains(location) else { continue}
+            guard view.frame.contains(location) else { continue }
 
             _tab = tab
             break
@@ -264,7 +409,7 @@ extension MainTabBarController {
         case .me:
             let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
             feedbackGenerator.impactOccurred()
-            let accountListViewModel = AccountListViewModel(context: context)
+            let accountListViewModel = AccountListViewModel(context: context, authContext: authContext)
             coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: self, transition: .modal(animated: true, completion: nil))
         default:
             break
@@ -275,6 +420,23 @@ extension MainTabBarController {
 
 // MARK: - UITabBarControllerDelegate
 extension MainTabBarController: UITabBarControllerDelegate {
+    
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        // fix issue 102: https://github.com/TwidereProject/TwidereX-iOS/issues/102
+        // try to pop to root when tap on the same tabBarItem and break select
+        if tabBarController.selectedViewController === viewController,
+           let navigationController = viewController as? UINavigationController,
+           navigationController.viewControllers.count > 1
+        {
+            navigationController.popToRootViewController(animated: true)
+            return false
+        }
+        
+        return true
+    }
+    
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
@@ -285,4 +447,5 @@ extension MainTabBarController: UITabBarControllerDelegate {
         
         select(tab: tab)
     }
+    
 }

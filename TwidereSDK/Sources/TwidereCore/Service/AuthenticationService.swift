@@ -27,9 +27,6 @@ public class AuthenticationService: NSObject {
 
     // output
     @Published public var authenticationIndexes: [AuthenticationIndex] = []
-    public let activeAuthenticationIndex = CurrentValueSubject<AuthenticationIndex?, Never>(nil)
-    
-    @Published public var activeAuthenticationContext: AuthenticationContext? = nil
 
     public init(
         managedObjectContext: NSManagedObjectContext,
@@ -93,26 +90,26 @@ public class AuthenticationService: NSObject {
 //            .store(in: &disposeBag)
 
         // bind activeAuthenticationIndex
-        $authenticationIndexes
-            .map { $0.sorted(by: { $0.activeAt > $1.activeAt }).first }
-            .assign(to: \.value, on: activeAuthenticationIndex)
-            .store(in: &disposeBag)
-        
-        // bind activeAuthenticationContext
-        activeAuthenticationIndex
-            .map { authenticationIndex -> AuthenticationContext? in
-                guard let authenticationIndex = authenticationIndex else { return nil }
-                guard let authenticationContext = AuthenticationContext(authenticationIndex: authenticationIndex, secret: appSecret.secret) else { return nil }
-                return authenticationContext
-            }
-            .assign(to: &$activeAuthenticationContext)
-
-        do {
-            try authenticationIndexFetchedResultsController.performFetch()
-            authenticationIndexes = authenticationIndexFetchedResultsController.fetchedObjects ?? []
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
+//        $authenticationIndexes
+//            .map { $0.sorted(by: { $0.activeAt > $1.activeAt }).first }
+//            .assign(to: \.value, on: activeAuthenticationIndex)
+//            .store(in: &disposeBag)
+//
+//        // bind activeAuthenticationContext
+//        activeAuthenticationIndex
+//            .map { authenticationIndex -> AuthenticationContext? in
+//                guard let authenticationIndex = authenticationIndex else { return nil }
+//                guard let authenticationContext = AuthenticationContext(authenticationIndex: authenticationIndex, secret: appSecret.secret) else { return nil }
+//                return authenticationContext
+//            }
+//            .assign(to: &$activeAuthenticationContext)
+//
+//        do {
+//            try authenticationIndexFetchedResultsController.performFetch()
+//            authenticationIndexes = authenticationIndexFetchedResultsController.fetchedObjects ?? []
+//        } catch {
+//            assertionFailure(error.localizedDescription)
+//        }
     }
     
 }
@@ -186,7 +183,7 @@ extension AuthenticationService {
 
 // MARK: - NSFetchedResultsControllerDelegate
 extension AuthenticationService: NSFetchedResultsControllerDelegate {
-    
+
     public func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
          os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
@@ -199,5 +196,5 @@ extension AuthenticationService: NSFetchedResultsControllerDelegate {
             assertionFailure()
         }
     }
-    
+
 }

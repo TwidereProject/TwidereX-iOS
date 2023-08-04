@@ -11,8 +11,6 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import TwidereCore
-import AppShared
 
 extension UserTimelineViewModel {
     
@@ -24,15 +22,12 @@ extension UserTimelineViewModel {
         let configuration = StatusSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
             timelineMiddleLoaderTableViewCellDelegate: nil,
-            statusViewConfigurationContext: StatusView.ConfigurationContext(
-                dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider(),
-                authenticationContext: context.authenticationService.$activeAuthenticationContext
-            )
+            viewLayoutFramePublisher: $viewLayoutFrame
         )
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,
             context: context,
+            authContext: authContext,
             configuration: configuration
         )
         
@@ -83,7 +78,7 @@ extension UserTimelineViewModel {
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
                     }
                     
-                    await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
+                    self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
                 
                     self.didLoadLatest.send()
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")

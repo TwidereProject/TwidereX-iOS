@@ -105,11 +105,7 @@ extension ListUserViewModel.State {
                 break
             }
 
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else {
-                stateMachine.enter(Fail.self)
-                return
-            }
-            
+            let authenticationContext = viewModel.authContext.authenticationContext
             let list = viewModel.kind.list
 
             if nextInput == nil {

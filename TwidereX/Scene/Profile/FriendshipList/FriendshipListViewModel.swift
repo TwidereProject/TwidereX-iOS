@@ -22,6 +22,7 @@ final class FriendshipListViewModel: NSObject {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let kind: Kind
     let userIdentifier: UserIdentifier
     let userRecordFetchedResultController: UserRecordFetchedResultController
@@ -46,10 +47,12 @@ final class FriendshipListViewModel: NSObject {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         kind: Kind,
         userIdentifier: UserIdentifier      // identifier for friend list owner user
     ) {
         self.context = context
+        self.authContext = authContext
         self.kind = kind
         self.userIdentifier = userIdentifier
         self.userRecordFetchedResultController = UserRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
@@ -61,15 +64,14 @@ final class FriendshipListViewModel: NSObject {
     // convenience init for current active user
     convenience init?(
         context: AppContext,
+        authContext: AuthContext,
         kind: Kind
     ) {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return nil }
-        let userIdentifier = authenticationContext.userIdentifier
-        
         self.init(
             context: context,
+            authContext: authContext,
             kind: kind,
-            userIdentifier: userIdentifier
+            userIdentifier: authContext.authenticationContext.userIdentifier
         )
     }
     

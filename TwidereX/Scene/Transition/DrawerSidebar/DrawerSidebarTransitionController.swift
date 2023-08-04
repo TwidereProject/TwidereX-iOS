@@ -9,7 +9,7 @@
 import os.log
 import UIKit
 
-protocol DrawerSidebarTransitionHostViewController: UIViewController & NeedsDependency {
+protocol DrawerSidebarTransitionHostViewController: UIViewController & NeedsDependency & AuthContextProvider {
     var drawerSidebarTransitionController: DrawerSidebarTransitionController! { get }
     var avatarBarButtonItem: AvatarBarButtonItem { get }
 }
@@ -145,10 +145,14 @@ extension DrawerSidebarTransitionController {
         switch transitionType {
         case .present:
             wantsInteractive = true
+            let drawerSidebarViewModel = DrawerSidebarViewModel(
+                context: hostViewController.context,
+                authContext: hostViewController.authContext
+            )
             hostViewController.coordinator.present(
-                scene: .drawerSidebar(viewModel: DrawerSidebarViewModel(context: hostViewController.context)),
+                scene: .drawerSidebar(viewModel: drawerSidebarViewModel),
                 from: hostViewController,
-                transition: .custom(transitioningDelegate: self)
+                transition: .custom(animated: true, transitioningDelegate: self)
             )
 
         case .dismiss:

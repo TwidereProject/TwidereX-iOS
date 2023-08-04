@@ -16,7 +16,8 @@ final class DisplayPreferenceViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    let viewModel = DisplayPreferenceViewModel()
+    var viewModel: DisplayPreferenceViewModel!
+    private(set) lazy var displayPreferenceView = DisplayPreferenceView(viewModel: viewModel)
 
     private(set) lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView(frame: .zero, style: .insetGrouped)
@@ -40,61 +41,77 @@ extension DisplayPreferenceViewController {
         super.viewDidLoad()
         
         title = L10n.Scene.Settings.Display.title
+        viewModel.viewSize = view.frame.size
 
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
+        let hostingViewController = UIHostingController(rootView: displayPreferenceView)
+        addChild(hostingViewController)
+        hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(hostingViewController.view)
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            hostingViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-
-        tableView.delegate = self
-        tableView.dataSource = viewModel
-
-//        tableView.addGestureRecognizer(textFontSizeSliderPanGestureRecognizer)
-//        textFontSizeSliderPanGestureRecognizer.addTarget(self, action: #selector(DisplayPreferenceViewController.sliderPanGestureRecoginzerHandler(_:)))
-//        textFontSizeSliderPanGestureRecognizer.delegate = self
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         
-        tableView.deselectRow(with: transitionCoordinator, animated: animated)
+        viewModel.viewLayoutFrame.update(view: view)
+        if viewModel.viewSize != view.frame.size {
+            viewModel.viewSize = view.frame.size
+        }
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        viewModel.viewLayoutFrame.update(view: view)
     }
     
-}
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
 
-// MARK: - UITableViewDelegate
-extension DisplayPreferenceViewController: UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let sectionData = viewModel.sections[section]
-        let header = sectionData.header
-        let headerView = TableViewSectionTextHeaderView()
-        headerView.label.text = header
-        return headerView
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let section = viewModel.sections[indexPath.section]
-        let setting = section.settings[indexPath.row]
-
-        switch setting {
-        case .avatarStyle(let avatarStyle):
-            UserDefaults.shared.avatarStyle = avatarStyle
-            tableView.deselectRow(at: indexPath, animated: true)
-        default:
-            break
+        coordinator.animate {[weak self] _ in
+            guard let self = self else { return }
+            self.viewModel.viewLayoutFrame.update(view: self.view)
+        } completion: {  _ in
+            // do nothing
         }
     }
     
 }
 
-extension DisplayPreferenceViewController {
-    
-    @objc private func sliderPanGestureRecoginzerHandler(_ sender: UIPanGestureRecognizer) {
+// MARK: - UITableViewDelegate
+//extension DisplayPreferenceViewController: UITableViewDelegate {
+//
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        let sectionData = viewModel.sections[section]
+//        let header = sectionData.header
+//        let headerView = TableViewSectionTextHeaderView()
+//        headerView.label.text = header
+//        return headerView
+//    }
+//
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        let section = viewModel.sections[indexPath.section]
+//        let setting = section.settings[indexPath.row]
+//
+//        switch setting {
+//        case .avatarStyle(let avatarStyle):
+//            UserDefaults.shared.avatarStyle = avatarStyle
+//            tableView.deselectRow(at: indexPath, animated: true)
+//        default:
+//            break
+//        }
+//    }
+//
+//}
+
+//extension DisplayPreferenceViewController {
+//
+//    @objc private func sliderPanGestureRecoginzerHandler(_ sender: UIPanGestureRecognizer) {
 //        let slider = viewModel.fontSizeSlideTableViewCell.slider
 //        guard slider.isUserInteractionEnabled else { return }
 //
@@ -109,13 +126,13 @@ extension DisplayPreferenceViewController {
 //        let index = max(0, min(UserDefaults.contentSizeCategory.count - 1, Int(roundValue)))
 //        let customContentSizeCatagory = UserDefaults.contentSizeCategory[index]
 //        viewModel.customContentSizeCatagory.value = customContentSizeCatagory
-    }
-    
-}
+//    }
+//
+//}
 
 // MARK: - UIGestureRecognizerDelegate
-extension DisplayPreferenceViewController: UIGestureRecognizerDelegate {
-    
+//extension DisplayPreferenceViewController: UIGestureRecognizerDelegate {
+//
 //    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
 //        if gestureRecognizer === textFontSizeSliderPanGestureRecognizer {
 //            return true
@@ -135,5 +152,5 @@ extension DisplayPreferenceViewController: UIGestureRecognizerDelegate {
 //        
 //        return true
 //    }
-
-}
+//
+//}

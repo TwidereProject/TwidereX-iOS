@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import TwidereCore
 
 final class FollowActionButton: UIButton {
     

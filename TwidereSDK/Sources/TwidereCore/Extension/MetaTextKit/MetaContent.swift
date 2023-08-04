@@ -14,28 +14,26 @@ import Meta
 extension Meta {
     public enum Source {
         case plaintext(string: String)
-        case twitter(string: String, urlMaximumLength: Int = 30, provider: TwitterTextProvider)
-        case mastodon(string: String, emojis: MastodonContent.Emojis)
+        case twitter(content: TwitterContent, urlMaximumLength: Int = 30)
+        case mastodon(content: MastodonContent)
     }
     
-    public static func convert(from source: Source) -> MetaContent {
+    public static func convert(document source: Source) -> MetaContent {
         switch source {
         case .plaintext(let string):
             return PlaintextMetaContent(string: string)
-        case .twitter(let string, let urlMaximumLength, let provider):
-            let content = TwitterContent(content: string)
+        case .twitter(let content, let urlMaximumLength):
             return TwitterMetaContent.convert(
-                content: content,
+                document: content,
                 urlMaximumLength: urlMaximumLength,
-                twitterTextProvider: provider
+                twitterTextProvider: SwiftTwitterTextProvider()
             )
-        case .mastodon(let string, let emojis):
+        case .mastodon(let content):
             do {
-                let content = MastodonContent(content: string, emojis: emojis)
                 return try MastodonMetaContent.convert(document: content)
             } catch {
                 assertionFailure()
-                return PlaintextMetaContent(string: string)
+                return PlaintextMetaContent(string: content.content)
             }
         }
     }

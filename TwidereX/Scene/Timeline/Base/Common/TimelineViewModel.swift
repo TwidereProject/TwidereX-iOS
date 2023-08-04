@@ -12,6 +12,8 @@ import Combine
 import CoreDataStack
 import GameplayKit
 import TwidereCore
+import TwitterSDK
+import func QuartzCore.CACurrentMediaTime
 
 class TimelineViewModel: TimelineViewModelDriver {
     
@@ -24,21 +26,35 @@ class TimelineViewModel: TimelineViewModelDriver {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let kind: StatusFetchViewModel.Timeline.Kind
     let feedFetchedResultsController: FeedFetchedResultsController
     let statusRecordFetchedResultController: StatusRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
+    
     @Published var enableAutoFetchLatest = false
+    @Published var didAutoFetchLatest = false
     @Published var isRefreshControlEnabled = true
     @Published var isFloatyButtonDisplay = true
     @Published var isLoadingLatest = false
-    @Published var lastAutomaticFetchTimestamp: Date?
+    
+    @Published private(set) var timelineRefreshInterval = UserDefaults.shared.timelineRefreshInterval
+    @Published private(set) var preferredTimelineResetToTop = UserDefaults.shared.preferredTimelineResetToTop
     
     // output
-    // @Published var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
     let didLoadLatest = PassthroughSubject<Void, Never>()
+    @Published var emptyState: EmptyState?
+    
+    // auto fetch
+    private var autoFetchLatestActionTime = CACurrentMediaTime()
+    let autoFetchLatestAction = PassthroughSubject<Void, Never>()
+    let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
+        .autoconnect()
+        .share()
+        .eraseToAnyPublisher()
     
     // bottom loader
     @MainActor private(set) lazy var stateMachine: GKStateMachine = {
@@ -57,13 +73,40 @@ class TimelineViewModel: TimelineViewModelDriver {
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         kind: StatusFetchViewModel.Timeline.Kind
     ) {
         self.context  = context
+        self.authContext = authContext
         self.kind = kind
         self.feedFetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
         self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
+        super.init()
         // end init
+        
+        UserDefaults.shared.publisher(for: \.timelineRefreshInterval)
+            .removeDuplicates()
+            .assign(to: &$timelineRefreshInterval)
+        
+        UserDefaults.shared.publisher(for: \.preferredTimelineResetToTop)
+            .removeDuplicates()
+            .assign(to: &$preferredTimelineResetToTop)
+        
+        timestampUpdatePublisher
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                guard self.enableAutoFetchLatest else { return }
+                let now = CACurrentMediaTime()
+                let elapse = now - self.autoFetchLatestActionTime
+                guard elapse > self.timelineRefreshInterval.seconds else {
+                    let remains = self.timelineRefreshInterval.seconds - elapse
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): (\(String(describing: self)) auto fetch in \(remains, format: .fixed(precision: 2))s")
+                    return
+                }
+                self.autoFetchLatestActionTime = now
+                self.autoFetchLatestAction.send()
+            }
+            .store(in: &disposeBag)
     }
     
 }
@@ -78,6 +121,8 @@ extension TimelineViewModel {
             statusRecordFetchedResultController.twitterStatusFetchedResultController.prepend(statusIDs: statusIDs)
         case .twitterV2(let array):
             let statusIDs = array.map { $0.id }
+            statusRecordFetchedResultController.twitterStatusFetchedResultController.prepend(statusIDs: statusIDs)
+        case .twitterIDs(let statusIDs):
             statusRecordFetchedResultController.twitterStatusFetchedResultController.prepend(statusIDs: statusIDs)
         case .mastodon(let array):
             let statusIDs = array.map { $0.id }
@@ -97,10 +142,9 @@ extension TimelineViewModel {
             isLoadingLatest = false
         }
         
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         let fetchContext = StatusFetchViewModel.Timeline.FetchContext(
             managedObjectContext: context.managedObjectContext,
-            authenticationContext: authenticationContext,
+            authenticationContext: authContext.authenticationContext,
             kind: kind,
             position: {
                 switch kind {
@@ -109,7 +153,8 @@ extension TimelineViewModel {
                     let anchor: StatusRecord? = {
                         guard let record = feedFetchedResultsController.records.first else { return nil }
                         guard let feed = record.object(in: managedObjectContext) else { return nil }
-                        return feed.statusObject?.asRecord
+                        guard case let .status(status) = feed.content else { return nil }
+                        return status.asRecord
                     }()
                     return .top(anchor: anchor)
                 case .public, .hashtag, .list:
@@ -118,9 +163,11 @@ extension TimelineViewModel {
                     assertionFailure("do not support refresh for search")
                     return .top(anchor: nil)
                 case .user:
-                    // FIXME: use anchor with minID or reset the data source
-                    // the like timeline gap may missing
-                    return .top(anchor: nil)
+                    let anchor: StatusRecord? = {
+                        guard let record = statusRecordFetchedResultController.records.first else { return nil }
+                        return record
+                    }()
+                    return .top(anchor: anchor)
                 }
             }(),
             filter: StatusFetchViewModel.Timeline.Filter(rule: .empty)
@@ -141,6 +188,14 @@ extension TimelineViewModel {
             case .public, .hashtag, .list, .search, .user:
                 await prepend(result: output.result)
             }
+        } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded {
+            self.didLoadLatest.send()
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
+            context.apiService.error.send(.explicit(.twitterResponseError(error)))
+        } catch let error as EmptyState {
+            self.didLoadLatest.send()
+            self.emptyState = error
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
         } catch {
             self.didLoadLatest.send()
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")

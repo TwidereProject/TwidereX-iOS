@@ -8,7 +8,6 @@
 
 import UIKit
 import CommonOSLog
-import TwidereUI
 
 final class DrawerSidebarAnimatedTransitioning: ViewControllerAnimatedTransitioning {
 

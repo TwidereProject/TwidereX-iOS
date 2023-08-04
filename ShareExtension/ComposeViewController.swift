@@ -9,9 +9,10 @@
 import os.log
 import UIKit
 import Combine
-import AppShared
-import TwidereUI
+import CoreDataStack
 import UniformTypeIdentifiers
+
+@_exported import TwidereUI
 
 class ComposeViewController: UIViewController {
 
@@ -25,26 +26,29 @@ class ComposeViewController: UIViewController {
     private(set) lazy var sendBarButtonItem = UIBarButtonItem(image: Asset.Transportation.paperAirplane.image, style: .plain, target: self, action: #selector(ComposeViewController.sendBarButtonItemPressed(_:)))
 
     
-    lazy var composeContentViewModel: ComposeContentViewModel = {
-        return ComposeContentViewModel(
-            kind: .post,
-            configurationContext: ComposeContentViewModel.ConfigurationContext(
-                apiService: context.apiService,
-                authenticationService: context.authenticationService,
-                mastodonEmojiService: context.mastodonEmojiService,
-                statusViewConfigureContext: .init(
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    authenticationContext: context.authenticationService.$activeAuthenticationContext
-                )
-            )
-        )
-    }()
-    private(set) lazy var composeContentViewController: ComposeContentViewController = {
-        let composeContentViewController = ComposeContentViewController()
-        composeContentViewController.viewModel = composeContentViewModel
-        return composeContentViewController
-    }()
+    private var composeContentViewModel: ComposeContentViewModel?
+    private var composeContentViewController: ComposeContentViewController?
+    
+//    lazy var composeContentViewModel: ComposeContentViewModel = {
+//        return ComposeContentViewModel(
+//            kind: .post,
+//            configurationContext: ComposeContentViewModel.ConfigurationContext(
+//                apiService: context.apiService,
+//                authenticationService: context.authenticationService,
+//                mastodonEmojiService: context.mastodonEmojiService,
+//                statusViewConfigureContext: .init(
+//                    dateTimeProvider: DateTimeSwiftProvider(),
+//                    twitterTextProvider: OfficialTwitterTextProvider(),
+//                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+//                )
+//            )
+//        )
+//    }()
+//    private(set) lazy var composeContentViewController: ComposeContentViewController = {
+//        let composeContentViewController = ComposeContentViewController()
+//        composeContentViewController.viewModel = composeContentViewModel
+//        return composeContentViewController
+//    }()
     
     let activityIndicatorBarButtonItem: UIBarButtonItem = {
         let indicatorView = UIActivityIndicatorView(style: .medium)
@@ -75,6 +79,7 @@ extension ComposeViewController {
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(ComposeViewController.closeBarButtonItemPressed(_:)))
         navigationItem.rightBarButtonItem = sendBarButtonItem
+        
         viewModel.$isBusy
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isBusy in
@@ -88,57 +93,90 @@ extension ComposeViewController {
             await load(inputItems: inputItems)
         }   // end Task
 
-        addChild(composeContentViewController)
-        composeContentViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(composeContentViewController.view)
-        NSLayoutConstraint.activate([
-            composeContentViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
-            composeContentViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            composeContentViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            composeContentViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
-        composeContentViewController.didMove(toParent: self)
-        
-        // layout publish progress
-        publishProgressView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(publishProgressView)
-        NSLayoutConstraint.activate([
-            publishProgressView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
-            publishProgressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            publishProgressView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
-        
-        // bind compose bar button item
-        composeContentViewModel.$isComposeBarButtonEnabled
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.isEnabled, on: sendBarButtonItem)
-            .store(in: &disposeBag)
-        
-        // bind author
-        viewModel.$author.assign(to: &composeContentViewModel.$author)
-        
-        // bind progress bar
-        viewModel.$currentPublishProgress
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] progress in
-                guard let self = self else { return }
-                let progress = Float(progress)
-                let withAnimation = progress > self.publishProgressView.progress
-                self.publishProgressView.setProgress(progress, animated: withAnimation)
-                
-                if progress == 1 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                        guard let self = self else { return }
-                        self.publishProgressView.setProgress(0, animated: false)
+        do {
+            guard let authContext = try setupAuthContext() else {
+                // setupHintLabel()
+                return
+            }
+            viewModel.authContext = authContext
+            
+            let composeContentViewModel = ComposeContentViewModel(
+                context: context,
+                authContext: authContext,
+                kind: .post
+            )
+            let composeContentViewController = ComposeContentViewController()
+            composeContentViewController.viewModel = composeContentViewModel
+            
+            addChild(composeContentViewController)
+            composeContentViewController.view.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(composeContentViewController.view)
+            NSLayoutConstraint.activate([
+                composeContentViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+                composeContentViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                composeContentViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                composeContentViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ])
+            composeContentViewController.didMove(toParent: self)
+            
+            // layout publish progress
+            publishProgressView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(publishProgressView)
+            NSLayoutConstraint.activate([
+                publishProgressView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+                publishProgressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                publishProgressView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            ])
+            
+            // bind compose bar button item
+            composeContentViewModel.$isComposeBarButtonEnabled
+                .receive(on: DispatchQueue.main)
+                .assign(to: \.isEnabled, on: sendBarButtonItem)
+                .store(in: &disposeBag)
+            
+            // bind progress bar
+            viewModel.$currentPublishProgress
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] progress in
+                    guard let self = self else { return }
+                    let progress = Float(progress)
+                    let withAnimation = progress > self.publishProgressView.progress
+                    self.publishProgressView.setProgress(progress, animated: withAnimation)
+                    
+                    if progress == 1 {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                            guard let self = self else { return }
+                            self.publishProgressView.setProgress(0, animated: false)
+                        }
                     }
                 }
-            }
-            .store(in: &disposeBag)
-        
-        // set delegate
-        composeContentViewController.delegate = self
+                .store(in: &disposeBag)
+            
+            // set delegate
+            composeContentViewController.delegate = self
+            
+            self.composeContentViewModel = composeContentViewModel
+            self.composeContentViewController = composeContentViewController
+            
+            Task { @MainActor in
+                let inputItems = self.extensionContext?.inputItems.compactMap { $0 as? NSExtensionItem } ?? []
+                await load(inputItems: inputItems)
+            }   // end Task
+            
+        } catch {
+            
+        }
     }
 
+}
+
+extension ComposeViewController {
+    private func setupAuthContext() throws -> AuthContext? {
+        let request = AuthenticationIndex.sortedFetchRequest
+        let _authenticationIndex = try context.managedObjectContext.fetch(request).first
+        let _authContext = _authenticationIndex.flatMap { AuthContext(authenticationIndex: $0) }
+        return _authContext
+    }
 }
 
 extension ComposeViewController {
@@ -154,7 +192,10 @@ extension ComposeViewController {
         Task { @MainActor in
             do {
                 await self.setBusy(true)
-                let statusPublisher = try composeContentViewModel.statusPublisher()
+                guard let statusPublisher = try self.composeContentViewModel?.statusPublisher() else {
+                    await self.setBusy(false)
+                    return
+                }
                 
                 // setup progress
                 self.viewModel.currentPublishProgressObservation = statusPublisher.progress
@@ -195,6 +236,13 @@ extension ComposeViewController {
 extension ComposeViewController {
     
     private func load(inputItems: [NSExtensionItem]) async {
+        guard let composeContentViewModel = self.composeContentViewModel,
+              let authContext = viewModel.authContext
+        else {
+            assertionFailure()
+            return
+        }
+        
         var itemProviders: [NSItemProvider] = []
 
         for item in inputItems {
@@ -281,7 +329,7 @@ extension ComposeViewController: ComposeContentViewControllerDelegate {
 extension ComposeViewController: UIAdaptivePresentationControllerDelegate {
 
     func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
-        return composeContentViewModel.canDismissDirectly
+        return composeContentViewModel?.canDismissDirectly ?? true
     }
 
     func presentationControllerDidAttemptToDismiss(_ presentationController: UIPresentationController) {

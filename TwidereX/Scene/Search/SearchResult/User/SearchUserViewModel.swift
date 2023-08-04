@@ -14,7 +14,6 @@ import CoreDataStack
 import GameplayKit
 import TwitterSDK
 import TwidereCore
-import TwidereUI
 
 final class SearchUserViewModel {
     
@@ -24,6 +23,7 @@ final class SearchUserViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let kind: Kind
     let userRecordFetchedResultController: UserRecordFetchedResultController
     let listMembershipViewModel: ListMembershipViewModel?
@@ -49,9 +49,11 @@ final class SearchUserViewModel {
 
     init(
         context: AppContext,
+        authContext: AuthContext,
         kind: SearchUserViewModel.Kind
     ) {
         self.context = context
+        self.authContext = authContext
         self.kind = kind
         self.userRecordFetchedResultController = UserRecordFetchedResultController(
             managedObjectContext: context.managedObjectContext
@@ -87,7 +89,7 @@ final class SearchUserViewModel {
 
 extension SearchUserViewModel {
     enum Kind {
-        case friendship
+        case search
         case listMember(list: ListRecord)
     }
 }

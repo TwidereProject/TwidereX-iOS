@@ -9,6 +9,7 @@
 import UIKit
 import Meta
 import MetaTextKit
+import MetaLabel
 import MetaTextArea
 import TwidereAsset
 
@@ -24,11 +25,13 @@ public enum TextStyle {
     case statusTimestamp
     case statusLocation
     case statusContent
+    case statusTranslateButton
     case statusMetrics
     case userAuthorName
     case pollOptionTitle
     case pollOptionPercentage
     case pollVoteDescription
+    case pollVoteButton
     case userAuthorUsername
     case userDescription
     case profileAuthorName
@@ -71,10 +74,12 @@ extension TextStyle {
         case .statusTimestamp:              return 1
         case .statusLocation:               return 1
         case .statusContent:                return 0
+        case .statusTranslateButton:        return 1
         case .statusMetrics:                return 1
         case .pollOptionTitle:              return 1
         case .pollOptionPercentage:         return 1
         case .pollVoteDescription:          return 1
+        case .pollVoteButton:               return 1
         case .userAuthorName:               return 1
         case .userAuthorUsername:           return 1
         case .userDescription:              return 1
@@ -113,14 +118,18 @@ extension TextStyle {
             return .preferredFont(forTextStyle: .caption1)
         case .statusContent:
             return .preferredFont(forTextStyle: .body)
+        case .statusTranslateButton:
+            return .preferredFont(forTextStyle: .headline)
         case .statusMetrics:
             return .preferredFont(forTextStyle: .footnote)
         case .pollOptionTitle:
-            return .systemFont(ofSize: 15, weight: .regular)
+            return UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 14))
         case .pollOptionPercentage:
-            return .systemFont(ofSize: 12, weight: .regular)
+            return UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 14))
         case .pollVoteDescription:
-            return .systemFont(ofSize: 14, weight: .regular)
+            return UIFontMetrics(forTextStyle: .callout).scaledFont(for: .systemFont(ofSize: 14))
+        case .pollVoteButton:
+            return UIFontMetrics(forTextStyle: .callout).scaledFont(for: .systemFont(ofSize: 14, weight: .medium))
         case .userAuthorName:
             return .preferredFont(forTextStyle: .headline)
         case .userAuthorUsername:
@@ -176,6 +185,8 @@ extension TextStyle {
             return .secondaryLabel
         case .statusContent:
             return .label.withAlphaComponent(0.8)
+        case .statusTranslateButton:
+            return .tintColor
         case .statusMetrics:
             return .secondaryLabel
         case .userAuthorName:
@@ -186,6 +197,8 @@ extension TextStyle {
             return .secondaryLabel
         case .pollVoteDescription:
             return .secondaryLabel
+        case .pollVoteButton:
+            return .tintColor
         case .userAuthorUsername:
             return .secondaryLabel
         case .userDescription:
@@ -201,7 +214,8 @@ extension TextStyle {
         case .profileFieldValue:
             return .label
         case .mediaDescriptionAuthorName:
-            return .label
+            // force white due to media view controller override to dark mode
+            return .white
         case .hashtagTitle:
             return .label
         case .hashtagDescription:
@@ -235,79 +249,12 @@ extension MetaLabel: TextStyleConfigurable {
     }
     
     public func setupLayout(style: TextStyle) {
-        lineBreakMode = .byTruncatingTail
-        textContainer.lineBreakMode = .byTruncatingTail
-        textContainer.lineFragmentPadding = 0
-        
-        numberOfLines = style.numberOfLines
-        
-        switch style {
-        case .statusHeader:
-            break
-        case .statusAuthorName:
-            break
-        case .statusAuthorUsername:
-            break
-        case .statusTimestamp:
-            break
-        case .statusLocation:
-            break
-        case .statusContent:
-            break
-        case .statusMetrics:
-            break
-        case .pollOptionTitle:
-            break
-        case .pollOptionPercentage:
-            break
-        case .pollVoteDescription:
-            break
-        case .userAuthorName:
-            break
-        case .userAuthorUsername:
-            break
-        case .userDescription:
-            break
-        case .profileAuthorName, .profileAuthorUsername:
-            textAlignment = .center
-            paragraphStyle.alignment = .center
-        case .profileAuthorBio:
-            break
-        case .profileFieldKey:
-            break
-        case .profileFieldValue:
-            break
-        case .mediaDescriptionAuthorName:
-            break
-        case .hashtagTitle:
-            break
-        case .hashtagDescription:
-            break
-        case .listPrimaryText:
-            break
-        case .searchHistoryTitle:
-            break
-        case .searchTrendTitle:
-            break
-        case .searchTrendSubtitle:
-            break
-        case .searchTrendCount:
-            break
-        case .sidebarAuthorName:
-            break
-        case .sidebarAuthorUsername:
-            break
-        case .custom:
-            break
-        }
+        // do nothing due to cannot tweak TextKit 2
     }
     
     public func setupAttributes(style: TextStyle) {
         let font = style.font
         let textColor = style.textColor
-        
-        self.font = font
-        self.textColor = textColor
         
         textAttributes = [
             .font: font,

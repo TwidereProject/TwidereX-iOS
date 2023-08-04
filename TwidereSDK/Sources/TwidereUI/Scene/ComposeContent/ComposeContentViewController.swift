@@ -58,7 +58,7 @@ extension ComposeContentViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
-        viewModel.viewSize = view.frame.size
+        viewModel.viewLayoutFrame.update(view: view)
         
         customEmojiPickerInputView.delegate = self
         viewModel.setupDiffableDataSource(
@@ -85,18 +85,19 @@ extension ComposeContentViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
+                guard let authContext = self.viewModel.authContext else { return }
                 guard let primaryItem = self.viewModel.primaryMentionPickItem else { return }
-                
+
                 let mentionPickViewModel = MentionPickViewModel(
-                    apiService: self.viewModel.configurationContext.apiService,
-                    authenticationService: self.viewModel.configurationContext.authenticationService,
+                    context: self.viewModel.context,
+                    authContext: authContext,
                     primaryItem: primaryItem,
                     secondaryItems: self.viewModel.secondaryMentionPickItems
                 )
                 let mentionPickViewController = MentionPickViewController()
                 mentionPickViewController.viewModel = mentionPickViewModel
                 mentionPickViewController.delegate = self
-                
+
                 let navigationController = AdaptiveStatusBarStyleNavigationController(rootViewController: mentionPickViewController)
                 navigationController.modalPresentationStyle = .pageSheet
                 if let sheetPresentationController = navigationController.sheetPresentationController {
@@ -179,11 +180,15 @@ extension ComposeContentViewController {
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        if viewModel.viewSize != view.frame.size {
-            viewModel.viewSize = view.frame.size            
-        }
+        viewModel.viewLayoutFrame.update(view: view)
     }
     
+    public override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        viewModel.viewLayoutFrame.update(view: view)
+    }
+
 }
 
 extension ComposeContentViewController {

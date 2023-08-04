@@ -117,7 +117,7 @@ extension MastodonNotificationSectionView {
                     viewModel.mentionPreference = newValue
                     viewModel.updateNotificationSubscription { notificationSubscription in
                         let mentionPreference = MastodonNotificationSubscription.MentionPreference(preference: newValue)
-                        notificationSubscription.update(mentionPreference: mentionPreference)
+                        notificationSubscription.update(mentionPreferenceTransient: mentionPreference)
                     }
                 }
             )) {
@@ -136,7 +136,7 @@ extension MastodonNotificationSectionView {
 extension MastodonNotificationSubscription.MentionPreference.Preference {
     fileprivate var title: String {
         switch self {
-        case .everyone:     return "Everyone"
+        case .everyone:     return "Everyone"   // TODO: i18n
         case .follows:      return "Follows"
         }
     }

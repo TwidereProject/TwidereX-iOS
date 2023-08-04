@@ -128,36 +128,12 @@ extension GridTimelineViewController {
 
 // MARK: - UICollectionViewDelegate
 extension GridTimelineViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did select \(indexPath.debugDescription)")
-        guard let cell = collectionView.cellForItem(at: indexPath) as? StatusMediaGalleryCollectionCell else { return }
-        Task {
-            let source = DataSourceItem.Source(collectionViewCell: nil, indexPath: indexPath)
-            guard let item = await item(from: source) else {
-                assertionFailure()
-                return
-            }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {
-                assertionFailure("only works for status data provider")
-                return
-            }
-            await DataSourceFacade.coordinateToMediaPreviewScene(
-                provider: self,
-                target: .status,
-                status: status,
-                mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
-                    containerView: .mediaView(cell.mediaView),
-                    mediaView: cell.mediaView,
-                    index: 0        // <-- only one attachment
-                )
-            )
-        }
-    }
+
 }
 
 // MARK: - StatusMediaGalleryCollectionCellDelegate
 extension GridTimelineViewController: StatusMediaGalleryCollectionCellDelegate {
-    func statusMediaGalleryCollectionCell(_ cell: StatusMediaGalleryCollectionCell, coverFlowCollectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func statusMediaGalleryCollectionCell(_ cell: StatusMediaGalleryCollectionCell, mediaStackContainerViewModel: TwidereUI.MediaStackContainerView.ViewModel, didSelectMediaView mediaViewModel: TwidereUI.MediaView.ViewModel) {
         Task {
             let source = DataSourceItem.Source(collectionViewCell: cell, indexPath: nil)
             guard let item = await item(from: source) else {
@@ -168,43 +144,11 @@ extension GridTimelineViewController: StatusMediaGalleryCollectionCellDelegate {
                 assertionFailure("only works for status data provider")
                 return
             }
-            
-            guard let cell = coverFlowCollectionView.cellForItem(at: indexPath) as? CoverFlowStackMediaCollectionCell else {
-                assertionFailure()
-                return
-            }
-            
-            await DataSourceFacade.coordinateToMediaPreviewScene(
+            await DataSourceFacade.coordinateToStatusThreadScene(
                 provider: self,
-                target: .status,
-                status: status,
-                mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
-                    containerView: .mediaView(cell.mediaView),
-                    mediaView: cell.mediaView,
-                    index: indexPath.row
-                )
+                kind: .status(status)
             )
-        }
-    }
-    
-    func statusMediaGalleryCollectionCell(_ cell: StatusMediaGalleryCollectionCell, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView) {
-        Task {
-            let source = DataSourceItem.Source(collectionViewCell: cell, indexPath: nil)
-            guard let item = await item(from: source) else {
-                assertionFailure()
-                return
-            }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {
-                assertionFailure("only works for status data provider")
-                return
-            }
-            
-            try await DataSourceFacade.responseToToggleMediaSensitiveAction(
-                provider: self,
-                target: .status,
-                status: status
-            )
-        }
+        }   // end Task
     }
 }
 

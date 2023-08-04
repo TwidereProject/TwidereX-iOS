@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "F7CFE4C2-F5F8-4618-A708-6C7DB0AFD818",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "mainThreadCheckerEnabled" : false,
+    "uiTestingScreenshotsLifetime" : "keepNever",
+    "userAttachmentLifetime" : "keepNever"
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : [
+        "TwidereXUITests"
+      ],
+      "target" : {
+        "containerPath" : "container:TwidereX.xcodeproj",
+        "identifier" : "DBDA8E3E24FCF8A7006750DC",
+        "name" : "TwidereXUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

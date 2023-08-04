@@ -12,7 +12,6 @@ import CoreData
 import CoreDataStack
 import MastodonSDK
 import TwidereCommon
-import CoreData
 
 public struct NotificationSubject {
     public let fcmToken: String?
@@ -205,7 +204,7 @@ extension NotificationService.MastodonNotificationSubscriber {
                         poll: true,
                         createdAt: now,
                         updatedAt: now,
-                        mentionPreference: MastodonNotificationSubscription.MentionPreference()
+                        mentionPreferenceTransient: MastodonNotificationSubscription.MentionPreference()
                     ),
                     relationship: .init(authentication: authentication)
                 )

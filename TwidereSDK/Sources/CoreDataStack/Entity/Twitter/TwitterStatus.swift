@@ -42,7 +42,12 @@ final public class TwitterStatus: NSManagedObject {
     @NSManaged public private(set) var replyToStatusID: TwitterStatus.ID?
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var replyToUserID: TwitterUser.ID?
-
+    
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var isMediaSensitive: Bool
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var isMediaSensitiveToggled: Bool
+    
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
     // sourcery: autoUpdatableObject, autoGenerateProperty
@@ -54,15 +59,16 @@ final public class TwitterStatus: NSManagedObject {
         
     // one-to-many relationship
     @NSManaged public private(set) var feeds: Set<Feed>
-    
+    @NSManaged public private(set) var histories: Set<History>
+
     // many-to-one relationship
     // sourcery: autoGenerateRelationship
     @NSManaged public private(set) var author: TwitterUser
-    // sourcery: autoGenerateRelationship
+    // sourcery: autoUpdatableObject, autoGenerateRelationship
     @NSManaged public private(set) var repost: TwitterStatus?
-    // sourcery: autoGenerateRelationship
+    // sourcery: autoUpdatableObject, autoGenerateRelationship
     @NSManaged public private(set) var quote: TwitterStatus?
-    // sourcery: autoGenerateRelationship, autoUpdatableObject
+    // sourcery: autoUpdatableObject, autoGenerateRelationship
     @NSManaged public private(set) var replyTo: TwitterStatus?
     
     // one-to-many relationship
@@ -77,103 +83,171 @@ final public class TwitterStatus: NSManagedObject {
 }
 
 extension TwitterStatus {
+    @NSManaged private var attachments: Data?
+    @NSManaged private var primitiveAttachmentsTransient: [TwitterAttachment]?
     // sourcery: autoUpdatableObject
-    @objc public var attachments: [TwitterAttachment] {
+    @objc public private(set) var attachmentsTransient: [TwitterAttachment] {
         get {
-            let keyPath = #keyPath(TwitterStatus.attachments)
+            let keyPath = #keyPath(attachmentsTransient)
             willAccessValue(forKey: keyPath)
-            let _data = primitiveValue(forKey: keyPath) as? Data
+            let attachments = primitiveAttachmentsTransient
             didAccessValue(forKey: keyPath)
-            do {
-                guard let data = _data else { return [] }
-                let attachments = try JSONDecoder().decode([TwitterAttachment].self, from: data)
+            if let attachments = attachments {
                 return attachments
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return []
+            } else {
+                do {
+                    let _data = self.attachments
+                    guard let data = _data, !data.isEmpty else {
+                        primitiveAttachmentsTransient = []
+                        return []
+                    }
+                    let attachments = try JSONDecoder().decode([TwitterAttachment].self, from: data)
+                    primitiveAttachmentsTransient = attachments
+                    return attachments
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return []
+                }
             }
         }
         set {
-            let keyPath = #keyPath(TwitterStatus.attachments)
-            let data = try? JSONEncoder().encode(newValue)
-            willChangeValue(forKey: keyPath)
-            setPrimitiveValue(data, forKey: keyPath)
-            didChangeValue(forKey: keyPath)
+            let keyPath = #keyPath(attachmentsTransient)
+            do {
+                if newValue.isEmpty {
+                    attachments = nil
+                } else {
+                    let data = try JSONEncoder().encode(newValue)
+                    attachments = data
+                }
+                willChangeValue(forKey: keyPath)
+                primitiveAttachmentsTransient = newValue
+                didChangeValue(forKey: keyPath)
+            } catch {
+                assertionFailure()
+            }
         }
     }
     
+    @NSManaged private var location: Data?
+    @NSManaged private var primitiveLocationTransient: TwitterLocation?
     // sourcery: autoUpdatableObject
-    @objc public var location: TwitterLocation? {
+    @objc public private(set) var locationTransient: TwitterLocation? {
         get {
-            let keyPath = #keyPath(TwitterStatus.location)
+            let keyPath = #keyPath(locationTransient)
             willAccessValue(forKey: keyPath)
-            let _data = primitiveValue(forKey: keyPath) as? Data
+            let location = primitiveLocationTransient
             didAccessValue(forKey: keyPath)
-            do {
-                guard let data = _data else { return nil }
-                let location = try JSONDecoder().decode(TwitterLocation.self, from: data)
+            if let location = location {
                 return location
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return nil
+            } else {
+                do {
+                    let _data = self.location
+                    guard let data = _data, !data.isEmpty else {
+                        primitiveLocationTransient = nil
+                        return nil
+                    }
+                    let location = try JSONDecoder().decode(TwitterLocation.self, from: data)
+                    primitiveLocationTransient = location
+                    return location
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return nil
+                }
             }
         }
         set {
-            let keyPath = #keyPath(TwitterStatus.location)
-            let data = try? JSONEncoder().encode(newValue)
-            willChangeValue(forKey: keyPath)
-            setPrimitiveValue(data, forKey: keyPath)
-            didChangeValue(forKey: keyPath)
+            let keyPath = #keyPath(locationTransient)
+            do {
+                let data = try newValue.flatMap { try JSONEncoder().encode($0) }
+                location = data
+                willChangeValue(forKey: keyPath)
+                primitiveLocationTransient = newValue
+                didChangeValue(forKey: keyPath)
+            } catch {
+                assertionFailure()
+            }
         }
     }
     
+    @NSManaged private var entities: Data?
+    @NSManaged private var primitiveEntitiesTransient: TwitterEntity?
     // sourcery: autoUpdatableObject
-    @objc public var entities: TwitterEntity? {
+    @objc public private(set) var entitiesTransient: TwitterEntity? {
         get {
-            let keyPath = #keyPath(TwitterStatus.entities)
+            let keyPath = #keyPath(entitiesTransient)
             willAccessValue(forKey: keyPath)
-            let _data = primitiveValue(forKey: keyPath) as? Data
+            let entities = primitiveEntitiesTransient
             didAccessValue(forKey: keyPath)
-            do {
-                guard let data = _data else { return nil }
-                let entities = try JSONDecoder().decode(TwitterEntity.self, from: data)
+            if let entities = entities {
                 return entities
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return nil
+            } else {
+                do {
+                    let _data = self.entities
+                    guard let data = _data, !data.isEmpty else {
+                        primitiveEntitiesTransient = nil
+                        return nil
+                    }
+                    let entities = try JSONDecoder().decode(TwitterEntity.self, from: data)
+                    primitiveEntitiesTransient = entities
+                    return entities
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return nil
+                }
             }
         }
         set {
-            let keyPath = #keyPath(TwitterStatus.entities)
-            let data = try? JSONEncoder().encode(newValue)
-            willChangeValue(forKey: keyPath)
-            setPrimitiveValue(data, forKey: keyPath)
-            didChangeValue(forKey: keyPath)
+            let keyPath = #keyPath(entitiesTransient)
+            do {
+                let data = try newValue.flatMap { try JSONEncoder().encode($0) }
+                entities = data
+                willChangeValue(forKey: keyPath)
+                primitiveEntitiesTransient = newValue
+                didChangeValue(forKey: keyPath)
+            } catch {
+                assertionFailure()
+            }
         }
     }
     
+    @NSManaged private var replySettings: Data?
+    @NSManaged private var primitiveReplySettingsTransient: TwitterReplySettings?
     // sourcery: autoUpdatableObject
-    @objc public var replySettings: TwitterReplySettings? {
+    @objc public private(set) var replySettingsTransient: TwitterReplySettings? {
         get {
-            let keyPath = #keyPath(TwitterStatus.replySettings)
+            let keyPath = #keyPath(replySettingsTransient)
             willAccessValue(forKey: keyPath)
-            let _data = primitiveValue(forKey: keyPath) as? Data
+            let replySettings = primitiveReplySettingsTransient
             didAccessValue(forKey: keyPath)
-            do {
-                guard let data = _data else { return nil }
-                let replySettings = try JSONDecoder().decode(TwitterReplySettings.self, from: data)
+            if let replySettings = replySettings {
                 return replySettings
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return nil
+            } else {
+                do {
+                    let _data = self.replySettings
+                    guard let data = _data, !data.isEmpty else {
+                        primitiveReplySettingsTransient = nil
+                        return nil
+                    }
+                    let replySettings = try JSONDecoder().decode(TwitterReplySettings.self, from: data)
+                    primitiveReplySettingsTransient = replySettings
+                    return replySettings
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return nil
+                }
             }
         }
         set {
-            let keyPath = #keyPath(TwitterStatus.replySettings)
-            let data = try? JSONEncoder().encode(newValue)
-            willChangeValue(forKey: keyPath)
-            setPrimitiveValue(data, forKey: keyPath)
-            didChangeValue(forKey: keyPath)
+            let keyPath = #keyPath(replySettingsTransient)
+            do {
+                let data = try newValue.flatMap { try JSONEncoder().encode($0) }
+                replySettings = data
+                willChangeValue(forKey: keyPath)
+                primitiveReplySettingsTransient = newValue
+                didChangeValue(forKey: keyPath)
+            } catch {
+                assertionFailure()
+            }
         }
     }
 }
@@ -233,6 +307,7 @@ extension TwitterStatus: AutoGenerateProperty {
         public let source: String?
         public let replyToStatusID: TwitterStatus.ID?
         public let replyToUserID: TwitterUser.ID?
+        public let isMediaSensitive: Bool
         public let createdAt: Date
         public let updatedAt: Date
 
@@ -247,6 +322,7 @@ extension TwitterStatus: AutoGenerateProperty {
     		source: String?,
     		replyToStatusID: TwitterStatus.ID?,
     		replyToUserID: TwitterUser.ID?,
+    		isMediaSensitive: Bool,
     		createdAt: Date,
     		updatedAt: Date
     	) {
@@ -260,6 +336,7 @@ extension TwitterStatus: AutoGenerateProperty {
     		self.source = source
     		self.replyToStatusID = replyToStatusID
     		self.replyToUserID = replyToUserID
+    		self.isMediaSensitive = isMediaSensitive
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
     	}
@@ -276,6 +353,7 @@ extension TwitterStatus: AutoGenerateProperty {
     	self.source = property.source
     	self.replyToStatusID = property.replyToStatusID
     	self.replyToUserID = property.replyToUserID
+    	self.isMediaSensitive = property.isMediaSensitive
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
     }
@@ -287,6 +365,7 @@ extension TwitterStatus: AutoGenerateProperty {
     	update(source: property.source)
     	update(replyToStatusID: property.replyToStatusID)
     	update(replyToUserID: property.replyToUserID)
+    	update(isMediaSensitive: property.isMediaSensitive)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
     }
@@ -372,6 +451,16 @@ extension TwitterStatus: AutoUpdatableObject {
     		self.replyToUserID = replyToUserID
     	}
     }
+    public func update(isMediaSensitive: Bool) {
+    	if self.isMediaSensitive != isMediaSensitive {
+    		self.isMediaSensitive = isMediaSensitive
+    	}
+    }
+    public func update(isMediaSensitiveToggled: Bool) {
+    	if self.isMediaSensitiveToggled != isMediaSensitiveToggled {
+    		self.isMediaSensitiveToggled = isMediaSensitiveToggled
+    	}
+    }
     public func update(createdAt: Date) {
     	if self.createdAt != createdAt {
     		self.createdAt = createdAt
@@ -382,29 +471,39 @@ extension TwitterStatus: AutoUpdatableObject {
     		self.updatedAt = updatedAt
     	}
     }
+    public func update(repost: TwitterStatus?) {
+    	if self.repost != repost {
+    		self.repost = repost
+    	}
+    }
+    public func update(quote: TwitterStatus?) {
+    	if self.quote != quote {
+    		self.quote = quote
+    	}
+    }
     public func update(replyTo: TwitterStatus?) {
     	if self.replyTo != replyTo {
     		self.replyTo = replyTo
     	}
     }
-    public func update(attachments: [TwitterAttachment]) {
-    	if self.attachments != attachments {
-    		self.attachments = attachments
+    public func update(attachmentsTransient: [TwitterAttachment]) {
+    	if self.attachmentsTransient != attachmentsTransient {
+    		self.attachmentsTransient = attachmentsTransient
     	}
     }
-    public func update(location: TwitterLocation?) {
-    	if self.location != location {
-    		self.location = location
+    public func update(locationTransient: TwitterLocation?) {
+    	if self.locationTransient != locationTransient {
+    		self.locationTransient = locationTransient
     	}
     }
-    public func update(entities: TwitterEntity?) {
-    	if self.entities != entities {
-    		self.entities = entities
+    public func update(entitiesTransient: TwitterEntity?) {
+    	if self.entitiesTransient != entitiesTransient {
+    		self.entitiesTransient = entitiesTransient
     	}
     }
-    public func update(replySettings: TwitterReplySettings?) {
-    	if self.replySettings != replySettings {
-    		self.replySettings = replySettings
+    public func update(replySettingsTransient: TwitterReplySettings?) {
+    	if self.replySettingsTransient != replySettingsTransient {
+    		self.replySettingsTransient = replySettingsTransient
     	}
     }
     // sourcery:end

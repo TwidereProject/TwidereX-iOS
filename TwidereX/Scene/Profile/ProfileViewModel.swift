@@ -21,19 +21,28 @@ class ProfileViewModel: ObservableObject {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     @Published var me: UserObject?
     @Published var user: UserObject?
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
         
     // output
+    let displayLikeTimeline: Bool
     @Published var userRecord: UserRecord?
     @Published var userIdentifier: UserIdentifier? = nil
+    @Published var protected: Bool? = nil
     let relationshipViewModel = RelationshipViewModel()
 
 //    let suspended = CurrentValueSubject<Bool, Never>(false)
     
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        authContext: AuthContext,
+        displayLikeTimeline: Bool
+    ) {
         self.context = context
+        self.authContext = authContext
+        self.displayLikeTimeline = displayLikeTimeline
         // end init
         
         // bind data after publisher setup
@@ -44,7 +53,7 @@ class ProfileViewModel: ObservableObject {
         }
 
         $user
-            .map { user in user.flatMap { UserRecord(object: $0) } }
+            .map { $0?.asRecord }
             .assign(to: &$userRecord)
             
         $user
@@ -59,42 +68,34 @@ class ProfileViewModel: ObservableObject {
                 }
             }
             .assign(to: &$userIdentifier)
+        
+        $user
+            .map { $0?.protected }
+            .assign(to: &$protected)
             
         // bind active authentication
-        context.authenticationService.$activeAuthenticationContext
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                Task {
-                    let managedObjectContext = self.context.managedObjectContext
-                    self.me = await managedObjectContext.perform {
-                        switch authenticationContext {
-                        case .twitter(let authenticationContext):
-                            let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext)
-                            return authentication.flatMap { .twitter(object: $0.user) }
-                        case .mastodon(let authenticationContext):
-                            let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext)
-                            return authentication.flatMap { .mastodon(object: $0.user) }
-                        case nil:
-                            return nil
-                        }
-                    }
+        Task {
+            let managedObjectContext = self.context.managedObjectContext
+            self.me = await managedObjectContext.perform {
+                switch authContext.authenticationContext {
+                case .twitter(let authenticationContext):
+                    let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext)
+                    return authentication.flatMap { .twitter(object: $0.user) }
+                case .mastodon(let authenticationContext):
+                    let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext)
+                    return authentication.flatMap { .mastodon(object: $0.user) }
                 }
             }
-            .store(in: &disposeBag)
+        }   // end Task
 
         // observe friendship
-        Publishers.CombineLatest(
-            $userRecord,
-            context.authenticationService.$activeAuthenticationContext
-        )
-        .sink { [weak self] userRecord, authenticationContext in
-            guard let self = self else { return }
-            guard let userRecord = userRecord,
-                  let authenticationContext = authenticationContext
-            else { return }
-            self.dispatchUpdateRelationshipTask(user: userRecord, authenticationContext: authenticationContext)
-        }
-        .store(in: &disposeBag)
+        $userRecord
+            .sink { [weak self] userRecord in
+                guard let self = self else { return }
+                guard let userRecord = userRecord else { return }
+                self.dispatchUpdateRelationshipTask(user: userRecord, authenticationContext: self.authContext.authenticationContext)
+            }
+            .store(in: &disposeBag)
     }
 
     deinit {

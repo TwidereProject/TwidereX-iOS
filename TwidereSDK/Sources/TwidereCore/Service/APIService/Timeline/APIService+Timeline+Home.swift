@@ -26,10 +26,14 @@ extension APIService {
         case persist([ManagedObjectRecord<TwitterStatus>])
     }
     
+    @available(*, deprecated, message: "")
     public func twitterHomeTimeline(
         query: Twitter.API.V2.User.Timeline.HomeQuery,
         authenticationContext: TwitterAuthenticationContext
     ) async throws -> [Twitter.Response.Content<Twitter.API.V2.User.Timeline.HomeContent>] {
+        assertionFailure()
+        throw Twitter.API.Error.InternalError(message: "API Deprecated")
+        
         #if DEBUG
         // log time cost
         let start = CACurrentMediaTime()
@@ -118,7 +122,8 @@ extension APIService {
                                     sinceID: sinceID,
                                     untilID: nil,
                                     paginationToken: nextToken,
-                                    maxResults: query.maxResults
+                                    maxResults: query.maxResults,
+                                    onlyMedia: query.onlyMedia
                                 ),
                                 authorization: authenticationContext.authorization
                             )
@@ -169,7 +174,7 @@ extension APIService {
 
             let statusArray = statusRecords.compactMap { $0.object(in: managedObjectContext) }
             assert(statusArray.count == statusRecords.count)
-            
+
             // amend the v2 missing properties
             if let me = me {
                 var batchLookupResponse = TwitterBatchLookupResponse()
@@ -181,15 +186,15 @@ extension APIService {
                 batchLookupResponse.update(statuses: statusArray, me: me)
             }
 
-             // locate anchor status
-             let anchorStatus: TwitterStatus? = {
-                 guard let untilID = query.untilID else { return nil }
-                 let request = TwitterStatus.sortedFetchRequest
-                 request.predicate = TwitterStatus.predicate(id: untilID)
-                 request.fetchLimit = 1
-                 return try? managedObjectContext.fetch(request).first
-             }()
-
+            // locate anchor status
+            let anchorStatus: TwitterStatus? = {
+                guard let untilID = query.untilID else { return nil }
+                let request = TwitterStatus.sortedFetchRequest
+                request.predicate = TwitterStatus.predicate(id: untilID)
+                request.fetchLimit = 1
+                return try? managedObjectContext.fetch(request).first
+            }()
+            
             // update hasMore flag for anchor status
             let acct = Feed.Acct.twitter(userID: authenticationContext.userID)
             if let anchorStatus = anchorStatus,

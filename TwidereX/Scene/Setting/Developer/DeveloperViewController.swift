@@ -20,7 +20,7 @@ final class DeveloperViewController: UIViewController, NeedsDependency {
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
-    let viewModel = DeveloperViewModel()
+    var viewModel: DeveloperViewModel!
     private(set) lazy var developerView = DeveloperView(viewModel: viewModel)
     
 }
@@ -43,12 +43,16 @@ extension DeveloperViewController {
             hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        if case let .twitter(authenticationContext) = context.authenticationService.activeAuthenticationContext {
+        if case let .twitter(authenticationContext) = viewModel.authContext.authenticationContext {
             Task { @MainActor in
-                viewModel.fetching = true
-                defer { viewModel.fetching = false }
-                let response = try await self.context.apiService.rateLimitStatus(authorization: authenticationContext.authorization)
-                viewModel.rateLimitStatusResources.value = response.value.resources
+                do {
+                    viewModel.fetching = true
+                    let response = try await self.context.apiService.rateLimitStatus(authorization: authenticationContext.authorization)
+                    viewModel.rateLimitStatusResources.value = response.value.resources
+                } catch {
+                    // do nothing
+                }
+                self.viewModel.fetching = false
             }   // end Task
         }
     }

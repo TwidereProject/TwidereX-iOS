@@ -98,6 +98,9 @@ extension Persistence.TwitterStatus {
         
         if let oldStatus = fetch(in: managedObjectContext, context: context) {
             merge(twitterStatus: oldStatus, context: context)
+            if let repost = repost, oldStatus.repost == nil {
+                oldStatus.update(repost: repost)
+            }
             return PersistResult(
                 status: oldStatus,
                 isNewInsertion: false,
@@ -203,15 +206,15 @@ extension Persistence.TwitterStatus {
         context: PersistContext
     ) {
         // prefer use V2 entities. only update entities when not exist
-        if status.entities == nil {
-            status.update(entities: TwitterEntity(
+        if status.entitiesTransient == nil {
+            status.update(entitiesTransient: TwitterEntity(
                 entity: context.entity.entities,
                 extendedEntity: context.entity.extendedEntities
             ))
         }
         
-        context.entity.twitterAttachments.flatMap { status.update(attachments: $0) }
-        context.entity.twitterLocation.flatMap { status.update(location:$0) }
+        context.entity.twitterAttachments.flatMap { status.update(attachmentsTransient: $0) }
+        context.entity.twitterLocation.flatMap { status.update(locationTransient: $0) }
         
         // update relationship
         if let me = context.me {

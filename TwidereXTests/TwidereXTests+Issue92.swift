@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import TwidereX
+import TwidereCore
 
 // https://github.com/TwidereProject/TwidereX-iOS/issues/92
 extension TwidereXTests {

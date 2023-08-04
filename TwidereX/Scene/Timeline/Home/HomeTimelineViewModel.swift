@@ -20,33 +20,33 @@ final class HomeTimelineViewModel: ListTimelineViewModel {
     @Published var unreadItemCount = 0
     @Published var loadItemCount = 0
     
-    init(context: AppContext) {
-        super.init(context: context, kind: .home)
-        
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
+        super.init(
+            context: context,
+            authContext: authContext,
+            kind: .home
+        )
+        // end init
+
         enableAutoFetchLatest = true
         
-        context.authenticationService.$activeAuthenticationContext
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                let emptyFeedPredicate = Feed.nonePredicate()
-                guard let authenticationContext = authenticationContext else {
-                    self.feedFetchedResultsController.predicate = emptyFeedPredicate
-                    return
-                }
-                
-                let predicate: NSPredicate
-                switch authenticationContext {
-                case .twitter(let authenticationContext):
-                    let userID = authenticationContext.userID
-                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: userID))
-                case .mastodon(let authenticationContext):
-                    let domain = authenticationContext.domain
-                    let userID = authenticationContext.userID
-                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
-                }
-                self.feedFetchedResultsController.predicate = predicate
+        feedFetchedResultsController.predicate = {
+            let predicate: NSPredicate
+            let authenticationContext = authContext.authenticationContext
+            switch authenticationContext {
+            case .twitter(let authenticationContext):
+                let userID = authenticationContext.userID
+                predicate = Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: userID))
+            case .mastodon(let authenticationContext):
+                let domain = authenticationContext.domain
+                let userID = authenticationContext.userID
+                predicate = Feed.predicate(kind: .home, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
             }
-            .store(in: &disposeBag)
+            return predicate
+        }()
     }
     
     deinit {
@@ -60,9 +60,10 @@ extension HomeTimelineViewModel {
     
     var sinceID: String? {
         guard let first = feedFetchedResultsController.records.first,
-              let object = first.object(in: context.managedObjectContext)?.statusObject
+              let feed = first.object(in: context.managedObjectContext),
+              case let .status(status) = feed.content
         else { return nil }
-        return object.id
+        return status.id
     }
     
 }

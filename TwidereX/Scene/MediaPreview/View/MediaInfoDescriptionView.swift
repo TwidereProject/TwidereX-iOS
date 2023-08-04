@@ -11,14 +11,14 @@ import UIKit
 import Combine
 import MetaTextKit
 import MetaTextArea
-import TwidereUI
+import MetaLabel
 
 protocol MediaInfoDescriptionViewDelegate: AnyObject {
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarButtonDidPressed button: UIButton)
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, contentTextViewDidPressed textView: MetaTextAreaView)
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, nameMetaLabelDidPressed metaLabel: MetaLabel)
-    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
-    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
+//    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
+//    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
 }
 
 final class MediaInfoDescriptionView: UIView {
@@ -66,11 +66,11 @@ final class MediaInfoDescriptionView: UIView {
         return textView
     }()
     
-    let toolbar: StatusToolbar = {
-        let toolbar = StatusToolbar()
-        toolbar.setup(style: .plain)
-        return toolbar
-    }()
+//    let toolbar: StatusToolbar = {
+//        let toolbar = StatusToolbar()
+//        toolbar.setup(style: .plain)
+//        return toolbar
+//    }()
     
     let contentTextViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     let nameMetaLabelTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
@@ -124,11 +124,11 @@ extension MediaInfoDescriptionView {
             avatarView.heightAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.height).priority(.required - 1),
         ])
         bottomContainerStackView.addArrangedSubview(nameMetaLabel)
-        toolbar.translatesAutoresizingMaskIntoConstraints = false
-        bottomContainerStackView.addArrangedSubview(toolbar)
-        NSLayoutConstraint.activate([
-            toolbar.widthAnchor.constraint(equalToConstant: 180).priority(.defaultHigh),
-        ])
+//        toolbar.translatesAutoresizingMaskIntoConstraints = false
+//        bottomContainerStackView.addArrangedSubview(toolbar)
+//        NSLayoutConstraint.activate([
+//            toolbar.widthAnchor.constraint(equalToConstant: 180).priority(.defaultHigh),
+//        ])
         
         avatarView.avatarButton.addTarget(self, action: #selector(MediaInfoDescriptionView.avatarButtonDidPressed(_:)), for: .touchUpInside)
         
@@ -139,7 +139,7 @@ extension MediaInfoDescriptionView {
         nameMetaLabelTapGestureRecognizer.addTarget(self, action: #selector(MediaInfoDescriptionView.nameMetaLabelDidPressed(_:)))
         nameMetaLabel.addGestureRecognizer(nameMetaLabelTapGestureRecognizer)
         
-        toolbar.delegate = self
+        //toolbar.delegate = self
     }
     
 }
@@ -166,15 +166,15 @@ extension MediaInfoDescriptionView {
 }
 
 // MARK: - StatusToolbarDelegate
-extension MediaInfoDescriptionView: StatusToolbarDelegate {
-    func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
-        delegate?.mediaInfoDescriptionView(self, statusToolbar: statusToolbar, actionDidPressed: action, button: button)
-    }
-    
-    func statusToolbar(_ statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
-        delegate?.mediaInfoDescriptionView(self, statusToolbar: statusToolbar, menuActionDidPressed: action, menuButton: button)
-    }
-}
+//extension MediaInfoDescriptionView: StatusToolbarDelegate {
+//    func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
+//        delegate?.mediaInfoDescriptionView(self, statusToolbar: statusToolbar, actionDidPressed: action, button: button)
+//    }
+//    
+//    func statusToolbar(_ statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
+//        delegate?.mediaInfoDescriptionView(self, statusToolbar: statusToolbar, menuActionDidPressed: action, menuButton: button)
+//    }
+//}
 
 extension MediaInfoDescriptionView {
     override var accessibilityElements: [Any]? {
@@ -182,7 +182,7 @@ extension MediaInfoDescriptionView {
             return [
                 avatarView,
                 nameMetaLabel,
-                toolbar,
+                // toolbar,
             ]
         }
         set { }

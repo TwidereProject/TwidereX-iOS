@@ -15,7 +15,7 @@ final class MastodonNotificationSectionViewModel: ObservableObject {
     
     // input
     let context: AppContext
-    let auth: AuthContext
+    let authContext: AuthContext
     let notificationSubscription: MastodonNotificationSubscription
     
     // output
@@ -31,11 +31,11 @@ final class MastodonNotificationSectionViewModel: ObservableObject {
     
     init(
         context: AppContext,
-        auth: AuthContext,
+        authContext: AuthContext,
         notificationSubscription: MastodonNotificationSubscription
     ) {
         self.context = context
-        self.auth = auth
+        self.authContext = authContext
         self.notificationSubscription = notificationSubscription
         self.isActive = notificationSubscription.isActive
         self.isNewFollowEnabled = notificationSubscription.follow
@@ -43,7 +43,7 @@ final class MastodonNotificationSectionViewModel: ObservableObject {
         self.isFavoriteEnabled = notificationSubscription.favourite
         self.isPollEnabled = notificationSubscription.poll
         self.isMentionEnabled = notificationSubscription.mention
-        self.mentionPreference = notificationSubscription.mentionPreference.preference
+        self.mentionPreference = notificationSubscription.mentionPreferenceTransient.preference
         // end init
         
         notificationSubscription.publisher(for: \.isActive)
@@ -66,7 +66,7 @@ final class MastodonNotificationSectionViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: &$isMentionEnabled)
         
-        notificationSubscription.publisher(for: \.mentionPreference)
+        notificationSubscription.publisher(for: \.mentionPreferenceTransient)
             .receive(on: DispatchQueue.main)
             .map { $0.preference }
             .assign(to: &$mentionPreference)
@@ -89,7 +89,7 @@ extension MastodonNotificationSectionViewModel {
                 action(object)
             }
             
-            await context.notificationService.notifySubscriber(authenticationContext: auth.authenticationContext)
+            await context.notificationService.notifySubscriber(authenticationContext: authContext.authenticationContext)
         }   // end Task
     }
     

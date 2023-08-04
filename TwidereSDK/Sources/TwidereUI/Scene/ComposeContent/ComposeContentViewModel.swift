@@ -32,15 +32,25 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     }()
     
     // MARK: - layout
-    @Published var viewSize: CGSize = .zero
+    @Published public var viewLayoutFrame = ViewLayoutFrame()
 
     // input
+    let context: AppContext
     public let kind: Kind
-    public let configurationContext: ConfigurationContext
     public let customEmojiPickerInputViewModel = CustomEmojiPickerInputView.ViewModel()
-
+    public let platform: Platform
+    
+    // Author (Me)
+    @Published public private(set) var authContext: AuthContext?
+    @Published public private(set) var author: UserObject?
+    
     // reply-to
     public private(set) var replyTo: StatusObject?
+    @Published public private(set) var replyToStatusViewModel: StatusView.ViewModel?
+    
+    // quote
+    public private(set) var quote: StatusObject?
+    @Published private(set) public var quoteStatusViewModel: StatusView.ViewModel?
 
     // limit
     @Published public var maxTextInputLimit = 500
@@ -76,9 +86,6 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         }
     }
     @Published public var isContentWarningEditing = false
-
-    // avatar
-    @Published public var author: UserObject?
         
     // mention (Twitter)
     @Published public private(set) var isMentionPickDisplay = false
@@ -140,7 +147,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     @Published public private(set) var availableActions: Set<ComposeContentToolbarView.Action> = Set()
     @Published public private(set) var isMediaToolBarButtonEnabled = true
     @Published public private(set) var isPollToolBarButtonEnabled = true
-    @Published public private(set) var isLocationToolBarButtonEnabled = CLLocationManager.locationServicesEnabled()
+    @Published public private(set) var isLocationToolBarButtonEnabled = false
     
     // UI state
     @Published public private(set) var isComposeBarButtonEnabled = true
@@ -150,14 +157,21 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     let viewLayoutMarginDidUpdate = CurrentValueSubject<Void, Never>(Void())
     
     public init(
+        context: AppContext,
+        authContext: AuthContext,
         kind: Kind,
-        settings: Settings = Settings(),
-        configurationContext: ConfigurationContext
+        settings: Settings = Settings()
     ) {
+        self.context = context
+        self.authContext = authContext
         self.kind = kind
-        self.configurationContext = configurationContext
+        self.platform = authContext.authenticationContext.platform
         super.init()
         // end init
+        
+        Task {
+            isLocationToolBarButtonEnabled = CLLocationManager.locationServicesEnabled()
+        }
 
         switch kind {
         case .post:
@@ -174,10 +188,19 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             }
         case .reply(let status):
             replyTo = status
+            replyToStatusViewModel = StatusView.ViewModel(
+                status: status,
+                authContext: nil,
+                kind: .referenceReplyTo,
+                delegate: nil,
+                viewLayoutFramePublisher: $viewLayoutFrame
+            )
+            replyToStatusViewModel?.isBottomConversationLinkLineViewDisplay = true
             
             switch status {
             case .twitter(let status):
                 // set mention
+                var usernames: [String] = []
                 self.primaryMentionPickItem = .twitterUser(
                     username: status.author.username,
                     attribute: MentionPickViewModel.Item.Attribute(
@@ -189,10 +212,12 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                         state: .finish
                     )
                 )
+                usernames.append(status.author.username)
                 self.secondaryMentionPickItems = {
                     var items: [MentionPickViewModel.Item] = []
-                    for mention in status.entities?.mentions ?? [] {
+                    for mention in status.entitiesTransient?.mentions ?? [] {
                         let username = mention.username
+                        guard !usernames.contains(username) else { continue }
                         let item = MentionPickViewModel.Item.twitterUser(
                             username: username,
                             attribute: .init(
@@ -204,6 +229,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                                 state: .loading
                             )
                         )
+                        usernames.append(username)
                         items.append(item)
                     }
                     return items
@@ -214,8 +240,45 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                     isContentWarningComposing = true
                     contentWarning = spoilerText
                 }
+                
+                // set content text
+                var mentionAccts: [String] = []
+                let _authorUserIdentifier: MastodonUserIdentifier? = {
+                    switch authContext.authenticationContext.userIdentifier {
+                    case .mastodon(let userIdentifier):     return userIdentifier
+                    default:                                return nil
+                    }
+                }()
+                if _authorUserIdentifier?.id != status.author.id {
+                    mentionAccts.append("@" + status.author.acct)
+                }
+                for mention in status.mentionsTransient {
+                    let acct = "@" + mention.acct
+                    guard !mentionAccts.contains(acct) else { continue }
+                    guard mention.id != _authorUserIdentifier?.id else { continue }
+                    mentionAccts.append(acct)
+                }
+                for acct in mentionAccts {
+                    UITextChecker.learnWord(acct)
+                }
+                content = mentionAccts.joined(separator: " ") + " "
             }
+            
+        case .quote(let status):
+            quote = status
+            quoteStatusViewModel = StatusView.ViewModel(
+                status: status,
+                authContext: nil,
+                kind: .referenceQuote,
+                delegate: nil,
+                viewLayoutFramePublisher: $viewLayoutFrame
+            )
         }
+        
+        initialContent = content
+        
+        // bind author
+        author = authContext.authenticationContext.user(in: context.managedObjectContext)
         
         // bind text
         $content
@@ -231,7 +294,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             guard let author = author else { return }
             switch author {
             case .twitter:
-                let twitterTextProvider = configurationContext.statusViewConfigureContext.twitterTextProvider
+                let twitterTextProvider = SwiftTwitterTextProvider()
                 let parseResult = twitterTextProvider.parse(text: content)
                 self.contentWeightedLength = parseResult.weightedLength
                 self.maxTextInputLimit = parseResult.maxWeightedLength
@@ -317,7 +380,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 }
                 excludeUsernames.insert(author.username)
                 
-                for mention in status.entities?.mentions ?? [] {
+                for mention in status.entitiesTransient?.mentions ?? [] {
                     guard !excludeUsernames.contains(mention.username) else { continue }
                     usernames.append(mention.username)
                 }
@@ -326,7 +389,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 break
             }
             
-            let names = usernames.map { "@" + $0 }
+            let names = usernames.removingDuplicates().map { "@" + $0 }
             return ListFormatter.localizedString(byJoining: names)
         }
         .assign(to: &$mentionPickButtonTitle)
@@ -409,7 +472,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 guard let self = self else { return nil }
                 guard case let .mastodon(user) = author else { return nil }
                 let domain = user.domain
-                guard let emojiViewModel = self.configurationContext.mastodonEmojiService.dequeueEmojiViewModel(for: domain) else { return nil }
+                guard let emojiViewModel = self.context.mastodonEmojiService.dequeueEmojiViewModel(for: domain) else { return nil }
                 return emojiViewModel
             }
             .assign(to: &$emojiViewModel)
@@ -427,20 +490,19 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             }
             .store(in: &disposeBag)
         
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             $isRequestLocation,
-            $currentLocation
+            $currentLocation,
+            $authContext
         )
-        .asyncMap { [weak self] isRequestLocation, currentLocation -> Twitter.Entity.Place? in
+        .asyncMap { [weak self] isRequestLocation, currentLocation, authContext -> Twitter.Entity.Place? in
             guard let self = self else { return nil }
             guard isRequestLocation, let currentLocation = currentLocation else { return nil }
             
-            guard let authenticationContext = self.configurationContext.authenticationService.activeAuthenticationContext,
-                  case let .twitter(twitterAuthenticationContext) = authenticationContext
-            else { return nil }
+            guard case let .twitter(twitterAuthenticationContext) = authContext?.authenticationContext else { return nil }
             
             do {
-                let response = try await self.configurationContext.apiService.geoSearch(
+                let response = try await self.context.apiService.geoSearch(
                     latitude: currentLocation.coordinate.latitude,
                     longitude: currentLocation.coordinate.longitude,
                     granularity: "city",
@@ -550,6 +612,7 @@ extension ComposeContentViewModel {
         case hashtag(hashtag: String)
         case mention(user: UserObject)
         case reply(status: StatusObject)
+        case quote(status: StatusObject)
     }
     
     public struct Settings {
@@ -564,25 +627,7 @@ extension ComposeContentViewModel {
             self.mastodonVisibility = mastodonVisibility
         }
     }
-    
-    public struct ConfigurationContext {
-        public let apiService: APIService
-        public let authenticationService: AuthenticationService
-        public let mastodonEmojiService: MastodonEmojiService
-        public let statusViewConfigureContext: StatusView.ConfigurationContext
 
-        public init(
-            apiService: APIService,
-            authenticationService: AuthenticationService,
-            mastodonEmojiService: MastodonEmojiService,
-            statusViewConfigureContext: StatusView.ConfigurationContext
-        ) {
-            self.apiService = apiService
-            self.authenticationService = authenticationService
-            self.mastodonEmojiService = mastodonEmojiService
-            self.statusViewConfigureContext = statusViewConfigureContext
-        }
-    }
 }
 
 extension ComposeContentViewModel {
@@ -695,7 +740,9 @@ extension ComposeContentViewModel {
     }
     
     public func statusPublisher() throws -> StatusPublisher {
-        guard let author = self.author else {
+        guard let authContext = self.authContext,
+              let author = self.author
+        else {
             throw AppError.implicit(.authenticationMissing)
         }
         
@@ -713,13 +760,17 @@ extension ComposeContentViewModel {
         switch author {
         case .twitter(let author):
             return TwitterStatusPublisher(
-                apiService: configurationContext.apiService,
+                apiService: context.apiService,
                 author: author,
                 replyTo: {
                     guard case let .twitter(status) = replyTo else { return nil }
-                    return .init(objectID: status.objectID)
+                    return status.asRecrod
                 }(),
                 excludeReplyUserIDs: Array(excludeReplyTwitterUserIDs),
+                quote: {
+                    guard case let .twitter(status) = quote else { return nil }
+                    return status.asRecrod
+                }(),
                 content: content,
                 place: isRequestLocation ? currentPlace : nil,
                 poll: {
@@ -740,6 +791,7 @@ extension ComposeContentViewModel {
             )
         case .mastodon(let author):
             return MastodonStatusPublisher(
+                authContext: authContext,
                 author: author,
                 replyTo: {
                     guard case let .mastodon(status) = replyTo else { return nil }

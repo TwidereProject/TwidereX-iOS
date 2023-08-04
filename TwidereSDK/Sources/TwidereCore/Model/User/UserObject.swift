@@ -47,6 +47,19 @@ extension UserObject {
         }
     }
     
+    public var authenticationIndex: AuthenticationIndex? {
+        switch self {
+        case .twitter(let object):
+            return object.twitterAuthentication.flatMap {
+                $0.authenticationIndex
+            }
+        case .mastodon(let object):
+            return object.mastodonAuthentication.flatMap {
+                $0.authenticationIndex
+            }
+        }
+    }
+    
     public var notifications: Set<MastodonNotification> {
         switch self {
         case .twitter:
@@ -84,6 +97,26 @@ extension UserObject {
             return object.avatarImageURL()
         case .mastodon(let object):
             return object.avatar.flatMap { URL(string: $0) }
+        }
+    }
+    
+    public var protected: Bool {
+        switch self {
+        case .twitter(let object):
+            return object.protected
+        case .mastodon(let object):
+            return object.locked
+        }
+    }
+}
+
+extension UserObject {
+    public var histories: Set<History> {
+        switch self {
+        case .twitter(let user):
+            return user.histories
+        case .mastodon(let user):
+            return user.histories
         }
     }
 }

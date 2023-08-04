@@ -17,7 +17,9 @@ extension SearchViewModel {
         diffableDataSource = SearchSection.diffableDataSource(
             tableView: tableView,
             context: context,
-            configuration: SearchSection.Configuration()
+            configuration: SearchSection.Configuration(
+                viewLayoutFramePublisher: $viewLayoutFrame
+            )
         )
         
         var snapshot = NSDiffableDataSourceSnapshot<SearchSection, SearchItem>()
@@ -79,22 +81,15 @@ extension SearchViewModel {
         }
         .eraseToAnyPublisher()
         
-        Publishers.CombineLatest3(
+        Publishers.CombineLatest(
             historyItems,
-            trendItems,
-            context.authenticationService.$activeAuthenticationContext
+            trendItems
         )
         .throttle(for: 0.3, scheduler: DispatchQueue.main, latest: true)
-        .sink { [weak self] historyItems, trendItems, authenticationContext in
+        .sink { [weak self] historyItems, trendItems in
             guard let self = self else { return }
             guard let diffableDataSource = self.diffableDataSource else { return }
-            
-            guard let authenticationContext = authenticationContext else {
-                let snapshot = NSDiffableDataSourceSnapshot<SearchSection, SearchItem>()
-                diffableDataSource.applySnapshotUsingReloadData(snapshot)
-                return
-            }
-            
+                        
             var snapshot = NSDiffableDataSourceSnapshot<SearchSection, SearchItem>()
             snapshot.appendSections([.history, .trend])
             

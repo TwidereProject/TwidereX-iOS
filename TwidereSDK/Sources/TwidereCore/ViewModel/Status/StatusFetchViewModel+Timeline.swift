@@ -7,6 +7,7 @@
 
 import os.log
 import CoreData
+import Combine
 import Foundation
 import TwitterSDK
 import MastodonSDK
@@ -17,6 +18,8 @@ extension StatusFetchViewModel {
 }
 
 extension StatusFetchViewModel.Timeline {
+    public static let logger = Logger(subsystem: "StatusFetchViewModel", category: "Timeline")
+    
     public enum Kind {
         case home
         case `public`(isLocal: Bool)
@@ -47,18 +50,27 @@ extension StatusFetchViewModel.Timeline.Kind {
 
     public class UserTimelineContext {
         public let timelineKind: TimelineKind
+        @Published public var protected: Bool?
         @Published public var userIdentifier: UserIdentifier?
         
         public init(
             timelineKind: TimelineKind,
-            userIdentifier: Published<UserIdentifier?>.Publisher?
+            protected protectedPublisher: Published<Bool?>.Publisher?,
+            userIdentifier userIdentifierPublisher: Published<UserIdentifier?>.Publisher?
         ) {
             self.timelineKind = timelineKind
-            
-            if let userIdentifier = userIdentifier {
-                userIdentifier.assign(to: &self.$userIdentifier)
-                
-            }
+            protectedPublisher?.assign(to: &$protected)
+            userIdentifierPublisher?.assign(to: &$userIdentifier)
+        }
+        
+        public init(
+            timelineKind: TimelineKind,
+            protected: Bool,
+            userIdentifier: UserIdentifier?
+        ) {
+            self.timelineKind = timelineKind
+            self.protected = protected
+            self.userIdentifier = userIdentifier
         }
         
         public enum TimelineKind {
@@ -372,6 +384,7 @@ extension StatusFetchViewModel.Timeline {
                     throw AppError.implicit(.internal(reason: "Use invalid list record for Twitter list status lookup"))
                 }
                 return .list(.twitter(.init(
+                    managedObjectContext: fetchContext.managedObjectContext,
                     authenticationContext: authenticationContext,
                     list: record,
                     paginationToken: nil,
@@ -438,6 +451,7 @@ extension StatusFetchViewModel.Timeline {
                 return .user(.twitter(.init(
                     authenticationContext: authenticationContext,
                     userID: userIdentifier.id,
+                    protected: userTimelineContext.protected ?? false,
                     paginationToken: nil,
                     maxID: nil,
                     maxResults: nil,
@@ -491,19 +505,24 @@ extension StatusFetchViewModel.Timeline {
         api: APIService,
         input: Input
     ) async throws -> Output {
-        switch input {
-        case .home(let input):
-            return try await Home.fetch(api: api, input: input)
-        case .public(let input):
-            return try await Public.fetch(api: api, input: input)
-        case .hashtag(let input):
-            return try await Hashtag.fetch(api: api, input: input)
-        case .list(let input):
-            return try await List.fetch(api: api, input: input)
-        case .search(let input):
-            return try await Search.fetch(api: api, input: input)
-        case .user(let input):
-            return try await User.fetch(api: api, input: input)
+        do {
+            switch input {
+            case .home(let input):
+                return try await Home.fetch(api: api, input: input)
+            case .public(let input):
+                return try await Public.fetch(api: api, input: input)
+            case .hashtag(let input):
+                return try await Hashtag.fetch(api: api, input: input)
+            case .list(let input):
+                return try await List.fetch(api: api, input: input)
+            case .search(let input):
+                return try await Search.fetch(api: api, input: input)
+            case .user(let input):
+                return try await User.fetch(api: api, input: input)
+            }
+        } catch {
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(String(describing: input)) failure…")
+            throw error
         }
     }
 

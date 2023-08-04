@@ -14,9 +14,10 @@ public protocol ListMembershipViewModelDelegate: AnyObject {
 }
 
 public final class ListMembershipViewModel {
-    
+
     let logger = Logger(subsystem: "ListMembershipViewModel", category: "ViewModel")
     
+    public var id = UUID()
     public weak var delegate: ListMembershipViewModelDelegate?
     
     // input
@@ -55,6 +56,7 @@ public final class ListMembershipViewModel {
 
 extension ListMembershipViewModel {
     
+    @MainActor
     public func add(
         user: UserRecord,
         authenticationContext: AuthenticationContext
@@ -77,6 +79,7 @@ extension ListMembershipViewModel {
         }
     }
     
+    @MainActor
     public func remove(
         user: UserRecord,
         authenticationContext: AuthenticationContext
@@ -99,4 +102,15 @@ extension ListMembershipViewModel {
         }
     }
     
+}
+
+// MARK: - ListMembershipViewModel
+extension ListMembershipViewModel: Hashable {
+    public static func == (lhs: ListMembershipViewModel, rhs: ListMembershipViewModel) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }

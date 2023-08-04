@@ -12,7 +12,6 @@ import Intents
 import CoreData
 import CoreDataStack
 import TwidereCore
-import TwidereCommon
 
 final class SwitchAccountIntentHandler: NSObject {
     

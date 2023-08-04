@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import SwiftUI
 import Combine
+import TwidereCore
 
 final class TrendPlaceViewController: UIViewController, NeedsDependency {
  

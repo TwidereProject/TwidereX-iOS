@@ -11,6 +11,7 @@ import Combine
 import TabBarPager
 import MetaTextKit
 import MetaTextArea
+import MetaLabel
 import Meta
 
 protocol ProfileHeaderViewControllerDelegate: AnyObject {

@@ -7,7 +7,6 @@
 
 import os.log
 import Foundation
-import TwidereCommon
 import TwidereCore
 import MastodonSDK
 import CoreDataStack
@@ -17,6 +16,7 @@ public final class MastodonStatusPublisher: NSObject, ProgressReporting {
     let logger = Logger(subsystem: "MastodonStatusPublisher", category: "Publisher")
     
     // Input
+    public let authContext: AuthContext
     
     // author
     public let author: MastodonUser
@@ -45,6 +45,7 @@ public final class MastodonStatusPublisher: NSObject, ProgressReporting {
     public var state: Published<StatusPublisherState>.Publisher { $_state }
     
     public init(
+        authContext: AuthContext,
         author: MastodonUser,
         replyTo: ManagedObjectRecord<MastodonStatus>?,
         isContentWarningComposing: Bool,
@@ -58,6 +59,7 @@ public final class MastodonStatusPublisher: NSObject, ProgressReporting {
         pollMultipleConfiguration: PollComposeItem.MultipleConfiguration,
         visibility: Mastodon.Entity.Status.Visibility
     ) {
+        self.authContext = authContext
         self.author = author
         self.replyTo = replyTo
         self.isContentWarningComposing = isContentWarningComposing
@@ -96,11 +98,8 @@ extension MastodonStatusPublisher: StatusPublisher {
         progress.totalUnitCount = taskCount
         progress.completedUnitCount = 0
         
-        let _authenticationContext: MastodonAuthenticationContext? = await api.backgroundManagedObjectContext.perform {
-            guard let authentication = self.author.mastodonAuthentication else { return nil }
-            return MastodonAuthenticationContext(authentication: authentication)
-        }
-        guard let authenticationContext = _authenticationContext else {
+        guard case let .mastodon(authenticationContext) = authContext.authenticationContext else {
+            assertionFailure()
             throw AppError.implicit(.authenticationMissing)
         }
         

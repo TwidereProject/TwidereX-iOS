@@ -11,7 +11,7 @@ import UIKit
 import Combine
 import MetaTextKit
 import MetaTextArea
-import TwidereUI
+import MetaLabel
 
 protocol ProfileHeaderViewDelegate: AnyObject {
     func profileHeaderView(_ headerView: ProfileHeaderView, friendshipButtonPressed button: UIButton)

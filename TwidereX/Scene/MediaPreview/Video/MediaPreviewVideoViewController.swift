@@ -68,6 +68,7 @@ extension MediaPreviewVideoViewController {
         switch viewModel.item {
         case .gif:
             playerViewController.showsPlaybackControls = false
+            playerViewController.view.isUserInteractionEnabled = false      // disable pan to seek time
         default:
             break
         }
@@ -90,6 +91,13 @@ extension MediaPreviewVideoViewController {
                 }
                 .store(in: &disposeBag)
         }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        // fix player not respect safe area issue
+        playerViewController.didMove(toParent: self)
     }
     
 }

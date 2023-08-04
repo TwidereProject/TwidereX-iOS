@@ -12,6 +12,10 @@ import Combine
 import CoreData
 import CoreDataStack
 
+public protocol DifferenceItem {
+    var isTransient: Bool { get }
+}
+
 extension ListTimelineViewModel {
     
     struct Difference<T>: CustomStringConvertible {
@@ -30,12 +34,28 @@ extension ListTimelineViewModel {
         }
     }
     
-    @MainActor func calculateReloadSnapshotDifference<S: Hashable, T: Hashable>(
+    @MainActor func calculateReloadSnapshotDifference<S: Hashable, T: Hashable & DifferenceItem>(
         tableView: UITableView,
         oldSnapshot: NSDiffableDataSourceSnapshot<S, T>,
         newSnapshot: NSDiffableDataSourceSnapshot<S, T>
     ) -> Difference<T>? {
-        guard let sourceIndexPath = (tableView.indexPathsForVisibleRows ?? []).sorted().first else { return nil }
+        guard oldSnapshot.numberOfItems != 0 else { return nil }
+        guard let indexPathsForVisibleRows = tableView.indexPathsForVisibleRows?.sorted() else { return nil }
+
+        // find index of the first visible item in both old and new snapshot
+        var _index: Int?
+        let items = oldSnapshot.itemIdentifiers
+        for (i, item) in items.enumerated() {
+            guard let _ = indexPathsForVisibleRows.first(where: { $0.row == i }) else { continue }
+            guard !item.isTransient else { continue }
+            guard newSnapshot.indexOfItem(item) != nil else { continue }
+            _index = i
+            break
+        }
+
+        guard let index = _index else { return nil }
+        let sourceIndexPath = IndexPath(row: index, section: 0)
+
         let rectForSourceItemCell = tableView.rectForRow(at: sourceIndexPath)
         let sourceDistanceToTableViewTopEdge: CGFloat = {
             if tableView.window != nil {
@@ -44,9 +64,6 @@ extension ListTimelineViewModel {
                 return rectForSourceItemCell.origin.y - tableView.contentOffset.y - tableView.safeAreaInsets.top
             }
         }()
-        guard sourceIndexPath.section < oldSnapshot.numberOfSections,
-              sourceIndexPath.row < oldSnapshot.numberOfItems(inSection: oldSnapshot.sectionIdentifiers[sourceIndexPath.section])
-        else { return nil }
         
         let sectionIdentifier = oldSnapshot.sectionIdentifiers[sourceIndexPath.section]
         let item = oldSnapshot.itemIdentifiers(inSection: sectionIdentifier)[sourceIndexPath.row]

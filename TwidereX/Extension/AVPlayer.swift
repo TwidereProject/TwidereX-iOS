@@ -6,6 +6,7 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import UIKit
 import AVKit
 
 // MARK: - CustomDebugStringConvertible

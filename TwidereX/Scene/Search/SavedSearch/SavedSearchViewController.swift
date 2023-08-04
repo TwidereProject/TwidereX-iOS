@@ -62,6 +62,34 @@ extension SavedSearchViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        viewModel.viewLayoutFrame.update(view: view)
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        viewModel.viewLayoutFrame.update(view: view)
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate {[weak self] _ in
+            guard let self = self else { return }
+            self.viewModel.viewLayoutFrame.update(view: self.view)
+        } completion: {  _ in
+            // do nothing
+        }
+    }
+    
+}
+
+// MARK: - AuthContextProvider
+extension SavedSearchViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }
 
 // MARK: - UITableViewDelegate
@@ -83,9 +111,10 @@ extension SavedSearchViewController: UITableViewDelegate {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
         guard let diffableDataSource = self.viewModel.diffableDataSource,
-              case let .history(record) = diffableDataSource.itemIdentifier(for: indexPath),
-              let authenticationContext = self.viewModel.context.authenticationService.activeAuthenticationContext
+              case let .history(record) = diffableDataSource.itemIdentifier(for: indexPath)
         else { return nil }
+        
+        let authenticationContext = authContext.authenticationContext
         
         let deleteAction = UIContextualAction(
             style: .destructive,

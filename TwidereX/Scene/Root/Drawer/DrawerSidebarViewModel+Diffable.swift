@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Combine
 import TwidereAsset
 
 extension DrawerSidebarViewModel {
@@ -20,18 +21,28 @@ extension DrawerSidebarViewModel {
         sidebarSnapshot.appendSections([.main])
         sidebarDiffableDataSource?.applySnapshotUsingReloadData(sidebarSnapshot)
         
-        context.authenticationService.$activeAuthenticationContext
-            .sink { [weak self] authenticationContext in
+        UserDefaults.shared.publisher(for: \.preferredEnableHistory).removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] preferredEnableHistory in
                 guard let self = self else { return }
+
                 var snapshot = NSDiffableDataSourceSnapshot<SidebarSection, SidebarItem>()
                 snapshot.appendSections([.main])
+
+                let authenticationContext = self.authContext.authenticationContext
                 switch authenticationContext {
                 case .twitter:
-                    snapshot.appendItems([.likes, .lists], toSection: .main)
+                    snapshot.appendItems([.likes], toSection: .main)
+                    if preferredEnableHistory {
+                        snapshot.appendItems([.history], toSection: .main)
+                    }
+                    snapshot.appendItems([.lists], toSection: .main)
                 case .mastodon:
-                    snapshot.appendItems([.local, .federated, .likes, .lists], toSection: .main)
-                case .none:
-                    break
+                    snapshot.appendItems([.local, .federated, .likes], toSection: .main)
+                    if preferredEnableHistory {
+                        snapshot.appendItems([.history], toSection: .main)
+                    }
+                    snapshot.appendItems([.lists], toSection: .main)
                 }
                 self.sidebarDiffableDataSource?.applySnapshotUsingReloadData(snapshot)
             }

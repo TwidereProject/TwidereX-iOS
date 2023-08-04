@@ -89,6 +89,10 @@ extension TwitterListRecordFetchedResultController {
         ids = []
     }
     
+    public func update(ids: [TwitterList.ID]) {
+        self.ids = ids
+    }
+    
     public func prepend(ids: [TwitterList.ID]) {
         var result = self.ids
         let ids = ids.filter { !result.contains($0) }

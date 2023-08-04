@@ -54,13 +54,7 @@ extension APIService {
             query: query,
             authorization: authenticationContext.authorization
         )
-        
-        let statusIDs: [Twitter.Entity.V2.Tweet.ID] = (response.value.statuses ?? []).map { $0.idStr }
-        let _lookupResponse = try? await twitterBatchLookupV2(
-            statusIDs: statusIDs,
-            authenticationContext: authenticationContext
-        )
-        
+
         #if DEBUG
         // log time cost
         let start = CACurrentMediaTime()
@@ -91,11 +85,6 @@ extension APIService {
                 )
                 statusArray.append(result.status)
             }   // end for in
-            
-            // amend the v2 only properties
-            if let lookupResponse = _lookupResponse, let me = me {
-                lookupResponse.update(statuses: statusArray, me: me)
-            }
         }
 
         return response
@@ -111,7 +100,7 @@ extension APIService {
         searchText: String,
         nextToken: String?,
         authenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Search.Content> {
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.V2.TimelineContent> {
         let query = Twitter.API.V2.Search.RecentTweetQuery(
             query: searchText,
             maxResults: APIService.defaultSearchCount,
@@ -133,7 +122,7 @@ extension APIService {
         startTime: Date?,
         nextToken: String?,
         authenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Search.Content> {
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.V2.TimelineContent> {
         let query = Twitter.API.V2.Search.RecentTweetQuery(
             query: "conversation_id:\(conversationID) (to:\(authorID) OR from:\(authorID))",
             maxResults: APIService.conversationSearchCount,
@@ -150,7 +139,7 @@ extension APIService {
     public func searchTwitterStatus(
         query: Twitter.API.V2.Search.RecentTweetQuery,
         authenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Search.Content> {
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.V2.TimelineContent> {
         let response = try await Twitter.API.V2.Search.recentTweet(
             session: session,
             query: query,
@@ -191,35 +180,7 @@ extension APIService {
                 )
             )
         }   // end .performChanges { … }
-        
-        // query and update entity video/GIF attribute from V1 API
-        do {
-            let statusIDs: [Twitter.Entity.Tweet.ID] = {
-                var statusIDs: Set<Twitter.Entity.Tweet.ID> = Set()
-                for status in response.value.data ?? [] {
-                    guard let mediaKeys = status.attachments?.mediaKeys else { continue }
-                    for mediaKey in mediaKeys {
-                        guard let media = dictionary.mediaDict[mediaKey],
-                              media.attachmentKind == .video || media.attachmentKind == .animatedGIF
-                        else { continue }
-                        
-                        statusIDs.insert(status.id)
-                    }
-                }
-                return Array(statusIDs)
-            }()
-            if !statusIDs.isEmpty {
-                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(statusIDs.count) missing assetURL from V1 API…")
-                _ = try await twitterStatusV1(
-                    statusIDs: statusIDs,
-                    authenticationContext: authenticationContext
-                )
-                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch missing assetURL from V1 API success")
-            }
-        } catch {
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch missing assetURL from V1 API fail: \(error.localizedDescription)")
-        }
-        
+
         return response
     }
     

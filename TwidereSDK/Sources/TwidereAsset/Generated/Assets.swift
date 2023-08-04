@@ -8,6 +8,9 @@
 #elseif os(tvOS) || os(watchOS)
   import UIKit
 #endif
+#if canImport(SwiftUI)
+  import SwiftUI
+#endif
 
 // Deprecated typealiases
 @available(*, deprecated, renamed: "ColorAsset.Color", message: "This typealias will be removed in SwiftGen 7.0")
@@ -24,11 +27,13 @@ public enum Asset {
   public static let accentColor = ColorAsset(name: "AccentColor")
   public enum Arrows {
     public static let arrowLeft = ImageAsset(name: "Arrows/arrow.left")
+    public static let arrowRampRight = ImageAsset(name: "Arrows/arrow.ramp.right")
     public static let arrowRight = ImageAsset(name: "Arrows/arrow.right")
     public static let arrowTriangle2Circlepath = ImageAsset(name: "Arrows/arrow.triangle.2.circlepath")
     public static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")
     public static let arrowTurnUpLeftMini = ImageAsset(name: "Arrows/arrow.turn.up.left.mini")
     public static let arrowshapeTurnUpLeftFill = ImageAsset(name: "Arrows/arrowshape.turn.up.left.fill")
+    public static let clockArrowCirclepath = ImageAsset(name: "Arrows/clock.arrow.circlepath")
     public static let squareAndArrowUp = ImageAsset(name: "Arrows/square.and.arrow.up")
     public static let squareAndArrowUpMini = ImageAsset(name: "Arrows/square.and.arrow.up.mini")
     public static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
@@ -82,6 +87,8 @@ public enum Asset {
     public static let ellipsisBubblePlus = ImageAsset(name: "Communication/ellipsis.bubble.plus")
     public static let mail = ImageAsset(name: "Communication/mail")
     public static let mailMiniInline = ImageAsset(name: "Communication/mail.mini.inline")
+    public static let textBubble = ImageAsset(name: "Communication/text.bubble")
+    public static let textBubbleMini = ImageAsset(name: "Communication/text.bubble.mini")
     public static let textBubbleSmall = ImageAsset(name: "Communication/text.bubble.small")
   }
   public enum Editing {
@@ -144,7 +151,11 @@ public enum Asset {
     public static let gifRectangle = ImageAsset(name: "Media/gif.rectangle")
     public static let playerRectangle = ImageAsset(name: "Media/player.rectangle")
     public static let `repeat` = ImageAsset(name: "Media/repeat")
+    public static let repeatLock = ImageAsset(name: "Media/repeat.lock")
+    public static let repeatLockMini = ImageAsset(name: "Media/repeat.lock.mini")
     public static let repeatMini = ImageAsset(name: "Media/repeat.mini")
+    public static let repeatOff = ImageAsset(name: "Media/repeat.off")
+    public static let repeatOffMini = ImageAsset(name: "Media/repeat.off.mini")
   }
   public enum ObjectTools {
     public static let bell = ImageAsset(name: "Object&Tools/bell")
@@ -209,6 +220,7 @@ public enum Asset {
     public static let capitalFloatLeftLarge = ImageAsset(name: "TextFormatting/capital.float.left.large")
     public static let listBullet = ImageAsset(name: "TextFormatting/list.bullet")
     public static let textHeaderRedaction = ImageAsset(name: "TextFormatting/text.header.redaction")
+    public static let textQuote = ImageAsset(name: "TextFormatting/text.quote")
     public static let textQuoteMini = ImageAsset(name: "TextFormatting/text.quote.mini")
   }
   public enum Transportation {
@@ -249,6 +261,13 @@ public final class ColorAsset {
   }
   #endif
 
+  #if canImport(SwiftUI)
+  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+  public private(set) lazy var swiftUIColor: SwiftUI.Color = {
+    SwiftUI.Color(asset: self)
+  }()
+  #endif
+
   fileprivate init(name: String) {
     self.name = name
   }
@@ -267,6 +286,16 @@ public extension ColorAsset.Color {
     #endif
   }
 }
+
+#if canImport(SwiftUI)
+@available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+public extension SwiftUI.Color {
+  init(asset: ColorAsset) {
+    let bundle = Bundle.module
+    self.init(asset.name, bundle: bundle)
+  }
+}
+#endif
 
 public struct ImageAsset {
   public fileprivate(set) var name: String
@@ -304,6 +333,13 @@ public struct ImageAsset {
     return result
   }
   #endif
+
+  #if canImport(SwiftUI)
+  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+  public var swiftUIImage: SwiftUI.Image {
+    SwiftUI.Image(asset: self)
+  }
+  #endif
 }
 
 public extension ImageAsset.Image {
@@ -321,3 +357,23 @@ public extension ImageAsset.Image {
     #endif
   }
 }
+
+#if canImport(SwiftUI)
+@available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+public extension SwiftUI.Image {
+  init(asset: ImageAsset) {
+    let bundle = Bundle.module
+    self.init(asset.name, bundle: bundle)
+  }
+
+  init(asset: ImageAsset, label: Text) {
+    let bundle = Bundle.module
+    self.init(asset.name, bundle: bundle, label: label)
+  }
+
+  init(decorative asset: ImageAsset) {
+    let bundle = Bundle.module
+    self.init(decorative: asset.name, bundle: bundle)
+  }
+}
+#endif

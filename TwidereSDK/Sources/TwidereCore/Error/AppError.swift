@@ -55,7 +55,7 @@ extension AppError.ErrorReason: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .internal(let reason):
-            return "Internal"
+            return "Internal. \(reason)"
         case .twitterInternalError(let error):
             return error.errorDescription
         case .authenticationMissing:
@@ -63,7 +63,7 @@ extension AppError.ErrorReason: LocalizedError {
         case .badRequest:
             return "Bad Request"
         case .requestThrottle:
-            return "Request Throttle"
+            return L10n.Common.Alerts.RequestThrottle.title
         case .twitterResponseError(let error):
             guard let twitterAPIError = error.twitterAPIError else {
                 return error.httpResponseStatus.reasonPhrase
@@ -71,11 +71,7 @@ extension AppError.ErrorReason: LocalizedError {
             
             return twitterAPIError.errorDescription
         case .mastodonResponseError(let error):
-            guard let mastodonError = error.mastodonError else {
-                return error.httpResponseStatus.reasonPhrase
-            }
-            
-            return mastodonError.errorDescription
+            return error.errorDescription
         }
     }
     
@@ -90,7 +86,7 @@ extension AppError.ErrorReason: LocalizedError {
         case .badRequest:
             return "The request is invalid"
         case .requestThrottle:
-            return "The requests are too frequent"
+            return L10n.Common.Alerts.RequestThrottle.message
         case .twitterResponseError(let error):
             guard let twitterAPIError = error.twitterAPIError else {
                 return nil
@@ -98,11 +94,7 @@ extension AppError.ErrorReason: LocalizedError {
             
             return twitterAPIError.failureReason
         case .mastodonResponseError(let error):
-            guard let mastodonError = error.mastodonError else {
-                return nil
-            }
-            
-            return mastodonError.failureReason
+            return error.failureReason
         }
     }
     

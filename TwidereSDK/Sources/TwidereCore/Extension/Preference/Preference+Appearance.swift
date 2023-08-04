@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import TwidereCommon
 import TwidereLocalization
 
 extension UserDefaults.TranslateButtonPreference {

@@ -9,7 +9,6 @@
 import CoreData
 import CoreDataStack
 import SwiftUI
-import TwidereUI
 
 struct TextCaseEraseStyle: ViewModifier {
     func body(content: Content) -> some View {
@@ -25,10 +24,11 @@ struct TextCaseEraseStyle: ViewModifier {
 
 enum SettingListEntryType: Hashable {
     case account
-    case appearance
+    case behaviors
     case display
     case layout
     case webBrowser
+    case appIcon
     case about
     
     #if DEBUG
@@ -38,10 +38,11 @@ enum SettingListEntryType: Hashable {
     var image: Image {
         switch self {
         case .account:          return Image(systemName: "person")
-        case .appearance:       return Image(uiImage: Asset.ObjectTools.clothes.image)
+        case .behaviors:        return Image(uiImage: Asset.Arrows.arrowRampRight.image)
         case .display:          return Image(uiImage: Asset.TextFormatting.textHeaderRedaction.image)
         case .layout:           return Image(uiImage: Asset.sidebarLeft.image)
         case .webBrowser:       return Image(uiImage: Asset.window.image)
+        case .appIcon:          return Image(uiImage: Asset.Logo.twidere.image)
         case .about:            return Image(uiImage: Asset.Indices.infoCircle.image)
         #if DEBUG
         case .developer:        return Image(systemName: "hammer")
@@ -51,11 +52,12 @@ enum SettingListEntryType: Hashable {
     
     var title: String {
         switch self {
-        case .account:          return "Account"        // TODO: i18n
-        case .appearance:       return L10n.Scene.Settings.Appearance.title
+        case .account:          return L10n.Scene.Settings.SectionHeader.account
+        case .behaviors:        return L10n.Scene.Settings.Behaviors.title
         case .display:          return L10n.Scene.Settings.Display.title
         case .layout:           return "Layout"
         case .webBrowser:       return "Web Browser"
+        case .appIcon:          return L10n.Scene.Settings.Appearance.appIcon
         case .about:            return L10n.Scene.Settings.About.title
         #if DEBUG
         case .developer:        return "Developer"
@@ -83,11 +85,8 @@ struct SettingListView: View {
     
     @ViewBuilder
     var accountView: some View {
-        if let user = viewModel.user {
-            UserContentView(viewModel: .init(
-                user: user,
-                accessoryType: .disclosureIndicator
-            ))
+        if let userViewModel = viewModel.userViewModel {
+            UserView(viewModel: userViewModel)
         } else {
             EmptyView()
         }
@@ -95,7 +94,7 @@ struct SettingListView: View {
 
     static let generalSection: [SettingListEntry] = {
         let types: [SettingListEntryType]  = [
-            .appearance,
+            .behaviors,
             .display,
 //            .layout,
 //            .webBrowser
@@ -104,6 +103,20 @@ struct SettingListView: View {
             return SettingListEntry(type: type, image: type.image, title: type.title)
         }
     }()
+    
+    var appIconRow: some View {
+        Button {
+            
+        } label: {
+            HStack {
+                Text(L10n.Scene.Settings.Appearance.appIcon)
+                Spacer()
+                Image(uiImage: UIImage(named: "\(viewModel.alternateIconNamePreference.iconName)") ?? UIImage())
+                    .cornerRadius(4)
+            }
+        }
+        .tint(Color(uiColor: .label))
+    }
     
     static let aboutSection: [SettingListEntry] = {
         let types: [SettingListEntryType]  = [
@@ -127,19 +140,19 @@ struct SettingListView: View {
     
     var body: some View {
         List {
-            Section(header: Text(verbatim: "Account")) {
+            // Account Section
+            Section {
                 Button {
                     viewModel.settingListEntryPublisher.send(SettingListView.accountListEntry)
                 } label: {
                     accountView
                 }
+            } header: {
+                Text(verbatim: L10n.Scene.Settings.SectionHeader.account)
+                    .textCase(nil)
             }
-            Section(
-                // grouped tableView get header padding since iOS 15.
-                // no more top padding manually
-                // seealso: 'UITableView.sectionHeaderTopPadding'
-                header: Text(verbatim: L10n.Scene.Settings.SectionHeader.general)
-            ) {
+            // General Section
+            Section {
                 ForEach(SettingListView.generalSection) { entry in
                     Button(action: {
                         viewModel.settingListEntryPublisher.send(entry)
@@ -148,9 +161,20 @@ struct SettingListView: View {
                             .foregroundColor(Color(.label))
                     })
                 }
+            } header: {
+                Text(verbatim: L10n.Scene.Settings.SectionHeader.general)
+                    .textCase(nil)
             }
-            .modifier(TextCaseEraseStyle())
-            Section(header: Text(verbatim: L10n.Scene.Settings.SectionHeader.about)) {
+            // App Icon Section
+            Section {
+                NavigationLink {
+                    AppIconPreferenceView()
+                } label: {
+                    appIconRow
+                }
+            }
+            // About Section
+            Section {
                 ForEach(SettingListView.aboutSection) { entry in
                     Button(action: {
                         viewModel.settingListEntryPublisher.send(entry)
@@ -159,8 +183,10 @@ struct SettingListView: View {
                             .foregroundColor(Color(.label))
                     })
                 }
+            } header: {
+                Text(verbatim: L10n.Scene.Settings.SectionHeader.about)
+                    .textCase(nil)
             }
-            .modifier(TextCaseEraseStyle())
             #if DEBUG
             Section {
                 ForEach(SettingListView.developerSection) { entry in
@@ -172,7 +198,6 @@ struct SettingListView: View {
                     })
                 }
             }
-            .modifier(TextCaseEraseStyle())
             #endif
         }
         .listStyle(InsetGroupedListStyle())
@@ -185,15 +210,17 @@ struct SettingListView: View {
 struct SettingListView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            SettingListView(viewModel: SettingListViewModel(
-                context: .shared,
-                auth: nil
-            ))
-            SettingListView(viewModel: SettingListViewModel(
-                context: .shared,
-                auth: nil
-            ))
-            .preferredColorScheme(.dark)
+            if let authContext = AuthContext.mock(context: .shared) {
+                SettingListView(viewModel: SettingListViewModel(
+                    context: .shared,
+                    authContext: authContext
+                ))
+                SettingListView(viewModel: SettingListViewModel(
+                    context: .shared,
+                    authContext: authContext
+                ))
+                .preferredColorScheme(.dark)                
+            }
         }
     }
 }

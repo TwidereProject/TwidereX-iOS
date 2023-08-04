@@ -8,13 +8,10 @@
 
 import UIKit
 import MetaTextArea
-import TwidereCommon
-import TwidereCore
-import TwidereUI
-import AppShared
 import MetaTextKit
+import MetaLabel
 
-extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
+extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider & AuthContextProvider {
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarButtonDidPressed button: UIButton) {
         Task {
             let source = DataSourceItem.Source(tableViewCell: nil, indexPath: nil)
@@ -44,11 +41,10 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
                 assertionFailure("only works for status data provider")
                 return
             }
-
+            
             await DataSourceFacade.coordinateToStatusThreadScene(
                 provider: self,
-                target: .repost,    // keep repost wrapper
-                status: status
+                kind: .status(status)
             )
         }
     }
@@ -63,41 +59,39 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
                 assertionFailure("only works for status data provider")
                 return
             }
-
+            
             await DataSourceFacade.coordinateToStatusThreadScene(
                 provider: self,
-                target: .repost,    // keep repost wrapper
-                status: status
+                kind: .status(status)
             )
         }
     }
 
     
-    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
-        Task {
-            let source = DataSourceItem.Source(tableViewCell: nil, indexPath: nil)
-            guard let item = await item(from: source) else {
-                assertionFailure()
-                return
-            }
-            guard let status = await item.status(in: self.context.managedObjectContext) else {
-                assertionFailure("only works for status data provider")
-                return
-            }
-            
-            await DataSourceFacade.responseToStatusToolbar(
-                provider: self,
-                status: status,
-                action: action,
-                sender: button,
-                authenticationContext: authenticationContext
-            )
-        }   // end Task
-    }   // end func
+//    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
+//        Task {
+//            let source = DataSourceItem.Source(tableViewCell: nil, indexPath: nil)
+//            guard let item = await item(from: source) else {
+//                assertionFailure()
+//                return
+//            }
+//            guard let status = await item.status(in: self.context.managedObjectContext) else {
+//                assertionFailure("only works for status data provider")
+//                return
+//            }
+//
+//            await DataSourceFacade.responseToStatusToolbar(
+//                provider: self,
+//                status: status,
+//                action: action,
+//                sender: button,
+//                authenticationContext: authContext.authenticationContext
+//            )
+//        }   // end Task
+//    }   // end func
     
-    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
-        assertionFailure("present UIAcitivityController directly")
-    }
+//    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
+//        assertionFailure("present UIAcitivityController directly")
+//    }
 
 }

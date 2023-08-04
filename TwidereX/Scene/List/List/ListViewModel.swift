@@ -18,9 +18,12 @@ class ListViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let kind: Kind
     let fetchedResultController: ListRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
+    
+    var needsResetBeforeReloading = true
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<ListSection, ListItem>?
@@ -38,12 +41,15 @@ class ListViewModel {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
+    @MainActor var retryCount = 0
     
     init(
         context: AppContext,
+        authContext: AuthContext,
         kind: Kind
     ) {
         self.context = context
+        self.authContext = authContext
         self.kind = kind
         self.fetchedResultController = ListRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         // end init

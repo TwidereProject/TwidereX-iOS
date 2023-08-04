@@ -16,7 +16,9 @@ extension TrendViewModel {
         diffableDataSource = SearchSection.diffableDataSource(
             tableView: tableView,
             context: context,
-            configuration: SearchSection.Configuration()
+            configuration: SearchSection.Configuration(
+                viewLayoutFramePublisher: $viewLayoutFrame
+            )
         )
         
         var snapshot = NSDiffableDataSourceSnapshot<SearchSection, SearchItem>()
@@ -31,7 +33,9 @@ extension TrendViewModel {
         .map { trendGroupRecords, trendGroupIndex in
             let trendItems: [SearchItem] = trendGroupRecords[trendGroupIndex]
                 .flatMap { group in
-                    return group.trends.map { .trend(trend: $0) }
+                    return group.trends
+                        .removingDuplicates()
+                        .map { .trend(trend: $0) }
                 } ?? []
             return trendItems
         }

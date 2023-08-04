@@ -48,28 +48,44 @@ final public class MastodonNotificationSubscription: NSManagedObject {
 }
 
 extension MastodonNotificationSubscription {
+    @NSManaged private var mentionPreference: Data?
+    @NSManaged private var primitiveMentionPreferenceTransient: MentionPreference?
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @objc public var mentionPreference: MentionPreference {
+    @objc public private(set) var mentionPreferenceTransient: MentionPreference {
         get {
-            let keyPath = #keyPath(MastodonNotificationSubscription.mentionPreference)
+            let keyPath = #keyPath(mentionPreferenceTransient)
             willAccessValue(forKey: keyPath)
-            let _data = primitiveValue(forKey: keyPath) as? Data
+            let mentionPreference = primitiveMentionPreferenceTransient
             didAccessValue(forKey: keyPath)
-            do {
-                guard let data = _data, !data.isEmpty else { return MentionPreference() }
-                let mentionPreference = try JSONDecoder().decode(MentionPreference.self, from: data)
+            if let mentionPreference = mentionPreference {
                 return mentionPreference
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return MentionPreference()
+            } else {
+                do {
+                    let _data = self.mentionPreference
+                    guard let data = _data, !data.isEmpty else {
+                        primitiveMentionPreferenceTransient = MentionPreference()
+                        return MentionPreference()
+                    }
+                    let mentionPreference = try JSONDecoder().decode(MentionPreference.self, from: data)
+                    primitiveMentionPreferenceTransient = mentionPreference
+                    return mentionPreference
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return MentionPreference()
+                }
             }
         }
         set {
-            let keyPath = #keyPath(MastodonNotificationSubscription.mentionPreference)
-            let data = try? JSONEncoder().encode(newValue)
-            willChangeValue(forKey: keyPath)
-            setPrimitiveValue(data, forKey: keyPath)
-            didChangeValue(forKey: keyPath)
+            let keyPath = #keyPath(mentionPreferenceTransient)
+            do {
+                let data = try JSONEncoder().encode(newValue)
+                mentionPreference = data
+                willChangeValue(forKey: keyPath)
+                primitiveMentionPreferenceTransient = newValue
+                didChangeValue(forKey: keyPath)
+            } catch {
+                assertionFailure()
+            }
         }
     }
 }
@@ -124,7 +140,7 @@ extension MastodonNotificationSubscription: AutoGenerateProperty {
         public let poll: Bool
         public let createdAt: Date
         public let updatedAt: Date
-        public let mentionPreference: MentionPreference
+        public let mentionPreferenceTransient: MentionPreference
 
     	public init(
     		id: ID?,
@@ -140,7 +156,7 @@ extension MastodonNotificationSubscription: AutoGenerateProperty {
     		poll: Bool,
     		createdAt: Date,
     		updatedAt: Date,
-    		mentionPreference: MentionPreference
+    		mentionPreferenceTransient: MentionPreference
     	) {
     		self.id = id
     		self.domain = domain
@@ -155,7 +171,7 @@ extension MastodonNotificationSubscription: AutoGenerateProperty {
     		self.poll = poll
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
-    		self.mentionPreference = mentionPreference
+    		self.mentionPreferenceTransient = mentionPreferenceTransient
     	}
     }
 
@@ -173,7 +189,7 @@ extension MastodonNotificationSubscription: AutoGenerateProperty {
     	self.poll = property.poll
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
-    	self.mentionPreference = property.mentionPreference
+    	self.mentionPreferenceTransient = property.mentionPreferenceTransient
     }
 
     public func update(property: Property) {
@@ -190,7 +206,7 @@ extension MastodonNotificationSubscription: AutoGenerateProperty {
     	update(poll: property.poll)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
-    	update(mentionPreference: property.mentionPreference)
+    	update(mentionPreferenceTransient: property.mentionPreferenceTransient)
     }
 
     // sourcery:end
@@ -290,9 +306,9 @@ extension MastodonNotificationSubscription: AutoUpdatableObject {
     		self.updatedAt = updatedAt
     	}
     }
-    public func update(mentionPreference: MentionPreference) {
-    	if self.mentionPreference != mentionPreference {
-    		self.mentionPreference = mentionPreference
+    public func update(mentionPreferenceTransient: MentionPreference) {
+    	if self.mentionPreferenceTransient != mentionPreferenceTransient {
+    		self.mentionPreferenceTransient = mentionPreferenceTransient
     	}
     }
 

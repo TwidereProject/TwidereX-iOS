@@ -18,6 +18,7 @@ final class DeveloperViewModel: ObservableObject {
     var disposeBag = Set<AnyCancellable>()
     
     // input
+    let authContext: AuthContext
     let rateLimitStatusResources = CurrentValueSubject<JSON?, Never>(nil)
     @Published var resourceFilterOption: DeveloperViewModel.ResourceFilterOption = .used
 
@@ -25,7 +26,12 @@ final class DeveloperViewModel: ObservableObject {
     @Published var fetching = false
     @Published var sections: [Section] = []
     
-    init() {
+    init(
+        authContext: AuthContext
+    ) {
+        self.authContext = authContext
+        // end init
+        
         Publishers.CombineLatest(
             $resourceFilterOption.eraseToAnyPublisher(),
             rateLimitStatusResources

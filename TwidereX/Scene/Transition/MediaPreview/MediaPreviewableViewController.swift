@@ -24,12 +24,13 @@ extension MediaPreviewableViewController {
                 height: 44
             )
             return frame
-        case .attachment(let mediaView):
-            return mediaView.superview?.convert(mediaView.frame, to: nil)
-        case .attachments(let mediaGridContainerView):
-            guard index < mediaGridContainerView.mediaViews.count else { return nil }
-            let mediaView = mediaGridContainerView.mediaViews[index]
-            return mediaView.superview?.convert(mediaView.frame, to: nil)
+        case .mediaView(let mediaViewModel, let viewModels):
+            guard let _viewModel = viewModels[safe: index] else {
+                guard mediaViewModel.frameInWindow != .zero else { return nil }
+                return mediaViewModel.frameInWindow
+            }
+            guard _viewModel.frameInWindow != .zero else { return nil }
+            return _viewModel.frameInWindow
         case .profileAvatar:
             return nil      // TODO:
         case .profileBanner:

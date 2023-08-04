@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import CoreData
 import CoreDataStack
+import TwidereCore
 
 extension SearchMediaTimelineViewModel {
     @MainActor func setupDiffableDataSource(

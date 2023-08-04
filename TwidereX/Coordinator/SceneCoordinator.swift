@@ -11,7 +11,6 @@ import UIKit
 import Combine
 import SafariServices
 import CoreDataStack
-import TwidereUI
 
 final public class SceneCoordinator {
     
@@ -22,6 +21,8 @@ final public class SceneCoordinator {
     private(set) weak var scene: UIScene!
     private(set) weak var sceneDelegate: SceneDelegate!
     private(set) weak var context: AppContext!
+    
+    private(set) var authContext: AuthContext?
     
     let id = UUID().uuidString
     
@@ -44,7 +45,7 @@ extension SceneCoordinator {
         case show                           // push
         case showDetail                     // replace
         case modal(animated: Bool, completion: (() -> Void)? = nil)
-        case custom(transitioningDelegate: UIViewControllerTransitioningDelegate)
+        case custom(animated: Bool, transitioningDelegate: UIViewControllerTransitioningDelegate)
         case customPush
         case safariPresent(animated: Bool, completion: (() -> Void)? = nil)
         case activityViewControllerPresent(animated: Bool, completion: (() -> Void)? = nil)
@@ -93,16 +94,18 @@ extension SceneCoordinator {
         case trendPlace(viewModel: TrendViewModel)
         case searchResult(viewModel: SearchResultViewModel)
         
+        // Hisotry
+        case history(viewModel: HistoryViewModel)
+        
         // Settings
         case setting(viewModel: SettingListViewModel)
         case accountPreference(viewModel: AccountPreferenceViewModel)
-        case appearancePreference
-        case displayPreference
-        case about
+        case behaviorsPreference(viewModel: BehaviorsPreferenceViewModel)
+        case displayPreference(viewModel: DisplayPreferenceViewModel)
+        case about(viewModel: AboutViewModel)
         
         #if DEBUG
-        case developer
-        case stubTimeline
+        case developer(viewModel: DeveloperViewModel)
         
         case pushNotificationScratch
         #endif
@@ -115,48 +118,72 @@ extension SceneCoordinator {
 
 extension SceneCoordinator {
     
-    func setup() {
+    @MainActor
+    func setup(authentication record: ManagedObjectRecord<AuthenticationIndex>? = nil) {
         let rootViewController: UIViewController
-        switch UIDevice.current.userInterfaceIdiom {
-        case .phone:
-            let viewController = MainTabBarController(context: context, coordinator: self)
-            rootViewController = viewController
-            needsSetupAvatarBarButtonItem = true
-        default:
-            let contentSplitViewController = ContentSplitViewController()
-            contentSplitViewController.context = context
-            contentSplitViewController.coordinator = self
-            rootViewController = contentSplitViewController
-            contentSplitViewController.$isSidebarDisplay
-                .sink { [weak self] isSidebarDisplay in
-                    guard let self = self else { return }
-                    self.needsSetupAvatarBarButtonItem = !isSidebarDisplay
-                }
-                .store(in: &contentSplitViewController.disposeBag)
-        }
         
-        sceneDelegate.window?.rootViewController = rootViewController
-    }
-    
-    func setupWelcomeIfNeeds() {
         do {
-            let request = AuthenticationIndex.sortedFetchRequest
-            let count = try context.managedObjectContext.count(for: request)
-            if count == 0 {
-                DispatchQueue.main.async {
-                    let configuration = WelcomeViewModel.Configuration(allowDismissModal: false)
-                    let welcomeViewModel = WelcomeViewModel(context: self.context, configuration: configuration)
-                    self.present(scene: .welcome(viewModel: welcomeViewModel), from: nil, transition: .modal(animated: false, completion: nil))
+            // check AuthContext
+            let _authenticationIndex: AuthenticationIndex? = try {
+                if let index = record?.object(in: context.managedObjectContext) {
+                    return index
+                } else {
+                    let request = AuthenticationIndex.sortedFetchRequest
+                    request.fetchLimit = 1
+                    let result = try context.managedObjectContext.fetch(request).first
+                    return result
                 }
+            }()
+            guard let authenticationIndex = _authenticationIndex,
+                  let authContext = AuthContext(authenticationIndex: authenticationIndex)
+            else {
+                // no AuthContext, use empty ViewController as root and show welcome via modal
+                let configuration = WelcomeViewModel.Configuration(allowDismissModal: false)
+                let welcomeViewModel = WelcomeViewModel(context: context, configuration: configuration)
+                sceneDelegate.window?.rootViewController = UIViewController()
+                // use async without animation modal to fix the UIKit safe-area not take effect issue
+                DispatchQueue.main.async {
+                    self.present(
+                        scene: .welcome(viewModel: welcomeViewModel),
+                        from: nil,
+                        transition: .modal(animated: false)
+                    )                                                                       // entry #1: Welcome
+                }
+                self.authContext = nil
+                return
             }
+            
+            self.authContext = authContext
+        
+            switch UIDevice.current.userInterfaceIdiom {
+            case .phone:
+                let viewController = MainTabBarController(context: context, coordinator: self, authContext: authContext)
+                rootViewController = viewController
+                needsSetupAvatarBarButtonItem = true
+            default:
+                let contentSplitViewController = ContentSplitViewController(context: context, coordinator: self, authContext: authContext)
+                rootViewController = contentSplitViewController
+                contentSplitViewController.$isSidebarDisplay
+                    .sink { [weak self] isSidebarDisplay in
+                        guard let self = self else { return }
+                        self.needsSetupAvatarBarButtonItem = !isSidebarDisplay
+                    }
+                    .store(in: &contentSplitViewController.disposeBag)
+            }
+            sceneDelegate.window?.rootViewController = rootViewController                   // entry #2: main app
             
         } catch {
             assertionFailure(error.localizedDescription)
+            self.authContext = nil
+            Task {
+                try? await Task.sleep(nanoseconds: .second * 2)
+                setup()                                                                     // entry #3: retry
+            }   // end Task
         }
     }
     
-    @discardableResult
     @MainActor
+    @discardableResult
     func present(scene: Scene, from sender: UIViewController?, transition: Transition) -> UIViewController? {
         guard let viewController = get(scene: scene) else {
             return nil
@@ -208,10 +235,10 @@ extension SceneCoordinator {
             }
             presentingViewController.present(modalNavigationController, animated: animated, completion: completion)
             
-        case .custom(let transitioningDelegate):
+        case .custom(let animated, let transitioningDelegate):
             viewController.modalPresentationStyle = .custom
             viewController.transitioningDelegate = transitioningDelegate
-            sender?.present(viewController, animated: true, completion: nil)
+            sender?.present(viewController, animated: animated, completion: nil)
             
         case .customPush:
             // set delegate in view controller
@@ -244,7 +271,7 @@ extension SceneCoordinator {
 
 }
 
-private extension SceneCoordinator {
+extension SceneCoordinator {
     
     func get(scene: Scene) -> UIViewController? {
         let viewController: UIViewController?
@@ -355,6 +382,10 @@ private extension SceneCoordinator {
             _viewController.searchResultViewModel = viewModel
             _viewController.searchResultViewController = searchResultViewController
             viewController = _viewController
+        case .history(let viewModel):
+            let _viewController = HistoryViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .setting(let viewModel):
             let _viewController = SettingListViewController()
             _viewController.viewModel = viewModel
@@ -363,17 +394,23 @@ private extension SceneCoordinator {
             let _viewController = AccountPreferenceViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
-        case .appearancePreference:
-            viewController = AppearancePreferenceViewController()
-        case .displayPreference:
-            viewController = DisplayPreferenceViewController()
-        case .about:
-            viewController = AboutViewController()
+        case .behaviorsPreference(let viewModel):
+            let _viewController = BehaviorsPreferenceViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .displayPreference(let viewModel):
+            let _viewController = DisplayPreferenceViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .about(let viewModel):
+            let _viewController = AboutViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         #if DEBUG
-        case .developer:
-            viewController = DeveloperViewController()
-        case .stubTimeline:
-            viewController = StubTimelineViewController()
+        case .developer(let viewModel):
+            let _viewController = DeveloperViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .pushNotificationScratch:
             viewController = PushNotificationScratchViewController()
         #endif
@@ -436,13 +473,19 @@ extension SceneCoordinator {
                 return
             }
             
+            let mastodonAuthenticationContext = MastodonAuthenticationContext(authentication: authentication)
+            let authConext = AuthContext(authenticationContext: .mastodon(authenticationContext: mastodonAuthenticationContext))
+            
             // 1. active notification account
-            guard let currentAuthenticationContext = context.authenticationService.activeAuthenticationContext else {
-                // discard task if no available account
-                return
-            }
+            let authenticationIndexRequest = AuthenticationIndex.sortedFetchRequest
+            authenticationIndexRequest.fetchLimit = 1
+            let _authenticationIndex = try context.managedObjectContext.fetch(authenticationIndexRequest).first
+            guard let authenticationIndex = _authenticationIndex,
+                  let currentAuthenticationContext = AuthContext(authenticationIndex: authenticationIndex)
+            else { return }
+                    
             let needsSwitchActiveAccount: Bool = {
-                switch currentAuthenticationContext {
+                switch currentAuthenticationContext.authenticationContext {
                 case .mastodon(let authenticationContext):
                     let result = authenticationContext.authorization.accessToken != pushNotification.accessToken
                     return result
@@ -477,6 +520,7 @@ extension SceneCoordinator {
             case .follow:
                 let remoteProfileViewModel = RemoteProfileViewModel(
                     context: context,
+                    authContext: authConext,
                     profileContext: .mastodon(.userID(notification.account.id))
                 )
                 present(
@@ -503,7 +547,8 @@ extension SceneCoordinator {
                 }
                 let statusThreadViewModel = StatusThreadViewModel(
                     context: context,
-                    root: .root(context: .init(status: .mastodon(record: root.asRecrod)))
+                    authContext: authConext,
+                    kind: .status(.mastodon(record: root.asRecrod))
                 )
                 present(
                     scene: .statusThread(viewModel: statusThreadViewModel),

@@ -51,67 +51,69 @@ final public actor NotificationService {
         self.api = apiService
         self.authenticationService = authenticationService
         self.appSecret = appSecret
-        
-        // request notification permission if needs
-        // register notification subscriber
-        authenticationService.$authenticationIndexes
-            .sink { [weak self] authenticationIndexes in
-                guard let self = self else { return }
-                
-                // request permission when sign-in account
-                Task {
-                    if !authenticationIndexes.isEmpty {
-                        await self.requestNotificationPermission()
-                    }
-                }   // end Task
-                
-                Task {
-                    let authenticationContexts = authenticationIndexes.compactMap { authenticationIndex in
-                        AuthenticationContext(authenticationIndex: authenticationIndex, secret: self.appSecret.secret)
-                    }
-                    await self.updateSubscribers(authenticationContexts)
-                }   // end Task
-            }
-            .store(in: &disposeBag)         // FIXME: how to use disposeBag in actor under Swift 6 ??
-        
-        Publishers.CombineLatest(
-            authenticationService.$authenticationIndexes,
-            applicationIconBadgeNeedsUpdate
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] authenticationIndexes, _ in
-            guard let self = self else { return }
-
-            let authenticationContexts = authenticationIndexes.compactMap { authenticationIndex in
-                AuthenticationContext(authenticationIndex: authenticationIndex, secret: self.appSecret.secret)
-            }
-            
-            var count = 0
-            for authenticationContext in authenticationContexts {
-                switch authenticationContext {
-                case .twitter:
-                    continue
-                case .mastodon(let authenticationContext):
-                    let accessToken = authenticationContext.authorization.accessToken
-                    let _count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
-                    count += _count
-                }
-            }
-
-            UserDefaults.shared.notificationBadgeCount = count
-            let _count = count
-            Task {
-                await self.updateApplicationIconBadge(count: _count)
-            }
-            self.unreadNotificationCountDidUpdate.send()
-        }
-        .store(in: &disposeBag)
+        // end init
     }
     
 }
 
 extension NotificationService {
+    func registerNotification() {
+        guard let authenticationService = authenticationService else { return }
+        
+        // request notification permission if needs
+        Task {
+            let isEmpty = authenticationService.authenticationIndexes.isEmpty
+            if !isEmpty {
+                await self.requestNotificationPermission()
+            }
+        }   // end Task
+        
+        // register notification subscriber
+        Task {
+            let managedObjectContext = authenticationService.managedObjectContext
+            let authenticationContexts: [AuthenticationContext] = await managedObjectContext.perform {
+                let authenticationContexts = authenticationService.authenticationIndexes.compactMap { authenticationIndex in
+                    AuthenticationContext(authenticationIndex: authenticationIndex, secret: self.appSecret.secret)
+                }
+                return authenticationContexts
+            }
+            await self.updateSubscribers(authenticationContexts)
+        }   // end Task
+    }
+    
+    func updateApplicationIconBadge() async {
+        guard let authenticationService = authenticationService else { return }
 
+        let managedObjectContext = authenticationService.managedObjectContext
+        let authenticationContexts: [AuthenticationContext] = await managedObjectContext.perform {
+            let authenticationContexts = authenticationService.authenticationIndexes.compactMap { authenticationIndex in
+                AuthenticationContext(authenticationIndex: authenticationIndex, secret: self.appSecret.secret)
+            }
+            return authenticationContexts
+        }
+        
+        var count = 0
+        for authenticationContext in authenticationContexts {
+            switch authenticationContext {
+            case .twitter:
+                continue
+            case .mastodon(let authenticationContext):
+                let accessToken = authenticationContext.authorization.accessToken
+                let _count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
+                count += _count
+            }
+        }
+        
+        UserDefaults.shared.notificationBadgeCount = count
+        let _count = count
+        Task {
+            await self.updateApplicationIconBadge(count: _count)
+        }
+        self.unreadNotificationCountDidUpdate.send()
+    }
+}
+
+extension NotificationService {
     public nonisolated func unreadApplicationShortcutItems() async -> [UIApplicationShortcutItem] {
         guard let authenticationService = await self.authenticationService else { return [] }
         let managedObjectContext = authenticationService.managedObjectContext
@@ -123,14 +125,14 @@ extension NotificationService {
                     return authenticationIndex.mastodonAuthentication?.userAccessToken
                 }()
                 guard let accessToken = _accessToken else { continue}
-                
+
                 let count = UserDefaults.shared.getNotificationCountWithAccessToken(accessToken: accessToken)
                 guard count > 0 else { continue }
-                
+
                 guard let user = authenticationIndex.user else { continue}
                 let title = "@\(user.username)"
                 let subtitle = L10n.Count.notification(count)
-                
+
                 let item = UIApplicationShortcutItem(
                     type: NotificationService.unreadShortcutItemIdentifier,
                     localizedTitle: title,
@@ -145,15 +147,12 @@ extension NotificationService {
             return items
         }
     }
-    
 }
 
 extension NotificationService {
     
-    public func clearNotificationCountForActiveUser() {
-        guard let authenticationService = self.authenticationService else { return }
-        guard let authenticationContext = authenticationService.activeAuthenticationContext else { return }
-        switch authenticationContext {
+    public func clearNotificationCountForUser(authContext: AuthContext) {
+        switch authContext.authenticationContext {
         case .twitter:
             return
         case .mastodon(let authenticationContext):

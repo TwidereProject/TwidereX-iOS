@@ -8,6 +8,7 @@
 
 import SwiftUI
 import TwidereLocalization
+import TwidereCore
 
 struct EditListView: View {
         
@@ -40,12 +41,14 @@ struct EditListView: View {
 struct CreateListView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            EditListView(viewModel: EditListViewModel(context: .shared, platform: .twitter, kind: .create))
-            EditListView(viewModel: EditListViewModel(context: .shared, platform: .twitter, kind: .create))
-                .preferredColorScheme(.dark)
-            EditListView(viewModel: EditListViewModel(context: .shared, platform: .mastodon, kind: .create))
-            EditListView(viewModel: EditListViewModel(context: .shared, platform: .mastodon, kind: .create))
-                .preferredColorScheme(.dark)
+            if let authContext = AuthContext.mock(context: .shared) {
+                EditListView(viewModel: EditListViewModel(context: .shared, authContext: authContext, platform: .twitter, kind: .create))
+                EditListView(viewModel: EditListViewModel(context: .shared, authContext: authContext, platform: .twitter, kind: .create))
+                    .preferredColorScheme(.dark)
+                EditListView(viewModel: EditListViewModel(context: .shared, authContext: authContext, platform: .mastodon, kind: .create))
+                EditListView(viewModel: EditListViewModel(context: .shared, authContext: authContext, platform: .mastodon, kind: .create))
+                    .preferredColorScheme(.dark)
+            }
         }
     }
 }

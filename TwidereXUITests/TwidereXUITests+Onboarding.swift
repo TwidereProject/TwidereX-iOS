@@ -21,6 +21,7 @@ extension TwidereXUITests {
         try await authorizeTwitter(app: app)
     }
     
+    
 }
 
 extension TwidereXUITests {

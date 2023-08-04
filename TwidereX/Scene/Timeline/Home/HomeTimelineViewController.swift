@@ -9,14 +9,14 @@
 import os.log
 import UIKit
 import Combine
-import TwidereUI
 import TwidereLocalization
 
 final class HomeTimelineViewController: ListTimelineViewController {
     
     static var unreadIndicatorViewTopMargin: CGFloat { 16 }
     let unreadIndicatorView = UnreadIndicatorView()
-
+    var unreadIndicatorViewTrailingLayoutConstraint: NSLayoutConstraint!
+    
     // ref: https://medium.com/@Mos6yCanSwift/swift-ios-determine-scroll-direction-d48a2327a004
     var lastVelocityYSign = 0
     var lastContentOffset: CGPoint?
@@ -37,12 +37,24 @@ extension HomeTimelineViewController {
         // setup unreadIndicatorView
         unreadIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(unreadIndicatorView)
+        unreadIndicatorViewTrailingLayoutConstraint = view.layoutMarginsGuide.trailingAnchor.constraint(equalTo: unreadIndicatorView.trailingAnchor)
         NSLayoutConstraint.activate([
             unreadIndicatorView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 16),
-            view.layoutMarginsGuide.trailingAnchor.constraint(equalTo: unreadIndicatorView.trailingAnchor),
+            unreadIndicatorViewTrailingLayoutConstraint,
             unreadIndicatorView.widthAnchor.constraint(greaterThanOrEqualToConstant: 36).priority(.required - 1),
             unreadIndicatorView.heightAnchor.constraint(greaterThanOrEqualToConstant: 36).priority(.required - 1),
         ])
+        viewModel.$viewLayoutFrame
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewLayoutFrame in
+                guard let self = self else { return }
+                if viewLayoutFrame.layoutFrame.width == viewLayoutFrame.readableContentLayoutFrame.width {
+                    self.unreadIndicatorViewTrailingLayoutConstraint.constant = 16
+                } else {
+                    self.unreadIndicatorViewTrailingLayoutConstraint.constant = 0
+                }
+            }
+            .store(in: &disposeBag)
         unreadIndicatorView.alpha = 0
         viewModel.didLoadLatest
             .receive(on: DispatchQueue.main)
@@ -111,6 +123,22 @@ extension HomeTimelineViewController {
         super.viewDidAppear(animated)
         
         unreadIndicatorView.startDisplayLink()
+        
+//        #if DEBUG
+//        DispatchQueue.once {
+//            guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
+//            let historyViewModel = HistoryViewModel(
+//                context: self.context,
+//                coordinator: coordinator,
+//                authContext: .init(authenticationContext: authenticationContext)
+//            )
+//            self.coordinator.present(
+//                scene: .history(viewModel: historyViewModel),
+//                from: self,
+//                transition: .show
+//            )
+//        }
+//        #endif
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -261,6 +289,8 @@ extension HomeTimelineViewController {
         }
 
         guard indexPath.row < oldIndexPath.row else {
+            // always update the number
+            viewModel.unreadItemCount = oldIndexPath.row
             return
         }
 

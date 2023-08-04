@@ -8,7 +8,6 @@
 
 import SwiftUI
 import TwidereAsset
-import TwidereUI
 
 struct AboutView: View {
     
@@ -116,18 +115,20 @@ struct AboutView: View {
 struct AboutView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            AboutView(viewModel: AboutViewModel())
-            AboutView(viewModel: AboutViewModel())
-                .preferredColorScheme(.dark)
-            AboutView(viewModel: AboutViewModel())
-                .previewDevice("iPhone SE")
-            AboutView(viewModel: AboutViewModel())
-                .previewDevice("iPhone 13 mini")
-            AboutView(viewModel: AboutViewModel())
-                .previewDevice("iPhone 8")
-            AboutView(viewModel: AboutViewModel())
-                .previewDevice("iPad mini (6th generation)")
-        }
+            if let authContext = AuthContext.mock(context: AppContext.shared) {
+                AboutView(viewModel: AboutViewModel(authContext: authContext))
+                AboutView(viewModel: AboutViewModel(authContext: authContext))
+                    .preferredColorScheme(.dark)
+                AboutView(viewModel: AboutViewModel(authContext: authContext))
+                    .previewDevice("iPhone SE")
+                AboutView(viewModel: AboutViewModel(authContext: authContext))
+                    .previewDevice("iPhone 13 mini")
+                AboutView(viewModel: AboutViewModel(authContext: authContext))
+                    .previewDevice("iPhone 8")
+                AboutView(viewModel: AboutViewModel(authContext: authContext))
+                    .previewDevice("iPad mini (6th generation)")
+            }
+        }   // end Group
     }
 }
 

@@ -49,30 +49,19 @@ extension ListStatusTimelineViewController {
         }
         
         navigationItem.rightBarButtonItem = menuBarButtonItem
-        context.authenticationService.$activeAuthenticationContext
-            .asyncMap { [weak self] authenticationContext -> UIMenu? in
-                guard let self = self else { return nil }
-                guard case let .list(list) = self.viewModel.kind else { return nil }
-                guard let authenticationContext = authenticationContext else { return nil }
-                do {
-                    let menu = try await DataSourceFacade.createMenuForList(
-                        dependency: self,
-                        list: list,
-                        authenticationContext: authenticationContext
-                    )
-                    return menu
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                    return nil
-                }
-            }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] menu in
-                guard let self = self else { return }
-                guard let menu = menu else { return }
+        Task {
+            guard case let .list(list) = self.viewModel.kind else { return }
+            do {
+                let menu = try await DataSourceFacade.createMenuForList(
+                    dependency: self,
+                    list: list,
+                    authenticationContext: self.viewModel.authContext.authenticationContext
+                )
                 self.menuBarButtonItem.menu = menu
+            } catch {
+                assertionFailure(error.localizedDescription)
             }
-            .store(in: &disposeBag)
+        }   // end Task
         
         viewModel.$isDeleted
             .receive(on: DispatchQueue.main)

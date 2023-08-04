@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import TwidereCore
 import MetaTextKit
-import TwidereUI
+import MetaLabel
 
 protocol DrawerSidebarHeaderViewDelegate: AnyObject {
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, avatarButtonDidPressed button: UIButton)

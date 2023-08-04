@@ -8,7 +8,6 @@
 
 import Foundation
 import SwiftUI
-import TwidereUI
 
 enum AccountPreferenceListEntry: Hashable {
     case muted
@@ -20,7 +19,7 @@ enum AccountPreferenceListEntry: Hashable {
         switch self {
         case .muted:                return L10n.Scene.Settings.Account.mutedPeople
         case .blocked:              return L10n.Scene.Settings.Account.blockedPeople
-        case .accountSettings:      return L10n.Scene.Settings.Account.accountSettings
+        case .accountSettings:      return "Account Settings"   // TODO: i18n
         case .signout:              return L10n.Common.Controls.Actions.signOut
         }
     }
@@ -53,10 +52,9 @@ struct AccountPreferenceView: View {
         List {
             // user header section
             Section {
-                UserContentView(viewModel: .init(
-                    user: viewModel.user,
-                    accessoryType: .none
-                ))
+                if let userViewModel = viewModel.userViewModel {
+                    UserView(viewModel: userViewModel)
+                }
             }
             // notification section
             if let viewModel = viewModel.mastodonNotificationSectionViewModel {

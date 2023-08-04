@@ -71,18 +71,14 @@ extension SearchHashtagViewModel.State {
             }
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext
-            else {
-                stateMachine.enter(Fail.self)
-                return
-            }
             
             let searchText = viewModel.searchText
-
+            let authenticationContext = viewModel.authContext.authenticationContext
+            
             if nextInput == nil {
                 nextInput = {
                     switch authenticationContext {
-                    case .twitter(let authenticationContext):
+                    case .twitter:
                         assertionFailure()
                         return nil
                     case .mastodon(let authenticationContext):

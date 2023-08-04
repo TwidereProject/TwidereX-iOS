@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import SwiftUI
 import Combine
-import TwidereUI
 
 
 final class SidebarViewController: UIViewController, NeedsDependency {
@@ -81,7 +80,7 @@ extension SidebarViewController {
         let impactFeedbackGenerator = UIImpactFeedbackGenerator()
         impactFeedbackGenerator.impactOccurred()
         
-        let accountListViewModel = AccountListViewModel(context: context)
+        let accountListViewModel = AccountListViewModel(context: context, authContext: viewModel.authContext)
         coordinator.present(
             scene: .accountList(viewModel: accountListViewModel),
             from: nil,

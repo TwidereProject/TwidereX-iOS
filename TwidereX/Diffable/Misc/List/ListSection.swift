@@ -9,7 +9,6 @@
 import UIKit
 import Meta
 import TwidereCore
-import TwidereUI
 
 enum ListSection: Hashable {
     case twitter(kind: TwitterListKind)
@@ -130,7 +129,7 @@ extension ListSection {
     ) {
         switch list {
         case .twitter(let object):
-            let metaContent = Meta.convert(from: .plaintext(string: object.name))
+            let metaContent = Meta.convert(document: .plaintext(string: object.name))
             cell.primaryTextLabel.configure(content: metaContent)
             cell.accessoryImageView.image = Asset.ObjectTools.lockMiniInline.image.withRenderingMode(.alwaysTemplate)
             cell.accessoryImageView.contentMode = .scaleAspectFill
@@ -138,7 +137,7 @@ extension ListSection {
             cell.accessoryImageView.isHidden = !object.private
             cell.accessoryType = .disclosureIndicator
         case .mastodon(let object):
-            let metaContent = Meta.convert(from: .plaintext(string: object.title))
+            let metaContent = Meta.convert(document: .plaintext(string: object.title))
             cell.primaryTextLabel.configure(content: metaContent)
             cell.accessoryType = .disclosureIndicator
         }

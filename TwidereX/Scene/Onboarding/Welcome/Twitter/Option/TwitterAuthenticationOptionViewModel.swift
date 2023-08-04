@@ -8,9 +8,7 @@
 
 import UIKit
 import Combine
-import AppShared
 import TwitterSDK
-import TwidereCommon
 
 final class TwitterAuthenticationOptionViewModel: NSObject {
     

@@ -94,34 +94,40 @@ extension StatusFetchViewModel.Timeline.Home {
     public static func fetch(api: APIService, input: Input) async throws -> StatusFetchViewModel.Timeline.Output {
         switch input {
         case .twitter(let fetchContext):
-            let responses = try await api.twitterHomeTimeline(
-                query: .init(
-                    sinceID: fetchContext.sinceID,
-                    untilID: fetchContext.untilID,
-                    paginationToken: nil,
-                    maxResults: fetchContext.maxResults ?? 100
-                ),
-                authenticationContext: fetchContext.authenticationContext
-            )
-            let nextInput: Input? = {
-                guard let last = responses.last,
-                      last.value.meta.nextToken != nil,
-                      let oldestID = last.value.meta.oldestID
-                else { return nil }
-                let fetchContext = fetchContext.map(untilID: oldestID)
-                return .twitter(fetchContext)
-            }()
-            return .init(
-                result: {
-                    let statuses = responses
-                        .map { $0.value.data }
-                        .compactMap{ $0 }
-                        .flatMap { $0 }
-                    return .twitterV2(statuses)
-                }(),
-                backInput: nil,
-                nextInput: nextInput.flatMap { .home($0) }
-            )
+            do {
+                let responses = try await api.twitterHomeTimeline(
+                    query: .init(
+                        sinceID: fetchContext.sinceID,
+                        untilID: fetchContext.untilID,
+                        paginationToken: nil,
+                        maxResults: fetchContext.maxResults ?? 100,
+                        onlyMedia: fetchContext.filter.rule.contains(.onlyMedia)
+                    ),
+                    authenticationContext: fetchContext.authenticationContext
+                )
+                let nextInput: Input? = {
+                    guard let last = responses.last,
+                          last.value.meta.nextToken != nil,
+                          let oldestID = last.value.meta.oldestID
+                    else { return nil }
+                    let fetchContext = fetchContext.map(untilID: oldestID)
+                    return .twitter(fetchContext)
+                }()
+                return .init(
+                    result: {
+                        let statuses = responses
+                            .map { $0.value.data }
+                            .compactMap{ $0 }
+                            .flatMap { $0 }
+                        return .twitterV2(statuses)
+                    }(),
+                    backInput: nil,
+                    nextInput: nextInput.flatMap { .home($0) }
+                )
+            } catch {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
+                throw error
+            }
         case .mastodon(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
             let responses = try await api.mastodonHomeTimeline(

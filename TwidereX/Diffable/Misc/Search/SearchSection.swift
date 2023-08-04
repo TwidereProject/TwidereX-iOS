@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import SwiftUI
 import Meta
 import TwidereCore
+import TwidereUI
 
 enum SearchSection: Hashable, CaseIterable {
     case history
@@ -17,7 +19,9 @@ enum SearchSection: Hashable, CaseIterable {
 
 extension SearchSection {
     
-    struct Configuration { }
+    struct Configuration {
+        let viewLayoutFramePublisher: Published<ViewLayoutFrame>.Publisher?
+    }
     
     static func diffableDataSource(
         tableView: UITableView,
@@ -41,7 +45,13 @@ extension SearchSection {
                 return cell
             case .trend(let object):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TrendTableViewCell.self), for: indexPath) as! TrendTableViewCell
-                configure(cell: cell, object: object)
+                let trendViewModel = TrendView.ViewModel(
+                    object: object,
+                    viewLayoutFramePublisher: configuration.viewLayoutFramePublisher
+                )
+                cell.contentConfiguration = UIHostingConfiguration {
+                    TrendView(viewModel: trendViewModel)
+                }
                 return cell
             case .loader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
@@ -76,42 +86,42 @@ extension SearchSection {
     ) {
         switch object {
         case .twitter(let history):
-            let metaContent = Meta.convert(from: .plaintext(string: history.name))
+            let metaContent = Meta.convert(document: .plaintext(string: history.name))
             cell.primaryTextLabel.configure(content: metaContent)
         case .mastodon(let history):
-            let metaContent = Meta.convert(from: .plaintext(string: history.query))
+            let metaContent = Meta.convert(document: .plaintext(string: history.query))
             cell.primaryTextLabel.configure(content: metaContent)
         }
     }
     
-    private static func configure(
-        cell: TrendTableViewCell,
-        object: TrendObject
-    ) {
-        switch object {
-        case .twitter(let trend):
-            let metaContent = Meta.convert(from: .plaintext(string: trend.name))
-            cell.primaryLabel.configure(content: metaContent)
-            cell.accessoryType = .disclosureIndicator
-        case .mastodon(let tag):
-            let metaContent = Meta.convert(from: .plaintext(string: "#" + tag.name))
-            
-            cell.primaryLabel.configure(content: metaContent)
-            cell.secondaryLabel.text = L10n.Scene.Trends.accounts(tag.talkingPeopleCount ?? 0)
-            cell.setSecondaryLabelDisplay()
-            
-            cell.supplementaryLabel.text = tag.history?.first?.uses ?? " "
-            cell.setSupplementaryLabelDisplay()
-            
-            cell.lineChartView.data = (tag.history ?? [])
-                .sorted(by: { $0.day < $1.day })        // latest last
-                .map { entry in
-                    guard let point = Int(entry.accounts) else {
-                        return .zero
-                    }
-                    return CGFloat(point)
-                }
-            cell.setLineChartViewDisplay()
-        }
-    }
+//    private static func configure(
+//        cell: TrendTableViewCell,
+//        object: TrendObject
+//    ) {
+//        switch object {
+//        case .twitter(let trend):
+//            let metaContent = Meta.convert(document: .plaintext(string: trend.name))
+//            cell.primaryLabel.configure(content: metaContent)
+//            cell.accessoryType = .disclosureIndicator
+//        case .mastodon(let tag):
+//            let metaContent = Meta.convert(document: .plaintext(string: "#" + tag.name))
+//
+//            cell.primaryLabel.configure(content: metaContent)
+//            cell.secondaryLabel.text = L10n.Scene.Trends.accounts(tag.talkingPeopleCount ?? 0)
+//            cell.setSecondaryLabelDisplay()
+//
+//            cell.supplementaryLabel.text = tag.history?.first?.uses ?? " "
+//            cell.setSupplementaryLabelDisplay()
+//
+//            cell.lineChartView.data = (tag.history ?? [])
+//                .sorted(by: { $0.day < $1.day })        // latest last
+//                .map { entry in
+//                    guard let point = Int(entry.accounts) else {
+//                        return .zero
+//                    }
+//                    return CGFloat(point)
+//                }
+//            cell.setLineChartViewDisplay()
+//        }
+//    }
 }

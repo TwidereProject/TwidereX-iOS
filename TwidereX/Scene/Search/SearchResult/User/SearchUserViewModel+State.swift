@@ -72,13 +72,10 @@ extension SearchUserViewModel.State {
             }
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext
-            else {
-                stateMachine.enter(Fail.self)
-                return
-            }
             
+            let authenticationContext = viewModel.authContext.authenticationContext
             let searchText = viewModel.searchText
+            
             if nextInput == nil {
                 nextInput = {
                     switch authenticationContext {
@@ -95,7 +92,7 @@ extension SearchUserViewModel.State {
                             searchText: searchText,
                             following: {
                                 switch viewModel.kind {
-                                case .friendship:       return false
+                                case .search:       return false
                                 case .listMember:       return true
                                 }
                             }(),

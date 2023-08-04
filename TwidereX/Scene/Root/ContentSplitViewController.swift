@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import TwidereCore
 
 final class ContentSplitViewController: UIViewController, NeedsDependency {
     
@@ -20,34 +21,59 @@ final class ContentSplitViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
-        
+    let authContext: AuthContext
+
     private(set) lazy var sidebarViewController: SidebarViewController = {
         let sidebarViewController = SidebarViewController()
         sidebarViewController.context = context
         sidebarViewController.coordinator = coordinator
-        sidebarViewController.viewModel = SidebarViewModel(context: context)
+        sidebarViewController.viewModel = SidebarViewModel(context: context, authContext: authContext)
         sidebarViewController.viewModel.delegate = self
         return sidebarViewController
     }()
     
     private(set) lazy var mainTabBarController: MainTabBarController = {
-        let mainTabBarController = MainTabBarController(context: context, coordinator: coordinator)
+        let mainTabBarController = MainTabBarController(context: context, coordinator: coordinator, authContext: authContext)
         return mainTabBarController
     }()
     
+    private(set) lazy var secondaryContainerViewController: SecondaryContainerViewController = {
+        let viewController = SecondaryContainerViewController(context: context, coordinator: coordinator, authContext: authContext)
+        return viewController
+    }()
+    
     private(set) lazy var secondaryTabBarController: SecondaryTabBarController = {
-        let secondaryTabBarController = SecondaryTabBarController(context: context, coordinator: coordinator)
+        let secondaryTabBarController = SecondaryTabBarController(context: context, coordinator: coordinator, authContext: authContext)
         return secondaryTabBarController
     }()
     
     var mainTabBarViewLeadingLayoutConstraint: NSLayoutConstraint!
+    var mainTabBarViewTrailingLayoutConstraint: NSLayoutConstraint!
+    var mainTabBarViewWidthLayoutConstraint: NSLayoutConstraint!
     
     @Published var isSidebarDisplay = false
     @Published var isSecondaryTabBarControllerActive = false
     
+    @Published var tabBarTapScrollPreference = UserDefaults.shared.tabBarTapScrollPreference
+    
     // [Tab: HashValue]
     var transformNavigationStackRecord: [TabBarItem: [Int]] = [:]
-
+    
+    init(
+        context: AppContext,
+        coordinator: SceneCoordinator,
+        authContext: AuthContext
+    ) {
+        self.context = context
+        self.coordinator = coordinator
+        self.authContext = authContext
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
@@ -58,6 +84,10 @@ extension ContentSplitViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        UserDefaults.shared.publisher(for: \.tabBarTapScrollPreference)
+            .removeDuplicates()
+            .assign(to: &$tabBarTapScrollPreference)
         
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = .opaqueSeparator
@@ -78,12 +108,25 @@ extension ContentSplitViewController {
         view.addSubview(mainTabBarController.view)
         mainTabBarController.didMove(toParent: self)
         mainTabBarViewLeadingLayoutConstraint = mainTabBarController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+        mainTabBarViewTrailingLayoutConstraint = mainTabBarController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        mainTabBarViewWidthLayoutConstraint = mainTabBarController.view.widthAnchor.constraint(equalToConstant: 428).priority(.required - 1)
         NSLayoutConstraint.activate([
             mainTabBarController.view.topAnchor.constraint(equalTo: view.topAnchor),
             mainTabBarViewLeadingLayoutConstraint,
             mainTabBarController.view.leadingAnchor.constraint(equalTo: sidebarViewController.view.trailingAnchor, constant: UIView.separatorLineHeight(of: view)).priority(.required - 1),
-            mainTabBarController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mainTabBarViewTrailingLayoutConstraint,
             mainTabBarController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        
+        addChild(secondaryContainerViewController)
+        secondaryContainerViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(secondaryContainerViewController.view)
+        secondaryContainerViewController.didMove(toParent: self)
+        NSLayoutConstraint.activate([
+            secondaryContainerViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            secondaryContainerViewController.view.leadingAnchor.constraint(equalTo: mainTabBarController.view.trailingAnchor, constant: UIView.separatorLineHeight(of: view)), // 1pt for divider
+            secondaryContainerViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            secondaryContainerViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
         addChild(secondaryTabBarController)
@@ -129,7 +172,7 @@ extension ContentSplitViewController {
 
 extension ContentSplitViewController {
     func select(tab: TabBarItem) {
-        sidebarViewController.viewModel.setActiveTab(item: tab)
+        sidebarViewController.viewModel.tap(item: tab)
     }
 }
 
@@ -140,9 +183,28 @@ extension ContentSplitViewController {
         case .regular:
             isSidebarDisplay = true
             mainTabBarViewLeadingLayoutConstraint.isActive = false
+            let width: CGFloat = {
+                var minWidth = UIScreen.main.bounds.width
+                if UIScreen.main.bounds.height < minWidth {
+                    minWidth = UIScreen.main.bounds.height
+                }
+                if let window = view.window, window.frame.width < minWidth {
+                    minWidth = window.frame.width
+                }
+                return minWidth - ContentSplitViewController.sidebarWidth
+            }()
+            let mainWidth = width / 100 * 55
+            let secondaryWidth = width / 100 * 45
+            secondaryContainerViewController.viewModel.update(width: floor(secondaryWidth))
+            mainTabBarViewTrailingLayoutConstraint.isActive = false
+            mainTabBarViewWidthLayoutConstraint.constant = floor(mainWidth)
+            mainTabBarViewWidthLayoutConstraint.isActive = true
+            
         default:
             isSidebarDisplay = false
             mainTabBarViewLeadingLayoutConstraint.isActive = true
+            mainTabBarViewWidthLayoutConstraint.isActive = false
+            mainTabBarViewTrailingLayoutConstraint.isActive = true
         }
         
         guard let previousTraitCollection = previousTraitCollection else { return }
@@ -205,7 +267,7 @@ extension ContentSplitViewController {
         for tab in secondaryTabBarController.tabs {
             guard let secondaryTabBarNavigationController = secondaryTabBarController.navigationController(for: tab) else { continue }
             if secondaryTabBarNavigationController.viewControllers.count == 1 {
-                let viewController = tab.viewController(context: context, coordinator: coordinator)
+                let viewController = tab.viewController(context: context, coordinator: coordinator, authContext: authContext)
                 viewController.navigationItem.hidesBackButton = true
                 secondaryTabBarNavigationController.pushViewController(viewController, animated: false)
             }
@@ -217,15 +279,14 @@ extension ContentSplitViewController {
 // MARK: - SidebarViewModelDelegate
 extension ContentSplitViewController: SidebarViewModelDelegate {
 
-    func sidebarViewModel(_ viewModel: SidebarViewModel, active tab: TabBarItem) {
+    func sidebarViewModel(_ viewModel: SidebarViewModel, didTapItem tab: TabBarItem) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
 
         switch tab {
         case .settings:
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else { return }
             let settingListViewModel = SettingListViewModel(
                 context: context,
-                auth: .init(authenticationContext: authenticationContext)
+                authContext: viewModel.authContext
             )
             coordinator.present(
                 scene: .setting(viewModel: settingListViewModel),
@@ -240,6 +301,30 @@ extension ContentSplitViewController: SidebarViewModelDelegate {
             } else if secondaryTabBarController.tabs.contains(tab) {
                 secondaryTabBarController.select(tab: tab, isSecondaryTabBarControllerActive: isSecondaryTabBarControllerActive)
                 isSecondaryTabBarControllerActive = true
+            } else {
+                assertionFailure()
+            }
+        }
+    }
+    
+    func sidebarViewModel(_ viewModel: SidebarViewModel, didDoubleTapItem tab: TabBarItem) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        switch tabBarTapScrollPreference {
+        case .single:       return
+        case .double:       break
+        }
+
+        switch tab {
+        case .settings:
+            // do nothing
+            break
+        default:
+            guard viewModel.activeTab == tab else { return }
+            if mainTabBarController.tabs.contains(tab) {
+                mainTabBarController.scrollToTop(tab: tab, isMainTabBarControllerActive: !isSecondaryTabBarControllerActive)
+            } else if secondaryTabBarController.tabs.contains(tab) {
+                secondaryTabBarController.scrollToTop(tab: tab, isSecondaryTabBarControllerActive: isSecondaryTabBarControllerActive)
             } else {
                 assertionFailure()
             }

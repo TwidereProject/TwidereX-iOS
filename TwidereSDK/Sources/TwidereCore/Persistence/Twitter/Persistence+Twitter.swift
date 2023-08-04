@@ -1,5 +1,5 @@
 //
-//  .swift
+//  Persistence+Twitter.swift
 //  Persistence+TwiPersistence+Twittertter
 //
 //  Created by Cirno MainasuK on 2021-8-31.
@@ -62,7 +62,10 @@ extension Persistence.Twitter {
         for status in context.dictionary.tweetDict.values {
             guard let authorID = status.authorID,
                   let author = context.dictionary.userDict[authorID]
-            else { continue }
+            else {
+                assertionFailure()
+                continue
+            }
             
             var repost: Persistence.TwitterStatus.PersistContextV2.Entity?
             var replyTo: Persistence.TwitterStatus.PersistContextV2.Entity?
@@ -71,7 +74,10 @@ extension Persistence.Twitter {
             for referencedTweet in status.referencedTweets ?? [] {
                 guard let type = referencedTweet.type,
                       let statusID = referencedTweet.id
-                else { continue }
+                else {
+                    assertionFailure()
+                    continue
+                }
                 guard let status = context.dictionary.tweetDict[statusID],
                       let authorID = status.authorID,
                       let author = context.dictionary.userDict[authorID]
@@ -87,19 +93,20 @@ extension Persistence.Twitter {
                 }   // end switch
             }   // end for
             
+            let contextV2 = Persistence.TwitterStatus.PersistContextV2(
+                entity: .init(status: status, author: author),
+                repost: repost,
+                quote: quote,
+                replyTo: replyTo,
+                dictionary: context.dictionary,
+                me: context.me,
+                statusCache: statusCache,
+                userCache: userCache,
+                networkDate: context.networkDate
+            )
             let result = Persistence.TwitterStatus.createOrMerge(
                 in: managedObjectContext,
-                context: Persistence.TwitterStatus.PersistContextV2(
-                    entity: .init(status: status, author: author),
-                    repost: repost,
-                    quote: quote,
-                    replyTo: replyTo,
-                    dictionary: context.dictionary,
-                    me: context.me,
-                    statusCache: statusCache,
-                    userCache: userCache,
-                    networkDate: context.networkDate
-                )
+                context: contextV2
             )   // end .createOrMerge(…)
             
             #if DEBUG

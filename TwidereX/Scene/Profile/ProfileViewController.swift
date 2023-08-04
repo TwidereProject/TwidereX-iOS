@@ -10,14 +10,13 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import AppShared
 import Floaty
 import Meta
-import MetaTextArea
 import MetaTextKit
+import MetaTextArea
+import MetaLabel
 import TabBarPager
 import XLPagerTabStrip
-import TwidereUI
 
 final class ProfileViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
     
@@ -53,48 +52,14 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
     }()
     private(set) lazy var profilePagingViewController: ProfilePagingViewController = {
         let profilePagingViewController = ProfilePagingViewController()
-        
-        let userTimelineViewModel = UserTimelineViewModel(
+        profilePagingViewController.viewModel = ProfilePagingViewModel(
             context: context,
-            timelineContext: .init(
-                timelineKind: .status,
-                userIdentifier: viewModel.$userIdentifier
-            )
+            authContext: authContext,
+            coordinator: coordinator,
+            displayLikeTimeline: viewModel.displayLikeTimeline,
+            protected: viewModel.$protected,
+            userIdentifier: viewModel.$userIdentifier
         )
-        userTimelineViewModel.isFloatyButtonDisplay = false
-        
-        let userMediaTimelineViewModel = UserMediaTimelineViewModel(
-            context: context,
-            timelineContext: .init(
-                timelineKind: .media,
-                userIdentifier: viewModel.$userIdentifier
-            )
-        )
-        userMediaTimelineViewModel.isFloatyButtonDisplay = false
-        
-        let userLikeTimelineViewModel = UserTimelineViewModel(
-            context: context,
-            timelineContext: .init(
-                timelineKind: .like,
-                userIdentifier: viewModel.$userIdentifier
-            )
-        )
-        userLikeTimelineViewModel.isFloatyButtonDisplay = false
-
-        profilePagingViewController.viewModel = {
-            let profilePagingViewModel = ProfilePagingViewModel(
-                userTimelineViewModel: userTimelineViewModel,
-                userMediaTimelineViewModel: userMediaTimelineViewModel,
-                userLikeTimelineViewModel: userLikeTimelineViewModel
-            )
-            profilePagingViewModel.viewControllers.forEach { viewController in
-                if let viewController = viewController as? NeedsDependency {
-                    viewController.context = context
-                    viewController.coordinator = coordinator
-                }
-            }
-            return profilePagingViewModel
-        }()
         return profilePagingViewController
     }()
     
@@ -139,23 +104,26 @@ extension ProfileViewController {
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] needsSetupAvatarBarButtonItem in
                     guard let self = self else { return }
+                    if let leftBarButtonItem = self.navigationItem.leftBarButtonItem,
+                       leftBarButtonItem !== self.avatarBarButtonItem
+                    {
+                        // allow override
+                        return
+                    }
                     self.navigationItem.leftBarButtonItem = needsSetupAvatarBarButtonItem ? self.avatarBarButtonItem : nil
                 }
                 .store(in: &disposeBag)
             avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
             avatarBarButtonItem.delegate = self
             
-            Publishers.CombineLatest(
-                context.authenticationService.$activeAuthenticationContext,
-                viewModel.viewDidAppear
-            )
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] authenticationContext, _ in
-                guard let self = self else { return }
-                let user = authenticationContext?.user(in: self.context.managedObjectContext)
-                self.avatarBarButtonItem.configure(user: user)
-            }
-            .store(in: &disposeBag)
+            viewModel.viewDidAppear
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    guard let self = self else { return }
+                    let user = self.viewModel.authContext.authenticationContext.user(in: self.context.managedObjectContext)
+                    self.avatarBarButtonItem.configure(user: user)
+                }
+                .store(in: &disposeBag)
         }
         
         addChild(tabBarPagerController)
@@ -181,40 +149,20 @@ extension ProfileViewController {
         
         tabBarPagerController.delegate = self
         tabBarPagerController.dataSource = self
-        Publishers.CombineLatest(
-            viewModel.$user,
-            viewModel.$me
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] user, me in
-            guard let self = self else { return }
-            guard let user = user, let me = me else { return }
-            
-            // set like timeline display
-            switch (user, me) {
-            case (.mastodon(let userObject), .mastodon(let meObject)):
-                self.profilePagingViewController.viewModel.displayLikeTimeline = userObject.objectID == meObject.objectID
-            default:
-                self.profilePagingViewController.viewModel.displayLikeTimeline = true
-            }
-        }
-        .store(in: &disposeBag)
         
-        Publishers.CombineLatest3(
+        Publishers.CombineLatest(
             viewModel.relationshipViewModel.$optionSet,  // update trigger
-            viewModel.$userRecord,
-            context.authenticationService.$activeAuthenticationContext
+            viewModel.$userRecord
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] optionSet, userRecord, authenticationContext in
+        .sink { [weak self] optionSet, userRecord in
             guard let self = self else { return }
-            guard let userRecord = userRecord,
-                  let authenticationContext = authenticationContext
-            else {
+            guard let userRecord = userRecord else {
                 self.moreMenuBarButtonItem.menu = nil
                 self.navigationItem.rightBarButtonItems = []
                 return
             }
+            let authenticationContext = self.viewModel.authContext.authenticationContext
             Task {
                 do {
                     let menu = try await DataSourceFacade.createMenuForUser(
@@ -275,8 +223,8 @@ extension ProfileViewController {
     
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context)
-        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context, authContext: authContext)
+        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(animated: true, transitioningDelegate: drawerSidebarTransitionController))
     }
     
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
@@ -300,23 +248,15 @@ extension ProfileViewController {
         
         let composeViewModel = ComposeViewModel(context: context)
         let composeContentViewModel = ComposeContentViewModel(
+            context: context,
+            authContext: authContext,
             kind: {
                 if user == viewModel.me {
                     return .post
                 } else {
                     return .mention(user: user)
                 }
-            }(),
-            configurationContext: ComposeContentViewModel.ConfigurationContext(
-                apiService: context.apiService,
-                authenticationService: context.authenticationService,
-                mastodonEmojiService: context.mastodonEmojiService,
-                statusViewConfigureContext: .init(
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider(),
-                    authenticationContext: context.authenticationService.$activeAuthenticationContext
-                )
-            )
+            }()
         )
         coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
@@ -331,9 +271,9 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
     
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, friendshipButtonDidPressed button: UIButton) {
         guard let user = viewModel.user else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         guard let relationshipOptionSet = viewModel.relationshipViewModel.optionSet else { return }
         let record = UserRecord(object: user)
+        let authenticationContext = viewModel.authContext.authenticationContext
 
         Task {
             if relationshipOptionSet.contains(.blocking) {
@@ -383,7 +323,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
             assertionFailure()
             return
         }
-        let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .following, userIdentifier: userIdentifier)
+        let friendshipListViewModel = FriendshipListViewModel(context: context, authContext: authContext, kind: .following, userIdentifier: userIdentifier)
         coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: self, transition: .show)
     }
     
@@ -392,7 +332,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
             assertionFailure()
             return
         }
-        let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .follower, userIdentifier: userIdentifier)
+        let friendshipListViewModel = FriendshipListViewModel(context: context, authContext: authContext, kind: .follower, userIdentifier: userIdentifier)
         coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: self, transition: .show)
     }
     
@@ -405,6 +345,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
         
         let compositeListViewModel = CompositeListViewModel(
             context: context,
+            authContext: authContext,
             kind: .listed(user)
         )
         coordinator.present(
@@ -487,4 +428,9 @@ extension ProfileViewController: ScrollViewContainer {
     var scrollView: UIScrollView {
         return tabBarPagerController.relayScrollView
     }
+}
+
+// MARK: - AuthContextProvider
+extension ProfileViewController: AuthContextProvider {
+    var authContext: AuthContext { viewModel.authContext }
 }

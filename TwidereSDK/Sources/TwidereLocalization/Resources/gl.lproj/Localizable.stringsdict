@@ -13,9 +13,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>one</key>
-        <string>1 notification</string>
+        <string>1 notificación</string>
         <key>other</key>
-        <string>%ld notifications</string>
+        <string>%ld notificacións</string>
       </dict>
     </dict>
     <key>count.media</key>

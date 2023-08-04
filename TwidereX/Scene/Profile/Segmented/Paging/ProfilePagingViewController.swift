@@ -78,15 +78,6 @@ extension ProfilePagingViewController {
         }
         
         super.viewDidLoad()
-        
-        viewModel.$displayLikeTimeline
-            .receive(on: DispatchQueue.main)
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.reloadPagerTabStripView()
-            }
-            .store(in: &disposeBag)
     }
 
 }

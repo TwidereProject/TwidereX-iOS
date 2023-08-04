@@ -6,11 +6,11 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import CoreData
 import CoreDataStack
 import Foundation
 import TwitterSDK
-import os.log
 
 extension Persistence.TwitterUser {
     
@@ -102,8 +102,28 @@ extension Persistence.TwitterUser {
         twitterUser user: TwitterUser,
         context: PersistContextV2
     ) {
-        user.update(bioEntities: TwitterEntity(entity: context.entity.entities?.description))
-        user.update(urlEntities: TwitterEntity(entity: context.entity.entities?.url))
+        user.update(bioEntitiesTransient: TwitterEntity(entity: context.entity.entities?.description))
+        user.update(urlEntitiesTransient: TwitterEntity(entity: context.entity.entities?.url))
+        
+        if let publicMetrics = context.entity.publicMetrics {
+            if let tweetCount = publicMetrics.tweetCount {
+                user.update(statusesCount: Int64(tweetCount))
+            }
+            if let followingCount = publicMetrics.followingCount {
+                user.update(followingCount: Int64(followingCount))
+            }
+            if let followersCount = publicMetrics.followersCount {
+                user.update(followersCount: Int64(followersCount))
+            }
+            if let listedCount = publicMetrics.listedCount {
+                user.update(listedCount: Int64(listedCount))
+            }            
+        }
+
+        // convertible properties
+        if let profileBannerURL = context.entity.profileBannerURL {
+            user.update(profileBannerURL: profileBannerURL)
+        }
         
         // V2 entity not contains relationship flags
     }

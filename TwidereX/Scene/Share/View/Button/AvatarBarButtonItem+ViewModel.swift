@@ -10,7 +10,6 @@ import UIKit
 import Combine
 import TwidereCore
 import CoreDataStack
-import TwidereUI
 
 extension AvatarBarButtonItem {
     public class ViewModel: ObservableObject {

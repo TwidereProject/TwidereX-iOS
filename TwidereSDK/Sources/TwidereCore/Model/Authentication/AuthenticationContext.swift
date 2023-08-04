@@ -57,6 +57,15 @@ extension AuthenticationContext {
                 .flatMap { UserObject.mastodon(object: $0.user) }
         }
     }
+    
+    public func authenticationIndex(in managedObjectContext: NSManagedObjectContext) -> AuthenticationIndex? {
+        switch self {
+        case .twitter(let authenticationContext):
+            return authenticationContext.authenticationRecord.object(in: managedObjectContext)?.authenticationIndex
+        case .mastodon(let authenticationContext):
+            return authenticationContext.authenticationRecord.object(in: managedObjectContext)?.authenticationIndex
+        }
+    }
 }
 
 extension AuthenticationContext {
@@ -66,6 +75,24 @@ extension AuthenticationContext {
             return .twitter(.init(id: authenticationContext.userID))
         case .mastodon(let authenticationContext):
             return .mastodon(.init(domain: authenticationContext.domain, id: authenticationContext.userID))
+        }
+    }
+    
+    public var acct: Feed.Acct {
+        switch self {
+        case .twitter(let authenticationContext):
+            return .twitter(userID: authenticationContext.userID)
+        case .mastodon(let authenticationContext):
+            return .mastodon(domain: authenticationContext.domain, userID: authenticationContext.userID)
+        }
+    }
+}
+
+extension AuthenticationContext {
+    public var platform: Platform {
+        switch self {
+        case .twitter:      return .twitter
+        case .mastodon:     return .mastodon
         }
     }
 }

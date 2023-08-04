@@ -23,12 +23,10 @@ extension UserDefaults {
     
     // Translate button
     
-    @objc public enum TranslateButtonPreference: Int, Identifiable, CaseIterable {
+    @objc public enum TranslateButtonPreference: Int, CaseIterable {
         case auto
         case always
         case off
-        
-        public var id: String { "\(rawValue)" }
     }
     
     @objc dynamic public var translateButtonPreference: TranslateButtonPreference {
@@ -41,12 +39,10 @@ extension UserDefaults {
     
     // Service
     
-    @objc public enum TranslationServicePreference: Int, Identifiable, CaseIterable {
+    @objc public enum TranslationServicePreference: Int, CaseIterable {
         case bing
         case deepl
         case google
-        
-        public var id: String { "\(rawValue)" }
     }
     
     @objc dynamic public var translationServicePreference: TranslationServicePreference {

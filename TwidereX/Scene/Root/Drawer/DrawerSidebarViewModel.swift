@@ -17,13 +17,18 @@ final class DrawerSidebarViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     
     // output
     var sidebarDiffableDataSource: UICollectionViewDiffableDataSource<SidebarSection, SidebarItem>?
     var settingDiffableDataSource: UICollectionViewDiffableDataSource<SidebarSection, SidebarItem>?
     
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
         self.context = context
+        self.authContext = authContext
         // end init
     }
     

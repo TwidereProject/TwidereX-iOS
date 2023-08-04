@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import SwiftUI
 import TwidereAsset
-import TwidereCommon
 
 public final class NotificationBannerView: UIView {
 
@@ -23,6 +22,7 @@ public final class NotificationBannerView: UIView {
         let imageView = UIImageView()
         imageView.image = Asset.Indices.exclamationmarkCircle.image.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = .white
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     

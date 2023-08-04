@@ -13,7 +13,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld notifications</string>
+        <string>%ld件の通知</string>
       </dict>
     </dict>
     <key>count.media</key>
@@ -47,7 +47,7 @@
     <key>count.metric_formatted.post</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>
-      <string>%@ %#@post_count@</string>
+      <string>%@%#@post_count@</string>
       <key>post_count</key>
       <dict>
         <key>NSStringFormatSpecTypeKey</key>
@@ -55,7 +55,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>posts</string>
+        <string>投稿</string>
       </dict>
     </dict>
     <key>count.post</key>
@@ -181,7 +181,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld people talking</string>
+        <string>%ld人がこの話題について話しています</string>
       </dict>
     </dict>
     <key>date.year.left</key>

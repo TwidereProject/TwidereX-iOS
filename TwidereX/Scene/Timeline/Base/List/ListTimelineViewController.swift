@@ -8,10 +8,9 @@
 
 import os.log
 import UIKit
+import SwiftUI
 import Combine
 import Floaty
-import AppShared
-import TwidereCore
 import TabBarPager
 
 class ListTimelineViewController: TimelineViewController {
@@ -24,11 +23,15 @@ class ListTimelineViewController: TimelineViewController {
             _viewModel = newValue
         }
     }
+    let emptyStateViewModel = EmptyStateView.ViewModel()
+    
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .systemBackground
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
+        tableView.selfSizingInvalidation = .enabled
+        tableView.cellLayoutMarginsFollowReadableWidth = true
         return tableView
     }()
     
@@ -72,9 +75,51 @@ extension ListTimelineViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
+                // do not fetch more when on background
                 guard self.isDisplaying else { return }
+                
+                switch self.viewModel.kind {
+                case .home:
+                    // do not fetch more when empty on home timeline
+                    // otherwise the fetchLatest will be override at app launch
+                    guard let snapshot = self.viewModel.diffableDataSource?.snapshot(),
+                          snapshot.numberOfItems > 0
+                    else { return }
+                default:
+                    break
+                }
+                
                 self.viewModel.stateMachine.enter(TimelineViewModel.LoadOldestState.Loading.self)
             }
+            .store(in: &disposeBag)
+        
+        viewModel.autoFetchLatestAction
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.autoFetchLatest()
+            }
+            .store(in: &disposeBag)
+        
+        viewModel.$emptyState
+            .assign(to: \.emptyState, on: emptyStateViewModel)
+            .store(in: &disposeBag)
+        
+        let emptyStateViewHostingController = UIHostingController(rootView: EmptyStateView(viewModel: emptyStateViewModel))
+        addChild(emptyStateViewHostingController)
+        emptyStateViewHostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emptyStateViewHostingController.view)
+        NSLayoutConstraint.activate([
+            emptyStateViewHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            emptyStateViewHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emptyStateViewHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emptyStateViewHostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        emptyStateViewHostingController.view.isHidden = true
+        emptyStateViewModel.$emptyState
+            .map { $0 == nil }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isHidden, on: emptyStateViewHostingController.view)
             .store(in: &disposeBag)
         
         NotificationCenter.default
@@ -108,13 +153,6 @@ extension ListTimelineViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        // FIXME: use timer to auto refresh
-        autoFetchLatest()
-    }
-    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -144,29 +182,9 @@ extension ListTimelineViewController {
               !diffableDataSource.snapshot().itemIdentifiers.isEmpty        // conflict with LoadOldestState
         else { return }
         
-        if !viewModel.isLoadingLatest {
-            let now = Date()
-            if let timestamp = viewModel.lastAutomaticFetchTimestamp {
-                #if DEBUG
-                let throttle: TimeInterval = 1
-                #else
-                let throttle: TimeInterval = 60
-                #endif
-                if now.timeIntervalSince(timestamp) > throttle {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline…")
-                    Task {
-                        await _viewModel.loadLatest()
-                    }
-                    viewModel.lastAutomaticFetchTimestamp = now
-                } else {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline skip. Reason: updated in recent 60s")
-                }
-            } else {
-                Task {
-                    await self.viewModel.loadLatest()
-                }
-                viewModel.lastAutomaticFetchTimestamp = now
-            }
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline…")
+        Task {
+            await _viewModel.loadLatest()
         }
     }   // end func
     
@@ -256,7 +274,8 @@ extension ListTimelineViewController {
 
 // MARK: - UITableViewDelegate
 extension ListTimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
-    // sourcery:inline:ListTimelineView
+    // sourcery:inline:ListTimelineViewController.AutoGenerateTableViewDelegate
+
     // Generated using Sourcery
     // DO NOT EDIT
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -297,16 +316,25 @@ extension ListTimelineViewController: UITableViewDelegate, AutoGenerateTableView
     }
 }
 
+// MARK: - UITableViewDataSourcePrefetching
+extension ListTimelineViewController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        aspectTableView(tableView, prefetchRowsAt: indexPaths)
+    }
+}
+
 // MARK: - ScrollViewContainer
 extension ListTimelineViewController: ScrollViewContainer {
 
     var scrollView: UIScrollView { return tableView }
 
-    func scrollToTop(animated: Bool) {
+    func scrollToTop(animated: Bool, option: ScrollViewContainerOption) {
         if scrollView.contentOffset.y < scrollView.frame.height,
            !viewModel.isLoadingLatest,
            (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
-           !refreshControl.isRefreshing {
+           !refreshControl.isRefreshing,
+           option.tryRefreshWhenStayAtTop
+        {
             scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }

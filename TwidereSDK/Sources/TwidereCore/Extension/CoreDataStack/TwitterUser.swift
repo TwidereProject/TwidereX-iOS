@@ -51,7 +51,6 @@ extension TwitterUser {
 }
 
 extension TwitterUser {
-    
     public enum SizeKind: String {
         case small
         case medium
@@ -80,52 +79,48 @@ extension String {
 }
 
 extension TwitterUser {
-    public func bioMetaContent(provider: TwitterTextProvider) -> TwitterMetaContent? {
-        let _bioContent: String? = bio.flatMap { text in
-            var text = text
-            for url in bioEntities?.urls ?? [] {
-                guard let expandedURL = url.expandedURL else { continue }
-                let shortURL = url.url
-                text = text.replacingOccurrences(of: shortURL, with: expandedURL)
-            }
-            return text
+    public var bioURLEntities: [TwitterContent.URLEntity] {
+        let results = bioEntitiesTransient?.urls?.map { entity in
+            TwitterContent.URLEntity(url: entity.url, expandedURL: entity.expandedURL, displayURL: entity.displayURL)
         }
-        guard let bioContent = _bioContent else { return nil }
-        let content = TwitterContent(content: bioContent)
+        return results ?? []
+    }
+    
+    public func bioMetaContent(provider: TwitterTextProvider) -> TwitterMetaContent? {
+        guard let bio = self.bio else { return nil }
+        let content = TwitterContent(content: bio, urlEntities: bioURLEntities)
         let metaContent = TwitterMetaContent.convert(
-            content: content,
-            urlMaximumLength: 50,
+            document: content,
+            urlMaximumLength: .max,
             twitterTextProvider: provider
         )
         return metaContent
     }
     
-    public func urlMetaContent(provider: TwitterTextProvider) -> TwitterMetaContent? {
-        let _urlContent: String? = url.flatMap { text in
-            var text = text
-            for url in urlEntities?.urls ?? [] {
-                guard let expandedURL = url.expandedURL else { continue }
-                let shortURL = url.url
-                text = text.replacingOccurrences(of: shortURL, with: expandedURL)
-            }
-            return text
+    public var urlEntity: [TwitterContent.URLEntity] {
+        let results = urlEntitiesTransient?.urls?.map { entity in
+            TwitterContent.URLEntity(url: entity.url, expandedURL: entity.expandedURL, displayURL: entity.displayURL)
         }
-        guard let urlContent = _urlContent else { return nil }
-        let content = TwitterContent(content: urlContent)
+        return results ?? []
+    }
+    
+    public func urlMetaContent(provider: TwitterTextProvider) -> TwitterMetaContent? {
+        guard let url = self.url else { return nil }
+        let content = TwitterContent(content: url, urlEntities: urlEntity)
         let metaContent = TwitterMetaContent.convert(
-            content: content,
-            urlMaximumLength: 50,
+            document: content,
+            urlMaximumLength: .max,
             twitterTextProvider: provider
         )
         return metaContent
     }
     
     public func locationMetaContent(provider: TwitterTextProvider) -> TwitterMetaContent? {
-        return location.flatMap { location in
+        return location.flatMap { location -> TwitterMetaContent? in
             let location = location.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !location.isEmpty else { return nil }
             let metaContent = TwitterMetaContent.convert(
-                content: TwitterContent(content: location),
+                document: TwitterContent(content: location, urlEntities: []),
                 urlMaximumLength: 50,
                 twitterTextProvider: provider
             )

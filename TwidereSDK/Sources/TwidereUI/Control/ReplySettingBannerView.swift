@@ -6,76 +6,96 @@
 //
 
 import UIKit
+import SwiftUI
+import TwitterSDK
 import TwidereAsset
+import TwidereLocalization
 
-final public class ReplySettingBannerView: UIView {
+public struct ReplySettingBannerView: View {
     
-    let topSeparator = SeparatorLineView()
+    public let viewModel: ViewModel
+
+    @ScaledMetric(relativeTo: .callout) private var imageDimension: CGFloat = 16
+
     
-    let overflowBackgroundView = UIView()
-    
-    let stackView = UIStackView()
-    
-    public let imageView = UIImageView()
-    
-    public let label: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .callout)
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        _init()
-    }
-    
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        _init()
+    public var body: some View {
+        HStack(spacing: 4) {
+            Image(uiImage: viewModel.icon)
+                .resizable()
+                .frame(width: imageDimension, height: imageDimension)
+            Text(viewModel.title)
+        }
+        .font(.callout)
+        .foregroundColor(.white)
+        .padding(.vertical, 8)
     }
     
 }
 
 extension ReplySettingBannerView {
-    private func _init() {
-        // Hack the background view to fill the table width
-        overflowBackgroundView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(overflowBackgroundView)
-        NSLayoutConstraint.activate([
-            overflowBackgroundView.topAnchor.constraint(equalTo: topAnchor),
-            leadingAnchor.constraint(equalTo: overflowBackgroundView.leadingAnchor, constant: 400),
-            overflowBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 400),
-            overflowBackgroundView.bottomAnchor.constraint(equalTo: bottomAnchor),
-        ])
+    public class ViewModel: ObservableObject {
+        // input
+        public let replaySettings: Twitter.Entity.V2.Tweet.ReplySettings
+        public let authorUsername: String
         
-        // Hack the line to fill the table width
-        topSeparator.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(topSeparator)
-        NSLayoutConstraint.activate([
-            topSeparator.topAnchor.constraint(equalTo: topSeparator.topAnchor),
-            leadingAnchor.constraint(equalTo: topSeparator.leadingAnchor, constant: 400),
-            topSeparator.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 400),
-        ])
+        // output
+        public let icon: UIImage
+        public let title: String
+        public let shouldHidden: Bool
         
-        // stackView: H - [ icon | label ]
-        stackView.axis = .horizontal
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.alignment = .center
-        stackView.spacing = 4
-        addSubview(stackView)
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 8),
-        ])
-        
-        stackView.addArrangedSubview(imageView)
-        stackView.addArrangedSubview(label)
-        
-        overflowBackgroundView.backgroundColor = Asset.Colors.hightLight.color.withAlphaComponent(0.6)
-        imageView.tintColor = .white
-        label.textColor = .white
+        public init(
+            replaySettings: Twitter.Entity.V2.Tweet.ReplySettings,
+            authorUsername: String
+        ) {
+            self.replaySettings = replaySettings
+            self.authorUsername = authorUsername
+            self.icon = {
+                switch replaySettings {
+                case .everyone:
+                    fallthrough
+                case .following:
+                    return Asset.Communication.at.image.withRenderingMode(.alwaysTemplate)
+                case .mentionedUsers:
+                    return Asset.Human.personCheckMini.image.withRenderingMode(.alwaysTemplate)
+                }
+            }()
+            self.title = {
+                switch replaySettings {
+                case .everyone:
+                    return ""
+                case .following:
+                    return L10n.Common.Controls.Status.ReplySettings.peopleUserFollowsOrMentionedCanReply("@\(authorUsername)")
+                case .mentionedUsers:
+                    return L10n.Common.Controls.Status.ReplySettings.peopleUserMentionedCanReply("@\(authorUsername)")
+                }
+            }()
+            self.shouldHidden = replaySettings == .everyone
+            // end init
+        }
     }
 }
+
+#if canImport(SwiftUI) && DEBUG
+import SwiftUI
+
+@available(iOS 13.0, *)
+struct ReplySettingBannerView_Previews: PreviewProvider {
+    
+    static var previews: some View {
+        Group {
+            ReplySettingBannerView(viewModel: .init(
+                replaySettings: .following,
+                authorUsername: "alice"
+            ))
+            ReplySettingBannerView(viewModel: .init(
+                replaySettings: .mentionedUsers,
+                authorUsername: "alice"
+            ))
+        }
+        .background(Color.black)
+    }
+    
+}
+
+#endif
+

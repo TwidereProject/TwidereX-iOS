@@ -43,7 +43,7 @@ extension StatusObject {
             return status.displayText
         case .mastodon(let status):
             do {
-                let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
+                let content = MastodonContent(content: status.content, emojis: status.emojisTransient.asDictionary)
                 let metaContent = try MastodonMetaContent.convert(document: content)
                 return metaContent.original
             } catch {
@@ -65,9 +65,20 @@ extension StatusObject {
         switch self {
         case .twitter(let status):
             let status = status.repost ?? status
-            return status.attachments.map { .twitter($0) }
+            return status.attachmentsTransient.map { .twitter($0) }
         case .mastodon(let status):
-            return status.attachments.map { .mastodon($0) }
+            return status.attachmentsTransient.map { .mastodon($0) }
+        }
+    }
+}
+
+extension StatusObject {
+    public var histories: Set<History> {
+        switch self {
+        case .twitter(let status):
+            return status.histories
+        case .mastodon(let status):
+            return status.histories
         }
     }
 }

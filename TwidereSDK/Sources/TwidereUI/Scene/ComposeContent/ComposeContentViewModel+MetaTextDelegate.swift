@@ -24,10 +24,6 @@ extension ComposeContentViewModel: MetaTextDelegate {
         _ metaText: MetaText,
         processEditing textStorage: MetaTextStorage
     ) -> MetaContent? {
-        guard let author = self.author else {
-            return nil
-        }
-        
         let kind = MetaTextViewKind(rawValue: metaText.textView.tag) ?? .none
         
         switch kind {
@@ -39,13 +35,13 @@ extension ComposeContentViewModel: MetaTextDelegate {
             let textInput = textStorage.string
             self.content = textInput
             
-            switch author {
+            switch platform {
             case .twitter:
-                let content = TwitterContent(content: textInput)
+                let content = TwitterContent(content: textInput, urlEntities: [])
                 let metaContent = TwitterMetaContent.convert(
-                    content: content,
+                    text: content,
                     urlMaximumLength: .max,
-                    twitterTextProvider: configurationContext.statusViewConfigureContext.twitterTextProvider
+                    twitterTextProvider: SwiftTwitterTextProvider()
                 )
                 return metaContent
                 
@@ -56,6 +52,9 @@ extension ComposeContentViewModel: MetaTextDelegate {
                 )
                 let metaContent = MastodonMetaContent.convert(text: content)
                 return metaContent
+            case .none:
+                assertionFailure()
+                return nil
             }
             
         case .contentWarning:

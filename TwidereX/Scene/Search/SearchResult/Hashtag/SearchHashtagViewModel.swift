@@ -21,6 +21,7 @@ final class SearchHashtagViewModel {
     
     // input
     let context: AppContext
+    let authContext: AuthContext
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     let viewDidAppear = PassthroughSubject<Void, Never>()
     @Published var items: [HashtagItem] = []
@@ -41,8 +42,12 @@ final class SearchHashtagViewModel {
         return stateMachine
     }()
 
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        authContext: AuthContext
+    ) {
         self.context = context
+        self.authContext = authContext
         // end init
         
         $searchText

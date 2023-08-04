@@ -18,12 +18,12 @@ final class CoverFlowStackMediaCollectionCell: UICollectionViewCell {
         return viewModel
     }()
     
-    let mediaView = MediaView()
+//    let mediaView = MediaView()
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        mediaView.prepareForReuse()
+//        mediaView.prepareForReuse()
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -40,21 +40,21 @@ final class CoverFlowStackMediaCollectionCell: UICollectionViewCell {
 extension CoverFlowStackMediaCollectionCell {
     
     private func _init() {
-        contentView.layer.masksToBounds = true
-        contentView.layer.cornerRadius = MediaView.cornerRadius
-        contentView.layer.cornerCurve = .continuous
-        
-        mediaView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(mediaView)
-        NSLayoutConstraint.activate([
-            mediaView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            mediaView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            mediaView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            mediaView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-        ])
-        
-        // delegate user interactive to collection view
-        mediaView.isUserInteractionEnabled = false
+//        contentView.layer.masksToBounds = true
+//        contentView.layer.cornerRadius = MediaView.cornerRadius
+//        contentView.layer.cornerCurve = .continuous
+//
+//        mediaView.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(mediaView)
+//        NSLayoutConstraint.activate([
+//            mediaView.topAnchor.constraint(equalTo: contentView.topAnchor),
+//            mediaView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+//            mediaView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+//            mediaView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+//        ])
+//
+//        // delegate user interactive to collection view
+//        mediaView.isUserInteractionEnabled = false
     }
 
 }

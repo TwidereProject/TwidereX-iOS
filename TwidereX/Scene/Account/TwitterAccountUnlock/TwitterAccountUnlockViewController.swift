@@ -8,6 +8,7 @@
 
 import UIKit
 import WebKit
+import TwidereCore
 
 final class TwitterAccountUnlockViewController: UIViewController, NeedsDependency {
     

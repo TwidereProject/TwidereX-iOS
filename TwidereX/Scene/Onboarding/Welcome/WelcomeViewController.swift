@@ -10,7 +10,6 @@ import os.log
 import UIKit
 import SwiftUI
 import Combine
-import AppShared
 import TwitterSDK
 import MastodonSDK
 import AuthenticationServices
@@ -64,10 +63,16 @@ extension WelcomeViewController {
         navigationItem.scrollEdgeAppearance = navigationBarAppearance
         
         let hostingController = UIHostingController(rootView: WelcomeView().environmentObject(viewModel))
-        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        hostingController.view.frame = view.bounds
+        addChild(hostingController)
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hostingController.view)
-        
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
         viewModel.delegate = self
         
         viewModel.error
@@ -75,6 +80,15 @@ extension WelcomeViewController {
             .sink { [weak self] error in
                 guard let self = self else { return }
                 let alertController = UIAlertController.standardAlert(of: error)
+                let action = UIAlertAction(title: "Contact", style: .default) { _ in
+                    let url = URL(string: "https://twitter.com/twidereproject")!
+                    self.coordinator.present(
+                        scene: .safari(url: url.absoluteString),
+                        from: nil,
+                        transition: .safariPresent(animated: true, completion: nil)
+                    )
+                }
+                alertController.addAction(action)
                 self.present(alertController, animated: true)
             }
             .store(in: &disposeBag)
@@ -194,7 +208,7 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
             .sink { [weak self] authenticationSession in
                 guard let self = self else { return }
                 guard let authenticationSession = authenticationSession else { return }
-                authenticationSession.prefersEphemeralWebBrowserSession = false
+                authenticationSession.prefersEphemeralWebBrowserSession = true
                 authenticationSession.presentationContextProvider = self
                 authenticationSession.start()
             }
