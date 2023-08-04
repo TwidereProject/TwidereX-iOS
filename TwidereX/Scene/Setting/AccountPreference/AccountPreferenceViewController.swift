@@ -69,3 +69,10 @@ extension AccountPreferenceViewController {
     }
     
 }
+
+// MARK: - AuthContextProvider
+extension AccountPreferenceViewController: AuthContextProvider {
+    var authContext: AuthContext {
+        return viewModel.authContext
+    }
+}

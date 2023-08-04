@@ -42,15 +42,30 @@ final class HomeListStatusTimelineViewModel: ObservableObject {
         self.context  = context
         self.authContext = authContext
         if let me = authContext.authenticationContext.user(in: context.managedObjectContext)?.asRecord {
-            self.ownedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .owned(user: me))
-            self.subscribedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .subscribed(user: me))
+            self.ownedListViewModel = {
+                let viewModel = ListViewModel(context: context, authContext: authContext, kind: .owned(user: me))
+                viewModel.needsResetBeforeReloading = false
+                return viewModel
+            }()
+            self.subscribedListViewModel = {
+                let viewModel = ListViewModel(context: context, authContext: authContext, kind: .subscribed(user: me))
+                viewModel.needsResetBeforeReloading = false
+                return viewModel
+            }()
         } else {
             self.ownedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .none)
             self.subscribedListViewModel = ListViewModel(context: context, authContext: authContext, kind: .none)
         }
         self.homeTimelineMenuActionViewModels = {
             guard let authenticationIndex = authContext.authenticationContext.authenticationIndex(in: context.managedObjectContext) else { return [] }
-            return [HomeListMenuActionViewModel(timeline: .home(authenticationIndex))]
+            switch authContext.authenticationContext.platform {
+            case .twitter:
+                return []
+            case .mastodon:
+                return [HomeListMenuActionViewModel(timeline: .home(authenticationIndex))]
+            case .none:
+                return []
+            }
         }()
         // end init
         

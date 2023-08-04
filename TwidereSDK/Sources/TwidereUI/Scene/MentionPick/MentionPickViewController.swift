@@ -49,12 +49,14 @@ extension MentionPickViewController {
         ])
         
         tableView.delegate = self
-//        viewModel.setupDiffableDataSource(
-//            for: tableView,
-//            configuration: MentionPickViewModel.DataSourceConfiguration(
-//                userTableViewCellDelegate: self
-//            )
-//        )
+        viewModel.setupDiffableDataSource(
+            tableView: tableView,
+            context: viewModel.context,
+            authContext: viewModel.authContext,
+            configuration: .init(
+                userViewTableViewCellDelegate: self
+            )
+        )
     }
     
 }
@@ -100,24 +102,20 @@ extension MentionPickViewController: UITableViewDelegate {
 }
 
 // MARK: - UserTableViewCellDelegate
-//extension MentionPickViewController: UserViewTableViewCellDelegate {
-//    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton) {
-//        // do nothing
-//    }
-//    
-//    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, friendshipButtonDidPressed button: UIButton) {
-//        // do nothing
-//    }
-//    
-//    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, membershipButtonDidPressed button: UIButton) {
-//        // do nothing
-//    }
-//    
-//    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, acceptFollowReqeustButtonDidPressed button: UIButton) {
-//        // do nothing
-//    }
-//    
-//    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, rejectFollowReqeustButtonDidPressed button: UIButton) {
-//        // do nothing
-//    }
-//}
+extension MentionPickViewController: UserViewTableViewCellDelegate {
+    public func tableViewCell(_ cell: UITableViewCell, viewModel: UserView.ViewModel, userAvatarButtonDidPressed user: UserRecord) {
+        
+    }
+    
+    public func tableViewCell(_ cell: UITableViewCell, viewModel: UserView.ViewModel, menuActionDidPressed action: UserView.ViewModel.MenuAction) {
+        
+    }
+    
+    public func tableViewCell(_ cell: UITableViewCell, viewModel: UserView.ViewModel, listMembershipButtonDidPressed user: UserRecord) {
+        
+    }
+    
+    public func tableViewCell(_ cell: UITableViewCell, viewModel: UserView.ViewModel, followReqeustButtonDidPressed user: UserRecord, accept: Bool) {
+        
+    }
+}

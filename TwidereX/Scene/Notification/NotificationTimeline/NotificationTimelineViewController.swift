@@ -187,7 +187,7 @@ extension NotificationTimelineViewController: UITableViewDelegate, AutoGenerateT
         // check item type inside `loadMore`
         Task {
             await viewModel.loadMore(item: item)
-        }
+        }   // end Task
     }
 
 }

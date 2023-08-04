@@ -36,13 +36,13 @@ public final class TwitterUser: NSManagedObject {
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var verified: Bool
     
-    // sourcery: autoUpdatableObject, autoGenerateProperty
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var statusesCount: Int64
-    // sourcery: autoUpdatableObject, autoGenerateProperty
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var followingCount: Int64
-    // sourcery: autoUpdatableObject, autoGenerateProperty
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var followersCount: Int64
-    // sourcery: autoUpdatableObject, autoGenerateProperty
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var listedCount: Int64
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
@@ -293,10 +293,6 @@ extension TwitterUser: AutoGenerateProperty {
     	update(protected: property.protected)
     	update(url: property.url)
     	update(verified: property.verified)
-    	update(statusesCount: property.statusesCount)
-    	update(followingCount: property.followingCount)
-    	update(followersCount: property.followersCount)
-    	update(listedCount: property.listedCount)
     	update(updatedAt: property.updatedAt)
     }
     // sourcery:end
@@ -364,26 +360,6 @@ extension TwitterUser: AutoUpdatableObject {
     		self.verified = verified
     	}
     }
-    public func update(statusesCount: Int64) {
-    	if self.statusesCount != statusesCount {
-    		self.statusesCount = statusesCount
-    	}
-    }
-    public func update(followingCount: Int64) {
-    	if self.followingCount != followingCount {
-    		self.followingCount = followingCount
-    	}
-    }
-    public func update(followersCount: Int64) {
-    	if self.followersCount != followersCount {
-    		self.followersCount = followersCount
-    	}
-    }
-    public func update(listedCount: Int64) {
-    	if self.listedCount != listedCount {
-    		self.listedCount = listedCount
-    	}
-    }
     public func update(updatedAt: Date) {
     	if self.updatedAt != updatedAt {
     		self.updatedAt = updatedAt
@@ -400,6 +376,27 @@ extension TwitterUser: AutoUpdatableObject {
     	}
     }
     // sourcery:end
+    
+    public func update(statusesCount: Int64) {
+        if self.statusesCount != statusesCount, statusesCount >= 0 {
+            self.statusesCount = statusesCount
+        }
+    }
+    public func update(followingCount: Int64) {
+        if self.followingCount != followingCount, followingCount >= 0 {
+            self.followingCount = followingCount
+        }
+    }
+    public func update(followersCount: Int64) {
+        if self.followersCount != followersCount, followersCount >= 0 {
+            self.followersCount = followersCount
+        }
+    }
+    public func update(listedCount: Int64) {
+        if self.listedCount != listedCount, listedCount >= 0 {
+            self.listedCount = listedCount
+        }
+    }
     
     public func update(isFollow: Bool, by user: TwitterUser) {
         if isFollow {

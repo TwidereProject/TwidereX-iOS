@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import SwiftUI
 import Combine
 import TwidereLocalization
 
@@ -29,7 +30,9 @@ final class HomeListStatusTimelineViewController: UIViewController, NeedsDepende
     public var viewModel: HomeListStatusTimelineViewModel!
     var disposeBag = Set<AnyCancellable>()
     
-    var listStatusTimelineViewController: ListTimelineViewController?
+    let emptyStateViewModel = EmptyStateView.ViewModel()
+    
+    @Published var listStatusTimelineViewController: ListTimelineViewController?
 }
 
 extension HomeListStatusTimelineViewController {
@@ -73,6 +76,10 @@ extension HomeListStatusTimelineViewController {
         navigationItem.titleMenuProvider = { [weak self] _ -> UIMenu? in
             guard let self = self else { return nil }
             
+            defer {
+                self.reloadList()
+            }
+            
             let menuContext = self.viewModel.createHomeListMenuContext()
             
             var children: [UIMenuElement] = [
@@ -109,6 +116,29 @@ extension HomeListStatusTimelineViewController {
                 guard let self = self else { return }
                 self.attachTimelineViewController(menuContext: menuContext)
             }
+            .store(in: &disposeBag)
+        
+        let emptyStateViewHostingController = UIHostingController(rootView: EmptyStateView(viewModel: emptyStateViewModel))
+        addChild(emptyStateViewHostingController)
+        emptyStateViewHostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emptyStateViewHostingController.view)
+        NSLayoutConstraint.activate([
+            emptyStateViewHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            emptyStateViewHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emptyStateViewHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emptyStateViewHostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        emptyStateViewHostingController.view.isHidden = true
+        emptyStateViewModel.$emptyState
+            .map { $0 == nil }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isHidden, on: emptyStateViewHostingController.view)
+            .store(in: &disposeBag)
+        
+        $listStatusTimelineViewController
+            .map { $0 == nil ? EmptyState.homeListNotSelected : nil }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.emptyState, on: emptyStateViewModel)
             .store(in: &disposeBag)
     }
     
@@ -202,6 +232,11 @@ extension HomeListStatusTimelineViewController {
         listStatusTimelineViewController?.didMove(toParent: nil)
         listStatusTimelineViewController?.removeFromParent()
         title = L10n.Scene.Timeline.title
+    }
+    
+    private func reloadList() {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): reload owned list")
+        viewModel.ownedListViewModel.stateMachine.enter(ListViewModel.State.Reloading.self)
     }
     
 }

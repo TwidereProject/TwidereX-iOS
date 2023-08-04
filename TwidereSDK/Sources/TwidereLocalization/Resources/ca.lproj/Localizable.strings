@@ -181,6 +181,8 @@
 "Common.Controls.Actions.SignOut" = "Tanca sessió";
 "Common.Controls.Actions.TakePhoto" = "Fes una foto";
 "Common.Controls.Actions.Yes" = "Sí";
+"Common.Controls.EmptyState.NoResults" = "Cap resultat";
+"Common.Controls.EmptyState.UnableToAccess" = "Unable to access";
 "Common.Controls.Friendship.Actions.Block" = "Bloca";
 "Common.Controls.Friendship.Actions.Blocked" = "Blocat";
 "Common.Controls.Friendship.Actions.Follow" = "Segueix";
@@ -282,6 +284,11 @@
 "Common.NotificationChannel.ContentMessages.Name" = "Missatges";
 "Scene.Authentication.Title" = "Autenticació";
 "Scene.Bookmark.Title" = "Marcador";
+"Scene.Column.Actions.CloseColumn" = "Close column";
+"Scene.Column.Actions.MoveLeft" = "Move left";
+"Scene.Column.Actions.MoveRight" = "Move right";
+"Scene.Column.Actions.OpenInNewColumn" = "Open in new column";
+"Scene.Column.Title" = "New Column";
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "Escriviu la vostra advertència aquí";
 "Scene.Compose.LastEnd" = " i ";
@@ -374,6 +381,7 @@
 "Scene.ListsUsers.MenuActions.Remove" = "Elimina";
 "Scene.Local.Title" = "Local";
 "Scene.ManageAccounts.DeleteAccount" = "Esborra el compte";
+"Scene.ManageAccounts.OpenInNewWindow" = "Open in new window";
 "Scene.ManageAccounts.Title" = "Comptes";
 "Scene.Mentions.Title" = "Mencions";
 "Scene.Messages.Action.CopyText" = "Copia el text del missatge";

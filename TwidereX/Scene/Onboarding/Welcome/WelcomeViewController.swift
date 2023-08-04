@@ -63,10 +63,16 @@ extension WelcomeViewController {
         navigationItem.scrollEdgeAppearance = navigationBarAppearance
         
         let hostingController = UIHostingController(rootView: WelcomeView().environmentObject(viewModel))
-        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        hostingController.view.frame = view.bounds
+        addChild(hostingController)
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hostingController.view)
-        
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
         viewModel.delegate = self
         
         viewModel.error

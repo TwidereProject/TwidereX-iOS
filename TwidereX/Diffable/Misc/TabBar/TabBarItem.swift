@@ -133,6 +133,7 @@ extension TabBarItem {
                     userIdentifier: authContext.authenticationContext.userIdentifier
                 )
             )
+            _viewController.viewModel.isFloatyButtonDisplay = false
             viewController = _viewController
         case .history:
             let _viewController = HistoryViewController()

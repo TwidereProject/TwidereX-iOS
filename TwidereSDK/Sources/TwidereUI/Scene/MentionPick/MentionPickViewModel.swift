@@ -35,7 +35,7 @@ public final class MentionPickViewModel {
         self.context = context
         self.authContext = authContext
         self.primaryItem = primaryItem
-        self.secondaryItems = secondaryItems
+        self.secondaryItems = secondaryItems.removingDuplicates()
         // end init
         
         switch authContext.authenticationContext {
@@ -62,14 +62,27 @@ extension MentionPickViewModel {
     
     public enum Item: Hashable {
         case twitterUser(username: String, attribute: Attribute)
+        
+        var id: String {
+            switch self {
+            case .twitterUser(let username, _):
+                return username
+            }
+        }
+        
+        public static func == (lhs: MentionPickViewModel.Item, rhs: MentionPickViewModel.Item) -> Bool {
+            return lhs.id == rhs.id
+        }
+        
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
     }
 }
 
 extension MentionPickViewModel.Item {
-    public class Attribute: Hashable {
+    public class Attribute {
         
-        public let id = UUID()
-
         public var state: State = .loading
         
         // input
@@ -101,14 +114,9 @@ extension MentionPickViewModel.Item {
             return lhs.state == rhs.state &&
                 lhs.disabled == rhs.disabled &&
                 lhs.selected == rhs.selected &&
-                lhs.avatarImageURL == rhs.avatarImageURL &&
-                lhs.userID == rhs.userID
+                lhs.avatarImageURL == rhs.avatarImageURL
         }
-        
-        public func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
-        }
-
+    
     }
 }
 

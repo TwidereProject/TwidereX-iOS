@@ -29,7 +29,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider & AuthCon
 
 
 // MARK: - menu button
-extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
+extension UserViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
     func tableViewCell(
         _ cell: UITableViewCell,
         viewModel: UserView.ViewModel,

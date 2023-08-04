@@ -22,7 +22,6 @@ public struct ComposeContentView: View {
     
     @ObservedObject var viewModel: ComposeContentViewModel
     
-    @State var mentionTextHeight: CGFloat = 0
     @State var toolbarHeight: CGFloat = 0
     @State var isPollExpireConfigurationPopoverPresent = false
     
@@ -142,22 +141,12 @@ extension ComposeContentView {
             viewModel.mentionPickPublisher.send()
         } label: {
             HStack(spacing: .zero) {
-                VectorImageView(
-                    image: Asset.Communication.textBubbleSmall.image.withRenderingMode(.alwaysTemplate),
-                    tintColor: .tintColor
-                )
-                .frame(width: mentionTextHeight, height: mentionTextHeight, alignment: .center)
-                Text(viewModel.mentionPickButtonTitle)
-                    .font(.footnote)
-                    .background(GeometryReader { geometry in
-                        Color.clear.preference(
-                            key: SizeDimensionPreferenceKey.self,
-                            value: geometry.size.height
-                        )
-                    })
-                    .onPreferenceChange(SizeDimensionPreferenceKey.self) {
-                        mentionTextHeight = $0
-                    }
+                Label {
+                    Text(viewModel.mentionPickButtonTitle)
+                } icon: {
+                    Image(systemName: "text.bubble")
+                }
+                .font(.footnote)
                 Spacer()
             }
         }

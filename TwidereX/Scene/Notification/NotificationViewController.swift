@@ -128,7 +128,7 @@ extension NotificationViewController {
         
         // reset notification count
         Task {
-            await self.context.notificationService.clearNotificationCountForActiveUser()
+            await self.context.notificationService.clearNotificationCountForUser(authContext: viewModel.authContext)
         }   // end Task
     }
     

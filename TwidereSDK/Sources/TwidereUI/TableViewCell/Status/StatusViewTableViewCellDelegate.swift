@@ -26,7 +26,7 @@ public protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     // sourcery:inline:StatusViewTableViewCellDelegate.AutoGenerateProtocolDelegate
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, userAvatarButtonDidPressed user: UserRecord)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
-    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta)
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta?)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, mediaViewModel: MediaView.ViewModel, action: MediaView.ViewModel.Action)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentWarningOverlayDisplay isReveal: Bool)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, pollVoteActionForViewModel pollViewModel: PollView.ViewModel)
@@ -51,7 +51,7 @@ public extension StatusViewDelegate where Self: StatusViewContainerTableViewCell
         statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, toggleContentDisplay: isReveal)
     }
 
-    func statusView(_ viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta) {
+    func statusView(_ viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta?) {
         statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, textViewDidSelectMeta: meta)
     }
 

@@ -117,6 +117,11 @@ extension Persistence.TwitterUser {
         user.update(profileBannerURL: context.entity.profileBannerURL)
         user.update(bioEntitiesTransient: TwitterEntity(entity: context.entity.entities?.description))
         user.update(urlEntitiesTransient: TwitterEntity(entity: context.entity.entities?.url))
+        
+        context.entity.statusesCount.flatMap { user.update(statusesCount: Int64($0)) }
+        context.entity.friendsCount.flatMap { user.update(followingCount: Int64($0)) }
+        context.entity.followersCount.flatMap { user.update(followersCount: Int64($0)) }
+        context.entity.listedCount.flatMap { user.update(listedCount: Int64($0)) }
 
         // relationship
         if let me = context.me {

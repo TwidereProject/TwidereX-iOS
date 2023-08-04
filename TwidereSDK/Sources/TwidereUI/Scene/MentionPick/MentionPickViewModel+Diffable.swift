@@ -6,38 +6,52 @@
 //
 
 import UIKit
+import SwiftUI
 import CoreData
 import MetaTextKit
 
 extension MentionPickViewModel {
-    struct DataSourceConfiguration {
-        weak var userTableViewCellDelegate: UserViewTableViewCellDelegate?
-    }
     
+    struct Configuration {
+        weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
+    }
+
     func setupDiffableDataSource(
-        for tableView: UITableView,
-        configuration: DataSourceConfiguration
+        tableView: UITableView,
+        context: AppContext,
+        authContext: AuthContext,
+        configuration: Configuration
     ) {
-//        tableView.register(UserMentionPickStyleTableViewCell.self, forCellReuseIdentifier: String(describing: UserMentionPickStyleTableViewCell.self))
-//
-//        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item -> UITableViewCell? in
-//            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserMentionPickStyleTableViewCell.self), for: indexPath) as! UserMentionPickStyleTableViewCell
-//            MentionPickViewModel.configure(
-//                cell: cell,
-//                item: item,
-//                configuration: configuration
-//            )
-//            return cell
-//        }
-//
-//        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-//        snapshot.appendSections([.primary])
-//        snapshot.appendItems([primaryItem], toSection: .primary)
-//        if !secondaryItems.isEmpty {
-//            snapshot.appendSections([.secondary])
-//            snapshot.appendItems(secondaryItems, toSection: .secondary)
-//        }
-//        diffableDataSource?.apply(snapshot)
+        tableView.register(UserTableViewCell.self, forCellReuseIdentifier: String(describing: UserTableViewCell.self))
+
+        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item -> UITableViewCell? in
+            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserTableViewCell.self), for: indexPath) as! UserTableViewCell
+            cell.userViewTableViewCellDelegate = configuration.userViewTableViewCellDelegate
+    
+            let viewModel = UserView.ViewModel(
+                item: item,
+                delegate: cell
+            )
+            cell.contentConfiguration = UIHostingConfiguration {
+                UserView(viewModel: viewModel)
+            }
+            .margins(.vertical, 0)  // remove vertical margins
+            switch item {
+            case .twitterUser(_, let attribute):
+                cell.selectionStyle = attribute.disabled ? .none : .default
+            }
+
+            return cell
+        }
+
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        snapshot.appendSections([.primary])
+        snapshot.appendItems([primaryItem], toSection: .primary)
+        if !secondaryItems.isEmpty {
+            snapshot.appendSections([.secondary])
+            snapshot.appendItems(secondaryItems, toSection: .secondary)
+        }
+        diffableDataSource?.apply(snapshot)
     }
 }
 

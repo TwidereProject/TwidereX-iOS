@@ -103,7 +103,7 @@ extension TwitterStatusFetchedResultController {
         }
         self.statusIDs.value = result
     }
-    
+
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

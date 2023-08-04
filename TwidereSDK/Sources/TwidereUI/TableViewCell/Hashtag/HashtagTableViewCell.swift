@@ -11,7 +11,7 @@ import TwidereCore
 import MetaTextKit
 import MetaLabel
 
-final class HashtagTableViewCell: UITableViewCell {
+final public class HashtagTableViewCell: UITableViewCell {
     
     let primaryLabel = MetaLabel(style: .hashtagTitle)
     let secondaryLabel = MetaLabel(style: .hashtagDescription)

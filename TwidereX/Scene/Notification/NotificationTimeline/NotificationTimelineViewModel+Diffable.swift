@@ -156,6 +156,7 @@ extension NotificationTimelineViewModel {
     }
     
     // load timeline gap
+    @MainActor
     func loadMore(item: NotificationItem) async {
         guard case let .feedLoader(record) = item else { return }
         

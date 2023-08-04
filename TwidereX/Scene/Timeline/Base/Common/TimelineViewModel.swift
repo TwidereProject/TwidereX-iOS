@@ -12,6 +12,7 @@ import Combine
 import CoreDataStack
 import GameplayKit
 import TwidereCore
+import TwitterSDK
 import func QuartzCore.CACurrentMediaTime
 
 class TimelineViewModel: TimelineViewModelDriver {
@@ -45,6 +46,7 @@ class TimelineViewModel: TimelineViewModelDriver {
     
     // output
     let didLoadLatest = PassthroughSubject<Void, Never>()
+    @Published var emptyState: EmptyState?
     
     // auto fetch
     private var autoFetchLatestActionTime = CACurrentMediaTime()
@@ -120,6 +122,8 @@ extension TimelineViewModel {
         case .twitterV2(let array):
             let statusIDs = array.map { $0.id }
             statusRecordFetchedResultController.twitterStatusFetchedResultController.prepend(statusIDs: statusIDs)
+        case .twitterIDs(let statusIDs):
+            statusRecordFetchedResultController.twitterStatusFetchedResultController.prepend(statusIDs: statusIDs)
         case .mastodon(let array):
             let statusIDs = array.map { $0.id }
             statusRecordFetchedResultController.mastodonStatusFetchedResultController.prepend(statusIDs: statusIDs)
@@ -184,6 +188,14 @@ extension TimelineViewModel {
             case .public, .hashtag, .list, .search, .user:
                 await prepend(result: output.result)
             }
+        } catch let error as Twitter.API.Error.ResponseError where error.twitterAPIError == .rateLimitExceeded {
+            self.didLoadLatest.send()
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
+            context.apiService.error.send(.explicit(.twitterResponseError(error)))
+        } catch let error as EmptyState {
+            self.didLoadLatest.send()
+            self.emptyState = error
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
         } catch {
             self.didLoadLatest.send()
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")

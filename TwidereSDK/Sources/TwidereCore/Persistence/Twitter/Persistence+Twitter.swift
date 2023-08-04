@@ -93,19 +93,20 @@ extension Persistence.Twitter {
                 }   // end switch
             }   // end for
             
+            let contextV2 = Persistence.TwitterStatus.PersistContextV2(
+                entity: .init(status: status, author: author),
+                repost: repost,
+                quote: quote,
+                replyTo: replyTo,
+                dictionary: context.dictionary,
+                me: context.me,
+                statusCache: statusCache,
+                userCache: userCache,
+                networkDate: context.networkDate
+            )
             let result = Persistence.TwitterStatus.createOrMerge(
                 in: managedObjectContext,
-                context: Persistence.TwitterStatus.PersistContextV2(
-                    entity: .init(status: status, author: author),
-                    repost: repost,
-                    quote: quote,
-                    replyTo: replyTo,
-                    dictionary: context.dictionary,
-                    me: context.me,
-                    statusCache: statusCache,
-                    userCache: userCache,
-                    networkDate: context.networkDate
-                )
+                context: contextV2
             )   // end .createOrMerge(…)
             
             #if DEBUG

@@ -181,6 +181,8 @@
 "Common.Controls.Actions.SignOut" = "Çıkış Yap";
 "Common.Controls.Actions.TakePhoto" = "Fotoğraf çek";
 "Common.Controls.Actions.Yes" = "Evet";
+"Common.Controls.EmptyState.NoResults" = "Sonuç bulunamadı";
+"Common.Controls.EmptyState.UnableToAccess" = "Unable to access";
 "Common.Controls.Friendship.Actions.Block" = "Engelle";
 "Common.Controls.Friendship.Actions.Blocked" = "Engellenmiş";
 "Common.Controls.Friendship.Actions.Follow" = "Takip et";
@@ -282,6 +284,11 @@
 "Common.NotificationChannel.ContentMessages.Name" = "Mesajlar";
 "Scene.Authentication.Title" = "Yetkilendirme";
 "Scene.Bookmark.Title" = "Yer işareti";
+"Scene.Column.Actions.CloseColumn" = "Sütunu kapat";
+"Scene.Column.Actions.MoveLeft" = "Sola taşı";
+"Scene.Column.Actions.MoveRight" = "Sağa taşı";
+"Scene.Column.Actions.OpenInNewColumn" = "Yeni sütunda";
+"Scene.Column.Title" = "Yeni sütun";
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "Uyarınızı buraya yazın";
 "Scene.Compose.LastEnd" = " ve ";
@@ -322,7 +329,7 @@
 "Scene.Compose.Vote.PlaceholderIndex" = "Seçim %d";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "Hashtag ara";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "Kullanıcıları ara";
-"Scene.Detail.Title" = "Detail";
+"Scene.Detail.Title" = "Ayrıntılar";
 "Scene.Drafts.Actions.DeleteDraft" = "Taslağı sil";
 "Scene.Drafts.Actions.EditDraft" = "Taslağı düzenle";
 "Scene.Drafts.Title" = "Taslaklar";
@@ -374,6 +381,7 @@
 "Scene.ListsUsers.MenuActions.Remove" = "Kaldır";
 "Scene.Local.Title" = "Yerel";
 "Scene.ManageAccounts.DeleteAccount" = "Hesabı sil";
+"Scene.ManageAccounts.OpenInNewWindow" = "Yeni pencerede aç";
 "Scene.ManageAccounts.Title" = "Hesaplar";
 "Scene.Mentions.Title" = "Etiketler";
 "Scene.Messages.Action.CopyText" = "Mesaj metnini kopyala";

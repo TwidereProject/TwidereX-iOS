@@ -45,19 +45,7 @@ extension UserView {
         @Published public var isMyself: Bool = false
         @Published public var protected: Bool = false
         
-//        @Published public var authenticationContext: AuthenticationContext?       // me
-//        @Published public var userAuthenticationContext: AuthenticationContext?
-//
-//        @Published public var userIdentifier: UserIdentifier? = nil
-//        @Published public var avatarImageURL: URL?
-//        @Published public var avatarBadge: AvatarBadge = .none
-//        // TODO: verified | bot
-//
-//        @Published public var name: MetaContent? = PlaintextMetaContent(string: " ")
-//        @Published public var username: String?
-//
-
-//        @Published public var followerCount: Int?
+        // TODO: verified | bot
 
         // follow request
         @Published public var isFollowRequestActionDisplay = false
@@ -75,10 +63,8 @@ extension UserView {
         // notification count
         @Published public var notificationBadgeCount: Int = 0
 
-//        public enum Header {
-//            case none
-//            case notification(info: NotificationHeaderInfo)
-//        }
+        @Published public var isSelectable: Bool = true
+        @Published public var isSelect: Bool = false
         
         private init(
             object user: UserObject?,
@@ -257,6 +243,7 @@ extension UserView.ViewModel {
         case .notification:             return false
         case .settingAccountSection:    return false
         case .plain:                    return false
+        case .mentionPick:              return false
         default:                        return true
         }
     }
@@ -452,6 +439,31 @@ extension UserView.ViewModel {
             .assign(to: &$username)
         user.publisher(for: \.locked)
             .assign(to: &$protected)
+    }
+}
+
+extension UserView.ViewModel {
+    public convenience init(
+        item: MentionPickViewModel.Item,
+        delegate: UserViewDelegate?
+    ) {
+        self.init(
+            object: nil,
+            authContext: nil,
+            kind: .mentionPick,
+            delegate: delegate
+        )
+        // end init
+
+        // user
+        switch item {
+        case .twitterUser(let username, let attribute):
+            self.avatarURL = attribute.avatarImageURL
+            self.name = PlaintextMetaContent(string: attribute.name ?? "")
+            self.username = username
+            self.isSelectable = !attribute.disabled
+            self.isSelect = attribute.selected
+        }   // switch
     }
 }
 

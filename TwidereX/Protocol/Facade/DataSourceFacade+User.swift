@@ -315,7 +315,7 @@ extension DataSourceFacade {
 extension DataSourceFacade {
     @MainActor
     static func responseToUserSignOut(
-        dependency: NeedsDependency & UIViewController,
+        dependency: NeedsDependency & AuthContextProvider & UIViewController,
         user: UserRecord
     ) async throws  {
         let alertController = UIAlertController(
@@ -332,7 +332,7 @@ extension DataSourceFacade {
                 var isSignOut = false
                 
                 // clear badge before sign-out
-                await dependency.context.notificationService.clearNotificationCountForActiveUser()
+                await dependency.context.notificationService.clearNotificationCountForUser(authContext: dependency.authContext)
                 
                 // cancel push notification subscription
                 do {

@@ -119,7 +119,7 @@ extension SecondaryContainerViewModel {
                         
             var menuElements: [UIMenuElement] = []
             
-            let closeColumnAction = UIAction(title: "Close column", image: UIImage(systemName: "xmark.square")) { [weak self, weak stack, weak navigationController] _ in
+            let closeColumnAction = UIAction(title: L10n.Scene.Column.Actions.closeColumn, image: UIImage(systemName: "xmark.square"), attributes: .destructive) { [weak self, weak stack, weak navigationController] _ in
                 guard let self = self else { return }
                 guard let stack = stack else { return }
                 guard let navigationController = navigationController else { return }
@@ -128,41 +128,40 @@ extension SecondaryContainerViewModel {
                 navigationController.view.isHidden = true
                 self.viewControllers.removeAll(where: { $0 === navigationController })
             }
-            let closeMenu = UIMenu(title: "", options: .displayInline, children: [closeColumnAction])
-            menuElements.append(closeMenu)
+            menuElements.append(closeColumnAction)
             
             let _index: Int? = stack.arrangedSubviews.firstIndex(where: { view in
                 return navigationController.view === view
             })
             if let index = _index {
-                var moveMenuElements: [UIMenuElement] = []
                 if index > 0 {
-                    let moveLeftMenuAction = UIAction(title: "Move left", image: UIImage(systemName: "arrow.left.square")) { [weak self, weak stack, weak navigationController] _ in
+                    let moveLeftMenuAction = UIAction(title: L10n.Scene.Column.Actions.moveLeft, image: UIImage(systemName: "arrow.left.square")) { [weak self, weak stack, weak navigationController] _ in
                         guard let self = self else { return }
                         guard let stack = stack else { return }
                         guard let navigationController = navigationController else { return }
                         stack.removeArrangedSubview(navigationController.view)
                         stack.insertArrangedSubview(navigationController.view, at: index - 1)
                     }
-                    moveMenuElements.append(moveLeftMenuAction)
+                    menuElements.append(moveLeftMenuAction)
                 }
                 if index < stack.arrangedSubviews.count - 2 {
-                    let moveRightMenuAction = UIAction(title: "Move Right", image: UIImage(systemName: "arrow.right.square")) { [weak self, weak stack, weak navigationController] _ in
+                    let moveRightMenuAction = UIAction(title: L10n.Scene.Column.Actions.moveRight, image: UIImage(systemName: "arrow.right.square")) { [weak self, weak stack, weak navigationController] _ in
                         guard let self = self else { return }
                         guard let stack = stack else { return }
                         guard let navigationController = navigationController else { return }
                         stack.removeArrangedSubview(navigationController.view)
                         stack.insertArrangedSubview(navigationController.view, at: index + 1)
                     }
-                    moveMenuElements.append(moveRightMenuAction)
-                }
-                if !moveMenuElements.isEmpty {
-                    let moveMenu = UIMenu(title: "", options: .displayInline, children: moveMenuElements)
-                    menuElements.append(moveMenu)
+                    menuElements.append(moveRightMenuAction)
                 }
             }
             
-            let menu = UIMenu(title: "", options: .displayInline, children: menuElements)
+            let menu = UIMenu(
+                title: "",
+                options: .displayInline,
+                preferredElementSize: menuElements.count > 1 ? .small : .large,
+                children: menuElements
+            )
             handler([menu])
         }
         

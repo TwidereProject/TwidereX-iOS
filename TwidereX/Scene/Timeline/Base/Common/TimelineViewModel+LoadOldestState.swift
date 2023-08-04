@@ -71,7 +71,7 @@ extension TimelineViewModel.LoadOldestState {
     class Loading: TimelineViewModel.LoadOldestState {
         
         var nextInput: StatusFetchViewModel.Timeline.Input?
-        var failCount = 0
+        var retryCount = 0
         var nonce = UUID()
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
@@ -103,9 +103,9 @@ extension TimelineViewModel.LoadOldestState {
             // reset fail count if needs
             switch previousState {
             case is Fail:
-                failCount += 1
+                retryCount += 1
             default:
-                failCount = 0
+                retryCount = 0
             }
 
             guard let viewModel = viewModel, let _ = stateMachine else { return }
@@ -126,9 +126,10 @@ extension TimelineViewModel.LoadOldestState {
                     }
                 }
                 
-                let failCount = UInt64(min(failCount, 60))
-                if failCount > 0 {
-                    try? await Task.sleep(nanoseconds: failCount * .second)                    
+                if retryCount > 0 {
+                    let delay = min(64.0, pow(2.0, Double(retryCount)))
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Loading] restore loading from fail case with delay: \(delay, format: .fixed(precision: 2))s")
+                    try? await Task.sleep(nanoseconds: UInt64(delay) * .second)
                 }
                 guard nonce == self.nonce else { return }
                 await fetch(anchor: _anchorRecord)
@@ -195,11 +196,19 @@ extension TimelineViewModel.LoadOldestState {
                     case .twitterV2(let statuses):
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
+                    case .twitterIDs(let statusIDs):
+                        viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
                     case .mastodon(let statuses):
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
                     }
                 }
+
+            } catch let error as EmptyState {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                enter(state: NoMore.self)
+                viewModel.emptyState = error
+                viewModel.statusRecordFetchedResultController.reload()
             } catch {
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                 enter(state: Fail.self)

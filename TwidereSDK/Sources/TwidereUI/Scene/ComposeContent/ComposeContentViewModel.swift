@@ -200,6 +200,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             switch status {
             case .twitter(let status):
                 // set mention
+                var usernames: [String] = []
                 self.primaryMentionPickItem = .twitterUser(
                     username: status.author.username,
                     attribute: MentionPickViewModel.Item.Attribute(
@@ -211,10 +212,12 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                         state: .finish
                     )
                 )
+                usernames.append(status.author.username)
                 self.secondaryMentionPickItems = {
                     var items: [MentionPickViewModel.Item] = []
                     for mention in status.entitiesTransient?.mentions ?? [] {
                         let username = mention.username
+                        guard !usernames.contains(username) else { continue }
                         let item = MentionPickViewModel.Item.twitterUser(
                             username: username,
                             attribute: .init(
@@ -226,6 +229,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                                 state: .loading
                             )
                         )
+                        usernames.append(username)
                         items.append(item)
                     }
                     return items
@@ -385,7 +389,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 break
             }
             
-            let names = usernames.map { "@" + $0 }
+            let names = usernames.removingDuplicates().map { "@" + $0 }
             return ListFormatter.localizedString(byJoining: names)
         }
         .assign(to: &$mentionPickButtonTitle)

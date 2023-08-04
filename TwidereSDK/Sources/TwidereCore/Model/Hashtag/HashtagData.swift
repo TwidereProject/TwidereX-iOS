@@ -13,7 +13,7 @@ import MastodonSDK
 // Maybe configure an in-memory CoreData persist coordinator better here
 // But a simple solution should also works
 
-enum HashtagData: Hashable {
+public enum HashtagData: Hashable {
     // case twitter(record: ManagedObjectRecord<TwitterStatus>)
     case mastodon(data: Mastodon.Entity.Tag)
 }

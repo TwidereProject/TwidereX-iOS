@@ -21,7 +21,7 @@ public struct TextViewRepresentable: UIViewRepresentable {
     let textStyle: TextStyle
     let width: CGFloat
     let isSelectable: Bool
-    let handler: (Meta) -> Void
+    let handler: (Meta?) -> Void
     
     // output
     let attributedString: NSAttributedString
@@ -31,7 +31,7 @@ public struct TextViewRepresentable: UIViewRepresentable {
         textStyle: TextStyle,
         width: CGFloat,
         isSelectable: Bool,
-        handler: @escaping (Meta) -> Void
+        handler: @escaping (Meta?) -> Void
     ) {
         self.metaContent = metaContent
         self.textStyle = textStyle
@@ -95,13 +95,6 @@ public struct TextViewRepresentable: UIViewRepresentable {
         let textView = view
         
         var needsLayout = false
-        defer {
-            if needsLayout {
-                textView.invalidateIntrinsicContentSize()
-                textView.setNeedsLayout()
-                textView.layoutIfNeeded()
-            }
-        }
         
         if textView.frame.size.width != width {
             textView.frame.size.width = width
@@ -114,6 +107,12 @@ public struct TextViewRepresentable: UIViewRepresentable {
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update textView \(view.hashValue): \(metaContent.string)")
         } else {
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): reuse textView content")
+        }
+        
+        if needsLayout {
+            textView.invalidateIntrinsicContentSize()
+            textView.setNeedsLayout()
+            textView.layoutIfNeeded()
         }
     }
     
@@ -148,14 +147,14 @@ extension TextViewRepresentable.Coordinator: UITextViewDelegate {
 
 // MARK: - WrappedTextViewDelegate
 extension TextViewRepresentable.Coordinator: WrappedTextViewDelegate {
-    public func wrappedTextView(_ wrappedTextView: WrappedTextView, didSelectMeta meta: Meta) {
+    public func wrappedTextView(_ wrappedTextView: WrappedTextView, didSelectMeta meta: Meta?) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): meta: \(meta.debugDescription)")
         view.handler(meta)
     }
 }
 
 public protocol WrappedTextViewDelegate: AnyObject {
-    func wrappedTextView(_ wrappedTextView: WrappedTextView, didSelectMeta meta: Meta)
+    func wrappedTextView(_ wrappedTextView: WrappedTextView, didSelectMeta meta: Meta?)
 }
 
 public class WrappedTextView: UITextView {
@@ -209,7 +208,7 @@ extension WrappedTextView {
         switch sender.state {
         case .ended:
             let point = sender.location(in: self)
-            guard let meta = meta(at: point) else { return }
+            let meta = meta(at: point)
             textViewDelegate?.wrappedTextView(self, didSelectMeta: meta)
         default:
             break
@@ -220,7 +219,7 @@ extension WrappedTextView {
 extension WrappedTextView {
     
     public override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        return meta(at: point) != nil || isSelectable
+        return true
     }
     
     func meta(at point: CGPoint) -> Meta? {

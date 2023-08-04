@@ -24,8 +24,8 @@ final class NewColumnViewModel: ObservableObject {
         switch auth.authenticationContext {
         case .twitter:
             var results: [TabBarItem] = [
-                .home,
-                .notification,
+                // .homeList,
+                // .notification,
                 .search,
                 .me,
                 .likes,
@@ -34,11 +34,10 @@ final class NewColumnViewModel: ObservableObject {
                 results.append(.history)
             }
             results.append(.lists)
-            results.append(.trends)
             return results
         case .mastodon:
             var results: [TabBarItem] = [
-                .home,
+                // .home,
                 .notification,
                 .search,
                 .me,
@@ -50,9 +49,8 @@ final class NewColumnViewModel: ObservableObject {
                 results.append(.history)
             }
             results.append(.lists)
-            results.append(.trends)
             return results
-        }
+        }   // end switch
     }
         
     // output

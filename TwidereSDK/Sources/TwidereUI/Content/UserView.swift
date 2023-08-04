@@ -288,6 +288,17 @@ extension UserView {
             Image(systemName: "\(count).circle.fill")
         }
     }
+    
+    var checkmarkView: some View {
+        Button {
+            // do nothing
+        } label: {
+            let name = viewModel.isSelect ? "checkmark.circle.fill" : "circle"
+            Image(systemName: name)
+        }
+        .buttonStyle(.borderless)
+        .disabled(!viewModel.isSelectable)
+    }
 }
     
 extension UserView {
@@ -358,7 +369,7 @@ extension UserView {
                     followRequestActionView
                 }
             case .mentionPick:
-                EmptyView()
+                checkmarkView
             case .listMember:
                 if viewModel.isMyList {
                     menuView

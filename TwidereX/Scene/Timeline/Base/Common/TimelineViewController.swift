@@ -245,7 +245,6 @@ extension TimelineViewController {
                 case .hashtag(let hashtag):
                     return .hashtag(hashtag: hashtag)
                 case .list:
-                    assertionFailure("do not support post on list status")
                     return .post
                 case .search:
                     assertionFailure("do not support post on search status")
