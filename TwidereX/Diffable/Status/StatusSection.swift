@@ -48,53 +48,41 @@ extension StatusSection {
             switch item {
             case .feed(let record):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                guard let feed = record.object(in: context.managedObjectContext) else { return cell }
                 cell.statusViewTableViewCellDelegate = configuration.statusViewTableViewCellDelegate
-                context.managedObjectContext.performAndWait {
-                    guard let feed = record.object(in: context.managedObjectContext) else { return }
-                    let _viewModel = StatusView.ViewModel(
-                        feed: feed,
-                        authContext: authContext,
-                        delegate: cell,
-                        viewLayoutFramePublisher: configuration.viewLayoutFramePublisher
-                    )
-                    
-                    guard let viewModel = _viewModel else { return }
-                    cell.contentConfiguration = UIHostingConfiguration {
-                        StatusView(viewModel: viewModel)
-                    }
-                    .margins(.vertical, 0)  // remove vertical margins
-                }
-                return cell
+                let _viewModel = StatusView.ViewModel(
+                    feed: feed,
+                    authContext: authContext,
+                    delegate: cell,
+                    viewLayoutFramePublisher: configuration.viewLayoutFramePublisher
+                )
                 
+                guard let viewModel = _viewModel else { return cell }
+                cell.contentConfiguration = UIHostingConfiguration {
+                    StatusView(viewModel: viewModel)
+                }
+                .margins(.vertical, 0)  // remove vertical margins
+                return cell
+                                
             case .status(let record):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                guard let status = record.object(in: context.managedObjectContext) else { return cell }
                 cell.statusViewTableViewCellDelegate = configuration.statusViewTableViewCellDelegate
-                context.managedObjectContext.performAndWait {
-                    guard let status = record.object(in: context.managedObjectContext) else { return }
-                    let viewModel = StatusView.ViewModel(
-                        status: status,
-                        authContext: authContext,
-                        delegate: cell,
-                        viewLayoutFramePublisher: cell.$viewLayoutaFrame
-                    )
-                    
-                    cell.contentConfiguration = UIHostingConfiguration {
-                        StatusView(viewModel: viewModel)
-                    }
-                    .margins(.vertical, 0)  // remove vertical margins
+                let viewModel = StatusView.ViewModel(
+                    status: status,
+                    authContext: authContext,
+                    delegate: cell,
+                    viewLayoutFramePublisher: configuration.viewLayoutFramePublisher
+                )
+                
+                cell.contentConfiguration = UIHostingConfiguration {
+                    StatusView(viewModel: viewModel)
                 }
+                .margins(.vertical, 0)  // remove vertical margins
                 return cell
-
+    
             case .feedLoader(let record):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
-//                context.managedObjectContext.performAndWait {
-//                    guard let feed = record.object(in: context.managedObjectContext) else { return }
-//                    configure(
-//                        cell: cell,
-//                        feed: feed,
-//                        configuration: configuration
-//                    )
-//                }
                 return cell
 
             case .topLoader:

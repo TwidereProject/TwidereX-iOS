@@ -33,17 +33,24 @@ public struct StatusHeaderView: View {
                 VectorImageView(image: viewModel.image)
                     .frame(width: iconImageDimension, height: iconImageDimension)
                     .offset(y: -1)
-                LabelRepresentable(
-                    metaContent: viewModel.label,
-                    textStyle: .statusHeader,
-                    setupLabel: { label in
-                        // do nothing
-                    }
-                )
-                .fixedSize(horizontal: false, vertical: true)
+                if viewModel.isLabelContainsMeta {
+                    LabelRepresentable(
+                        metaContent: viewModel.label,
+                        textStyle: .statusHeader,
+                        setupLabel: { label in
+                            // do nothing
+                        }
+                    )
+                } else {
+                    Text(viewModel.label.string)
+                        .font(Font(TextStyle.statusHeader.font))
+                        .foregroundColor(Color(uiColor: TextStyle.statusHeader.textColor))
+                        .lineLimit(1)
+                }
                 Spacer()
             }   // HStack
         }   // HStack
+        .fixedSize(horizontal: false, vertical: true)
         .onTapGesture {
             // TODO:
         }
@@ -55,6 +62,7 @@ extension StatusHeaderView {
     public class ViewModel: ObservableObject {
         @Published public var image: UIImage
         @Published public var label: MetaContent
+        @Published public var isLabelContainsMeta: Bool
         
         @Published public var hasHangingAvatar: Bool = false
         @Published public var avatarDimension: CGFloat = StatusView.hangingAvatarButtonDimension
@@ -65,6 +73,12 @@ extension StatusHeaderView {
         ) {
             self.image = image
             self.label = label
+            self.isLabelContainsMeta = label.entities.contains(where: { entity in
+                switch entity.meta {
+                case .emoji: return true
+                default: return false
+                }
+            })
         }
     }
 }
