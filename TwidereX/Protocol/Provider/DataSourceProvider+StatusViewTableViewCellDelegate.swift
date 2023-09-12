@@ -12,28 +12,20 @@ import Meta
 
 // MARK: - header
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & AuthContextProvider {
-//    func tableViewCell(
-//        _ cell: UITableViewCell,
-//        statusView: StatusView,
-//        headerDidPressed header: UIView
-//    ) {
-//        Task {
-//            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
-//            guard let item = await item(from: source) else {
-//                assertionFailure()
-//                return
-//            }
-//            guard let status = await item.status(in: self.context.managedObjectContext) else {
-//                assertionFailure("only works for status data provider")
-//                return
-//            }
-//            await DataSourceFacade.coordinateToProfileScene(
-//                provider: self,
-//                target: .repost,
-//                status: status
-//            )
-//        }
-//    }
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        viewModel: TwidereUI.StatusView.ViewModel,
+        statusHeaderViewModel: TwidereUI.StatusHeaderView.ViewModel,
+        headerDidPressed: Void
+    ) {
+        Task {
+            guard let user = viewModel.author?.asRecord else { return }
+            await DataSourceFacade.coordinateToProfileScene(
+                provider: self,
+                user: user
+            )
+        }   // end Task
+    }
 }
 
 // MARK: - avatar button

@@ -426,7 +426,8 @@ extension StatusView.ViewModel {
                     let userRepostText = L10n.Common.Controls.Status.userRetweeted(name)
                     let label = PlaintextMetaContent(string: userRepostText)
                     return label
-                }()
+                }(),
+                delegate: self
             )
             _statusHeaderViewModel.hasHangingAvatar = {
                 if kind == .conversationRoot { return true }
@@ -620,7 +621,8 @@ extension StatusView.ViewModel {
                     let text = MastodonContent(content: userRepostText, emojis: status.author.emojisTransient.asDictionary)
                     let label = MastodonMetaContent.convert(text: text)
                     return label
-                }()
+                }(),
+                delegate: self
             )
             _statusHeaderViewModel.hasHangingAvatar = _repostViewModel.hasHangingAvatar
             _repostViewModel.statusHeaderViewModel = _statusHeaderViewModel
@@ -800,5 +802,12 @@ extension StatusView.ViewModel {
         viewModel.contentAttributedString = metaContent.attributedString(accentColor: .tintColor)
         
         return viewModel
+    }
+}
+
+// MARK: - StatusHeaderViewDelegate
+extension StatusView.ViewModel: StatusHeaderViewDelegate {
+    public func headerViewDidPressed(_ viewModel: StatusHeaderView.ViewModel) {
+        delegate?.statusView(self, statusHeaderViewModel: viewModel, headerDidPressed: Void())
     }
 }

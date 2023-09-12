@@ -17,7 +17,6 @@ extension NotificationView {
 
         @Published public var viewLayoutFrame = ViewLayoutFrame()
         
-        
         // input
         public let notification: NotificationObject
         public let authContext: AuthContext?
@@ -131,10 +130,18 @@ extension NotificationView.ViewModel {
         if let info = _info {
             let _notificationHeaderViewModel = StatusHeaderView.ViewModel(
                 image: info.iconImage,
-                label: info.textMetaContent
+                label: info.textMetaContent,
+                delegate: self
             )
-            _notificationHeaderViewModel.hasHangingAvatar = true
+            _notificationHeaderViewModel.delegate = self
             self.notificationHeaderViewModel = _notificationHeaderViewModel
         }
     }   // end init
+}
+
+// MARK: - StatusHeaderViewDelegate
+extension NotificationView.ViewModel: StatusHeaderViewDelegate {
+    public func headerViewDidPressed(_ viewModel: StatusHeaderView.ViewModel) {
+        // FIXME:
+    }
 }

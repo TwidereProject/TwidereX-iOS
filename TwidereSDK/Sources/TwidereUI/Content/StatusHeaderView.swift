@@ -11,6 +11,10 @@ import TwidereLocalization
 import Meta
 import Kingfisher
 
+public protocol StatusHeaderViewDelegate: AnyObject {
+    func headerViewDidPressed(_ viewModel: StatusHeaderView.ViewModel)
+}
+
 public struct StatusHeaderView: View {
     
     static var iconImageTrailingSpacing: CGFloat { 4.0 }
@@ -52,7 +56,7 @@ public struct StatusHeaderView: View {
         }   // HStack
         .fixedSize(horizontal: false, vertical: true)
         .onTapGesture {
-            // TODO:
+            viewModel.delegate?.headerViewDidPressed(viewModel)
         }
     }   // end body
     
@@ -60,6 +64,9 @@ public struct StatusHeaderView: View {
 
 extension StatusHeaderView {
     public class ViewModel: ObservableObject {
+        
+        weak var delegate: StatusHeaderViewDelegate?
+        
         @Published public var image: UIImage
         @Published public var label: MetaContent
         @Published public var isLabelContainsMeta: Bool
@@ -69,10 +76,12 @@ extension StatusHeaderView {
         
         public init(
             image: UIImage,
-            label: MetaContent
+            label: MetaContent,
+            delegate: StatusHeaderViewDelegate?
         ) {
             self.image = image
             self.label = label
+            self.delegate = delegate
             self.isLabelContainsMeta = label.entities.contains(where: { entity in
                 switch entity.meta {
                 case .emoji: return true

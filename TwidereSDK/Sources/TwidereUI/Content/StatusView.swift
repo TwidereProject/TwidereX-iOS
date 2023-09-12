@@ -17,7 +17,8 @@ import MetaLabel
 import TwidereCore
 
 public protocol StatusViewDelegate: AnyObject {
-//    func statusView(_ statusView: StatusView, headerDidPressed header: UIView)
+    // header
+    func statusView(_ viewModel: StatusView.ViewModel, statusHeaderViewModel: StatusHeaderView.ViewModel, headerDidPressed: Void)
 
     // avatar
     func statusView(_ viewModel: StatusView.ViewModel, userAvatarButtonDidPressed user: UserRecord)
