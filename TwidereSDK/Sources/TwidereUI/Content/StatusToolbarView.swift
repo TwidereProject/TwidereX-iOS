@@ -65,14 +65,7 @@ extension StatusToolbarView {
                 handler(action)
             },
             action: .reply,
-            image: {
-                switch viewModel.style {
-                case .inline:
-                    return Asset.Communication.textBubbleMini.image.withRenderingMode(.alwaysTemplate)
-                case .plain:
-                    return Asset.Communication.textBubble.image.withRenderingMode(.alwaysTemplate)
-                }
-            }(),
+            image: viewModel.replyButtonImage,
             count: isMetricCountDisplay ? viewModel.replyCount : nil,
             tintColor: nil
         )
@@ -82,26 +75,6 @@ extension StatusToolbarView {
         case repost
         case repostOff
         case repostLock
-        
-        func image(style: StatusToolbarView.Style) -> UIImage {
-            switch self {
-            case .repost:
-                switch style {
-                case .inline:   return Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate)
-                case .plain:    return Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
-                }
-            case .repostOff:
-                switch style {
-                case .inline:   return Asset.Media.repeatOffMini.image.withRenderingMode(.alwaysTemplate)
-                case .plain:    return Asset.Media.repeatOff.image.withRenderingMode(.alwaysTemplate)
-                }
-            case .repostLock:
-                switch style {
-                case .inline:   return Asset.Media.repeatLockMini.image.withRenderingMode(.alwaysTemplate)
-                case .plain:    return Asset.Media.repeatLock.image.withRenderingMode(.alwaysTemplate)
-                }
-            }   // end switch
-        }   // end func
         
         static func kind(
             platform: Platform,
@@ -133,11 +106,12 @@ extension StatusToolbarView {
             },
             action: .repost,
             image: {
-                return RepostButtonImage.kind(
+                let kind = RepostButtonImage.kind(
                     platform: viewModel.platform,
                     isReposeRestricted: viewModel.isReposeRestricted,
                     isMyself: viewModel.isMyself
-                ).image(style: viewModel.style)
+                )
+                return viewModel.repostButtonImage(kind: kind)
             }(),
             count: isMetricCountDisplay ? viewModel.repostCount : nil,
             tintColor: viewModel.isReposted ? Asset.Scene.Status.Toolbar.repost.color : nil
@@ -185,15 +159,7 @@ extension StatusToolbarView {
                 handler(action)
             },
             action: .like,
-            image: {
-                switch viewModel.style {
-                case .inline:
-                    return viewModel.isLiked ? Asset.Health.heartFillMini.image.withRenderingMode(.alwaysTemplate) : Asset.Health.heartMini.image.withRenderingMode(.alwaysTemplate)
-                case .plain:
-                    return viewModel.isLiked ? Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate) : Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
-                }
-
-            }(),
+            image: viewModel.isLiked ? viewModel.likeOnButtonImage : viewModel.likeOffButtonImage,
             count: isMetricCountDisplay ? viewModel.likeCount : nil,
             tintColor: viewModel.isLiked ? Asset.Scene.Status.Toolbar.like.color : nil
         )
@@ -215,15 +181,7 @@ extension StatusToolbarView {
             }   // end ForEach
         } label: {
             HStack {
-                let image: UIImage = {
-                    switch viewModel.style {
-                    case .inline:
-                        return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
-                    case .plain:
-                        return Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate)
-                    }
-                }()
-                Image(uiImage: image)
+                Image(uiImage: viewModel.moreButtonImage)
                     .foregroundColor(.secondary)
             }
         }
@@ -237,8 +195,9 @@ extension StatusToolbarView {
         public let menuButtonBackgroundView = UIView()
 
         // input
+        let style: Style
+
         @Published var platform: Platform = .none
-        @Published var style: Style = .inline
         
         @Published var replyCount: Int?
         @Published var repostCount: Int?
@@ -250,12 +209,72 @@ extension StatusToolbarView {
         @Published var isReposeRestricted: Bool = false
         @Published var isMyself: Bool = false
         
+        // output
+        let replyButtonImage: UIImage
+        let repostButtonImage: UIImage
+        let repostOffButtonImage: UIImage
+        let repostLockButtonImage: UIImage
+        let likeOnButtonImage: UIImage
+        let likeOffButtonImage: UIImage
+        let moreButtonImage: UIImage
+        
         var isRepostable: Bool {
             return isMyself || !isReposeRestricted
         }
         
-        public init() {
+        public init(style: Style) {
+            self.style = style
+            self.replyButtonImage = {
+                switch style {
+                case .inline: return Asset.Communication.textBubbleMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain: return Asset.Communication.textBubble.image.withRenderingMode(.alwaysTemplate)
+                }
+            }()
+            self.repostButtonImage = {
+                switch style {
+                case .inline: return Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain: return Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
+                }
+            }()
+            self.repostOffButtonImage = {
+                switch style {
+                case .inline: return Asset.Media.repeatOffMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain: return Asset.Media.repeatOff.image.withRenderingMode(.alwaysTemplate)
+                }
+            }()
+            self.repostLockButtonImage = {
+                switch style {
+                case .inline: return Asset.Media.repeatLockMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain: return Asset.Media.repeatLock.image.withRenderingMode(.alwaysTemplate)
+                }
+            }()
+            self.likeOnButtonImage = {
+                switch style {
+                case .inline: return Asset.Health.heartFillMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain: return Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate)
+                }
+            }()
+            self.likeOffButtonImage = {
+                switch style {
+                case .inline: return Asset.Health.heartMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain: return Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
+                }
+            }()
+            self.moreButtonImage = {
+                switch style {
+                case .inline: return Asset.Editing.ellipsisMini.image.withRenderingMode(.alwaysTemplate)
+                case .plain: return Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate)
+                }
+            }()
             // end init
+        }
+        
+        func repostButtonImage(kind: RepostButtonImage) -> UIImage {
+            switch kind {
+            case .repost: return repostButtonImage
+            case .repostOff: return repostOffButtonImage
+            case .repostLock: return repostLockButtonImage
+            }
         }
     }
 }

@@ -449,8 +449,8 @@ extension StatusView {
                 // ignore tap
             }
         } else {
-            let metaContent = viewModel.spoilerContent ?? PlaintextMetaContent(string: "")
-            Text(metaContent.attributedString(accentColor: .tintColor))
+            let metaContent = viewModel.spoilerContentAttributedString ?? AttributedString("")
+            Text(metaContent)
                 .multilineTextAlignment(.leading)
                 .font(Font(TextStyle.statusContent.font))
                 .foregroundColor(Color(uiColor: TextStyle.statusContent.textColor))
@@ -474,7 +474,7 @@ extension StatusView {
                 // ignore tap
             }
         } else {
-            Text(viewModel.content.attributedString(accentColor: .tintColor))
+            Text(viewModel.contentAttributedString)
                 .multilineTextAlignment(.leading)
                 .font(Font(TextStyle.statusContent.font))
                 .foregroundColor(Color(uiColor: TextStyle.statusContent.textColor))

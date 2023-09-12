@@ -65,8 +65,11 @@ extension StatusView {
 
         // content
         @Published public var spoilerContent: MetaContent?
+        @Published public var spoilerContentAttributedString: AttributedString?
         @Published public var isSpoilerContentContainsMeta: Bool = false
+        
         @Published public var content: MetaContent = PlaintextMetaContent(string: "")
+        @Published public var contentAttributedString = AttributedString("")
         @Published public var isContentContainsMeta: Bool = false
         
         var isContentEmpty: Bool { content.string.isEmpty }
@@ -122,23 +125,7 @@ extension StatusView {
 
         // visibility
         @Published public var visibility: MastodonVisibility?
-        var visibilityIconImage: UIImage? {
-            switch visibility {
-            case .public:
-                return Asset.ObjectTools.globeMiniInline.image.withRenderingMode(.alwaysTemplate)
-            case .unlisted:
-                return Asset.ObjectTools.lockOpenMiniInline.image.withRenderingMode(.alwaysTemplate)
-            case .private:
-                return Asset.ObjectTools.lockMiniInline.image.withRenderingMode(.alwaysTemplate)
-            case .direct:
-                return Asset.Communication.mailMiniInline.image.withRenderingMode(.alwaysTemplate)
-            case ._other:
-                assertionFailure()
-                return nil
-            case nil:
-                return nil
-            }
-        }
+        @Published public var visibilityIconImage: UIImage?
 
 //        @Published public var groupedAccessibilityLabel = ""
 
@@ -152,7 +139,7 @@ extension StatusView {
         @Published public var metricViewModel: StatusMetricView.ViewModel?
 
         // toolbar
-        public let toolbarViewModel = StatusToolbarView.ViewModel()
+        public let toolbarViewModel: StatusToolbarView.ViewModel
         public var canDelete: Bool {
             guard let authContext = self.authContext else { return false }
             guard let authorUserIdentifier = self.authorUserIdentifier else { return false }
@@ -192,6 +179,7 @@ extension StatusView {
                 guard let myUserIdentifier = authContext?.authenticationContext.userIdentifier else { return false }
                 return myUserIdentifier == _authorUserIdentifier
             }()
+            self.toolbarViewModel = StatusToolbarView.ViewModel(style: kind == .conversationRoot ? .plain : .inline)
             // end init
             
             viewLayoutFramePublisher?.assign(to: &$viewLayoutFrame)
@@ -208,6 +196,7 @@ extension StatusView {
             self.kind = .timeline
             self.authorUserIdentifier = nil
             self.isMyself = false
+            self.toolbarViewModel = StatusToolbarView.ViewModel(style: kind == .conversationRoot ? .plain : .inline)
             // end init
             
             viewLayoutFramePublisher?.assign(to: &$viewLayoutFrame)
@@ -224,9 +213,6 @@ extension StatusView {
             UserDefaults.shared.publisher(for: \.translateButtonPreference)
                 .map { $0 }
                 .assign(to: &$translateButtonPreference)
-
-            // toolbar
-            toolbarViewModel.style = kind == .conversationRoot ? .plain : .inline
         }
     }
 }
@@ -248,6 +234,7 @@ extension StatusView.ViewModel {
                 useParagraphMark: true
             )
             self.content = metaContent
+            self.contentAttributedString = metaContent.attributedString(accentColor: .tintColor)
             // delegate?.statusView(self, translateContentDidChange: status)
         } catch {
             debugPrint(error.localizedDescription)
@@ -503,6 +490,7 @@ extension StatusView.ViewModel {
                 useParagraphMark: true
             )
             self.content = metaContent
+            self.contentAttributedString = metaContent.attributedString(accentColor: .tintColor)
             self.isContentContainsMeta = false
         }
         
@@ -653,8 +641,24 @@ extension StatusView.ViewModel {
             .assign(to: &$protected)
 
         // visibility
-        visibility = status.visibility
-        
+        let _visibility = status.visibility
+        visibility = _visibility
+        visibilityIconImage = {
+            switch _visibility {
+            case .public:
+                return Asset.ObjectTools.globeMiniInline.image.withRenderingMode(.alwaysTemplate)
+            case .unlisted:
+                return Asset.ObjectTools.lockOpenMiniInline.image.withRenderingMode(.alwaysTemplate)
+            case .private:
+                return Asset.ObjectTools.lockMiniInline.image.withRenderingMode(.alwaysTemplate)
+            case .direct:
+                return Asset.Communication.mailMiniInline.image.withRenderingMode(.alwaysTemplate)
+            case ._other:
+                assertionFailure()
+                return nil
+            }
+        }()
+
         // timestamp
         timestampLabelViewModel = TimestampLabelView.ViewModel(timestamp: status.createdAt)
         
@@ -664,10 +668,12 @@ extension StatusView.ViewModel {
                 let content = MastodonContent(content: spoilerText, emojis: status.emojisTransient.asDictionary)
                 let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
                 self.spoilerContent = metaContent
+                self.spoilerContentAttributedString = metaContent.attributedString(accentColor: .tintColor)
                 self.isSpoilerContentContainsMeta = !status.emojisTransient.isEmpty
             } catch {
                 assertionFailure(error.localizedDescription)
                 self.spoilerContent = nil
+                self.spoilerContentAttributedString = nil
             }
         }
         
@@ -676,10 +682,12 @@ extension StatusView.ViewModel {
             let content = MastodonContent(content: status.content, emojis: status.emojisTransient.asDictionary)
             let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
             self.content = metaContent
+            self.contentAttributedString = metaContent.attributedString(accentColor: .tintColor)
             self.isContentContainsMeta = !status.emojisTransient.isEmpty
         } catch {
             assertionFailure(error.localizedDescription)
             self.content = PlaintextMetaContent(string: "")
+            self.contentAttributedString = AttributedString("")
         }
 
         // language
@@ -783,11 +791,13 @@ extension StatusView.ViewModel {
         viewModel.avatarURL = URL(string: "https://pbs.twimg.com/profile_images/809741368134234112/htSiXXAU_400x400.jpg")
         viewModel.authorName = PlaintextMetaContent(string: "Twidere")
         viewModel.authorUsernme = "TwidereProject"
-        viewModel.content = TwitterMetaContent.convert(
+        let metaContent = TwitterMetaContent.convert(
             document: TwitterContent(content: L10n.Scene.Settings.Display.Preview.thankForUsingTwidereX, urlEntities: []),
             urlMaximumLength: 16,
             twitterTextProvider: SwiftTwitterTextProvider()
         )
+        viewModel.content = metaContent
+        viewModel.contentAttributedString = metaContent.attributedString(accentColor: .tintColor)
         
         return viewModel
     }
