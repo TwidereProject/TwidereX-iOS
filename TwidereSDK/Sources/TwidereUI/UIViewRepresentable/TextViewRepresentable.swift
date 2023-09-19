@@ -19,7 +19,6 @@ public struct TextViewRepresentable: UIViewRepresentable {
     // input
     let metaContent: MetaContent
     let textStyle: TextStyle
-    let width: CGFloat
     let isSelectable: Bool
     let handler: (Meta?) -> Void
     
@@ -29,13 +28,11 @@ public struct TextViewRepresentable: UIViewRepresentable {
     public init(
         metaContent: MetaContent,
         textStyle: TextStyle,
-        width: CGFloat,
         isSelectable: Bool,
         handler: @escaping (Meta?) -> Void
     ) {
         self.metaContent = metaContent
         self.textStyle = textStyle
-        self.width = width
         self.isSelectable = isSelectable
         self.handler = handler
         self.attributedString = {
@@ -76,45 +73,36 @@ public struct TextViewRepresentable: UIViewRepresentable {
             textView.isSelectable = false
             textView.textContainerInset = .zero
             textView.textContainer.lineFragmentPadding = 0
-            textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            textView.textContainer.maximumNumberOfLines = 0
+            textView.textAlignment = .natural
+            textView.setContentHuggingPriority(.defaultLow, for: .horizontal)
             textView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+            textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            textView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
             return textView
         }()
         textView.isSelectable = isSelectable
         textView.delegate = context.coordinator
         textView.textViewDelegate = context.coordinator
-        textView.frame.size.width = width
         textView.textStorage.setAttributedString(attributedString)
-        textView.invalidateIntrinsicContentSize()
-        textView.setNeedsLayout()
-        textView.layoutIfNeeded()
         return textView
     }
     
-    public func updateUIView(_ view: UITextView, context: Context) {
-        let textView = view
-        
-        var needsLayout = false
-        
-        if textView.frame.size.width != width {
-            textView.frame.size.width = width
-            needsLayout = true
-        }
+    public func updateUIView(_ textView: UITextView, context: Context) {
         if textView.attributedText.string != attributedString.string {
             textView.textStorage.setAttributedString(attributedString)
-            needsLayout = true
-            
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update textView \(view.hashValue): \(metaContent.string)")
-        } else {
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): reuse textView content")
-        }
-        
-        if needsLayout {
-            textView.invalidateIntrinsicContentSize()
-            textView.setNeedsLayout()
-            textView.layoutIfNeeded()
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update textView \(textView.hashValue): \(metaContent.string)")
         }
     }
+    
+    public func sizeThatFits(_ proposal: ProposedViewSize, uiView textView: UITextView, context: Context) -> CGSize? {
+        let size = textView.sizeThatFits(CGSize(
+            width: proposal.width ?? UIView.layoutFittingCompressedSize.width,
+            height: UIView.layoutFittingCompressedSize.height
+        ))
+        return CGSize(width: proposal.width ?? size.width, height: size.height)
+    }
+
     
     public func makeCoordinator() -> Coordinator {
         Coordinator(self)

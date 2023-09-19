@@ -24,6 +24,7 @@ public protocol StatusViewContainerTableViewCell: UITableViewCell, AutoGenerateP
 // sourcery: replaceWith = "func tableViewCell(_ cell: UITableViewCell,"
 public protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     // sourcery:inline:StatusViewTableViewCellDelegate.AutoGenerateProtocolDelegate
+    func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, statusHeaderViewModel: StatusHeaderView.ViewModel, headerDidPressed: Void)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, userAvatarButtonDidPressed user: UserRecord)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, toggleContentDisplay isReveal: Bool)
     func tableViewCell(_ cell: UITableViewCell, viewModel: StatusView.ViewModel, textViewDidSelectMeta meta: Meta?)
@@ -43,6 +44,10 @@ public protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
 // Protocol Extension
 public extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
     // sourcery:inline:StatusViewContainerTableViewCell.AutoGenerateProtocolRelayDelegate
+    func statusView(_ viewModel: StatusView.ViewModel, statusHeaderViewModel: StatusHeaderView.ViewModel, headerDidPressed: Void) {
+        statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, statusHeaderViewModel: statusHeaderViewModel, headerDidPressed: headerDidPressed)
+    }
+
     func statusView(_ viewModel: StatusView.ViewModel, userAvatarButtonDidPressed user: UserRecord) {
         statusViewTableViewCellDelegate?.tableViewCell(self, viewModel: viewModel, userAvatarButtonDidPressed: user)
     }

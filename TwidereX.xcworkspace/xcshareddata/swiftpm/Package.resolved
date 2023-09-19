@@ -65,6 +65,15 @@
         }
       },
       {
+        "package": "Disk",
+        "repositoryURL": "https://github.com/saoudrizwan/Disk.git",
+        "state": {
+          "branch": null,
+          "revision": "b0cb4fdf23e51849cc2460bdc6de795c3bcca99d",
+          "version": "0.6.4"
+        }
+      },
+      {
         "package": "FLAnimatedImage",
         "repositoryURL": "https://github.com/Flipboard/FLAnimatedImage.git",
         "state": {
@@ -258,8 +267,8 @@
         "repositoryURL": "https://github.com/TwidereProject/TwitterSDK.git",
         "state": {
           "branch": null,
-          "revision": "c2f03e475d48bc832054a121ede6a660f39af501",
-          "version": "0.17.0"
+          "revision": "af4adefe31f19635070a6fa7f40412b041cdd9c3",
+          "version": "0.18.0"
         }
       },
       {

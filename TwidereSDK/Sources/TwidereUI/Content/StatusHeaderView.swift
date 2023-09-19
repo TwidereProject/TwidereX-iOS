@@ -11,6 +11,10 @@ import TwidereLocalization
 import Meta
 import Kingfisher
 
+public protocol StatusHeaderViewDelegate: AnyObject {
+    func headerViewDidPressed(_ viewModel: StatusHeaderView.ViewModel)
+}
+
 public struct StatusHeaderView: View {
     
     static var iconImageTrailingSpacing: CGFloat { 4.0 }
@@ -33,19 +37,26 @@ public struct StatusHeaderView: View {
                 VectorImageView(image: viewModel.image)
                     .frame(width: iconImageDimension, height: iconImageDimension)
                     .offset(y: -1)
-                LabelRepresentable(
-                    metaContent: viewModel.label,
-                    textStyle: .statusHeader,
-                    setupLabel: { label in
-                        // do nothing
-                    }
-                )
-                .fixedSize(horizontal: false, vertical: true)
+                if viewModel.isLabelContainsMeta {
+                    LabelRepresentable(
+                        metaContent: viewModel.label,
+                        textStyle: .statusHeader,
+                        setupLabel: { label in
+                            // do nothing
+                        }
+                    )
+                } else {
+                    Text(viewModel.label.string)
+                        .font(Font(TextStyle.statusHeader.font))
+                        .foregroundColor(Color(uiColor: TextStyle.statusHeader.textColor))
+                        .lineLimit(1)
+                }
                 Spacer()
             }   // HStack
         }   // HStack
+        .fixedSize(horizontal: false, vertical: true)
         .onTapGesture {
-            // TODO:
+            viewModel.delegate?.headerViewDidPressed(viewModel)
         }
     }   // end body
     
@@ -53,18 +64,30 @@ public struct StatusHeaderView: View {
 
 extension StatusHeaderView {
     public class ViewModel: ObservableObject {
+        
+        weak var delegate: StatusHeaderViewDelegate?
+        
         @Published public var image: UIImage
         @Published public var label: MetaContent
+        @Published public var isLabelContainsMeta: Bool
         
         @Published public var hasHangingAvatar: Bool = false
         @Published public var avatarDimension: CGFloat = StatusView.hangingAvatarButtonDimension
         
         public init(
             image: UIImage,
-            label: MetaContent
+            label: MetaContent,
+            delegate: StatusHeaderViewDelegate?
         ) {
             self.image = image
             self.label = label
+            self.delegate = delegate
+            self.isLabelContainsMeta = label.entities.contains(where: { entity in
+                switch entity.meta {
+                case .emoji: return true
+                default: return false
+                }
+            })
         }
     }
 }
