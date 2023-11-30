@@ -52,6 +52,11 @@ extension AccountListViewController {
         navigationItem.leftBarButtonItem = closeBarButtonItem
         navigationItem.rightBarButtonItem = addBarButtonItem
         
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: tableView)
+            .store(in: &disposeBag)
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         NSLayoutConstraint.activate([
@@ -69,17 +74,6 @@ extension AccountListViewController {
         
         addBarButtonItem.target = self
         addBarButtonItem.action = #selector(AccountListViewController.addBarButtonItemPressed(_:))
-        
-        ThemeService.shared.theme
-            .sink { [weak self] theme in
-                guard let self = self else { return }
-                self.update(theme: theme)
-            }
-            .store(in: &disposeBag)
-    }
-    
-    private func update(theme: Theme) {
-        addBarButtonItem.tintColor = theme.accentColor
     }
     
 }

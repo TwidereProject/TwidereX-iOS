@@ -48,7 +48,7 @@ class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTr
     private lazy var floatyButton: Floaty = {
         let button = Floaty()
         button.plusColor = .white
-        button.buttonColor = ThemeService.shared.theme.value.accentColor
+        button.buttonColor = ThemeService.shared.theme.highlight
         button.buttonImage = Asset.Editing.featherPen.image
         button.handleFirstItemDirectly = true
         
@@ -80,6 +80,11 @@ extension TimelineViewController {
         drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
 
         view.backgroundColor = .systemBackground
+        
+        ThemeService.shared.$theme
+            .map { $0.highlight }
+            .assign(to: \.buttonColor, on: floatyButton)
+            .store(in: &disposeBag)
 
         // setup avatarBarButtonItem
         if navigationController?.viewControllers.first == self {

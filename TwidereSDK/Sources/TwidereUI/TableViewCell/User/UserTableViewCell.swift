@@ -9,10 +9,13 @@
 import os.log
 import UIKit
 import Combine
+import TwidereCore
 
 public class UserTableViewCell: UITableViewCell {
         
     let logger = Logger(subsystem: "UserTableViewCell", category: "View")
+    
+    private var _disposeBag = Set<AnyCancellable>()
             
     public weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
 
@@ -34,7 +37,10 @@ public class UserTableViewCell: UITableViewCell {
     }
     
     func _init() {
-        // selectionStyle = .none
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: self)
+            .store(in: &_disposeBag)
     }
     
 }

@@ -60,6 +60,12 @@ extension ListTimelineViewController {
         ])
         tableView.delegate = self
         
+        context.themeService.$theme
+            .map { $0.background }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.backgroundColor, on: tableView)
+            .store(in: &disposeBag)
+        
         // setup refresh control
         viewModel.$isRefreshControlEnabled
             .receive(on: DispatchQueue.main)

@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import Combine
 import MetaTextKit
 import MetaLabel
 import Meta
@@ -21,12 +22,15 @@ final class ProfileFieldListView: UIView {
     let logger = Logger(subsystem: "ProfileFieldListView", category: "View")
     
     weak var delegate: ProfileFieldListViewDelegate?
+    
+    private var disposeBag = Set<AnyCancellable>()
 
     var collectionViewHeightLayoutConstraint: NSLayoutConstraint!
     var collectionViewHeightObservation: NSKeyValueObservation?
     let collectionView: UICollectionView = {
         var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
         configuration.showsSeparators = false
+        configuration.backgroundColor = .clear
         let collectionViewLayout = UICollectionViewCompositionalLayout.list(using: configuration)
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)     // required for AutoLayout
         let collectionView = UICollectionView(frame: frame, collectionViewLayout: collectionViewLayout)
@@ -112,6 +116,11 @@ extension ProfileFieldListView {
             cell.delegate = self
             return cell
         }
+                
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: collectionView)
+            .store(in: &disposeBag)
     }
 }
 

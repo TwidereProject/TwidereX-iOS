@@ -18,6 +18,8 @@ public struct PollView: View {
     var logger: Logger { PollView.logger }
     
     @ObservedObject public var viewModel: ViewModel
+    @ObservedObject public var themeService = ThemeService.shared
+    
     public let selectAction: (PollOptionView.ViewModel) -> Void
     public let voteAction: (ViewModel) -> Void
     
@@ -28,54 +30,6 @@ public struct PollView: View {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(optionViewModel.index)")
                     selectAction(optionViewModel)
                 }
-//                VStack {
-//                    HStack {
-//                        Text(option.content)
-//                            .font(.system(size: 16, weight: .regular))
-//                            .foregroundColor(Color(uiColor: Asset.Color.M3.Sys.onSurface.color))
-//                        Spacer()
-//                    }
-//                    HStack(alignment: .center) {
-//                        GeometryReader { proxy in
-//                            RoundedRectangle(cornerRadius: proxy.size.height / 2)
-//                                .frame(width: proxy.size.width)
-//                                .foregroundColor(Color(uiColor: Asset.Color.M3.Sys.surfaceVariant.color))
-//                                .overlay(
-//                                    HStack {
-//                                        let gradient = Gradient(stops: [
-//                                            .init(color: Color(uiColor: UIColor(hex: 0xFF7575)), location: 0.0),
-//                                            .init(color: Color(uiColor: UIColor(hex: 0x8B54FF)), location: 1.0),
-//                                        ])
-//                                        LinearGradient(gradient: gradient, startPoint: .leading, endPoint: .trailing)
-//                                            .foregroundColor(Color(uiColor: Asset.Color.Sys.primary.color))
-//                                            .mask(alignment: .leading) {
-//                                                RoundedRectangle(cornerRadius: proxy.size.height / 2)
-//                                                    .frame(width: proxy.size.width * (option.percentage ?? 0))
-//                                            }
-//                                    }
-//                                    .frame(alignment: .leading)
-//                                )
-//                                .clipShape(
-//                                    RoundedRectangle(cornerRadius: proxy.size.height / 2)
-//                                )
-//                        }
-//                        .frame(height: 12)
-//                        Text("99.99%")      // fixed width size
-//                            .lineLimit(1)
-//                            .font(.system(size: 14, weight: .regular))
-//                            .foregroundColor(.clear)
-//                            .overlay(
-//                                HStack(spacing: .zero) {
-//                                    Spacer()
-//                                    Text(option.percentageText)
-//                                        .lineLimit(1)
-//                                        .font(.system(size: 14, weight: .regular))
-//                                        .foregroundColor(Color(uiColor: Asset.Color.secondary.color))
-//                                        .fixedSize(horizontal: true, vertical: false)
-//                                }
-//                            )
-//                    }
-//                }
             }   // end ForEach
             HStack {
                 Text(verbatim: viewModel.pollDescription)
@@ -89,7 +43,7 @@ public struct PollView: View {
                         guard !viewModel.isVoting else { return }
                         voteAction(viewModel)
                     } label: {
-                        let textColor = viewModel.isVoteButtonEnabled ? TextStyle.pollVoteButton.textColor : .secondaryLabel
+                        let textColor = viewModel.isVoteButtonEnabled ? themeService.theme.highlight : themeService.theme.commentDisabled
                         Text(L10n.Common.Controls.Status.Actions.vote)
                             .font(Font(TextStyle.pollVoteButton.font))
                             .lineLimit(TextStyle.pollVoteButton.numberOfLines)

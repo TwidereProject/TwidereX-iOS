@@ -83,7 +83,7 @@ extension DrawerSidebarViewModel {
                     return .clear
                 }
                 if state.isSelected || state.isHighlighted {
-                    return Asset.Colors.hightLight.color
+                    return ThemeService.shared.theme.highlight
                 } else {
                     return tintColor
                 }
@@ -117,7 +117,7 @@ extension DrawerSidebarViewModel {
                     return .clear
                 }
                 if state.isSelected || state.isHighlighted {
-                    return Asset.Scene.Sidebar.entryCellHighlightedBackground.color
+                    return ThemeService.shared.theme.highlight.withAlphaComponent(0.2)
                 } else {
                     return .clear
                 }

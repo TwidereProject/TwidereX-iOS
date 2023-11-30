@@ -7,12 +7,15 @@
 //
 
 import UIKit
+import Combine
 import TwidereCore
 import MetaTextKit
 import MetaLabel
 
 final public class HashtagTableViewCell: UITableViewCell {
-    
+
+    private var _disposeBag = Set<AnyCancellable>()
+
     let primaryLabel = MetaLabel(style: .hashtagTitle)
     let secondaryLabel = MetaLabel(style: .hashtagDescription)
     
@@ -64,6 +67,11 @@ extension HashtagTableViewCell {
         
         primaryLabel.isUserInteractionEnabled = false
         secondaryLabel.isUserInteractionEnabled = false
+        
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: self)
+            .store(in: &_disposeBag)
     }
     
 }

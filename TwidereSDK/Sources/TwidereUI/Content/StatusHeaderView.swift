@@ -20,6 +20,7 @@ public struct StatusHeaderView: View {
     static var iconImageTrailingSpacing: CGFloat { 4.0 }
     
     @ObservedObject public var viewModel: ViewModel
+    @ObservedObject public var themeService = ThemeService.shared
     
     @ScaledMetric(relativeTo: .footnote) private var iconImageDimension: CGFloat = 16
 
@@ -34,21 +35,24 @@ public struct StatusHeaderView: View {
                     .frame(width: max(.leastNonzeroMagnitude, width))
             }   // end if
             HStack(spacing: StatusHeaderView.iconImageTrailingSpacing) {
-                VectorImageView(image: viewModel.image)
-                    .frame(width: iconImageDimension, height: iconImageDimension)
-                    .offset(y: -1)
+                VectorImageView(
+                    image: viewModel.image,
+                    tintColor: themeService.theme.comment
+                )
+                .frame(width: iconImageDimension, height: iconImageDimension)
+                .offset(y: -1)
                 if viewModel.isLabelContainsMeta {
                     LabelRepresentable(
                         metaContent: viewModel.label,
                         textStyle: .statusHeader,
                         setupLabel: { label in
-                            // do nothing
+                            label.setupAttributes(foregroundColor: themeService.theme.comment)
                         }
                     )
                 } else {
                     Text(viewModel.label.string)
                         .font(Font(TextStyle.statusHeader.font))
-                        .foregroundColor(Color(uiColor: TextStyle.statusHeader.textColor))
+                        .foregroundColor(Color(uiColor: themeService.theme.comment))
                         .lineLimit(1)
                 }
                 Spacer()

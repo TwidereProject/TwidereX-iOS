@@ -40,22 +40,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         #endif
         
         // set tint color
-        window.tintColor = ThemeService.shared.theme.value.accentColor
-        
-        ThemeService.shared.theme
-            .receive(on: DispatchQueue.main)
-            .dropFirst()
-            .sink { [weak self] theme in
-                guard let self = self else { return }
-                guard let window = self.window else { return }
-                window.tintColor = theme.accentColor
-                window.subviews.forEach { view in
-                    view.removeFromSuperview()
-                    window.addSubview(view)
-                }
-            }
-            .store(in: &disposeBag)
-        
+        window.tintColor = Asset.Colors.Theme.daylight.color
+                
         let sceneCoordinator = SceneCoordinator(scene: scene, sceneDelegate: self, context: AppContext.shared)
         self.coordinator = sceneCoordinator
         

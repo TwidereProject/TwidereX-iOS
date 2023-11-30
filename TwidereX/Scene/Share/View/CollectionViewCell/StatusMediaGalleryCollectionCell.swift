@@ -13,12 +13,13 @@ import CoverFlowStackCollectionViewLayout
 
 protocol StatusMediaGalleryCollectionCellDelegate: AnyObject {
     func statusMediaGalleryCollectionCell(_ cell: StatusMediaGalleryCollectionCell, mediaStackContainerViewModel: MediaStackContainerView.ViewModel, didSelectMediaView mediaViewModel: MediaView.ViewModel)
-    // func statusMediaGalleryCollectionCell(_ cell: StatusMediaGalleryCollectionCell, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView)
 }
 
 final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
     
     let logger = Logger(subsystem: "StatusMediaGalleryCollectionCell", category: "Cell")
+    
+    private var _disposeBag = Set<AnyCancellable>()
 
     weak var delegate: StatusMediaGalleryCollectionCellDelegate?
         
@@ -43,8 +44,11 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
 
 extension StatusMediaGalleryCollectionCell {
     
-    private func _init() {        
-        // nothing
+    private func _init() {
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: self)
+            .store(in: &_disposeBag)
     }
     
 }

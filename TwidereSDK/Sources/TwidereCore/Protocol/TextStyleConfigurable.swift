@@ -263,8 +263,13 @@ extension MetaLabel: TextStyleConfigurable {
         
         linkAttributes = [
             .font: font,
-            .foregroundColor: ThemeService.shared.theme.value.accentColor
+            .foregroundColor: Asset.Colors.Theme.daylight.color
         ]
+    }
+    
+    public func setupAttributes(foregroundColor: UIColor) {
+        textAttributes[.foregroundColor] = foregroundColor
+        
     }
 }
 

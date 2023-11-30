@@ -7,8 +7,11 @@
 
 import os.log
 import UIKit
+import Combine
 
 public final class NotificationTableViewCell: UITableViewCell {
+    
+    var disposeBag = Set<AnyCancellable>()
     
     let logger = Logger(subsystem: "StatusTableViewCell", category: "View")
     
@@ -19,7 +22,6 @@ public final class NotificationTableViewCell: UITableViewCell {
     public override func prepareForReuse() {
         super.prepareForReuse()
         
-        contentConfiguration = nil
         statusViewTableViewCellDelegate = nil
         userViewTableViewCellDelegate = nil
     }
@@ -40,6 +42,11 @@ extension NotificationTableViewCell {
     
     private func _init() {
         selectionStyle = .none
+        
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: self)
+            .store(in: &disposeBag)
     }
     
 }

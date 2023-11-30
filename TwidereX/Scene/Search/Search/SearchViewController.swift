@@ -114,6 +114,12 @@ extension SearchViewController {
             tableView: tableView
         )
         
+        context.themeService.$theme
+            .map { $0.background }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.backgroundColor, on: tableView)
+            .store(in: &disposeBag)
+        
         // bind trend section titile
         viewModel.trendViewModel.$trendPlaceName
             .receive(on: DispatchQueue.main)

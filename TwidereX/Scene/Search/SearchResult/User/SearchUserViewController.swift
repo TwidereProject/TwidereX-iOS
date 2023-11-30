@@ -26,8 +26,6 @@ final class SearchUserViewController: UIViewController, NeedsDependency {
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
-//        tableView.register(UserRelationshipStyleTableViewCell.self, forCellReuseIdentifier: String(describing: UserRelationshipStyleTableViewCell.self))
-//        tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
@@ -43,6 +41,12 @@ extension SearchUserViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        context.themeService.$theme
+            .map { $0.background }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.backgroundColor, on: tableView)
+            .store(in: &disposeBag)
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)

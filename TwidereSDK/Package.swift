@@ -51,12 +51,11 @@ let package = Package(
         .package(url: "https://github.com/tid-kijyun/Kanna.git", from: "5.2.7"),
         .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", from: "0.2.0"),
         .package(url: "https://github.com/TwidereProject/TwitterSDK.git", exact: "0.18.0"),
+        .package(url: "https://github.com/saoudrizwan/Disk.git", from: "0.6.4"),
         .package(name: "ArkanaKeys", path: "../dependencies/ArkanaKeys"),
         .package(name: "CoverFlowStackLayout", path: "../CoverFlowStackLayout"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "CoreDataStack",
             dependencies: [
@@ -110,6 +109,7 @@ let package = Package(
                 .product(name: "Kanna", package: "Kanna"),
                 .product(name: "TwitterSDK", package: "TwitterSDK"),
                 .product(name: "CollectionConcurrencyKit", package: "CollectionConcurrencyKit"),
+                .product(name: "Disk", package: "Disk"),
             ]
         ),
         .target(

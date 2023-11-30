@@ -29,6 +29,8 @@ final class ButtonTableViewCell: UITableViewCell {
 
 extension ButtonTableViewCell {
     private func _init() {
+        backgroundColor = .clear
+
         button.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(button)
         NSLayoutConstraint.activate([

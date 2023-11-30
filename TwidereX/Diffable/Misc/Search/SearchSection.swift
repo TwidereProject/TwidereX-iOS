@@ -42,6 +42,7 @@ extension SearchSection {
                     guard let object = record.object(in: context.managedObjectContext) else { return }
                     configure(cell: cell, object: object)
                 }
+                cell.setup(theme: ThemeService.shared.theme)
                 return cell
             case .trend(let object):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TrendTableViewCell.self), for: indexPath) as! TrendTableViewCell
@@ -52,6 +53,7 @@ extension SearchSection {
                 cell.contentConfiguration = UIHostingConfiguration {
                     TrendView(viewModel: trendViewModel)
                 }
+                cell.setup(theme: ThemeService.shared.theme)
                 return cell
             case .loader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
@@ -93,35 +95,4 @@ extension SearchSection {
             cell.primaryTextLabel.configure(content: metaContent)
         }
     }
-    
-//    private static func configure(
-//        cell: TrendTableViewCell,
-//        object: TrendObject
-//    ) {
-//        switch object {
-//        case .twitter(let trend):
-//            let metaContent = Meta.convert(document: .plaintext(string: trend.name))
-//            cell.primaryLabel.configure(content: metaContent)
-//            cell.accessoryType = .disclosureIndicator
-//        case .mastodon(let tag):
-//            let metaContent = Meta.convert(document: .plaintext(string: "#" + tag.name))
-//
-//            cell.primaryLabel.configure(content: metaContent)
-//            cell.secondaryLabel.text = L10n.Scene.Trends.accounts(tag.talkingPeopleCount ?? 0)
-//            cell.setSecondaryLabelDisplay()
-//
-//            cell.supplementaryLabel.text = tag.history?.first?.uses ?? " "
-//            cell.setSupplementaryLabelDisplay()
-//
-//            cell.lineChartView.data = (tag.history ?? [])
-//                .sorted(by: { $0.day < $1.day })        // latest last
-//                .map { entry in
-//                    guard let point = Int(entry.accounts) else {
-//                        return .zero
-//                    }
-//                    return CGFloat(point)
-//                }
-//            cell.setLineChartViewDisplay()
-//        }
-//    }
 }

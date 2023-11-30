@@ -39,6 +39,12 @@ extension SearchHashtagViewController {
         
         view.backgroundColor = .systemBackground
         
+        context.themeService.$theme
+            .map { $0.background }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.backgroundColor, on: tableView)
+            .store(in: &disposeBag)
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         NSLayoutConstraint.activate([

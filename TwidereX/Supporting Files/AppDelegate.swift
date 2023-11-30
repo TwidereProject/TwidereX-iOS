@@ -59,8 +59,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
         // configure appearance
-        ThemeService.shared.apply(theme: ThemeService.shared.theme.value)
-
+        setupAppearance(theme: ThemeService.shared.theme)
+        ThemeService.shared.$theme
+            .dropFirst()
+            .sink { [weak self] theme in
+                guard let self = self else { return }
+                self.setupAppearance(theme: theme)
+            }
+            .store(in: &disposeBag)
+        
         return true
     }
 
@@ -93,6 +100,27 @@ extension AppDelegate {
             return .all
         }
         #endif
+    }
+}
+
+
+extension AppDelegate {
+    private func setupAppearance(theme: Theme) {
+        // set navigation bar appearance
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        if let barBackgroundColor = theme.barBackgroundColor {
+            appearance.backgroundColor = barBackgroundColor
+        }
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().compactAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().compactScrollEdgeAppearance = appearance
+        
+        // set tab bar appearance
+        let tabBarAppearance: UITabBarAppearance = .defaultAppearance
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
     }
 }
 
