@@ -14,6 +14,7 @@ import DateToolsSwift
 public struct TimestampLabelView: View {
     
     @ObservedObject public var viewModel: ViewModel
+    @ObservedObject public var themeService = ThemeService.shared
     
     public init(viewModel: TimestampLabelView.ViewModel) {
         self.viewModel = viewModel
@@ -24,7 +25,7 @@ public struct TimestampLabelView: View {
             let timeAgo = viewModel.timeAgo(now: timeline.date)
             Text("\(timeAgo)")
                 .font(Font(TextStyle.statusTimestamp.font).monospacedDigit())
-                .foregroundColor(Color(uiColor: TextStyle.statusTimestamp.textColor))
+                .foregroundColor(Color(uiColor: themeService.theme.commentDisabled))
         }
     }
 }

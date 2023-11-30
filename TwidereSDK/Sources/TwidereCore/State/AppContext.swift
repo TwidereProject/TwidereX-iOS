@@ -33,6 +33,8 @@ public class AppContext: ObservableObject {
     public let playerService = PlayerService()
     
     public let notificationService: NotificationService
+    
+    public let themeService = ThemeService.shared
 
     public init(appSecret: AppSecret) {
         let _coreDataStack = CoreDataStack()

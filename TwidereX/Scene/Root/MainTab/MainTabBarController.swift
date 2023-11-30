@@ -106,13 +106,16 @@ extension MainTabBarController {
         
         // TabBarItem appearance
         configureTabBarItemAppearance()
-        UserDefaults.shared.publisher(for: \.preferredTabBarLabelDisplay)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] preferredTabBarLabelDisplay in
-                guard let self = self else { return }
-                self.configureTabBarItemAppearance()
-            }
-            .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            UserDefaults.shared.publisher(for: \.preferredTabBarLabelDisplay),
+            ThemeService.shared.$theme
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] _, _ in
+            guard let self = self else { return }
+            self.configureTabBarItemAppearance()
+        }
+        .store(in: &disposeBag)
         
         // TabBar tap gesture
         doubleTapGestureRecognizer.addTarget(self, action: #selector(MainTabBarController.doubleTapGestureRecognizerHandler(_:)))
@@ -228,7 +231,7 @@ extension MainTabBarController {
             item.imageInsets = preferredTabBarLabelDisplay ? .zero : UIEdgeInsets(top: 6, left: 0, bottom: -6, right: 0)
         }
         
-        let tabBarAppearance = ThemeService.setupTabBarAppearance()
+        let tabBarAppearance: UITabBarAppearance = .defaultAppearance
         tabBar.standardAppearance = tabBarAppearance
         tabBar.scrollEdgeAppearance = tabBarAppearance
     }

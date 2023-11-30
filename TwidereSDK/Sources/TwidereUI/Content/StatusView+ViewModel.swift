@@ -670,7 +670,8 @@ extension StatusView.ViewModel {
                 let content = MastodonContent(content: spoilerText, emojis: status.emojisTransient.asDictionary)
                 let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
                 self.spoilerContent = metaContent
-                self.spoilerContentAttributedString = metaContent.attributedString(accentColor: .tintColor)
+                let accentColor = ThemeService.shared.theme.highlight
+                self.spoilerContentAttributedString = metaContent.attributedString(accentColor: accentColor)
                 self.isSpoilerContentContainsMeta = !status.emojisTransient.isEmpty
             } catch {
                 assertionFailure(error.localizedDescription)
@@ -684,7 +685,8 @@ extension StatusView.ViewModel {
             let content = MastodonContent(content: status.content, emojis: status.emojisTransient.asDictionary)
             let metaContent = try MastodonMetaContent.convert(document: content, useParagraphMark: true)
             self.content = metaContent
-            self.contentAttributedString = metaContent.attributedString(accentColor: .tintColor)
+            let accentColor = ThemeService.shared.theme.highlight
+            self.contentAttributedString = metaContent.attributedString(accentColor: accentColor)
             self.isContentContainsMeta = !status.emojisTransient.isEmpty
         } catch {
             assertionFailure(error.localizedDescription)

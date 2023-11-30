@@ -19,6 +19,8 @@ public struct TextViewRepresentable: UIViewRepresentable {
     // input
     let metaContent: MetaContent
     let textStyle: TextStyle
+    let textColor: UIColor
+    let tintColor: UIColor
     let isSelectable: Bool
     let handler: (Meta?) -> Void
     
@@ -28,22 +30,26 @@ public struct TextViewRepresentable: UIViewRepresentable {
     public init(
         metaContent: MetaContent,
         textStyle: TextStyle,
+        textColor: UIColor,
+        tintColor: UIColor,
         isSelectable: Bool,
         handler: @escaping (Meta?) -> Void
     ) {
         self.metaContent = metaContent
         self.textStyle = textStyle
+        self.textColor = textColor
+        self.tintColor = tintColor
         self.isSelectable = isSelectable
         self.handler = handler
         self.attributedString = {
             let attributedString = NSMutableAttributedString(string: metaContent.string)
             let textAttributes: [NSAttributedString.Key: Any] = [
                 .font: textStyle.font,
-                .foregroundColor: textStyle.textColor,
+                .foregroundColor: textColor,
             ]
             let linkAttributes: [NSAttributedString.Key: Any] = [
                 .font: textStyle.font,
-                .foregroundColor: UIColor.tintColor,
+                .foregroundColor: tintColor,
             ]
             let paragraphStyle: NSMutableParagraphStyle = {
                 let style = NSMutableParagraphStyle()

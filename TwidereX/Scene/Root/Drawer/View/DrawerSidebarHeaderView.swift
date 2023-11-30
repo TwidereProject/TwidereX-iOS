@@ -66,7 +66,7 @@ final class DrawerSidebarHeaderView: UIView {
     let menuButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
-        button.tintColor = Asset.Colors.hightLight.color
+        button.tintColor = ThemeService.shared.theme.highlight
         return button
     }()
     

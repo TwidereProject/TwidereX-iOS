@@ -63,6 +63,8 @@ final class ProfileFieldContentView: UIView, UIContentView {
 
 extension ProfileFieldContentView {
     private func _init() {
+        backgroundColor = .clear
+        
         container.translatesAutoresizingMaskIntoConstraints = false
         addSubview(container)
         NSLayoutConstraint.activate([

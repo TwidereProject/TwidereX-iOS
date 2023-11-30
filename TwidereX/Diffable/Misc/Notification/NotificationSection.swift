@@ -60,58 +60,16 @@ extension NotificationSection {
                 }
                 return cell
 
-            default:
-                return UITableViewCell()
+            case .feedLoader:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
+                cell.viewModel.isFetching = true
+                return cell
+                
+            case .bottomLoader:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
+                cell.activityIndicatorView.startAnimating()
+                return cell
             }   // end switch
-//                    switch feed.objectContent {
-//                    case .status:
-//                        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
-//                        StatusSection.setupStatusPollDataSource(
-//                            context: context,
-//                            statusView: cell.statusView,
-//                            configurationContext: configuration.statusViewConfigurationContext
-//                        )
-//                        configure(
-//                            tableView: tableView,
-//                            cell: cell,
-//                            viewModel: StatusTableViewCell.ViewModel(value: .feed(feed)),
-//                            configuration: configuration
-//                        )
-//                        return cell
-//                    case .notification(let object):
-//                        switch object {
-//                        case .mastodon(let notification):
-//                            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserNotificationStyleTableViewCell.self), for: indexPath) as! UserNotificationStyleTableViewCell
-//                            let authenticationContext = configuration.statusViewConfigurationContext.authContext.authenticationContext
-//                            let me = authenticationContext.user(in: context.managedObjectContext)
-//                            let user: UserObject = .mastodon(object: notification.account)
-//                            configure(
-//                                cell: cell,
-//                                viewModel: UserTableViewCell.ViewModel(
-//                                    user: user,
-//                                    me: me,
-//                                    notification: .mastodon(object: notification)
-//                                ),
-//                                configuration: configuration
-//                            )
-//                            return cell
-//                        }
-//                    case .none:
-//                        assertionFailure()
-//                        return UITableViewCell()
-//                    }
-//                }   // end return context.managedObjectContext.performAndWait
-
-//            case .feedLoader:
-//                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
-//                cell.viewModel.isFetching = true
-//                return cell
-//
-//            case .bottomLoader:
-//                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
-//                cell.activityIndicatorView.startAnimating()
-//                return cell
-//            }   // end switch
         }   // end return
     }   // end func
     

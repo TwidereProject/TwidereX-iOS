@@ -223,6 +223,19 @@ public enum Asset {
     public static let textQuote = ImageAsset(name: "TextFormatting/text.quote")
     public static let textQuoteMini = ImageAsset(name: "TextFormatting/text.quote.mini")
   }
+  public enum Theme {
+    public enum GrandBudapestHotel {
+      public static let background = ColorAsset(name: "Theme/GrandBudapestHotel/background")
+      public static let bookmark = ColorAsset(name: "Theme/GrandBudapestHotel/bookmark")
+      public static let comment = ColorAsset(name: "Theme/GrandBudapestHotel/comment")
+      public static let commentDisabled = ColorAsset(name: "Theme/GrandBudapestHotel/comment.disabled")
+      public static let foreground = ColorAsset(name: "Theme/GrandBudapestHotel/foreground")
+      public static let highlight = ColorAsset(name: "Theme/GrandBudapestHotel/highlight")
+      public static let like = ColorAsset(name: "Theme/GrandBudapestHotel/like")
+      public static let line = ColorAsset(name: "Theme/GrandBudapestHotel/line")
+      public static let repost = ColorAsset(name: "Theme/GrandBudapestHotel/repost")
+    }
+  }
   public enum Transportation {
     public static let paperAirplane = ImageAsset(name: "Transportation/paper.airplane")
   }

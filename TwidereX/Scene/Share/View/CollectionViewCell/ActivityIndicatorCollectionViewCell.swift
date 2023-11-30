@@ -27,6 +27,8 @@ final class ActivityIndicatorCollectionViewCell: UICollectionViewCell {
 extension ActivityIndicatorCollectionViewCell {
     
     private func _init() {
+        backgroundColor = .clear
+        
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(activityIndicatorView)
         NSLayoutConstraint.activate([

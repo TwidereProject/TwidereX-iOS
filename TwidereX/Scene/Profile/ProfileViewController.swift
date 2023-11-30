@@ -66,7 +66,7 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
     private lazy var floatyButton: Floaty = {
         let button = Floaty()
         button.plusColor = .white
-        button.buttonColor = ThemeService.shared.theme.value.accentColor
+        button.buttonColor = Asset.Colors.Theme.daylight.color
         button.buttonImage = Asset.Arrows.arrowshapeTurnUpLeftFill.image.withTintColor(.white)
         button.handleFirstItemDirectly = true
         
@@ -97,7 +97,15 @@ extension ProfileViewController {
         
         drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
 
-        view.backgroundColor = .systemBackground
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: view)
+            .store(in: &disposeBag)
+        
+        ThemeService.shared.$theme
+            .map { $0.highlight }
+            .assign(to: \.buttonColor, on: floatyButton)
+            .store(in: &disposeBag)
         
         if navigationController?.viewControllers.first == self {
             coordinator.$needsSetupAvatarBarButtonItem

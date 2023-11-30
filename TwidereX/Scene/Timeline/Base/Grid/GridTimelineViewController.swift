@@ -84,6 +84,12 @@ extension GridTimelineViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        context.themeService.$theme
+            .map { $0.background }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.backgroundColor, on: collectionView)
+            .store(in: &disposeBag)
+        
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([

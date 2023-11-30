@@ -12,6 +12,8 @@ import Combine
 
 public class StatusTableViewCell: UITableViewCell {
     
+    var disposeBag = Set<AnyCancellable>()
+    
     let logger = Logger(subsystem: "StatusTableViewCell", category: "View")
     
     public weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
@@ -39,6 +41,11 @@ extension StatusTableViewCell {
     
     private func _init() {
         selectionStyle = .none
+        
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: self)
+            .store(in: &disposeBag)
     }
     
 }

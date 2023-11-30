@@ -65,6 +65,7 @@ public struct StatusView: View {
     static var hangingAvatarButtonTrailingSpacing: CGFloat { 10.0 }
     
     @ObservedObject public private(set) var viewModel: ViewModel
+    @ObservedObject public private(set) var themeService = ThemeService.shared
     
     @Environment(\.displayScale) var displayScale
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
@@ -136,7 +137,8 @@ public struct StatusView: View {
                                 } label: {
                                     HStack {
                                         Image(uiImage: Asset.Editing.ellipsisLarge.image.withRenderingMode(.alwaysTemplate))
-                                            .background(Color(uiColor: .tertiarySystemFill))
+                                            .foregroundStyle(Color(uiColor: themeService.theme.highlight))
+                                            .background(Color(uiColor: themeService.theme.comment).opacity(0.5))
                                             .clipShape(Capsule())
                                         Spacer()
                                     }
@@ -327,7 +329,7 @@ extension StatusView {
                     if viewModel.protected {
                         VectorImageView(
                             image: Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate),
-                            tintColor: .secondaryLabel
+                            tintColor: themeService.theme.comment
                         )
                         .frame(width: lockImageDimension, height: lockImageDimension)
                     }
@@ -340,7 +342,7 @@ extension StatusView {
                     // username
                     Text(verbatim: "@\(viewModel.authorUsernme)")
                         .font(Font(TextStyle.statusAuthorUsername.font))
-                        .foregroundColor(Color(uiColor: TextStyle.statusAuthorUsername.textColor))
+                        .foregroundColor(Color(uiColor: themeService.theme.comment))
                         .lineLimit(1)
                     Spacer()
                     if !isAdaptiveLayout {
@@ -364,6 +366,7 @@ extension StatusView {
                 metaContent: viewModel.authorName,
                 textStyle: .statusAuthorName,
                 setupLabel: { label in
+                    label.setupAttributes(foregroundColor: themeService.theme.foreground)
                     label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
                     label.setContentHuggingPriority(.defaultHigh, for: .vertical)
                     label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -373,7 +376,7 @@ extension StatusView {
         } else {
             Text(verbatim: viewModel.authorName.string)
                 .font(Font(TextStyle.statusAuthorName.font))
-                .foregroundColor(Color(uiColor: TextStyle.statusAuthorName.textColor))
+                .foregroundColor(Color(uiColor: themeService.theme.foreground))
                 .lineLimit(1)
         }
     }
@@ -389,8 +392,11 @@ extension StatusView {
     var mastodonVisibilityIconView: some View {
         if let visibilityIconImage = viewModel.visibilityIconImage {
             let dimension = visibilityIconImageDimension
-            VectorImageView(image: visibilityIconImage, tintColor: TextStyle.statusTimestamp.textColor)
-                .frame(width: dimension, height: dimension)
+            VectorImageView(
+                image: visibilityIconImage,
+                tintColor: themeService.theme.commentDisabled
+            )
+            .frame(width: dimension, height: dimension)
         }
     }
     
@@ -440,6 +446,8 @@ extension StatusView {
             TextViewRepresentable(
                 metaContent: viewModel.spoilerContent ?? PlaintextMetaContent(string: ""),
                 textStyle: .statusContent,
+                textColor: themeService.theme.foreground,
+                tintColor: themeService.theme.highlight,
                 isSelectable: viewModel.kind == .conversationRoot,
                 handler: { meta in
                     viewModel.delegate?.statusView(viewModel, textViewDidSelectMeta: meta)
@@ -454,7 +462,7 @@ extension StatusView {
             Text(metaContent)
                 .multilineTextAlignment(.leading)
                 .font(Font(TextStyle.statusContent.font))
-                .foregroundColor(Color(uiColor: TextStyle.statusContent.textColor))
+                .foregroundColor(Color(uiColor: themeService.theme.foreground))
                 .frame(width: viewModel.contentWidth, alignment: .leading)
         }
     }
@@ -465,6 +473,8 @@ extension StatusView {
             TextViewRepresentable(
                 metaContent: viewModel.content,
                 textStyle: .statusContent,
+                textColor: themeService.theme.foreground,
+                tintColor: themeService.theme.highlight,
                 isSelectable: viewModel.kind == .conversationRoot,
                 handler: { meta in
                     viewModel.delegate?.statusView(viewModel, textViewDidSelectMeta: meta)
@@ -478,7 +488,7 @@ extension StatusView {
             Text(viewModel.contentAttributedString)
                 .multilineTextAlignment(.leading)
                 .font(Font(TextStyle.statusContent.font))
-                .foregroundColor(Color(uiColor: TextStyle.statusContent.textColor))
+                .foregroundColor(Color(uiColor: themeService.theme.foreground))
                 .frame(width: viewModel.contentWidth, alignment: .leading)
         }
     }
@@ -497,6 +507,7 @@ extension StatusView {
         }
     }
     
+    @ViewBuilder
     var toolbarView: some View {
         StatusToolbarView(
             viewModel: viewModel.toolbarViewModel,

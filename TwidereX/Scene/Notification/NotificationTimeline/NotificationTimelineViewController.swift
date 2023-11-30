@@ -83,6 +83,12 @@ extension NotificationTimelineViewController {
                 self.viewModel.loadOldestStateMachine.enter(NotificationTimelineViewModel.LoadOldestState.Loading.self)
             }
             .store(in: &disposeBag)
+        
+        context.themeService.$theme
+            .map { $0.background }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.backgroundColor, on: tableView)
+            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {

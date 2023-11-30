@@ -50,7 +50,10 @@ extension ProfileHeaderViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemBackground
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: view)
+            .store(in: &disposeBag)
         
         headerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(headerView)

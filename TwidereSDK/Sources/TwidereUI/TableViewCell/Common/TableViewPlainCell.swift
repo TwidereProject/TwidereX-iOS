@@ -7,11 +7,13 @@
 //
 
 import UIKit
+import Combine
 import MetaTextKit
 import MetaLabel
 
 public class TableViewPlainCell: UITableViewCell {
     
+    private var _disposeBag = Set<AnyCancellable>()
     public var observations = Set<NSKeyValueObservation>()
     
     public let iconImageView: UIImageView = {
@@ -99,6 +101,20 @@ public class TableViewPlainCell: UITableViewCell {
         accessoryImageView.isHidden = true
         
         primaryTextLabel.isUserInteractionEnabled = false
+        
+        // theme
+        ThemeService.shared.$theme
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] theme in
+                guard let self = self else { return }
+                self.setup(theme: theme)
+            }
+            .store(in: &_disposeBag)
+    }
+    
+    public func setup(theme: Theme) {
+        backgroundColor = theme.background
+        contentView.backgroundColor = theme.foreground.withAlphaComponent(0.04)
     }
     
 }

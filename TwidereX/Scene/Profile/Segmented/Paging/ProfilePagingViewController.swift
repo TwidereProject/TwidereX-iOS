@@ -62,11 +62,11 @@ extension ProfilePagingViewController {
     
     override func viewDidLoad() {
         // configure style before viewDidLoad
-        settings.style.buttonBarBackgroundColor = .systemBackground
-        settings.style.buttonBarItemBackgroundColor = .systemBackground
+        settings.style.buttonBarBackgroundColor = .clear
+        settings.style.buttonBarItemBackgroundColor = .clear
         settings.style.buttonBarItemsShouldFillAvailableWidth = true
         settings.style.selectedBarHeight = 3
-        settings.style.selectedBarBackgroundColor = Asset.Colors.hightLight.color
+        settings.style.selectedBarBackgroundColor = .red
         changeCurrentIndexProgressive = { [weak self] (oldCell: ButtonBarViewCell?, newCell: ButtonBarViewCell?, progressPercentage: CGFloat, changeCurrentIndex: Bool, animated: Bool) -> Void in
             guard let _ = self else { return }
             guard changeCurrentIndex == true else { return }
@@ -74,10 +74,25 @@ extension ProfilePagingViewController {
             newCell?.imageView.contentMode = .center
             
             oldCell?.imageView.tintColor = .secondaryLabel
-            newCell?.imageView.tintColor = Asset.Colors.hightLight.color
+            newCell?.imageView.tintColor = ThemeService.shared.theme.highlight
         }
         
         super.viewDidLoad()
+        
+        ThemeService.shared.$theme
+            .map { $0.highlight }
+            .assign(to: \.settings.style.selectedBarBackgroundColor, on: self)
+            .store(in: &disposeBag)
+        
+        let separatorLine = SeparatorLineView()
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(separatorLine)
+        NSLayoutConstraint.activate([
+            separatorLine.leadingAnchor.constraint(equalTo: buttonBarView.frameLayoutGuide.leadingAnchor),
+            separatorLine.trailingAnchor.constraint(equalTo: buttonBarView.frameLayoutGuide.trailingAnchor),
+            separatorLine.bottomAnchor.constraint(equalTo: buttonBarView.frameLayoutGuide.bottomAnchor),
+            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: buttonBarView)).priority(.required - 1),
+        ])
     }
 
 }

@@ -5,6 +5,9 @@ target 'TwidereX' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
   
+  # Debug
+  pod 'LookinServer', :subspecs => ['SwiftAndNoHook'], :configurations => ['Debug']
+  
   ## UI
   pod 'XLPagerTabStrip', '~> 9.0.0'
   

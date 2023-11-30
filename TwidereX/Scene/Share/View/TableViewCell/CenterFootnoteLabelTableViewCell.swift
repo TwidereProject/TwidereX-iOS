@@ -34,6 +34,8 @@ final class CenterFootnoteLabelTableViewCell: UITableViewCell {
 extension CenterFootnoteLabelTableViewCell {
     
     private func _init() {
+        backgroundColor = .clear
+
         label.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(label)
         NSLayoutConstraint.activate([

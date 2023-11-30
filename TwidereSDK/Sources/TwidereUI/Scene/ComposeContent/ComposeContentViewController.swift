@@ -57,7 +57,11 @@ extension ComposeContentViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemBackground
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: view)
+            .store(in: &disposeBag)
+        
         viewModel.viewLayoutFrame.update(view: view)
         
         customEmojiPickerInputView.delegate = self
@@ -79,6 +83,11 @@ extension ComposeContentViewController {
             hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         hostingViewController.didMove(toParent: self)
+        
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: hostingViewController.view)
+            .store(in: &disposeBag)
         
         // mention - pick action
         viewModel.mentionPickPublisher

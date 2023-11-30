@@ -111,6 +111,11 @@ final class ProfileHeaderView: UIView {
 
 extension ProfileHeaderView {
     private func _init() {
+        ThemeService.shared.$theme
+            .map { $0.background }
+            .assign(to: \.backgroundColor, on: self)
+            .store(in: &disposeBag)
+        
         bannerContainer.translatesAutoresizingMaskIntoConstraints = false
         addSubview(bannerContainer)
         NSLayoutConstraint.activate([

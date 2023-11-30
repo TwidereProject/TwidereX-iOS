@@ -15,6 +15,8 @@ public struct StatusToolbarView: View {
     var logger: Logger { StatusView.logger }
     
     @ObservedObject public var viewModel: ViewModel
+    @ObservedObject public var themeService = ThemeService.shared
+    
     public var menuActions: [Action]
     public let handler: (Action) -> Void
     
@@ -67,7 +69,7 @@ extension StatusToolbarView {
             action: .reply,
             image: viewModel.replyButtonImage,
             count: isMetricCountDisplay ? viewModel.replyCount : nil,
-            tintColor: nil
+            tintColor: themeService.theme.comment
         )
     }
     
@@ -114,7 +116,7 @@ extension StatusToolbarView {
                 return viewModel.repostButtonImage(kind: kind)
             }(),
             count: isMetricCountDisplay ? viewModel.repostCount : nil,
-            tintColor: viewModel.isReposted ? Asset.Scene.Status.Toolbar.repost.color : nil
+            tintColor: viewModel.isReposted ? themeService.theme.repost : themeService.theme.comment
         )
         .opacity(viewModel.isRepostable ? 1 : 0.5)
     }
@@ -161,7 +163,7 @@ extension StatusToolbarView {
             action: .like,
             image: viewModel.isLiked ? viewModel.likeOnButtonImage : viewModel.likeOffButtonImage,
             count: isMetricCountDisplay ? viewModel.likeCount : nil,
-            tintColor: viewModel.isLiked ? Asset.Scene.Status.Toolbar.like.color : nil
+            tintColor: viewModel.isLiked ? themeService.theme.like : themeService.theme.comment
         )
     }
     
@@ -182,7 +184,7 @@ extension StatusToolbarView {
         } label: {
             HStack {
                 Image(uiImage: viewModel.moreButtonImage)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color(uiColor: themeService.theme.comment))
             }
         }
         .buttonStyle(.borderless)
